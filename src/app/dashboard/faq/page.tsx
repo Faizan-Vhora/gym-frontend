@@ -4,10 +4,13 @@ import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import { Button, Stack, Typography } from '@mui/material';
 import { Plus as PlusIcon } from '@phosphor-icons/react';
+import { toast, ToastContainer } from 'react-toastify'; // Import the toast function
 
 import axiosInstance from '@/lib/axios';
 import { FaqFilters } from '@/components/dashboard/faq/faq-filters';
 import FaqTable, { FaqEntry, FaqStatus } from '@/components/dashboard/faq/faq-tables';
+
+import 'react-toastify/dist/ReactToastify.css';
 
 const initialFaqs: FaqEntry[] = [];
 
@@ -52,13 +55,22 @@ export default function FaqManagementPage(): React.JSX.Element {
     try {
       await axiosInstance.delete(`/faq/${id}`);
       fetchFaqs(); // Refresh the FAQ list after deletion
+      toast.success(`FAQ deleted Successfully`);
     } catch (error) {
+      toast.error('Failed to delete faq');
       console.error('Error deleting FAQ:', error);
     }
   };
 
-  const handleStatusChange = (id: number, status: FaqStatus) => {
-    setFaqs((prevFaqs) => prevFaqs.map((faq) => (faq.id === id ? { ...faq, status } : faq)));
+  const handleStatusChange = async (id: number, status: FaqStatus) => {
+    try {
+      await axiosInstance.patch(`/faq/update-status/${id}`, { status });
+      setFaqs((prevFaqs) => prevFaqs.map((faq) => (faq.id === id ? { ...faq, status } : faq)));
+      toast.success(`Status updated Successfully`);
+    } catch (error) {
+      toast.error('Failed to update status');
+      console.error('Error updating FAQ status:', error);
+    }
   };
 
   const handleTypeChange = (type: string) => {
@@ -79,7 +91,7 @@ export default function FaqManagementPage(): React.JSX.Element {
         </Stack>
 
         <Button
-          className="common-button"
+          className="common-button align-items-normal"
           startIcon={<PlusIcon fontSize="var(--icon-fontSize-md)" />}
           variant="contained"
           onClick={handleAddClick}
@@ -87,9 +99,7 @@ export default function FaqManagementPage(): React.JSX.Element {
           Add
         </Button>
       </Stack>
-
       <FaqFilters onTypeChange={handleTypeChange} onStatusChange={handleStatusChangeFilter} />
-
       <FaqTable
         faqs={faqs}
         page={page}
@@ -104,6 +114,7 @@ export default function FaqManagementPage(): React.JSX.Element {
           setPage(0);
         }}
       />
+      <ToastContainer /> {/* Add ToastContainer here */}
     </Stack>
   );
 }

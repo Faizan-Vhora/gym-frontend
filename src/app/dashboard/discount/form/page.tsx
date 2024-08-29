@@ -252,9 +252,14 @@ export default function DiscountFormPage(): React.JSX.Element {
         <MenuItem value={DiscountStatus.Expired}>Expired</MenuItem>
       </Select>
 
-      <Button className="common-button" variant="contained" onClick={handleSave}>
-        Save
-      </Button>
+      <Stack direction="row" spacing={2} justifyContent="flex-end">
+        <Button className="common-button" type="submit" variant="contained" onClick={handleSave}>
+          Save
+        </Button>
+        <Button className="common-button" variant="contained" onClick={() => router.push('/dashboard/discount')}>
+          Cancel
+        </Button>
+      </Stack>
     </Stack>
   );
 }

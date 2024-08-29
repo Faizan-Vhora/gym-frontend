@@ -1,5 +1,8 @@
 import React from 'react';
 import {
+  Box,
+  Card,
+  Divider,
   IconButton,
   MenuItem,
   Paper,
@@ -15,6 +18,8 @@ import {
 } from '@mui/material';
 import { PencilSimple, Trash } from '@phosphor-icons/react';
 
+import tableCss from '@/styles/table-css';
+
 interface DiscountTableProps {
   discounts: DiscountEntry[];
   page: number;
@@ -23,7 +28,6 @@ interface DiscountTableProps {
   onEdit: (id: number) => void;
   onDelete: (id: number) => void;
   onStatusChange: (id: number, status: DiscountStatus) => void;
-  onUsageLimitChange: (id: number, usageLimit: UsageLimit) => void;
   onPageChange: (newPage: number) => void;
   onRowsPerPageChange: (newRowsPerPage: number) => void;
 }
@@ -66,7 +70,6 @@ export function DiscountTable({
   onEdit,
   onDelete,
   onStatusChange,
-  onUsageLimitChange,
   onPageChange,
   onRowsPerPageChange,
 }: DiscountTableProps): React.JSX.Element {
@@ -79,46 +82,36 @@ export function DiscountTable({
   };
 
   return (
-    <Paper>
-      <TableContainer>
+    <Card>
+      <Box sx={{ overflowX: 'auto' }}>
         <Table>
           <TableHead>
-            <TableRow>
-              <TableCell>Code Name</TableCell>
-              <TableCell>Expiry Date</TableCell>
-              <TableCell>Discount Type</TableCell>
-              <TableCell>Usage Limit</TableCell>
-              <TableCell>Discount Value</TableCell>
-              <TableCell>Status</TableCell>
-              <TableCell>Actions</TableCell>
+            <TableRow sx={tableCss.tableRow}>
+              <TableCell sx={tableCss.tableHeaderCell}>Code Name</TableCell>
+              <TableCell sx={tableCss.tableHeaderCell}>Expiry Date</TableCell>
+              <TableCell sx={tableCss.tableHeaderCell}>Discount Type</TableCell>
+              <TableCell sx={tableCss.tableHeaderCell}>Usage Limit</TableCell>
+              <TableCell sx={tableCss.tableHeaderCell}>Discount Value</TableCell>
+              <TableCell sx={tableCss.tableHeaderCell}>Status</TableCell>
+              <TableCell sx={tableCss.tableHeaderCell}>Actions</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {discounts.length === 0 ? (
-              <TableRow>
+              <TableRow sx={tableCss.tableRow}>
                 <TableCell colSpan={7} align="center">
                   <Typography variant="body1">No data found</Typography>
                 </TableCell>
               </TableRow>
             ) : (
               discounts.map((discount) => (
-                <TableRow key={discount.id}>
-                  <TableCell>{discount.codeName}</TableCell>
-                  <TableCell>{new Date(discount.expiryDate).toLocaleDateString()}</TableCell>
-                  <TableCell>{discount.discountType}</TableCell>
-                  <TableCell>
-                    <Select
-                      value={discount.usageLimit}
-                      onChange={(e) => onUsageLimitChange(discount.id, e.target.value as UsageLimit)}
-                      fullWidth
-                    >
-                      <MenuItem value={UsageLimit.Once}>Once</MenuItem>
-                      <MenuItem value={UsageLimit.Twice}>Twice</MenuItem>
-                      <MenuItem value={UsageLimit.NoLimit}>No Limit</MenuItem>
-                    </Select>
-                  </TableCell>
-                  <TableCell>{discount.discountValue}</TableCell>
-                  <TableCell>
+                <TableRow key={discount.id} sx={tableCss.tableRow}>
+                  <TableCell sx={tableCss.tableCell}>{discount.codeName}</TableCell>
+                  <TableCell sx={tableCss.tableCell}>{new Date(discount.expiryDate).toLocaleDateString()}</TableCell>
+                  <TableCell sx={tableCss.tableCell}>{discount.discountType}</TableCell>
+                  <TableCell sx={tableCss.tableCell}>{discount.usageLimit}</TableCell>
+                  <TableCell sx={tableCss.tableCell}>{discount.discountValue}</TableCell>
+                  <TableCell sx={tableCss.tableCell}>
                     <Select
                       value={discount.status}
                       onChange={(e) => onStatusChange(discount.id, e.target.value as DiscountStatus)}
@@ -129,7 +122,7 @@ export function DiscountTable({
                       <MenuItem value={DiscountStatus.Expired}>Expired</MenuItem>
                     </Select>
                   </TableCell>
-                  <TableCell>
+                  <TableCell sx={tableCss.tableCell}>
                     <IconButton onClick={() => onEdit(discount.id)}>
                       <PencilSimple />
                     </IconButton>
@@ -142,7 +135,8 @@ export function DiscountTable({
             )}
           </TableBody>
         </Table>
-      </TableContainer>
+      </Box>
+      <Divider />
       <TablePagination
         component="div"
         count={totalEntries}
@@ -151,6 +145,6 @@ export function DiscountTable({
         rowsPerPage={rowsPerPage}
         onRowsPerPageChange={handleChangeRowsPerPage}
       />
-    </Paper>
+    </Card>
   );
 }

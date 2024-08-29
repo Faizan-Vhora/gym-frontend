@@ -2,10 +2,12 @@
 
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
-import { Button, Stack, Typography } from '@mui/material';
+import { Button, Stack, TextField, Typography } from '@mui/material';
+import { styled } from '@mui/material/styles';
 import { Plus as PlusIcon } from '@phosphor-icons/react';
 
 import axiosInstance from '@/lib/axios';
+import { DiscountFilter } from '@/components/dashboard/discount/discount-filters';
 import {
   DiscountEntry,
   DiscountStatus,
@@ -15,24 +17,33 @@ import {
 
 export default function DiscountManagementPage(): React.JSX.Element {
   const [discounts, setDiscounts] = React.useState<DiscountEntry[]>([]);
-  const [filteredDiscounts, setFilteredDiscounts] = React.useState<DiscountEntry[]>([]);
-  const [filterType, setFilterType] = React.useState<string>('All');
   const [page, setPage] = React.useState<number>(0);
   const [rowsPerPage, setRowsPerPage] = React.useState<number>(5);
+  const [totalItems, setTotalItems] = React.useState<number>(0);
+  const [filterType, setFilterType] = React.useState<string>('All');
+  const [search, setSearch] = React.useState<string>('');
   const router = useRouter();
 
-  React.useEffect(() => {
+  const fetchDiscounts = React.useCallback(() => {
     axiosInstance
-      .get('/discount')
-      .then((response) => setDiscounts(response.data.data.items))
+      .get('/discount', {
+        params: {
+          page: page + 1, // API pages are often 1-indexed
+          limit: rowsPerPage,
+          status: filterType !== 'All' ? filterType : undefined,
+          search,
+        },
+      })
+      .then((response) => {
+        setDiscounts(response.data.data.items);
+        setTotalItems(response.data.data.total);
+      })
       .catch((error) => console.error('Error fetching discounts:', error));
-  }, []);
+  }, [page, rowsPerPage, filterType, search]);
 
   React.useEffect(() => {
-    setFilteredDiscounts(
-      filterType === 'All' ? discounts : discounts.filter((discount) => discount.status === filterType)
-    );
-  }, [filterType, discounts]);
+    fetchDiscounts();
+  }, [fetchDiscounts]);
 
   const handleAddClick = () => {
     router.push('/dashboard/discount/form');
@@ -46,26 +57,29 @@ export default function DiscountManagementPage(): React.JSX.Element {
     axiosInstance
       .delete(`/discount/${id}`)
       .then(() => {
-        setDiscounts(discounts.filter((discount) => discount.id !== id));
+        fetchDiscounts();
       })
       .catch((error) => console.error('Error deleting discount:', error));
   };
 
+  const handleStatusChange = (id: number, status: DiscountStatus) => {
+    axiosInstance
+      .patch(`/discount/update-status/${id}`, { status })
+      .then(() => {
+        fetchDiscounts();
+      })
+      .catch((error) => console.error('Error updating discount status:', error));
+  };
+
   const handleFilterChange = (type: string) => {
     setFilterType(type);
+    setPage(0);
   };
 
-  const handleStatusChange = (id: number, status: DiscountStatus) => {
-    setDiscounts(discounts.map((discount) => (discount.id === id ? { ...discount, status } : discount)));
+  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSearch(event.target.value);
+    setPage(0);
   };
-
-  const handleUsageLimitChange = (id: number, usageLimit: UsageLimit) => {
-    setDiscounts(
-      discounts.map((discount) => (discount.id === id ? { ...discount, usage_limit: usageLimit } : discount))
-    );
-  };
-
-  const safeFilteredDiscounts = Array.isArray(filteredDiscounts) ? filteredDiscounts : [];
 
   return (
     <Stack spacing={3}>
@@ -82,16 +96,18 @@ export default function DiscountManagementPage(): React.JSX.Element {
           Add
         </Button>
       </Stack>
-      {/* Discount Filter Component */}
+      {/* Search Field */}
+      <TextField variant="outlined" label="Search" fullWidthvalue={search} onChange={handleSearchChange} />
+      {/* Discount Filter and Search Components */}
+      <DiscountFilter onFilterChange={handleFilterChange} />
       <DiscountTable
-        discounts={safeFilteredDiscounts.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)}
+        discounts={discounts}
         page={page}
         rowsPerPage={rowsPerPage}
-        totalEntries={safeFilteredDiscounts.length}
+        totalEntries={totalItems}
         onEdit={handleEdit}
         onDelete={handleDelete}
         onStatusChange={handleStatusChange}
-        onUsageLimitChange={handleUsageLimitChange}
         onPageChange={(newPage) => setPage(newPage)}
         onRowsPerPageChange={(newRowsPerPage) => {
           setRowsPerPage(newRowsPerPage);

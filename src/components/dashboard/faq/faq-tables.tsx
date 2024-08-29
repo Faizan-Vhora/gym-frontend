@@ -21,6 +21,8 @@ import { PencilSimple, ToggleLeft, ToggleRight, Trash } from '@phosphor-icons/re
 
 import tableCss from '@/styles/table-css';
 
+const statusOptions = ['Active', 'Inactive', 'Archived']; // Add more status options if needed
+
 export interface FaqEntry {
   id: number;
   type: FaqType;
@@ -52,7 +54,6 @@ interface FaqTableProps {
   onStatusChange: (id: number, status: FaqStatus) => void;
   onPageChange: (newPage: number) => void;
   onRowsPerPageChange: (newRowsPerPage: number) => void;
-  onFilterChange: (type: string) => void;
 }
 
 export default function FaqTable({
@@ -65,7 +66,6 @@ export default function FaqTable({
   onStatusChange,
   onPageChange,
   onRowsPerPageChange,
-  onFilterChange,
 }: FaqTableProps) {
   const handleRequestSort = (property: keyof FaqEntry) => {
     // Add sorting functionality here if needed
@@ -105,10 +105,16 @@ export default function FaqTable({
                 <TableCell sx={tableCss.tableCell}>{faq.question}</TableCell>
                 <TableCell sx={tableCss.tableCell}>{faq.answer}</TableCell>
                 <TableCell sx={tableCss.tableCell}>
-                  <Select value={faq.status} onChange={(e) => onStatusChange(faq.id, e.target.value as FaqStatus)}>
-                    <MenuItem value={FaqStatus.Active}>Active</MenuItem>
-                    <MenuItem value={FaqStatus.Inactive}>Inactive</MenuItem>
-                    <MenuItem value={FaqStatus.Archived}>Archived</MenuItem>
+                  <Select
+                    value={faq.status}
+                    onChange={(e) => onStatusChange(faq.id, e.target.value as FaqStatus)}
+                    fullWidth
+                  >
+                    {statusOptions.map((status) => (
+                      <MenuItem key={status} value={status.toLowerCase()}>
+                        {status}
+                      </MenuItem>
+                    ))}
                   </Select>
                 </TableCell>
                 <TableCell sx={tableCss.tableCell}>

@@ -19,9 +19,9 @@ export function DiscountFilter({ onFilterChange }: DiscountFilterProps): React.J
       <InputLabel>Status</InputLabel>
       <Select value={filter} onChange={handleFilterChange} label="Status">
         <MenuItem value="All">All</MenuItem>
-        <MenuItem value="Active">Active</MenuItem>
-        <MenuItem value="Inactive">Inactive</MenuItem>
-        <MenuItem value="Expired">Expired</MenuItem>
+        <MenuItem value="active">Active</MenuItem>
+        <MenuItem value="inactive">Inactive</MenuItem>
+        <MenuItem value="expired">Expired</MenuItem>
       </Select>
     </FormControl>
   );

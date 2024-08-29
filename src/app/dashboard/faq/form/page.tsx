@@ -136,9 +136,14 @@ export default function FaqForm({ initialData, onSave = () => {} }: FaqFormProps
         <MenuItem value={FaqStatus.Archived}>Archived</MenuItem>
       </Select>
 
-      <Button className="common-button mt-6 bg-blue-600 text-white" variant="contained" onClick={handleSave}>
-        Save
-      </Button>
+      <Stack direction="row" spacing={2} justifyContent="flex-end">
+        <Button className="common-button" type="submit" variant="contained">
+          Save
+        </Button>
+        <Button className="common-button" variant="contained" onClick={() => router.push('/dashboard/faq')}>
+          Cancel
+        </Button>
+      </Stack>
     </Stack>
   );
 }

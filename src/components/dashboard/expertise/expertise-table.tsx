@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import {
   IconButton,
   Paper,
@@ -11,102 +11,80 @@ import {
   Typography,
 } from '@mui/material';
 import { PencilSimple, ToggleLeft, ToggleRight, Trash } from '@phosphor-icons/react';
-import { z } from 'zod';
 
-import axiosInstance from '@/lib/axios';
+import tableCss from '@/styles/table-css';
 
 export interface ExpertiseEntry {
   id: number;
   title: string;
   status: 'active' | 'inactive';
-  createdAt: Date;
+  createdAt: Date | string;
 }
 
 interface ExpertiseTableProps {
+  entries: ExpertiseEntry[];
+  page: number;
+  rowsPerPage: number;
+  totalEntries: number;
   onEdit: (id: number) => void;
   onDelete: (id: number) => void;
-  handleToggleStatus: (id: number) => void;
+  onToggleStatus: (id: number, newStatus: 'active' | 'inactive') => void;
 }
 
 export function ExpertiseTable({
+  entries,
+  page,
+  rowsPerPage,
+  totalEntries,
   onEdit,
   onDelete,
-  handleToggleStatus = () => {},
+  onToggleStatus,
 }: ExpertiseTableProps): React.JSX.Element {
-  const [entries, setEntries] = useState<ExpertiseEntry[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
+  const formatDate = (date: Date | string) => {
+    if (typeof date === 'string') {
+      date = new Date(date);
+    }
+    return date.toLocaleDateString();
+  };
 
-  const schema = z.array(
-    z.object({
-      id: z.number(),
-      title: z.string(),
-      status: z.enum(['active', 'inactive']),
-      createdAt: z.string().transform((str) => new Date(str)),
-    })
-  );
-
-  useEffect(() => {
-    axiosInstance
-      .get('/expertise')
-      .then((response) => {
-        const data = response.data.data.items;
-        try {
-          const parsedData = schema.parse(data);
-          setEntries(parsedData);
-        } catch (e) {
-          console.error('Validation error:', e);
-          setError('Failed to load data due to validation error.');
-        }
-      })
-      .catch((err) => {
-        console.error('Error fetching expertise:', err);
-        setError('Failed to load data.');
-      })
-      .finally(() => setLoading(false));
-  }, []);
-
-  if (loading) {
-    return <Typography>Loading...</Typography>;
-  }
-
-  if (error) {
-    return <Typography color="error">{error}</Typography>;
-  }
+  const handleToggleStatus = (entry: ExpertiseEntry) => {
+    const newStatus = entry.status === 'active' ? 'inactive' : 'active';
+    onToggleStatus(entry.id, newStatus);
+  };
 
   return (
     <TableContainer component={Paper}>
       <Table>
         <TableHead>
-          <TableRow>
-            <TableCell>Title</TableCell>
-            <TableCell>Status</TableCell>
-            <TableCell>Created At</TableCell>
-            <TableCell>Actions</TableCell>
+          <TableRow sx={tableCss.tableRow}>
+            <TableCell sx={tableCss.tableHeaderCell}>Title</TableCell>
+            <TableCell sx={tableCss.tableHeaderCell}>Status</TableCell>
+            <TableCell sx={tableCss.tableHeaderCell}>Created At</TableCell>
+            <TableCell sx={tableCss.tableHeaderCell}>Actions</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
           {entries.length === 0 ? (
-            <TableRow>
-              <TableCell colSpan={6} align="center">
+            <TableRow sx={tableCss.tableRow}>
+              <TableCell colSpan={6} align="center" sx={tableCss.tableCell}>
                 <Typography variant="body1">No data found</Typography>
               </TableCell>
             </TableRow>
           ) : (
             entries.map((entry) => (
-              <TableRow key={entry.id}>
-                <TableCell>{entry.title}</TableCell>
-                <TableCell>{entry.status}</TableCell>
-                <TableCell>{entry.createdAt.toLocaleDateString()}</TableCell>
-                <TableCell>
+              <TableRow key={entry.id} sx={tableCss.tableRow}>
+                <TableCell sx={tableCss.tableCell}>{entry.title}</TableCell>
+                <TableCell sx={tableCss.tableCell}>{entry.status === 'active' ? 'Active' : 'Inactive'}</TableCell>
+                <TableCell sx={tableCss.tableCell}>{formatDate(entry.createdAt)}</TableCell>
+                <TableCell sx={tableCss.tableCell}>
                   <IconButton onClick={() => onEdit(entry.id)}>
                     <PencilSimple />
                   </IconButton>
                   <IconButton onClick={() => onDelete(entry.id)}>
                     <Trash />
                   </IconButton>
-                  <IconButton onClick={() => handleToggleStatus(entry.id)}>
-                    {entry.status === 'active' ? <ToggleLeft /> : <ToggleRight />}
+                  <IconButton onClick={() => handleToggleStatus(entry)}>
+                    {entry.status === 'active' ? <ToggleRight /> : <ToggleLeft />}
                   </IconButton>
                 </TableCell>
               </TableRow>
