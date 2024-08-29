@@ -1,0 +1,40 @@
+'use client';
+
+import * as React from 'react';
+import { Button, MenuItem, Select, Stack, TextField } from '@mui/material';
+
+interface ExpertiseFiltersProps {
+  onSearchChange: (searchTerm: string) => void;
+  onStatusChange: (status: string) => void;
+}
+
+export default function ExpertiseFilters({ onSearchChange, onStatusChange }: ExpertiseFiltersProps): React.JSX.Element {
+  // component implementation
+
+  // export default function ExpertiseFilters({ onSearchChange, onStatusChange }: ExpertiseFiltersProps): React.JSX.Element {
+  const [searchTerm, setSearchTerm] = React.useState('');
+  const [status, setStatus] = React.useState('ALL');
+
+  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const value = event.target.value;
+    setSearchTerm(value);
+    onSearchChange(value);
+  };
+
+  const handleStatusChange = (event: React.ChangeEvent<{ value: unknown }>) => {
+    const value = event.target.value as string;
+    setStatus(value);
+    onStatusChange(value);
+  };
+
+  return (
+    <Stack direction="row" spacing={2} sx={{ marginBottom: 3 }}>
+      <TextField label="Search" value={searchTerm} onChange={handleSearchChange} variant="outlined" fullWidth />
+      <Select label="Status" value={status} onChange={handleStatusChange} variant="outlined" fullWidth>
+        <MenuItem value="ALL">All</MenuItem>
+        <MenuItem value="active">Active</MenuItem>
+        <MenuItem value="inactive">Inactive</MenuItem>
+      </Select>
+    </Stack>
+  );
+}
