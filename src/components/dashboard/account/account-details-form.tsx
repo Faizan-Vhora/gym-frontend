@@ -12,20 +12,28 @@ import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import Grid from '@mui/material/Unstable_Grid2';
+import { toast, ToastContainer } from 'react-toastify';
+
+import 'react-toastify/dist/ReactToastify.css';
+
+import { Typography } from '@mui/material';
+import Avatar from '@mui/material/Avatar';
+import { Stack } from '@mui/system';
 
 import axiosInstance from '@/lib/axios';
 
-// Updated User type with id
 type User = {
   id: string;
   fullName: string;
   email: string;
   phoneNumber?: string;
   address?: string;
+  profileImageUrl: string;
 };
 
 export function AccountDetailsForm(): React.JSX.Element {
   const [user, setUser] = useState<User | null>(null);
+  const [file, setFile] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -42,6 +50,17 @@ export function AccountDetailsForm(): React.JSX.Element {
     setUser((prevUser) => (prevUser ? { ...prevUser, [name]: value } : null));
   };
 
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files && event.target.files[0]) {
+      const selectedFile = event.target.files[0];
+      setFile(selectedFile);
+
+      // Create a preview URL for the selected image
+      const imageUrl = URL.createObjectURL(selectedFile);
+      setUser((prevUser) => (prevUser ? { ...prevUser, profileImageUrl: imageUrl } : null));
+    }
+  };
+
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!user) return;
@@ -50,14 +69,29 @@ export function AccountDetailsForm(): React.JSX.Element {
     setError(null);
 
     try {
-      const response = await axiosInstance.put(`/users/${user.id}`, user); // API endpoint with user.id
-      const newUser = response.data.data; // Assuming response contains the updated user data
-      setUser(newUser); // Update state with the response data
+      const formData = new FormData();
+      formData.append('fullName', user.fullName);
+      formData.append('email', user.email);
+      formData.append('phoneNumber', user.phoneNumber || '');
+      formData.append('address', user.address || '');
 
-      // Update localStorage with the new user data
+      if (file) {
+        formData.append('profileImage', file);
+      }
+
+      const response = await axiosInstance.put(`/users/${user.id}`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+      const newUser = response.data.data;
+      setUser(newUser);
       localStorage.setItem('user', JSON.stringify(newUser));
+      toast.success('Profile updated successfully');
     } catch (err: any) {
       console.error('Update error:', err);
+      toast.error('Failed to update profile');
       setError('Failed to update user details.');
     } finally {
       setIsSubmitting(false);
@@ -111,16 +145,39 @@ export function AccountDetailsForm(): React.JSX.Element {
                 <OutlinedInput value={user.address || ''} label="Address" name="address" onChange={handleInputChange} />
               </FormControl>
             </Grid>
+            <Grid md={6} xs={12}>
+              <CardContent>
+                <Stack spacing={2} sx={{ alignItems: 'center' }}>
+                  <div>
+                    <Avatar src={user.profileImageUrl} sx={{ height: '80px', width: '80px' }} />
+                  </div>
+                  <Stack spacing={1} sx={{ textAlign: 'center' }}>
+                    <Typography variant="h5">{user.fullName}</Typography>
+                    <Typography color="text.secondary" variant="body2">
+                      {user.address}
+                    </Typography>
+                  </Stack>
+                </Stack>
+              </CardContent>
+              <Divider />
+              <CardActions>
+                <Button component="label" fullWidth variant="text">
+                  Upload picture
+                  <input type="file" accept="image/*" hidden onChange={handleFileChange} />
+                </Button>
+              </CardActions>
+            </Grid>
           </Grid>
         </CardContent>
         <Divider />
         <CardActions sx={{ justifyContent: 'flex-end' }}>
-          <Button variant="contained" type="submit" disabled={isSubmitting}>
+          <Button className="common-button" variant="contained" type="submit" disabled={isSubmitting}>
             {isSubmitting ? 'Saving...' : 'Save details'}
           </Button>
         </CardActions>
         {error && <div style={{ color: 'red' }}>{error}</div>}
       </Card>
+      <ToastContainer />
     </form>
   );
 }

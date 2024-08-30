@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
-import { Button, Stack, TextField, Typography } from '@mui/material';
+import { Button, Grid, Stack, TextField, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { Plus as PlusIcon } from '@phosphor-icons/react';
 
@@ -36,7 +36,7 @@ export default function DiscountManagementPage(): React.JSX.Element {
       })
       .then((response) => {
         setDiscounts(response.data.data.items);
-        setTotalItems(response.data.data.total);
+        setTotalItems(response.data.data.meta.totalItems);
       })
       .catch((error) => console.error('Error fetching discounts:', error));
   }, [page, rowsPerPage, filterType, search]);
@@ -97,9 +97,15 @@ export default function DiscountManagementPage(): React.JSX.Element {
         </Button>
       </Stack>
       {/* Search Field */}
-      <TextField variant="outlined" label="Search" fullWidthvalue={search} onChange={handleSearchChange} />
-      {/* Discount Filter and Search Components */}
-      <DiscountFilter onFilterChange={handleFilterChange} />
+      <Grid container spacing={2}>
+        <Grid className="input-width" item md={6} xs={12}>
+          <TextField variant="outlined" label="Search" fullWidthvalue={search} onChange={handleSearchChange} />
+        </Grid>
+        <Grid item md={6} xs={12}>
+          {/* Discount Filter and Search Components */}
+          <DiscountFilter onFilterChange={handleFilterChange} />
+        </Grid>
+      </Grid>
       <DiscountTable
         discounts={discounts}
         page={page}

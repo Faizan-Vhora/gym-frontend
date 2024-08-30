@@ -26,9 +26,7 @@ export function AccountInfo(): React.JSX.Element {
 
   useEffect(() => {
     // Retrieve user data from localStorage
-
     const storedUser = localStorage.getItem('user');
-
     if (storedUser) {
       setUser(JSON.parse(storedUser));
     }
@@ -44,7 +42,6 @@ export function AccountInfo(): React.JSX.Element {
     if (!file || !user) return;
 
     const formData = new FormData();
-
     formData.append('profileImage', file);
 
     try {
@@ -55,18 +52,22 @@ export function AccountInfo(): React.JSX.Element {
       });
 
       // Update local storage with the new avatar URL
-
-      const newAvatarUrl = response.data.avatarUrl;
-
-      const updatedUser = { ...user, avatar: newAvatarUrl };
+      const newAvatarUrl = response.data.data.profileImageUrl;
+      const updatedUser = { ...user, profileImageUrl: newAvatarUrl };
 
       localStorage.setItem('user', JSON.stringify(updatedUser));
-
       setUser(updatedUser);
     } catch (err) {
       console.error('Error uploading image:', err);
     }
   };
+
+  useEffect(() => {
+    // Automatically upload when a file is selected
+    if (file) {
+      handleUpload();
+    }
+  }, [file]);
 
   if (!user) {
     return <div>Loading...</div>;
@@ -79,19 +80,15 @@ export function AccountInfo(): React.JSX.Element {
           <div>
             <Avatar src={user.profileImageUrl} sx={{ height: '80px', width: '80px' }} />
           </div>
-
           <Stack spacing={1} sx={{ textAlign: 'center' }}>
             <Typography variant="h5">{user.fullName}</Typography>
-
             <Typography color="text.secondary" variant="body2">
               {user.address}
             </Typography>
           </Stack>
         </Stack>
       </CardContent>
-
       <Divider />
-
       <CardActions>
         <Button component="label" fullWidth variant="text">
           Upload picture

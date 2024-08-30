@@ -37,7 +37,7 @@ export default function ExpertisePage(): React.JSX.Element {
         const response = await axiosInstance.get('/expertise', { params });
         if (response.data.data.items && Array.isArray(response.data.data.items)) {
           setEntries(response.data.data.items);
-          setTotalEntries(response.data.data.meta.itemCount); // Assuming the API returns total count
+          setTotalEntries(response.data.data.meta.totalItems); // Assuming the API returns total count
         } else {
           console.error('Unexpected response data format:', response.data.errors);
           setError('Unexpected data format.');

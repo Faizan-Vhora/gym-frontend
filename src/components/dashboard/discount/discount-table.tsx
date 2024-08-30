@@ -1,11 +1,14 @@
 import React from 'react';
 import {
+  Avatar,
   Box,
   Card,
+  Dialog,
+  DialogContent,
+  DialogTitle,
   Divider,
   IconButton,
   MenuItem,
-  Paper,
   Select,
   Table,
   TableBody,
@@ -42,7 +45,7 @@ export interface DiscountEntry {
   description: string;
   status: DiscountStatus;
   isNewUser: boolean;
-  discountImage: string;
+  discountImageUrl: string; // Update to match the correct key from API
 }
 
 export enum DiscountType {
@@ -73,6 +76,9 @@ export function DiscountTable({
   onPageChange,
   onRowsPerPageChange,
 }: DiscountTableProps): React.JSX.Element {
+  const [openDialog, setOpenDialog] = React.useState(false);
+  const [selectedImage, setSelectedImage] = React.useState<string | null>(null);
+
   const handleChangePage = (event: unknown, newPage: number) => {
     onPageChange(newPage);
   };
@@ -81,70 +87,98 @@ export function DiscountTable({
     onRowsPerPageChange(parseInt(event.target.value, 10));
   };
 
+  const handleAvatarClick = (imageUrl: string) => {
+    setSelectedImage(imageUrl);
+    setOpenDialog(true);
+  };
+
+  const handleCloseDialog = () => {
+    setOpenDialog(false);
+    setSelectedImage(null);
+  };
+
   return (
-    <Card>
-      <Box sx={{ overflowX: 'auto' }}>
-        <Table>
-          <TableHead>
-            <TableRow sx={tableCss.tableRow}>
-              <TableCell sx={tableCss.tableHeaderCell}>Code Name</TableCell>
-              <TableCell sx={tableCss.tableHeaderCell}>Expiry Date</TableCell>
-              <TableCell sx={tableCss.tableHeaderCell}>Discount Type</TableCell>
-              <TableCell sx={tableCss.tableHeaderCell}>Usage Limit</TableCell>
-              <TableCell sx={tableCss.tableHeaderCell}>Discount Value</TableCell>
-              <TableCell sx={tableCss.tableHeaderCell}>Status</TableCell>
-              <TableCell sx={tableCss.tableHeaderCell}>Actions</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {discounts.length === 0 ? (
+    <>
+      <Card>
+        <Box sx={{ overflowX: 'auto' }}>
+          <Table>
+            <TableHead>
               <TableRow sx={tableCss.tableRow}>
-                <TableCell colSpan={7} align="center">
-                  <Typography variant="body1">No data found</Typography>
-                </TableCell>
+                <TableCell sx={tableCss.tableHeaderCell}>Image</TableCell>
+                <TableCell sx={tableCss.tableHeaderCell}>Code Name</TableCell>
+                <TableCell sx={tableCss.tableHeaderCell}>Expiry Date</TableCell>
+                <TableCell sx={tableCss.tableHeaderCell}>Discount Type</TableCell>
+                <TableCell sx={tableCss.tableHeaderCell}>Usage Limit</TableCell>
+                <TableCell sx={tableCss.tableHeaderCell}>Discount Value</TableCell>
+                <TableCell sx={tableCss.tableHeaderCell}>Status</TableCell>
+                <TableCell sx={tableCss.tableHeaderCell}>Actions</TableCell>
               </TableRow>
-            ) : (
-              discounts.map((discount) => (
-                <TableRow key={discount.id} sx={tableCss.tableRow}>
-                  <TableCell sx={tableCss.tableCell}>{discount.codeName}</TableCell>
-                  <TableCell sx={tableCss.tableCell}>{new Date(discount.expiryDate).toLocaleDateString()}</TableCell>
-                  <TableCell sx={tableCss.tableCell}>{discount.discountType}</TableCell>
-                  <TableCell sx={tableCss.tableCell}>{discount.usageLimit}</TableCell>
-                  <TableCell sx={tableCss.tableCell}>{discount.discountValue}</TableCell>
-                  <TableCell sx={tableCss.tableCell}>
-                    <Select
-                      value={discount.status}
-                      onChange={(e) => onStatusChange(discount.id, e.target.value as DiscountStatus)}
-                      fullWidth
-                    >
-                      <MenuItem value={DiscountStatus.Active}>Active</MenuItem>
-                      <MenuItem value={DiscountStatus.Inactive}>Inactive</MenuItem>
-                      <MenuItem value={DiscountStatus.Expired}>Expired</MenuItem>
-                    </Select>
-                  </TableCell>
-                  <TableCell sx={tableCss.tableCell}>
-                    <IconButton onClick={() => onEdit(discount.id)}>
-                      <PencilSimple />
-                    </IconButton>
-                    <IconButton onClick={() => onDelete(discount.id)}>
-                      <Trash />
-                    </IconButton>
+            </TableHead>
+            <TableBody>
+              {discounts.length === 0 ? (
+                <TableRow sx={tableCss.tableRow}>
+                  <TableCell colSpan={8} align="center">
+                    <Typography variant="body1">No data found</Typography>
                   </TableCell>
                 </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
-      </Box>
-      <Divider />
-      <TablePagination
-        component="div"
-        count={totalEntries}
-        page={page}
-        onPageChange={handleChangePage}
-        rowsPerPage={rowsPerPage}
-        onRowsPerPageChange={handleChangeRowsPerPage}
-      />
-    </Card>
+              ) : (
+                discounts.map((discount) => (
+                  <TableRow key={discount.id} sx={tableCss.tableRow}>
+                    <TableCell sx={tableCss.tableCell}>
+                      <Avatar
+                        src={discount.discountImageUrl}
+                        sx={{ height: '50px', width: '50px', cursor: 'pointer' }}
+                        onClick={() => handleAvatarClick(discount.discountImageUrl)}
+                      />
+                    </TableCell>
+                    <TableCell sx={tableCss.tableCell}>{discount.codeName}</TableCell>
+                    <TableCell sx={tableCss.tableCell}>{new Date(discount.expiryDate).toLocaleDateString()}</TableCell>
+                    <TableCell sx={tableCss.tableCell}>{discount.discountType}</TableCell>
+                    <TableCell sx={tableCss.tableCell}>{discount.usageLimit}</TableCell>
+                    <TableCell sx={tableCss.tableCell}>{discount.discountValue}</TableCell>
+                    <TableCell sx={tableCss.tableCell}>
+                      <Select
+                        value={discount.status}
+                        onChange={(e) => onStatusChange(discount.id, e.target.value as DiscountStatus)}
+                        fullWidth
+                      >
+                        <MenuItem value={DiscountStatus.Active}>Active</MenuItem>
+                        <MenuItem value={DiscountStatus.Inactive}>Inactive</MenuItem>
+                        <MenuItem value={DiscountStatus.Expired}>Expired</MenuItem>
+                      </Select>
+                    </TableCell>
+                    <TableCell sx={tableCss.tableCell}>
+                      <IconButton onClick={() => onEdit(discount.id)}>
+                        <PencilSimple />
+                      </IconButton>
+                      <IconButton onClick={() => onDelete(discount.id)}>
+                        <Trash />
+                      </IconButton>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </Box>
+        <Divider />
+        <TablePagination
+          component="div"
+          count={totalEntries}
+          page={page}
+          onPageChange={handleChangePage}
+          rowsPerPage={rowsPerPage}
+          onRowsPerPageChange={handleChangeRowsPerPage}
+        />
+      </Card>
+
+      {/* Dialog for image preview */}
+      <Dialog open={openDialog} onClose={handleCloseDialog} maxWidth="md" fullWidth>
+        <DialogTitle>Image Preview</DialogTitle>
+        <DialogContent>
+          {selectedImage && <img src={selectedImage} alt="Discount Image" style={{ width: '100%', height: 'auto' }} />}
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }

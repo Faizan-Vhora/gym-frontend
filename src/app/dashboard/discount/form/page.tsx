@@ -230,6 +230,7 @@ export default function DiscountFormPage(): React.JSX.Element {
       />
 
       <Input
+        className="input-flie"
         type="file"
         name="discountImage"
         onChange={handleImageChange}

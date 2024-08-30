@@ -25,6 +25,7 @@ export default function Page(): React.JSX.Element {
   const [fromFilter, setFromFilter] = useState('ALL');
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [count, setCount] = useState<number>(0);
 
   useEffect(() => {
     fetchEntries();
@@ -42,6 +43,7 @@ export default function Page(): React.JSX.Element {
         },
       });
       setEntries(response.data.data.items);
+      setCount(response.data.data.meta.totalItems);
     } catch (error) {
       console.error('Failed to fetch data:', error);
     }
@@ -120,7 +122,7 @@ export default function Page(): React.JSX.Element {
           entries={paginatedEntries}
           page={page}
           rowsPerPage={rowsPerPage}
-          totalEntries={entries.length}
+          totalEntries={count}
           onUpdateStatus={handleUpdateStatus}
           onPageChange={handlePageChange}
           onRowsPerPageChange={handleRowsPerPageChange}

@@ -4,7 +4,7 @@ import * as React from 'react';
 import { useEffect, useState } from 'react';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import { toast, ToastContainer } from 'react-toastify'; // Import toast and ToastContainer
+import { toast, ToastContainer } from 'react-toastify';
 
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -35,51 +35,49 @@ export default function TrainersPage(): React.JSX.Element {
           },
         });
         setTrainers(response.data.data.items);
-        setCount(response.data.data.meta.itemCount);
+        setCount(response.data.data.meta.totalItems);
       } catch (error) {
         console.error('Failed to fetch trainers:', error);
+        toast.error('Failed to fetch trainers');
       }
     };
 
     fetchTrainers();
   }, [page, rowsPerPage, filter, statusFilter]); // Re-fetch when page, rowsPerPage, filter, or statusFilter changes
 
+  // Handles page changes triggered by the TablePagination component
   const handlePageChange = (event: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => {
     setPage(newPage);
   };
 
+  // Handles changes to the number of rows displayed per page
   const handleRowsPerPageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0); // Reset to first page on rows per page change
   };
 
+  // Updates the search filter and resets to the first page
   const handleFilterChange = (filterText: string) => {
     setFilter(filterText);
     setPage(0); // Reset to first page on filter change
   };
 
+  // Updates the status filter and resets to the first page
   const handleStatusChange = (status: string) => {
     setStatusFilter(status);
     setPage(0); // Reset to first page on status filter change
   };
 
+  // Toggles the status of a trainer and updates the UI
   const updateTrainerStatus = async (id: string, currentStatus: number) => {
     const newStatus = currentStatus === 1 ? 2 : 1; // Toggle status
     try {
       await axiosInstance.patch(`/users/update-status/${id}`, { status: newStatus });
       toast.success(`Status updated to ${newStatus === 1 ? 'Active' : 'Inactive'}`);
-      // Call fetchTrainers to refresh data
-      const response = await axiosInstance.get('/users', {
-        params: {
-          userType: 2,
-          page: page + 1,
-          limit: rowsPerPage,
-          search: filter,
-          status: statusFilter !== 'ALL' ? statusFilter : undefined,
-        },
-      });
-      setTrainers(response.data.data.items);
-      setCount(response.data.data.meta.itemCount);
+      // Update local state directly instead of re-fetching
+      setTrainers((prevTrainers) =>
+        prevTrainers.map((trainer) => (trainer.id === id ? { ...trainer, status: newStatus } : trainer))
+      );
     } catch (error) {
       toast.error('Failed to update status');
       console.error('Failed to update status', error);

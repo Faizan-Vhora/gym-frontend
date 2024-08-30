@@ -33,7 +33,7 @@ export default function Page(): React.JSX.Element {
         },
       });
       setCustomers(response.data.data.items);
-      setCount(response.data.data.meta.itemCount);
+      setCount(response.data.data.meta.totalItems);
     } catch (error) {
       console.error('Failed to fetch customers:', error);
     }
