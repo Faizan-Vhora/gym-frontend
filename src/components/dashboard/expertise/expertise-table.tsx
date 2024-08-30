@@ -1,5 +1,6 @@
 import React from 'react';
 import {
+  Divider,
   IconButton,
   Paper,
   Table,
@@ -7,6 +8,7 @@ import {
   TableCell,
   TableContainer,
   TableHead,
+  TablePagination,
   TableRow,
   Typography,
 } from '@mui/material';

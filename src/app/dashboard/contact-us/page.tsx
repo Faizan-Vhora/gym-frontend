@@ -42,8 +42,10 @@ export default function Page(): React.JSX.Element {
           status: statusFilter !== 'ALL' ? statusFilter : undefined, // Status filter
         },
       });
+
+      // Assuming the API response includes paginated data
       setEntries(response.data.data.items);
-      setCount(response.data.data.meta.totalItems);
+      setCount(response.data.data.meta.totalItems); // Total number of items for pagination controls
     } catch (error) {
       console.error('Failed to fetch data:', error);
     }
@@ -63,7 +65,7 @@ export default function Page(): React.JSX.Element {
 
   const handleUpdateStatus = async (id: number, newStatus: ContactUsEntry['status']) => {
     try {
-      await axiosInstance.patch(`/contact-us/update-status/${id}`, { status: newStatus }); // Replace with your API endpoint
+      await axiosInstance.patch(`/contact-us/update-status/${id}`, { status: newStatus });
       setEntries((prevEntries) =>
         prevEntries.map((entry) => (entry.id === id ? { ...entry, status: newStatus } : entry))
       );
@@ -78,9 +80,8 @@ export default function Page(): React.JSX.Element {
 
   const handleRowsPerPageChange = (newRowsPerPage: number) => {
     setRowsPerPage(newRowsPerPage);
+    setPage(0); // Reset page to 0 when changing rows per page
   };
-
-  const paginatedEntries = applyPagination(entries, page, rowsPerPage);
 
   return (
     <Stack spacing={3}>
@@ -119,7 +120,7 @@ export default function Page(): React.JSX.Element {
         </TableContainer>
       ) : (
         <ContactUsTable
-          entries={paginatedEntries}
+          entries={entries}
           page={page}
           rowsPerPage={rowsPerPage}
           totalEntries={count}
@@ -130,8 +131,4 @@ export default function Page(): React.JSX.Element {
       )}
     </Stack>
   );
-}
-
-function applyPagination(entries: ContactUsEntry[], page: number, rowsPerPage: number): ContactUsEntry[] {
-  return entries.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
 }

@@ -1,15 +1,31 @@
 'use client';
 
+import * as React from 'react';
 import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Box, Button, Stack, TextField, Typography } from '@mui/material';
+import {
+  Box,
+  Button,
+  Card,
+  CardActions,
+  CardContent,
+  CardHeader,
+  Divider,
+  FormControl,
+  InputLabel,
+  OutlinedInput,
+  Stack,
+  Typography,
+} from '@mui/material';
 import dayjs from 'dayjs';
 import { useForm } from 'react-hook-form';
-import { toast } from 'react-toastify'; // Import toast for notification
+import { toast, ToastContainer } from 'react-toastify';
 import { z } from 'zod';
 
 import axiosInstance from '@/lib/axios';
+
+import 'react-toastify/dist/ReactToastify.css';
 
 const customerSchema = z.object({
   fullName: z.string().min(1, 'Full Name is required'),
@@ -21,7 +37,7 @@ const customerSchema = z.object({
 
 type CustomerFormInputs = z.infer<typeof customerSchema>;
 
-export default function CustomerEditForm() {
+export default function CustomerEditForm(): React.JSX.Element {
   const searchParams = useSearchParams();
   const id = searchParams.get('id');
   const router = useRouter();
@@ -41,9 +57,7 @@ export default function CustomerEditForm() {
     if (id) {
       axiosInstance
         .get(`/users/${id}`, {
-          params: {
-            userType: 3,
-          },
+          params: { userType: 3 },
         })
         .then((response) => {
           setCustomer(response.data.data);
@@ -67,14 +81,12 @@ export default function CustomerEditForm() {
   const onSubmit = async (data: CustomerFormInputs) => {
     try {
       await axiosInstance.put(`/users/${id}`, data, {
-        params: {
-          userType: 3,
-        },
+        params: { userType: 3 },
       });
-      toast.success('Customer updated successfully'); // Show success toast
-      router.push('/dashboard/customers'); // Redirect to the listing page after successful update
+      toast.success('Customer updated successfully');
+      router.push('/dashboard/customers');
     } catch (error) {
-      toast.error('Failed to update customer'); // Show error toast
+      toast.error('Failed to update customer');
       console.error('Failed to update customer:', error);
     }
   };
@@ -85,51 +97,67 @@ export default function CustomerEditForm() {
 
   return (
     <Box component="form" onSubmit={handleSubmit(onSubmit)} sx={{ maxWidth: 600, mx: 'auto' }}>
-      <Typography variant="h4" gutterBottom>
-        Edit Customer
-      </Typography>
-      <Stack spacing={3}>
-        <TextField
-          label="Full Name *"
-          {...register('fullName')}
-          error={!!errors.fullName}
-          helperText={errors.fullName?.message}
-        />
-        <TextField
-          label="Email *"
-          type="email"
-          {...register('email')}
-          error={!!errors.email}
-          helperText={errors.email?.message}
-        />
-        <TextField
-          label="Phone Number"
-          {...register('phoneNumber')}
-          error={!!errors.phoneNumber}
-          helperText={errors.phoneNumber?.message}
-        />
-        <TextField
-          label="Address"
-          {...register('address')}
-          error={!!errors.address}
-          helperText={errors.address?.message}
-        />
-        <TextField
-          label="Created At"
-          type="date"
-          value={dayjs(customer.createdAt).format('YYYY-MM-DD')}
-          InputProps={{ readOnly: true }}
-          disabled={true}
-        />
-        <Stack direction="row" spacing={2} justifyContent="flex-end">
-          <Button type="submit" variant="contained">
-            Save
-          </Button>
-          <Button variant="outlined" onClick={() => router.push('/dashboard/customers')}>
-            Cancel
-          </Button>
-        </Stack>
-      </Stack>
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <Card>
+          <CardHeader title="Edit Customer" subheader="Update the customer details" />
+          <Divider />
+          <CardContent>
+            <Stack spacing={3}>
+              <FormControl fullWidth required>
+                <InputLabel>Full Name</InputLabel>
+                <OutlinedInput
+                  {...register('fullName')}
+                  label="Full Name"
+                  error={!!errors.fullName}
+                  helperText={errors.fullName?.message}
+                />
+              </FormControl>
+              <FormControl fullWidth required>
+                <InputLabel>Email</InputLabel>
+                <OutlinedInput
+                  {...register('email')}
+                  label="Email"
+                  type="email"
+                  error={!!errors.email}
+                  helperText={errors.email?.message}
+                />
+              </FormControl>
+              <FormControl fullWidth>
+                <InputLabel>Phone Number</InputLabel>
+                <OutlinedInput
+                  {...register('phoneNumber')}
+                  label="Phone Number"
+                  error={!!errors.phoneNumber}
+                  helperText={errors.phoneNumber?.message}
+                />
+              </FormControl>
+              <FormControl fullWidth>
+                <InputLabel>Address</InputLabel>
+                <OutlinedInput
+                  {...register('address')}
+                  label="Address"
+                  error={!!errors.address}
+                  helperText={errors.address?.message}
+                />
+              </FormControl>
+              <FormControl fullWidth>
+                <InputLabel>Created At</InputLabel>
+                <OutlinedInput value={dayjs(customer.createdAt).format('YYYY-MM-DD')} label="Created At" disabled />
+              </FormControl>
+            </Stack>
+          </CardContent>
+          <Divider />
+          <CardActions sx={{ justifyContent: 'flex-end' }}>
+            <Button className="common-button" variant="contained" type="submit">
+              Save
+            </Button>
+            <Button className="common-button" variant="contained" onClick={() => router.push('/dashboard/customers')}>
+              Cancel
+            </Button>
+          </CardActions>
+        </Card>
+        <ToastContainer />
+      </form>
     </Box>
   );
 }

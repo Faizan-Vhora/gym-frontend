@@ -145,6 +145,7 @@ export default function ExpertisePage(): React.JSX.Element {
         onPageChange={handlePageChange}
         rowsPerPage={rowsPerPage}
         onRowsPerPageChange={handleRowsPerPageChange}
+        rowsPerPageOptions={[5, 10, 25]}
       />
       <ToastContainer /> {/* Add ToastContainer here */}
     </Stack>
