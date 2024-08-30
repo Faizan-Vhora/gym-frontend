@@ -67,7 +67,6 @@ export function AccountDetailsForm(): React.JSX.Element {
 
     setIsSubmitting(true);
     setError(null);
-
     try {
       const formData = new FormData();
       formData.append('fullName', user.fullName);
