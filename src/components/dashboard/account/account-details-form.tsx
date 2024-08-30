@@ -14,6 +14,8 @@ import OutlinedInput from '@mui/material/OutlinedInput';
 import Grid from '@mui/material/Unstable_Grid2';
 import { toast, ToastContainer } from 'react-toastify';
 
+import { useLoading } from '@/contexts/loading-context';
+
 import 'react-toastify/dist/ReactToastify.css';
 
 import { Typography } from '@mui/material';
@@ -67,8 +69,9 @@ export function AccountDetailsForm(): React.JSX.Element {
 
     setIsSubmitting(true);
     setError(null);
-
+    const { setLoading } = useLoading();
     try {
+      setLoading(true);
       const formData = new FormData();
       formData.append('fullName', user.fullName);
       formData.append('email', user.email);
@@ -94,6 +97,7 @@ export function AccountDetailsForm(): React.JSX.Element {
       toast.error('Failed to update profile');
       setError('Failed to update user details.');
     } finally {
+      setLoading(false);
       setIsSubmitting(false);
     }
   };

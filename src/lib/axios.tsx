@@ -2,7 +2,7 @@ import axios from 'axios';
 import { toast } from 'react-toastify';
 
 const axiosInstance = axios.create({
-  baseURL: 'http://localhost:3001/', // replace with your API base URL
+  baseURL: 'http://192.168.1.11:3001/', // replace with your API base URL
 });
 
 axiosInstance.interceptors.request.use((config) => {

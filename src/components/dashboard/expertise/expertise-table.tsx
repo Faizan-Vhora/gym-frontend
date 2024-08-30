@@ -1,8 +1,10 @@
 import React from 'react';
 import {
   Divider,
+  FormControlLabel,
   IconButton,
   Paper,
+  Switch,
   Table,
   TableBody,
   TableCell,
@@ -12,7 +14,7 @@ import {
   TableRow,
   Typography,
 } from '@mui/material';
-import { PencilSimple, ToggleLeft, ToggleRight, Trash } from '@phosphor-icons/react';
+import { PencilSimple, Trash } from '@phosphor-icons/react';
 
 import tableCss from '@/styles/table-css';
 
@@ -49,9 +51,9 @@ export function ExpertiseTable({
     return date.toLocaleDateString();
   };
 
-  const handleToggleStatus = (entry: ExpertiseEntry) => {
-    const newStatus = entry.status === 'active' ? 'inactive' : 'active';
-    onToggleStatus(entry.id, newStatus);
+  const handleToggleStatus = (id: number, currentStatus: 'active' | 'inactive') => {
+    const newStatus = currentStatus === 'active' ? 'inactive' : 'active';
+    onToggleStatus(id, newStatus);
   };
 
   return (
@@ -68,7 +70,7 @@ export function ExpertiseTable({
         <TableBody>
           {entries.length === 0 ? (
             <TableRow sx={tableCss.tableRow}>
-              <TableCell colSpan={6} align="center" sx={tableCss.tableCell}>
+              <TableCell colSpan={4} align="center" sx={tableCss.tableCell}>
                 <Typography variant="body1">No data found</Typography>
               </TableCell>
             </TableRow>
@@ -76,7 +78,18 @@ export function ExpertiseTable({
             entries.map((entry) => (
               <TableRow key={entry.id} sx={tableCss.tableRow}>
                 <TableCell sx={tableCss.tableCell}>{entry.title}</TableCell>
-                <TableCell sx={tableCss.tableCell}>{entry.status === 'active' ? 'Active' : 'Inactive'}</TableCell>
+                <TableCell sx={tableCss.tableCell}>
+                  <FormControlLabel
+                    control={
+                      <Switch
+                        checked={entry.status === 'active'}
+                        onChange={() => handleToggleStatus(entry.id, entry.status)}
+                        color={entry.status === 'active' ? 'success' : 'error'}
+                      />
+                    }
+                    label={entry.status.charAt(0).toUpperCase() + entry.status.slice(1)}
+                  />
+                </TableCell>
                 <TableCell sx={tableCss.tableCell}>{formatDate(entry.createdAt)}</TableCell>
                 <TableCell sx={tableCss.tableCell}>
                   <IconButton onClick={() => onEdit(entry.id)}>
@@ -84,9 +97,6 @@ export function ExpertiseTable({
                   </IconButton>
                   <IconButton onClick={() => onDelete(entry.id)}>
                     <Trash />
-                  </IconButton>
-                  <IconButton onClick={() => handleToggleStatus(entry)}>
-                    {entry.status === 'active' ? <ToggleRight /> : <ToggleLeft />}
                   </IconButton>
                 </TableCell>
               </TableRow>

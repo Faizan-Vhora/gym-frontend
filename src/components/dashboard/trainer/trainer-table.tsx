@@ -7,6 +7,7 @@ import {
   Box,
   Card,
   Divider,
+  FormControlLabel,
   IconButton,
   Stack,
   Switch,
@@ -97,17 +98,23 @@ export function TrainersTable({
                       <IconButton onClick={() => handleEdit(row.id)}>
                         <PencilSimple />
                       </IconButton>
-                      <Switch
-                        checked={row.status === 1}
-                        onChange={(event) => {
-                          event.stopPropagation(); // Prevent click event from bubbling up
-                          updateTrainerStatus(row.id, row.status); // Call update function from props
-                        }}
-                        color="primary"
-                      />
                     </Stack>
                   </TableCell>
-                  <TableCell sx={tableCss.tableCell}>{getStatusText(row.status)}</TableCell>
+                  <TableCell sx={tableCss.tableCell}>
+                    <FormControlLabel
+                      control={
+                        <Switch
+                          checked={row.status === 1}
+                          onChange={(event) => {
+                            event.stopPropagation();
+                            updateTrainerStatus(row.id, row.status);
+                          }}
+                          color={row.status === 1 ? 'success' : 'error'}
+                        />
+                      }
+                      label={getStatusText(row.status)}
+                    />
+                  </TableCell>
                 </TableRow>
               ))
             )}
