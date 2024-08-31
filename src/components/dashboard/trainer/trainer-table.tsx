@@ -69,8 +69,7 @@ export function TrainersTable({
         <Table>
           <TableHead>
             <TableRow sx={tableCss.tableRow}>
-              <TableCell sx={tableCss.tableHeaderCell}>Name</TableCell>
-              <TableCell sx={tableCss.tableHeaderCell}>Email</TableCell>
+              <TableCell sx={tableCss.tableHeaderCell}>User Details</TableCell>
               <TableCell sx={tableCss.tableHeaderCell}>Address</TableCell>
               <TableCell sx={tableCss.tableHeaderCell}>Phone</TableCell>
               <TableCell sx={tableCss.tableHeaderCell}>Signed Up</TableCell>
@@ -88,8 +87,12 @@ export function TrainersTable({
             ) : (
               rows.map((row) => (
                 <TableRow hover key={row.id} sx={tableCss.tableRow}>
-                  <TableCell sx={tableCss.tableCell}>{row.fullName}</TableCell>
-                  <TableCell sx={tableCss.tableCell}>{row.email}</TableCell>
+                  <TableCell sx={tableCss.tableCell}>
+                    <Typography variant="subtitle2">{row.fullName}</Typography>
+                    <Typography color="textSecondary" variant="body2">
+                      {row.email}
+                    </Typography>
+                  </TableCell>
                   <TableCell sx={tableCss.tableCell}>{row.address || '-'}</TableCell>
                   <TableCell sx={tableCss.tableCell}>{row.phoneNumber || '-'}</TableCell>
                   <TableCell sx={tableCss.tableCell}>{dayjs(row.createdAt).format('MMM D, YYYY')}</TableCell>

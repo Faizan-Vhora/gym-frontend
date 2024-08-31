@@ -79,7 +79,7 @@ export default function Page(): React.JSX.Element {
       <Stack direction="row" spacing={3}>
         <Stack spacing={1} sx={{ flex: '1 1 auto' }}>
           <Typography variant="h4" style={{ fontFamily: '"Audiowide", sans-serif' }}>
-            Customers
+            Members
           </Typography>
         </Stack>
       </Stack>
