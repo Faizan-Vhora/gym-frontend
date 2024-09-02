@@ -16,7 +16,7 @@ import { z as zod } from 'zod';
 
 import 'react-toastify/dist/ReactToastify.css';
 
-import { Alert } from '@mui/material';
+import { Alert, CardActions } from '@mui/material';
 
 import axiosInstance from '@/lib/axios';
 
@@ -81,9 +81,27 @@ export function ResetPasswordForm(): React.JSX.Element {
             )}
           />
           {errors.root ? <Alert color="error">{errors.root.message}</Alert> : null}
-          <Button className="common-button" disabled={isPending} type="submit" variant="contained">
-            {isPending ? 'Sending...' : 'Send Recovery Link'}
-          </Button>
+          <CardActions sx={{ justifyContent: 'flex-end' }}>
+            <Button className="common-button" disabled={isPending} type="submit" variant="contained">
+              {isPending ? 'Sending...' : 'Send Recovery Link'}
+            </Button>
+            <Button
+              variant="outlined"
+              onClick={() => router.push('/dashboard/cms')}
+              sx={{
+                borderColor: '#d0021b',
+                color: '#d0021b',
+                marginLeft: '15px',
+                transform: 'skewX(-20deg)',
+                '&:hover': {
+                  borderColor: 'darkred',
+                  backgroundColor: 'rgba(255, 0, 0, 0.1)',
+                },
+              }}
+            >
+              Back
+            </Button>
+          </CardActions>
         </Stack>
       </form>
 

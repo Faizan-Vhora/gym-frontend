@@ -1,5 +1,7 @@
 import * as React from 'react';
-import { Button, FormControl, Grid, InputLabel, MenuItem, Select, TextField } from '@mui/material';
+import { FormControl, Grid, IconButton, InputAdornment, InputLabel, MenuItem, Select, TextField } from '@mui/material';
+import { X as XIcon } from '@phosphor-icons/react'; // Import XIcon from phosphor-react
+import debounce from 'lodash/debounce';
 
 interface ContactUsFiltersProps {
   onSearchChange: (searchTerm: string) => void;
@@ -30,10 +32,23 @@ export function ContactUsFilters({
   const [status, setStatus] = React.useState('ALL');
   const [from, setFrom] = React.useState('ALL');
 
+  // Create a debounced version of the search handler
+  const debouncedSearch = React.useCallback(
+    debounce((value: string) => {
+      onSearchChange(value);
+    }, 300), // Adjust the debounce delay as needed
+    [onSearchChange]
+  );
+
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setSearchTerm(value);
-    onSearchChange(value);
+    debouncedSearch(value);
+  };
+
+  const handleSearchClear = () => {
+    setSearchTerm('');
+    onSearchChange('');
   };
 
   const handleStatusChange = (e: React.ChangeEvent<{ value: unknown }>) => {
@@ -57,6 +72,15 @@ export function ContactUsFilters({
           variant="outlined"
           value={searchTerm}
           onChange={handleSearchChange}
+          InputProps={{
+            endAdornment: searchTerm && (
+              <InputAdornment position="end">
+                <IconButton onClick={handleSearchClear} edge="end">
+                  <XIcon size={15} /> {/* Adjust size as needed */}
+                </IconButton>
+              </InputAdornment>
+            ),
+          }}
         />
       </Grid>
       <Grid item md={4} xs={12}>

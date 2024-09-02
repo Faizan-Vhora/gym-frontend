@@ -13,7 +13,6 @@ import {
   Table,
   TableBody,
   TableCell,
-  TableContainer,
   TableHead,
   TablePagination,
   TableRow,
@@ -45,7 +44,7 @@ export interface DiscountEntry {
   description: string;
   status: DiscountStatus;
   isNewUser: boolean;
-  discountImageUrl: string; // Update to match the correct key from API
+  discountImage: string; // Add this line
 }
 
 export enum DiscountType {

@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { Button, Grid, MenuItem, Select, Stack, TextField } from '@mui/material';
+import { Grid, MenuItem, Select, TextField } from '@mui/material';
 
 interface ExpertiseFiltersProps {
   onSearchChange: (searchTerm: string) => void;

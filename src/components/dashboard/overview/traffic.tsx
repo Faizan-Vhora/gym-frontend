@@ -7,6 +7,7 @@ import CardHeader from '@mui/material/CardHeader';
 import Stack from '@mui/material/Stack';
 import { useTheme } from '@mui/material/styles';
 import type { SxProps } from '@mui/material/styles';
+import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
 import type { Icon } from '@phosphor-icons/react/dist/lib/types';
 import { Desktop as DesktopIcon } from '@phosphor-icons/react/dist/ssr/Desktop';
@@ -42,9 +43,11 @@ export function Traffic({ chartSeries, labels, sx }: TrafficProps): React.JSX.El
                 <Stack key={label} spacing={1} sx={{ alignItems: 'center' }}>
                   {Icon ? <Icon fontSize="var(--icon-fontSize-lg)" /> : null}
                   <Typography variant="h6">{label}</Typography>
-                  <Typography color="text.secondary" variant="subtitle2">
-                    {item}%
-                  </Typography>
+                  <Tooltip title={`${item}%`} arrow>
+                    <Typography color="text.secondary" variant="subtitle2">
+                      {item}%
+                    </Typography>
+                  </Tooltip>
                 </Stack>
               );
             })}

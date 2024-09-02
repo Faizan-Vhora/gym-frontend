@@ -13,12 +13,12 @@ import {
   CardHeader,
   Divider,
   FormControl,
+  FormHelperText,
   InputLabel,
   OutlinedInput,
   Stack,
-  Typography,
+  TextField,
 } from '@mui/material';
-import dayjs from 'dayjs';
 import { useForm } from 'react-hook-form';
 import { toast, ToastContainer } from 'react-toastify';
 import { z } from 'zod';
@@ -32,7 +32,7 @@ const customerSchema = z.object({
   email: z.string().email('Invalid email address'),
   phoneNumber: z.string().optional(),
   address: z.string().optional(),
-  createdAt: z.string().min(1, 'Created Date is required'),
+  // createdAt: z.string().min(1, 'Created Date is required'),
 });
 
 type CustomerFormInputs = z.infer<typeof customerSchema>;
@@ -74,7 +74,7 @@ export default function CustomerEditForm(): React.JSX.Element {
       setValue('email', customer.email);
       setValue('phoneNumber', customer.phoneNumber || '');
       setValue('address', customer.address || '');
-      setValue('createdAt', customer.createdAt);
+      // setValue('createdAt', customer.createdAt);
     }
   }, [customer, setValue]);
 
@@ -83,11 +83,11 @@ export default function CustomerEditForm(): React.JSX.Element {
       await axiosInstance.put(`/users/${id}`, data, {
         params: { userType: 3 },
       });
-      toast.success('Customer updated successfully');
+      toast.success('Member updated successfully');
       router.push('/dashboard/customers');
     } catch (error) {
-      toast.error('Failed to update customer');
-      console.error('Failed to update customer:', error);
+      toast.error('Failed to update member');
+      console.error('Failed to update member:', error);
     }
   };
 
@@ -96,35 +96,37 @@ export default function CustomerEditForm(): React.JSX.Element {
   }
 
   return (
-    <Box component="form" onSubmit={handleSubmit(onSubmit)} sx={{ maxWidth: 600, mx: 'auto' }}>
+    <Box component="form" onSubmit={handleSubmit(onSubmit)}>
       <Card>
-        <CardHeader title="Edit Customer" subheader="Update the customer details" />
+        <CardHeader title="Edit Member" subheader="Update the Member details" />
         <Divider />
         <CardContent>
           <Stack spacing={3}>
             <FormControl fullWidth required>
               <InputLabel>Full Name</InputLabel>
               <OutlinedInput {...register('fullName')} label="Full Name" error={!!errors.fullName} />
-              {errors.fullName && <Typography color="error">{errors.fullName.message}</Typography>}
+              {errors.fullName ? <FormHelperText>{errors.fullName.message}</FormHelperText> : null}
             </FormControl>
             <FormControl fullWidth required>
               <InputLabel>Email</InputLabel>
               <OutlinedInput {...register('email')} label="Email" type="email" error={!!errors.email} />
-              {errors.email && <Typography color="error">{errors.email.message}</Typography>}
+              {errors.email ? <FormHelperText>{errors.email.message}</FormHelperText> : null}
             </FormControl>
             <FormControl fullWidth>
               <InputLabel>Phone Number</InputLabel>
               <OutlinedInput {...register('phoneNumber')} label="Phone Number" error={!!errors.phoneNumber} />
-              {errors.phoneNumber && <Typography color="error">{errors.phoneNumber.message}</Typography>}
+              {errors.phoneNumber ? <FormHelperText>{errors.phoneNumber.message}</FormHelperText> : null}
             </FormControl>
             <FormControl fullWidth>
-              <InputLabel>Address</InputLabel>
-              <OutlinedInput {...register('address')} label="Address" error={!!errors.address} />
-              {errors.address && <Typography color="error">{errors.address.message}</Typography>}
-            </FormControl>
-            <FormControl fullWidth>
-              <InputLabel>Created At</InputLabel>
-              <OutlinedInput value={dayjs(customer.createdAt).format('YYYY-MM-DD')} label="Created At" disabled />
+              <TextField
+                {...register('address')}
+                label="Address"
+                error={!!errors.address}
+                helperText={errors.address?.message}
+                multiline
+                rows={4} // Increase the number of rows here
+                variant="outlined"
+              />
             </FormControl>
           </Stack>
         </CardContent>
@@ -133,18 +135,21 @@ export default function CustomerEditForm(): React.JSX.Element {
           <Button className="common-button" variant="contained" type="submit">
             Save
           </Button>
-          <Button  variant="outlined" onClick={() => router.push('/dashboard/customers')}
-                         sx={{
-                          borderColor: '#d0021b',
-                          color: '#d0021b',
-                          transform: 'skewX(-20deg)',
-                          '&:hover': {
-                            borderColor: 'darkred',
-                            backgroundColor: 'rgba(255, 0, 0, 0.1)',
-                          },
-                        }}>
-              Cancel
-            </Button>
+          <Button
+            variant="outlined"
+            onClick={() => router.push('/dashboard/customers')}
+            sx={{
+              borderColor: '#d0021b',
+              color: '#d0021b',
+              transform: 'skewX(-20deg)',
+              '&:hover': {
+                borderColor: 'darkred',
+                backgroundColor: 'rgba(255, 0, 0, 0.1)',
+              },
+            }}
+          >
+            Cancel
+          </Button>
         </CardActions>
       </Card>
       <ToastContainer />

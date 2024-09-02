@@ -1,76 +1,45 @@
 'use client';
 
 import * as React from 'react';
-import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
-import { CKEditor } from '@ckeditor/ckeditor5-react';
-import { Box, Button, Card, Typography } from '@mui/material';
+import { useRouter } from 'next/navigation';
+import { Box, Card, IconButton, Typography } from '@mui/material';
+import { PencilSimple } from '@phosphor-icons/react';
 
-import axiosInstance from '@/lib/axios'; // Adjust import if needed
+import axiosInstance from '@/lib/axios';
 
 interface CmsSectionProps {
+  id: number; // Add ID prop
   title: string;
   content: string;
   onSave: (newContent: string) => void;
 }
 
-function CmsSection({ title, content, onSave }: CmsSectionProps): React.JSX.Element {
-  const [editableContent, setEditableContent] = React.useState(content);
+function CmsSection({ id, title, content, onSave }: CmsSectionProps): React.JSX.Element {
   const [isEditing, setIsEditing] = React.useState(false);
-
-  React.useEffect(() => {
-    if (!isEditing) {
-      setEditableContent(content); // Update editableContent when content changes
-    }
-  }, [content, isEditing]);
+  const router = useRouter();
 
   const handleEditClick = () => {
-    setIsEditing(true);
-  };
-
-  const handleSaveClick = () => {
-    onSave(editableContent);
-    setIsEditing(false);
+    router.push(`/dashboard/cms/form?id=${id}`); // Pass ID to the edit page
   };
 
   return (
-    <Card sx={{ marginBottom: 2, padding: 2 }}>
+    <Card sx={{ marginBottom: 2, padding: 2, position: 'relative' }}>
       <Typography variant="h6">{title}</Typography>
-      {isEditing ? (
-        <Box sx={{ marginTop: 2 }}>
-          <CKEditor
-            editor={ClassicEditor}
-            data={editableContent}
-            onChange={(event, editor) => {
-              const data = editor.getData();
-              setEditableContent(data);
-            }}
-            config={{
-              toolbar: ['bold', 'italic', 'link', 'bulletedList', 'numberedList', 'blockQuote', 'undo', 'redo'],
-            }}
-          />
-          <Box sx={{ marginTop: 2 }}>
-            <Button className="common-button" variant="contained" color="error" onClick={handleSaveClick}>
-              Save
-            </Button>
-          </Box>
-        </Box>
-      ) : (
-        <Typography sx={{ marginTop: 2 }}>{content}</Typography>
-      )}
-      {!isEditing && (
-        <Box sx={{ marginTop: 2 }}>
-          <Button className="common-button" variant="contained" color="error" onClick={handleEditClick}>
-            Edit
-          </Button>
-        </Box>
-      )}
+      <IconButton sx={{ position: 'absolute', top: 8, right: 8 }} onClick={handleEditClick}>
+        <PencilSimple />
+      </IconButton>
+      <Box sx={{ marginTop: 2 }}>
+        <Typography>{content}</Typography>
+      </Box>
     </Card>
   );
 }
 
-export function CmsPage(): React.JSX.Element {
+export default function CmsPage(): React.JSX.Element {
   const [aboutUsContent, setAboutUsContent] = React.useState<string>('');
   const [termsContent, setTermsContent] = React.useState<string>('');
+  const [aboutUsId, setAboutUsId] = React.useState<number | null>(null);
+  const [termsId, setTermsId] = React.useState<number | null>(null);
 
   React.useEffect(() => {
     const fetchData = async () => {
@@ -82,9 +51,11 @@ export function CmsPage(): React.JSX.Element {
 
         if (aboutUsItem) {
           setAboutUsContent(aboutUsItem.text);
+          setAboutUsId(aboutUsItem.id); // Set ID for About Us
         }
         if (termsItem) {
           setTermsContent(termsItem.text);
+          setTermsId(termsItem.id); // Set ID for Terms and Conditions
         }
       } catch (error) {
         console.error('Failed to fetch CMS content:', error);
@@ -97,15 +68,23 @@ export function CmsPage(): React.JSX.Element {
 
   return (
     <Box sx={{ padding: 4 }}>
-      <CmsSection title="About Us" content={aboutUsContent} onSave={(newContent) => setAboutUsContent(newContent)} />
-      <CmsSection
-        title="Terms and Conditions"
-        content={termsContent}
-        onSave={(newContent) => setTermsContent(newContent)}
-      />
+      {aboutUsId !== null && (
+        <CmsSection
+          id={aboutUsId}
+          title="About Us"
+          content={aboutUsContent}
+          onSave={(newContent) => setAboutUsContent(newContent)}
+        />
+      )}
+      {termsId !== null && (
+        <CmsSection
+          id={termsId}
+          title="Terms and Conditions"
+          content={termsContent}
+          onSave={(newContent) => setTermsContent(newContent)}
+        />
+      )}
       {/* Add more sections as needed */}
     </Box>
   );
 }
-
-export default CmsPage;

@@ -4,7 +4,7 @@ import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import { Button, Stack, Typography } from '@mui/material';
 import { Plus as PlusIcon } from '@phosphor-icons/react';
-import { toast, ToastContainer } from 'react-toastify'; // Import the toast function
+import { toast, ToastContainer } from 'react-toastify';
 
 import axiosInstance from '@/lib/axios';
 import { FaqFilters } from '@/components/dashboard/faq/faq-filters';
@@ -17,6 +17,7 @@ const initialFaqs: FaqEntry[] = [];
 export default function FaqManagementPage(): React.JSX.Element {
   const [faqs, setFaqs] = React.useState<FaqEntry[]>(initialFaqs);
   const [page, setPage] = React.useState<number>(0);
+  const [totalItems, setTotalItems] = React.useState<number>(0);
   const [rowsPerPage, setRowsPerPage] = React.useState<number>(5);
   const [filterType, setFilterType] = React.useState<string>('ALL');
   const [filterStatus, setFilterStatus] = React.useState<string>('ALL');
@@ -25,7 +26,7 @@ export default function FaqManagementPage(): React.JSX.Element {
 
   const fetchFaqs = React.useCallback(() => {
     const params = {
-      page: page + 1, // API page usually starts from 1, adjust if necessary
+      page: page + 1, // Adjusted to match typical API's 1-based page indexing
       limit: rowsPerPage,
       type: filterType !== 'ALL' ? filterType : undefined,
       status: filterStatus !== 'ALL' ? filterStatus : undefined,
@@ -35,6 +36,7 @@ export default function FaqManagementPage(): React.JSX.Element {
       .get('/faq', { params })
       .then((response) => {
         setFaqs(response.data.data.items);
+        setTotalItems(response.data.data.meta.totalItems);
       })
       .catch((error) => console.error('Error fetching FAQs:', error));
   }, [page, rowsPerPage, filterType, filterStatus]);
@@ -57,7 +59,7 @@ export default function FaqManagementPage(): React.JSX.Element {
       fetchFaqs(); // Refresh the FAQ list after deletion
       toast.success(`FAQ deleted Successfully`);
     } catch (error) {
-      toast.error('Failed to delete faq');
+      toast.error('Failed to delete FAQ');
       console.error('Error deleting FAQ:', error);
     }
   };
@@ -104,17 +106,17 @@ export default function FaqManagementPage(): React.JSX.Element {
         faqs={faqs}
         page={page}
         rowsPerPage={rowsPerPage}
-        totalEntries={faqs.length} // Replace with total entries from API if available
+        totalEntries={totalItems} // Display the total number of entries
         onEdit={handleEdit}
         onDelete={handleDelete}
         onStatusChange={handleStatusChange}
         onPageChange={(newPage) => setPage(newPage)}
         onRowsPerPageChange={(newRowsPerPage) => {
           setRowsPerPage(newRowsPerPage);
-          setPage(0);
+          setPage(0); // Reset page when rows per page change
         }}
       />
-      <ToastContainer /> {/* Add ToastContainer here */}
+      <ToastContainer />
     </Stack>
   );
 }

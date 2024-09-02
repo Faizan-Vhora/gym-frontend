@@ -150,6 +150,7 @@ export function ResetPasswordForm(): React.JSX.Element {
           </Button>
         </Stack>
       </form>
+      <ToastContainer />
     </Stack>
   );
 }

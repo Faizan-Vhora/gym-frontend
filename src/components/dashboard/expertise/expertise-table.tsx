@@ -1,6 +1,5 @@
 import React from 'react';
 import {
-  Divider,
   FormControlLabel,
   IconButton,
   Paper,
@@ -10,7 +9,6 @@ import {
   TableCell,
   TableContainer,
   TableHead,
-  TablePagination,
   TableRow,
   Typography,
 } from '@mui/material';

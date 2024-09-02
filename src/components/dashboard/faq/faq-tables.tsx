@@ -99,7 +99,7 @@ export default function FaqTable({
             </TableRow>
           </TableHead>
           <TableBody>
-            {faqs.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((faq) => (
+            {faqs.map((faq) => (
               <TableRow key={faq.id} sx={tableCss.tableRow}>
                 <TableCell sx={tableCss.tableCell}>{faq.type}</TableCell>
                 <TableCell sx={tableCss.tableCell}>{faq.question}</TableCell>
@@ -121,7 +121,7 @@ export default function FaqTable({
                   <IconButton onClick={() => onEdit(faq.id)}>
                     <PencilSimple />
                   </IconButton>
-                  <IconButton onClick={() => onDelete(faq.id)}>
+                  <IconButton onClick={() => handleDelete(faq.id)}>
                     <Trash />
                   </IconButton>
                 </TableCell>

@@ -17,12 +17,9 @@ export const paths = {
     discount: '/dashboard/discount',
     discountForm: (id?: number) => id ? `/dashboard/discount/form?id=${id}` : '/dashboard/discount/form',
   },
-  trainerPackage: {
-    trainerPackage: '/dashboard/trainer-package',
-    trainerPackageForm: (id?: number) => id ? `/dashboard/trainer-package/form/${id}` : '/dashboard/trainer-package/form',
-  },
   cms: {
     cms: '/dashboard/cms',
+    cmsEditPage: '/dashboard/cms/form',
   },
   experties: {
     experties: '/dashboard/expertise',
@@ -40,7 +37,7 @@ export const paths = {
   },
 
   dashboard: {
-    overview: '/dashboard',
+    dashboard: '/dashboard',
     account: '/dashboard/account',
     integrations: '/dashboard/integrations',
     settings: '/dashboard/settings'

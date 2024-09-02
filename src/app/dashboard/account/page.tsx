@@ -6,7 +6,8 @@ import Grid from '@mui/material/Unstable_Grid2';
 
 import { config } from '@/config';
 import { AccountDetailsForm } from '@/components/dashboard/account/account-details-form';
-import { AccountInfo } from '@/components/dashboard/account/account-info';
+
+// import { AccountInfo } from '@/components/dashboard/account/account-info';
 
 export const metadata = { title: `Account | Dashboard | ${config.site.name}` } satisfies Metadata;
 

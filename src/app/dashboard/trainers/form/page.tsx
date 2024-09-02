@@ -12,11 +12,11 @@ import {
   CardHeader,
   Divider,
   FormControl,
-  Grid,
+  FormHelperText,
   InputLabel,
   OutlinedInput,
   Stack,
-  Typography,
+  TextField,
 } from '@mui/material';
 import { useForm } from 'react-hook-form';
 import { toast, ToastContainer } from 'react-toastify';
@@ -25,8 +25,6 @@ import { z } from 'zod';
 import axiosInstance from '@/lib/axios';
 
 import 'react-toastify/dist/ReactToastify.css';
-
-import dayjs from 'dayjs';
 
 const trainerSchema = z.object({
   fullName: z.string().min(1, 'Full Name is required'),
@@ -109,74 +107,61 @@ export default function TrainerEditForm() {
   }
 
   return (
-    <Box component="form" onSubmit={handleSubmit(onSubmit)} sx={{ maxWidth: 600, mx: 'auto' }}>
+    <Box component="form" onSubmit={handleSubmit(onSubmit)}>
       <Card>
-        <CardHeader subheader="Edit the trainer's details" title="Trainer" />
+        <CardHeader title="Edit Member" subheader="Update the Member details" />
         <Divider />
         <CardContent>
           <Stack spacing={3}>
             <FormControl fullWidth required>
               <InputLabel>Full Name</InputLabel>
-              <OutlinedInput
-                {...register('fullName')}
-                label="Full Name"
-                error={!!errors.fullName}
-                helperText={errors.fullName?.message}
-              />
+              <OutlinedInput {...register('fullName')} label="Full Name" error={!!errors.fullName} />
+              {errors.fullName ? <FormHelperText>{errors.fullName.message}</FormHelperText> : null}
             </FormControl>
             <FormControl fullWidth required>
               <InputLabel>Email</InputLabel>
-              <OutlinedInput
-                {...register('email')}
-                label="Email"
-                type="email"
-                error={!!errors.email}
-                helperText={errors.email?.message}
-              />
+              <OutlinedInput {...register('email')} label="Email" type="email" error={!!errors.email} />
+              {errors.email ? <FormHelperText>{errors.email.message}</FormHelperText> : null}
             </FormControl>
             <FormControl fullWidth>
               <InputLabel>Phone Number</InputLabel>
-              <OutlinedInput
-                {...register('phoneNumber')}
-                label="Phone Number"
-                error={!!errors.phoneNumber}
-                helperText={errors.phoneNumber?.message}
-              />
+              <OutlinedInput {...register('phoneNumber')} label="Phone Number" error={!!errors.phoneNumber} />
+              {errors.phoneNumber ? <FormHelperText>{errors.phoneNumber.message}</FormHelperText> : null}
             </FormControl>
             <FormControl fullWidth>
-              <InputLabel>Address</InputLabel>
-              <OutlinedInput
+              <TextField
                 {...register('address')}
                 label="Address"
                 error={!!errors.address}
                 helperText={errors.address?.message}
+                multiline
+                rows={4} // Increase the number of rows here
+                variant="outlined"
               />
-            </FormControl>
-            <FormControl fullWidth>
-              <InputLabel>Created At</InputLabel>
-              <OutlinedInput value={dayjs(trainer.createdAt).format('YYYY-MM-DD')} label="Created At" disabled />
             </FormControl>
           </Stack>
         </CardContent>
         <Divider />
         <CardActions sx={{ justifyContent: 'flex-end' }}>
-          <Button className="common-button" variant="contained" type="submit" disabled={isSubmitting}>
-            {isSubmitting ? 'Saving...' : 'Save'}
+          <Button className="common-button" variant="contained" type="submit">
+            Save
           </Button>
-          <Button  variant="outlined" onClick={() => router.push('/dashboard/trainers')}
-                       sx={{
-                        borderColor: '#d0021b',
-                        color: '#d0021b',
-                        transform: 'skewX(-20deg)',
-                        '&:hover': {
-                          borderColor: 'darkred',
-                          backgroundColor: 'rgba(255, 0, 0, 0.1)',
-                        },
-                      }}>
+          <Button
+            variant="outlined"
+            onClick={() => router.push('/dashboard/trainers')}
+            sx={{
+              borderColor: '#d0021b',
+              color: '#d0021b',
+              transform: 'skewX(-20deg)',
+              '&:hover': {
+                borderColor: 'darkred',
+                backgroundColor: 'rgba(255, 0, 0, 0.1)',
+              },
+            }}
+          >
             Cancel
           </Button>
         </CardActions>
-        {error && <div style={{ color: 'red' }}>{error}</div>}
       </Card>
       <ToastContainer />
     </Box>

@@ -19,7 +19,6 @@ import {
 } from '@mui/material';
 import { PencilSimple } from '@phosphor-icons/react';
 import dayjs from 'dayjs';
-import { toast } from 'react-toastify'; // Import the toast function
 
 import tableCss from '@/styles/table-css';
 
@@ -69,7 +68,17 @@ export function CustomersTable({
           <TableHead>
             <TableRow sx={tableCss.tableRow}>
               <TableCell sx={tableCss.tableHeaderCell}>User Details</TableCell>
-              <TableCell sx={tableCss.tableHeaderCell}>Address</TableCell>
+              <TableCell
+                sx={{
+                  ...tableCss.tableHeaderCell,
+                  width: '250px',
+                  whiteSpace: 'nowrap',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                }}
+              >
+                Address
+              </TableCell>
               <TableCell sx={tableCss.tableHeaderCell}>Phone</TableCell>
               <TableCell sx={tableCss.tableHeaderCell}>Signed Up</TableCell>
               <TableCell sx={tableCss.tableHeaderCell}>Actions</TableCell>
@@ -93,7 +102,17 @@ export function CustomersTable({
                     </Typography>
                   </TableCell>
 
-                  <TableCell sx={tableCss.tableCell}>{row.address || '-'}</TableCell>
+                  <TableCell
+                    sx={{
+                      ...tableCss.tableCell,
+                      width: '50px !important',
+                      whiteSpace: 'nowrap',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis !important',
+                    }}
+                  >
+                    {row.address || '-'}
+                  </TableCell>
                   <TableCell sx={tableCss.tableCell}>{row.phoneNumber || '-'}</TableCell>
                   <TableCell sx={tableCss.tableCell}>{dayjs(row.createdAt).format('MMM D, YYYY')}</TableCell>
                   <TableCell sx={tableCss.tableCell}>

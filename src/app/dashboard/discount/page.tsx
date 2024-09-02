@@ -3,17 +3,11 @@
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import { Button, Grid, Stack, TextField, Typography } from '@mui/material';
-import { styled } from '@mui/material/styles';
 import { Plus as PlusIcon } from '@phosphor-icons/react';
 
 import axiosInstance from '@/lib/axios';
 import { DiscountFilter } from '@/components/dashboard/discount/discount-filters';
-import {
-  DiscountEntry,
-  DiscountStatus,
-  DiscountTable,
-  UsageLimit,
-} from '@/components/dashboard/discount/discount-table';
+import { DiscountEntry, DiscountStatus, DiscountTable } from '@/components/dashboard/discount/discount-table';
 
 export default function DiscountManagementPage(): React.JSX.Element {
   const [discounts, setDiscounts] = React.useState<DiscountEntry[]>([]);

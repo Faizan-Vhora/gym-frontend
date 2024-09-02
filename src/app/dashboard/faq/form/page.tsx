@@ -1,14 +1,35 @@
 'use client';
 
-import * as React from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Button, FormControl, InputLabel, MenuItem, Select, Stack, TextField, Typography } from '@mui/material';
+import { zodResolver } from '@hookform/resolvers/zod';
+import {
+  Box,
+  Button,
+  Card,
+  CardActions,
+  CardContent,
+  CardHeader,
+  Divider,
+  FormControl,
+  FormHelperText,
+  InputLabel,
+  MenuItem,
+  OutlinedInput,
+  Select,
+  Stack,
+} from '@mui/material';
+import { useForm } from 'react-hook-form';
+import { toast, ToastContainer } from 'react-toastify';
 import { z } from 'zod';
 
 import axiosInstance from '@/lib/axios';
-import { FaqEntry, FaqStatus, FaqType } from '@/components/dashboard/faq/faq-tables';
 
-// Define your validation schemas
+import 'react-toastify/dist/ReactToastify.css';
+
+import { FaqStatus, FaqType } from '@/components/dashboard/faq/faq-tables';
+
+// Define validation schemas
 const faqSchema = z.object({
   question: z.string().min(1, 'Question is required'),
   answer: z.string().min(1, 'Answer is required'),
@@ -16,147 +37,136 @@ const faqSchema = z.object({
   status: z.enum([FaqStatus.Active, FaqStatus.Inactive, FaqStatus.Archived]).optional(),
 });
 
-interface FaqFormProps {
-  initialData?: FaqEntry;
-  onSave: (faq: FaqEntry) => void;
-}
+type FaqFormInputs = z.infer<typeof faqSchema>;
 
-export default function FaqForm({ initialData, onSave = () => {} }: FaqFormProps): React.JSX.Element {
-  const [faq, setFaq] = React.useState<FaqEntry>(
-    initialData || {
-      id: 0,
-      question: '',
-      answer: '',
-      type: FaqType.General,
-      status: FaqStatus.Active,
-    }
-  );
-  const [errors, setErrors] = React.useState<z.ZodFormattedError<z.object>>({});
-  const router = useRouter();
+export default function FaqForm() {
   const searchParams = useSearchParams();
-  const faqId = searchParams.get('id');
+  const id = searchParams.get('id');
+  const router = useRouter();
+  const [faq, setFaq] = useState<FaqFormInputs | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
 
-  React.useEffect(() => {
-    if (faqId) {
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    formState: { errors },
+  } = useForm<FaqFormInputs>({
+    resolver: zodResolver(faqSchema),
+    mode: 'onBlur',
+  });
+
+  useEffect(() => {
+    if (id) {
       axiosInstance
-        .get(`/faq/${faqId}`)
+        .get(`/faq/${id}`)
         .then((response) => {
           setFaq(response.data.data);
         })
-        .catch((error) => console.error('Error fetching FAQ:', error));
+        .catch((error) => {
+          console.error('Failed to fetch FAQ:', error);
+        });
     }
-  }, [faqId]);
+  }, [id]);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFaq((prevFaq) => ({
-      ...prevFaq,
-      [name]: value,
-    }));
-  };
-
-  const handleSelectChange = (e: React.ChangeEvent<{ name?: string; value: unknown }>) => {
-    const { name, value } = e.target;
-    setFaq((prevFaq) => ({
-      ...prevFaq,
-      [name as string]: value as string,
-    }));
-  };
-
-  const validate = (): boolean => {
-    try {
-      faqSchema.parse(faq);
-      return true;
-    } catch (e) {
-      if (e instanceof z.ZodError) {
-        setErrors(e.format());
-      }
-      return false;
+  useEffect(() => {
+    if (faq) {
+      setValue('question', faq.question);
+      setValue('answer', faq.answer);
+      setValue('type', faq.type);
+      setValue('status', faq.status);
     }
-  };
+  }, [faq, setValue]);
 
-  const handleSave = async () => {
-    if (!validate()) return;
+  const onSubmit = async (data: FaqFormInputs) => {
+    setIsSubmitting(true);
+    setError(null);
 
     try {
-      const method = faq.id ? 'put' : 'post';
-      const url = faq.id ? `/faq/${faq.id}` : '/faq';
+      const method = id ? 'put' : 'post';
+      const url = id ? `/faq/${id}` : '/faq';
 
       await axiosInstance({
-        method: method,
-        url: url,
-        data: faq,
+        method,
+        url,
+        data,
       });
-
-      onSave(faq);
-      console.log('Successfully saved');
-      router.replace('/dashboard/faq');
+      toast.success('FAQ saved successfully');
+      router.push('/dashboard/faq'); // Redirect to the listing page after successful save
     } catch (error) {
-      console.error('Error saving FAQ:', error);
+      console.error('Failed to save FAQ:', error);
+      toast.error('Failed to save FAQ');
+      setError('Failed to save FAQ details.');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
+  if (!faq && id) {
+    return <div>Loading...</div>;
+  }
+
   return (
-    <Stack spacing={4} className="p-6 bg-white rounded-lg shadow-md">
-      <Typography variant="h4" className="text-gray-700">
-        {faqId ? 'Edit FAQ' : 'Create FAQ'}
-      </Typography>
-
-      <TextField
-        label="Question"
-        name="question"
-        value={faq.question}
-        onChange={handleInputChange}
-        fullWidth
-        error={!!errors.question}
-        helperText={errors.question?.message}
-        className="my-4"
-      />
-
-      <TextField
-        label="Answer"
-        name="answer"
-        value={faq.answer}
-        onChange={handleInputChange}
-        fullWidth
-        error={!!errors.answer}
-        helperText={errors.answer?.message}
-        className="my-4"
-        rows={5}
-      />
-      <FormControl variant="outlined" fullWidth>
-      <InputLabel>Type</InputLabel>
-      <Select label="Type" name="type" value={faq.type} onChange={handleSelectChange} fullWidth className="my-4">
-        <MenuItem value={FaqType.General}>General</MenuItem>
-        <MenuItem value={FaqType.User}>User</MenuItem>
-        <MenuItem value={FaqType.Trainer}>Trainer</MenuItem>
-      </Select>
-     </FormControl>
-      <FormControl variant="outlined" fullWidth>
-      <InputLabel>Status</InputLabel>
-      <Select label="Status" name="status" value={faq.status} onChange={handleSelectChange} fullWidth className="my-4">
-        <MenuItem value={FaqStatus.Active}>Active</MenuItem>
-        <MenuItem value={FaqStatus.Inactive}>Inactive</MenuItem>
-        <MenuItem value={FaqStatus.Archived}>Archived</MenuItem>
-      </Select>
-      </FormControl>
-      <Stack direction="row" spacing={2} justifyContent="flex-end">
-        <Button className="common-button" type="submit" variant="contained" onClick={handleSave}>
-          Save
-        </Button>
-        <Button  variant="outlined" onClick={() => router.push('/dashboard/faq')}
-           sx={{
-            borderColor: '#d0021b',
-            color: '#d0021b',
-            transform: 'skewX(-20deg)',
-            '&:hover': {
-              borderColor: 'darkred',
-              backgroundColor: 'rgba(255, 0, 0, 0.1)',
-            },
-          }}>
-          Cancel
-        </Button>
-      </Stack>
-    </Stack>
+    <Box component="form" onSubmit={handleSubmit(onSubmit)}>
+      <Card>
+        <CardHeader title={id ? 'Edit FAQ' : 'Create FAQ'} subheader="Fill in the FAQ details" />
+        <Divider />
+        <CardContent>
+          <Stack spacing={3}>
+            <FormControl fullWidth required>
+              <InputLabel>Question</InputLabel>
+              <OutlinedInput {...register('question')} label="Question" error={!!errors.question} />
+              {errors.question ? <FormHelperText>{errors.question.message}</FormHelperText> : null}
+            </FormControl>
+            <FormControl fullWidth required>
+              <InputLabel>Answer</InputLabel>
+              <OutlinedInput {...register('answer')} label="Answer" multiline rows={4} error={!!errors.answer} />
+              {errors.answer ? <FormHelperText>{errors.answer.message}</FormHelperText> : null}
+            </FormControl>
+            <FormControl fullWidth>
+              <InputLabel>Type</InputLabel>
+              <Select {...register('type')} label="Type" defaultValue={faq?.type || ''} error={!!errors.type}>
+                <MenuItem value={FaqType.General}>{FaqType.General}</MenuItem>
+                <MenuItem value={FaqType.User}>{FaqType.User}</MenuItem>
+                <MenuItem value={FaqType.Trainer}>{FaqType.Trainer}</MenuItem>
+              </Select>
+              {errors.type ? <FormHelperText>{errors.type.message}</FormHelperText> : null}
+            </FormControl>
+            <FormControl fullWidth>
+              <InputLabel>Status</InputLabel>
+              <Select {...register('status')} label="Status" defaultValue={faq?.status || ''} error={!!errors.status}>
+                <MenuItem value={FaqStatus.Active}>{FaqStatus.Active}</MenuItem>
+                <MenuItem value={FaqStatus.Inactive}>{FaqStatus.Inactive}</MenuItem>
+                <MenuItem value={FaqStatus.Archived}>{FaqStatus.Archived}</MenuItem>
+              </Select>
+              {errors.status ? <FormHelperText>{errors.status.message}</FormHelperText> : null}
+            </FormControl>
+          </Stack>
+        </CardContent>
+        <Divider />
+        <CardActions sx={{ justifyContent: 'flex-end' }}>
+          <Button className="common-button" variant="contained" type="submit" disabled={isSubmitting}>
+            Save
+          </Button>
+          <Button
+            variant="outlined"
+            onClick={() => router.push('/dashboard/faq')}
+            sx={{
+              borderColor: '#d0021b',
+              color: '#d0021b',
+              transform: 'skewX(-20deg)',
+              '&:hover': {
+                borderColor: 'darkred',
+                backgroundColor: 'rgba(255, 0, 0, 0.1)',
+              },
+            }}
+          >
+            Cancel
+          </Button>
+        </CardActions>
+      </Card>
+      <ToastContainer />
+    </Box>
   );
 }
