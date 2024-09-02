@@ -12,12 +12,15 @@ import { TasksProgress } from '@/components/dashboard/overview/tasks-progress';
 import { TotalCustomers } from '@/components/dashboard/overview/total-customers';
 import { TotalProfit } from '@/components/dashboard/overview/total-profit';
 import { Traffic } from '@/components/dashboard/overview/traffic';
+import { SelectionBackground } from '@phosphor-icons/react';
+import { Box } from '@mui/system';
 
 export const metadata = { title: `Overview | Dashboard | ${config.site.name}` } satisfies Metadata;
 
 export default function Page(): React.JSX.Element {
   return (
-    <Grid container spacing={3}>
+
+    <Grid container spacing={3} >
       <Grid lg={3} sm={6} xs={12}>
         <Budget diff={12} trend="up" sx={{ height: '100%' }} value="$24k" />
       </Grid>
@@ -129,5 +132,6 @@ export default function Page(): React.JSX.Element {
         />
       </Grid>
     </Grid>
+   
   );
 }

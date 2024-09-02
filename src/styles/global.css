@@ -40,7 +40,9 @@ body {
   background: #d60227 !important;
 }
 
-
+.dashbord{
+  background:#F7F5F2 ;
+}
 .common-button {
   display: inline-block;
   background-color: #d0021b !important; /* Red color */
