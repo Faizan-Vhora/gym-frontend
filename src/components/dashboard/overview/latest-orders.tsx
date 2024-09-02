@@ -16,9 +16,9 @@ import { ArrowRight as ArrowRightIcon } from '@phosphor-icons/react/dist/ssr/Arr
 import dayjs from 'dayjs';
 
 const statusMap = {
-  pending: { label: 'Pending', color: 'warning' },
-  delivered: { label: 'Delivered', color: 'success' },
-  refunded: { label: 'Refunded', color: 'error' },
+  pending: { label: 'Not Started', color: 'warning' },
+  delivered: { label: 'Completed', color: 'success' },
+  refunded: { label: 'Reschedule', color: 'error' },
 } as const;
 
 export interface Order {
@@ -37,13 +37,13 @@ export interface LatestOrdersProps {
 export function LatestOrders({ orders = [], sx }: LatestOrdersProps): React.JSX.Element {
   return (
     <Card sx={sx}>
-      <CardHeader title="Latest orders" />
+      <CardHeader title="Latest Booking" />
       <Divider />
       <Box sx={{ overflowX: 'auto' }}>
         <Table sx={{ minWidth: 800 }}>
           <TableHead>
             <TableRow>
-              <TableCell>Order</TableCell>
+              <TableCell>Booking</TableCell>
               <TableCell>Customer</TableCell>
               <TableCell sortDirection="desc">Date</TableCell>
               <TableCell>Status</TableCell>

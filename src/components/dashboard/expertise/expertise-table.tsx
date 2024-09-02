@@ -62,9 +62,10 @@ export function ExpertiseTable({
         <TableHead>
           <TableRow sx={tableCss.tableRow}>
             <TableCell sx={tableCss.tableHeaderCell}>Title</TableCell>
-            <TableCell sx={tableCss.tableHeaderCell}>Status</TableCell>
+
             <TableCell sx={tableCss.tableHeaderCell}>Created At</TableCell>
             <TableCell sx={tableCss.tableHeaderCell}>Actions</TableCell>
+            <TableCell sx={tableCss.tableHeaderCell}>Status</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -78,6 +79,16 @@ export function ExpertiseTable({
             entries.map((entry) => (
               <TableRow key={entry.id} sx={tableCss.tableRow}>
                 <TableCell sx={tableCss.tableCell}>{entry.title}</TableCell>
+
+                <TableCell sx={tableCss.tableCell}>{formatDate(entry.createdAt)}</TableCell>
+                <TableCell sx={tableCss.tableCell}>
+                  <IconButton onClick={() => onEdit(entry.id)}>
+                    <PencilSimple />
+                  </IconButton>
+                  <IconButton onClick={() => onDelete(entry.id)}>
+                    <Trash />
+                  </IconButton>
+                </TableCell>
                 <TableCell sx={tableCss.tableCell}>
                   <FormControlLabel
                     control={
@@ -89,15 +100,6 @@ export function ExpertiseTable({
                     }
                     label={entry.status.charAt(0).toUpperCase() + entry.status.slice(1)}
                   />
-                </TableCell>
-                <TableCell sx={tableCss.tableCell}>{formatDate(entry.createdAt)}</TableCell>
-                <TableCell sx={tableCss.tableCell}>
-                  <IconButton onClick={() => onEdit(entry.id)}>
-                    <PencilSimple />
-                  </IconButton>
-                  <IconButton onClick={() => onDelete(entry.id)}>
-                    <Trash />
-                  </IconButton>
                 </TableCell>
               </TableRow>
             ))

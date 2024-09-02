@@ -97,61 +97,43 @@ export default function CustomerEditForm(): React.JSX.Element {
 
   return (
     <Box component="form" onSubmit={handleSubmit(onSubmit)} sx={{ maxWidth: 600, mx: 'auto' }}>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <Card>
-          <CardHeader title="Edit Customer" subheader="Update the customer details" />
-          <Divider />
-          <CardContent>
-            <Stack spacing={3}>
-              <FormControl fullWidth required>
-                <InputLabel>Full Name</InputLabel>
-                <OutlinedInput
-                  {...register('fullName')}
-                  label="Full Name"
-                  error={!!errors.fullName}
-                  helperText={errors.fullName?.message}
-                />
-              </FormControl>
-              <FormControl fullWidth required>
-                <InputLabel>Email</InputLabel>
-                <OutlinedInput
-                  {...register('email')}
-                  label="Email"
-                  type="email"
-                  error={!!errors.email}
-                  helperText={errors.email?.message}
-                />
-              </FormControl>
-              <FormControl fullWidth>
-                <InputLabel>Phone Number</InputLabel>
-                <OutlinedInput
-                  {...register('phoneNumber')}
-                  label="Phone Number"
-                  error={!!errors.phoneNumber}
-                  helperText={errors.phoneNumber?.message}
-                />
-              </FormControl>
-              <FormControl fullWidth>
-                <InputLabel>Address</InputLabel>
-                <OutlinedInput
-                  {...register('address')}
-                  label="Address"
-                  error={!!errors.address}
-                  helperText={errors.address?.message}
-                />
-              </FormControl>
-              <FormControl fullWidth>
-                <InputLabel>Created At</InputLabel>
-                <OutlinedInput value={dayjs(customer.createdAt).format('YYYY-MM-DD')} label="Created At" disabled />
-              </FormControl>
-            </Stack>
-          </CardContent>
-          <Divider />
-          <CardActions sx={{ justifyContent: 'flex-end' }}>
-            <Button className="common-button" variant="contained" type="submit">
-              Save
-            </Button>
-            <Button  variant="outlined" onClick={() => router.push('/dashboard/customers')}
+      <Card>
+        <CardHeader title="Edit Customer" subheader="Update the customer details" />
+        <Divider />
+        <CardContent>
+          <Stack spacing={3}>
+            <FormControl fullWidth required>
+              <InputLabel>Full Name</InputLabel>
+              <OutlinedInput {...register('fullName')} label="Full Name" error={!!errors.fullName} />
+              {errors.fullName && <Typography color="error">{errors.fullName.message}</Typography>}
+            </FormControl>
+            <FormControl fullWidth required>
+              <InputLabel>Email</InputLabel>
+              <OutlinedInput {...register('email')} label="Email" type="email" error={!!errors.email} />
+              {errors.email && <Typography color="error">{errors.email.message}</Typography>}
+            </FormControl>
+            <FormControl fullWidth>
+              <InputLabel>Phone Number</InputLabel>
+              <OutlinedInput {...register('phoneNumber')} label="Phone Number" error={!!errors.phoneNumber} />
+              {errors.phoneNumber && <Typography color="error">{errors.phoneNumber.message}</Typography>}
+            </FormControl>
+            <FormControl fullWidth>
+              <InputLabel>Address</InputLabel>
+              <OutlinedInput {...register('address')} label="Address" error={!!errors.address} />
+              {errors.address && <Typography color="error">{errors.address.message}</Typography>}
+            </FormControl>
+            <FormControl fullWidth>
+              <InputLabel>Created At</InputLabel>
+              <OutlinedInput value={dayjs(customer.createdAt).format('YYYY-MM-DD')} label="Created At" disabled />
+            </FormControl>
+          </Stack>
+        </CardContent>
+        <Divider />
+        <CardActions sx={{ justifyContent: 'flex-end' }}>
+          <Button className="common-button" variant="contained" type="submit">
+            Save
+          </Button>
+          <Button  variant="outlined" onClick={() => router.push('/dashboard/customers')}
                          sx={{
                           borderColor: '#d0021b',
                           color: '#d0021b',
@@ -163,10 +145,9 @@ export default function CustomerEditForm(): React.JSX.Element {
                         }}>
               Cancel
             </Button>
-          </CardActions>
-        </Card>
-        <ToastContainer />
-      </form>
+        </CardActions>
+      </Card>
+      <ToastContainer />
     </Box>
   );
 }
