@@ -118,7 +118,16 @@ export default function ExpertiseForm(): React.JSX.Element {
         <Button className="common-button" type="submit" variant="contained" onClick={handleSave}>
           Save
         </Button>
-        <Button className="common-button" variant="contained" onClick={() => router.push('/dashboard/discount')}>
+        <Button  variant="outlined" onClick={() => router.push('/dashboard/discount')}
+                     sx={{
+                      borderColor: '#d0021b',
+                      color: '#d0021b',
+                      transform: 'skewX(-20deg)',
+                      '&:hover': {
+                        borderColor: 'darkred',
+                        backgroundColor: 'rgba(255, 0, 0, 0.1)',
+                      },
+                    }}>
           Cancel
         </Button>
       </Stack>

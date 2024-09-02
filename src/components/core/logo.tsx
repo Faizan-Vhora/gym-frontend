@@ -24,10 +24,10 @@ export function Logo({ color = 'dark', emblem, height = HEIGHT, width = WIDTH }:
   if (emblem) {
     url = color === 'light' ? '/assets/gymlogo.png' : '/assets/gymlogo.png';
   } else {
-    url = color === 'light' ? '/assets/gymlogo.png' : '/assets/gymlogo.png';
+    url = color === 'light' ? '/assets/red-strength.png' : '/assets/red-strength.png';
   }
 
-  return <Box alt="logo" component="img" height={height} src={url} width={width} />;
+  return <Box className='logo-img' alt="logo" component="img" height={height} src={url} width={width} />;
 }
 
 export interface DynamicLogoProps {

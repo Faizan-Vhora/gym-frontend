@@ -163,7 +163,16 @@ export default function TrainerEditForm() {
           <Button className="common-button" variant="contained" type="submit" disabled={isSubmitting}>
             {isSubmitting ? 'Saving...' : 'Save'}
           </Button>
-          <Button className="common-button" variant="contained" onClick={() => router.push('/dashboard/trainers')}>
+          <Button  variant="outlined" onClick={() => router.push('/dashboard/trainers')}
+                       sx={{
+                        borderColor: '#d0021b',
+                        color: '#d0021b',
+                        transform: 'skewX(-20deg)',
+                        '&:hover': {
+                          borderColor: 'darkred',
+                          backgroundColor: 'rgba(255, 0, 0, 0.1)',
+                        },
+                      }}>
             Cancel
           </Button>
         </CardActions>

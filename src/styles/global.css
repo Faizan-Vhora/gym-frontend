@@ -96,3 +96,7 @@ body {
 .customer{
   font-family: "Audiowide", sans-serif;
 }
+.logo-img{
+  background: #fff;
+  margin: auto;
+}

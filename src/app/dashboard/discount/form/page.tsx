@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Button, Input, MenuItem, Select, Stack, TextField, Typography } from '@mui/material';
+import { Button, FormControl, Input, InputLabel, MenuItem, Select, Stack, TextField, Typography } from '@mui/material';
 import { z } from 'zod';
 
 import axiosInstance from '@/lib/axios';
@@ -180,7 +180,8 @@ export default function DiscountFormPage(): React.JSX.Element {
         error={!!errors.expiryDate}
         helperText={errors.expiryDate?.message}
       />
-
+      <FormControl variant="outlined" fullWidth>
+      <InputLabel>Discount Type</InputLabel>
       <Select
         label="Discount Type"
         name="discountType"
@@ -193,7 +194,9 @@ export default function DiscountFormPage(): React.JSX.Element {
         <MenuItem value={DiscountType.Percentage}>Percentage</MenuItem>
         <MenuItem value={DiscountType.Fix}>Fixed Amount</MenuItem>
       </Select>
-
+      </FormControl>
+      <FormControl variant="outlined" fullWidth>
+      <InputLabel>Usage Limit</InputLabel>
       <Select
         label="Usage Limit"
         name="usageLimit"
@@ -207,7 +210,7 @@ export default function DiscountFormPage(): React.JSX.Element {
         <MenuItem value={UsageLimit.Twice}>Twice</MenuItem>
         <MenuItem value={UsageLimit.NoLimit}>No Limit</MenuItem>
       </Select>
-
+      </FormControl>
       <TextField
         label="Discount Value"
         name="discountValue"
@@ -246,18 +249,28 @@ export default function DiscountFormPage(): React.JSX.Element {
         />
       )}
       {errors.discountImage && <Typography color="error">{errors.discountImage.message}</Typography>}
-
+      <FormControl variant="outlined" fullWidth>
+      <InputLabel>Status</InputLabel>
       <Select label="Status" name="status" value={discount.status} onChange={handleSelectChange} fullWidth>
         <MenuItem value={DiscountStatus.Active}>Active</MenuItem>
         <MenuItem value={DiscountStatus.Inactive}>Inactive</MenuItem>
         <MenuItem value={DiscountStatus.Expired}>Expired</MenuItem>
       </Select>
-
+      </FormControl>
       <Stack direction="row" spacing={2} justifyContent="flex-end">
         <Button className="common-button" type="submit" variant="contained" onClick={handleSave}>
           Save
         </Button>
-        <Button className="common-button" variant="contained" onClick={() => router.push('/dashboard/discount')}>
+        <Button variant="outlined" onClick={() => router.push('/dashboard/discount')}
+                     sx={{
+                      borderColor: '#d0021b',
+                      color: '#d0021b',
+                      transform: 'skewX(-20deg)',
+                      '&:hover': {
+                        borderColor: 'darkred',
+                        backgroundColor: 'rgba(255, 0, 0, 0.1)',
+                      },
+                    }}>
           Cancel
         </Button>
       </Stack>

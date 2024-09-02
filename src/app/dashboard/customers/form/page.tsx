@@ -151,7 +151,16 @@ export default function CustomerEditForm(): React.JSX.Element {
             <Button className="common-button" variant="contained" type="submit">
               Save
             </Button>
-            <Button className="common-button" variant="contained" onClick={() => router.push('/dashboard/customers')}>
+            <Button  variant="outlined" onClick={() => router.push('/dashboard/customers')}
+                         sx={{
+                          borderColor: '#d0021b',
+                          color: '#d0021b',
+                          transform: 'skewX(-20deg)',
+                          '&:hover': {
+                            borderColor: 'darkred',
+                            backgroundColor: 'rgba(255, 0, 0, 0.1)',
+                          },
+                        }}>
               Cancel
             </Button>
           </CardActions>
