@@ -1,15 +1,17 @@
-import React from 'react';
+import * as React from 'react';
+import { useState } from 'react';
 import { FormControl, InputLabel, MenuItem, Select } from '@mui/material';
+import type { SelectChangeEvent } from '@mui/material';
 
 interface DiscountFilterProps {
   onFilterChange: (filterType: string) => void;
 }
 
 export function DiscountFilter({ onFilterChange }: DiscountFilterProps): React.JSX.Element {
-  const [filter, setFilter] = React.useState<string>('All');
+  const [filter, setFilter] = useState<string>('All');
 
-  const handleFilterChange = (event: React.ChangeEvent<{ value: unknown }>) => {
-    const selectedFilter = event.target.value as string;
+  const handleFilterChange = (event: SelectChangeEvent): void => {
+    const selectedFilter = event.target.value;
     setFilter(selectedFilter);
     onFilterChange(selectedFilter);
   };

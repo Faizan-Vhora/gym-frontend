@@ -1,4 +1,14 @@
-import React, { createContext, useContext, useReducer } from 'react';
+import { createContext, useContext, useReducer } from 'react';
+import type { ReactNode } from 'react'; // Type-only import for ReactNode
+import * as React from 'react';
+
+// Define the user interface
+interface User {
+  id: number;
+  name: string;
+  email: string;
+  // Add any other user properties you need
+}
 
 // Define action types
 type AuthActionType = 'LOGIN_SUCCESS' | 'LOGOUT';
@@ -6,7 +16,7 @@ type AuthActionType = 'LOGIN_SUCCESS' | 'LOGOUT';
 // Define the structure of our state
 interface AuthState {
   token: string | null;
-  user: object | null;
+  user: User | null;
   isPending: boolean;
   error: string | null;
 }
@@ -14,7 +24,10 @@ interface AuthState {
 // Define actions
 interface AuthAction {
   type: AuthActionType;
-  payload?: any;
+  payload?: {
+    token?: string;
+    user?: User;
+  };
 }
 
 // Initial state
@@ -31,8 +44,8 @@ const authReducer = (state: AuthState, action: AuthAction): AuthState => {
     case 'LOGIN_SUCCESS':
       return {
         ...state,
-        token: action.payload.token,
-        user: action.payload.user,
+        token: action.payload?.token || null,
+        user: action.payload?.user || null,
         isPending: false,
         error: null,
       };
@@ -52,14 +65,14 @@ const AuthContext = createContext<{
   dispatch: () => null,
 });
 
-// Create a provider component
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+// Create a provider component using a function declaration
+export function AuthProvider({ children }: { children: ReactNode }): React.JSX.Element {
   const [state, dispatch] = useReducer(authReducer, initialState);
 
   return <AuthContext.Provider value={{ state, dispatch }}>{children}</AuthContext.Provider>;
-};
+}
 
 // Custom hook to use the auth context
-export const useAuth = () => {
+export function useAuth(): { state: AuthState; dispatch: React.Dispatch<AuthAction> } {
   return useContext(AuthContext);
-};
+}

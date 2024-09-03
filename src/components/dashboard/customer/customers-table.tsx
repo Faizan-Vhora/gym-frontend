@@ -19,6 +19,7 @@ import {
 } from '@mui/material';
 import { PencilSimple } from '@phosphor-icons/react';
 import dayjs from 'dayjs';
+import { toast } from 'react-toastify';
 
 import tableCss from '@/styles/table-css';
 
@@ -56,7 +57,7 @@ export function CustomersTable({
   const handleEdit = React.useCallback(
     (id: string) => {
       router.push(`/dashboard/customers/form?id=${id}`);
-      console.log(`Edit customer with id: ${id}`);
+      toast.success(`Edit customer with id: ${id}`);
     },
     [router]
   );
@@ -117,7 +118,11 @@ export function CustomersTable({
                   <TableCell sx={tableCss.tableCell}>{dayjs(row.createdAt).format('MMM D, YYYY')}</TableCell>
                   <TableCell sx={tableCss.tableCell}>
                     <Stack direction="row" spacing={1} alignItems="center">
-                      <IconButton onClick={() => handleEdit(row.id)}>
+                      <IconButton
+                        onClick={() => {
+                          handleEdit(row.id);
+                        }}
+                      >
                         <PencilSimple />
                       </IconButton>
                     </Stack>

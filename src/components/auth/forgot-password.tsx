@@ -30,7 +30,6 @@ const defaultValues = { email: '' } satisfies Values;
 
 export function ResetPasswordForm(): React.JSX.Element {
   const [isPending, setIsPending] = React.useState<boolean>(false);
-  const [error, setError] = React.useState<string | null>(null);
   const router = useRouter();
 
   const {
@@ -43,7 +42,6 @@ export function ResetPasswordForm(): React.JSX.Element {
   const onSubmit = React.useCallback(
     async (values: Values): Promise<void> => {
       setIsPending(true);
-      setError(null);
 
       try {
         const response = await axiosInstance.post('/auth/forgot-password', values);
@@ -87,7 +85,9 @@ export function ResetPasswordForm(): React.JSX.Element {
             </Button>
             <Button
               variant="outlined"
-              onClick={() => router.push('/dashboard/cms')}
+              onClick={() => {
+                router.push('/dashboard/cms');
+              }}
               sx={{
                 borderColor: '#d0021b',
                 color: '#d0021b',

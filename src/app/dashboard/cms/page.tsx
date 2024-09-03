@@ -7,19 +7,23 @@ import { PencilSimple } from '@phosphor-icons/react';
 
 import axiosInstance from '@/lib/axios';
 
-interface CmsSectionProps {
-  id: number; // Add ID prop
+interface CmsItem {
+  id: number;
   title: string;
-  content: string;
-  onSave: (newContent: string) => void;
+  text: string;
 }
 
-function CmsSection({ id, title, content, onSave }: CmsSectionProps): React.JSX.Element {
-  const [isEditing, setIsEditing] = React.useState(false);
+interface CmsSectionProps {
+  id: number;
+  title: string;
+  content: string;
+}
+
+function CmsSection({ id, title, content }: CmsSectionProps): React.JSX.Element {
   const router = useRouter();
 
-  const handleEditClick = () => {
-    router.push(`/dashboard/cms/form?id=${id}`); // Pass ID to the edit page
+  const handleEditClick = (): void => {
+    router.push(`/dashboard/cms/form?id=${id}`);
   };
 
   return (
@@ -42,48 +46,35 @@ export default function CmsPage(): React.JSX.Element {
   const [termsId, setTermsId] = React.useState<number | null>(null);
 
   React.useEffect(() => {
-    const fetchData = async () => {
+    const fetchData = async (): Promise<void> => {
       try {
-        const response = await axiosInstance.get('/cms'); // Adjust endpoint if needed
+        const response = await axiosInstance.get<{ data: { items: CmsItem[] } }>('/cms');
         const items = response.data.data.items;
-        const aboutUsItem = items.find((item: any) => item.title === 'About Us');
-        const termsItem = items.find((item: any) => item.title === 'Terms and Conditions');
+        const aboutUsItem = items.find((item) => item.title === 'About Us');
+        const termsItem = items.find((item) => item.title === 'Terms and Conditions');
 
         if (aboutUsItem) {
           setAboutUsContent(aboutUsItem.text);
-          setAboutUsId(aboutUsItem.id); // Set ID for About Us
+          setAboutUsId(aboutUsItem.id);
         }
         if (termsItem) {
           setTermsContent(termsItem.text);
-          setTermsId(termsItem.id); // Set ID for Terms and Conditions
+          setTermsId(termsItem.id);
         }
       } catch (error) {
-        console.error('Failed to fetch CMS content:', error);
-        // Handle error (e.g., set error state, show message, etc.)
+        if (process.env.NODE_ENV !== 'production') {
+          // console.error('Failed to fetch CMS content:', error);
+        }
       }
     };
 
-    fetchData();
+    void fetchData();
   }, []);
 
   return (
     <Box sx={{ padding: 4 }}>
-      {aboutUsId !== null && (
-        <CmsSection
-          id={aboutUsId}
-          title="About Us"
-          content={aboutUsContent}
-          onSave={(newContent) => setAboutUsContent(newContent)}
-        />
-      )}
-      {termsId !== null && (
-        <CmsSection
-          id={termsId}
-          title="Terms and Conditions"
-          content={termsContent}
-          onSave={(newContent) => setTermsContent(newContent)}
-        />
-      )}
+      {aboutUsId !== null && <CmsSection id={aboutUsId} title="About Us" content={aboutUsContent} />}
+      {termsId !== null && <CmsSection id={termsId} title="Terms and Conditions" content={termsContent} />}
       {/* Add more sections as needed */}
     </Box>
   );

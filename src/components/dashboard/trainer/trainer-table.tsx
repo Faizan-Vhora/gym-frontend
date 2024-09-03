@@ -1,8 +1,6 @@
-'use client';
-
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
-import { getStatusText, statusOptions } from '@/utils/userstatus';
+import { getStatusText } from '@/utils/userstatus';
 import {
   Box,
   Card,
@@ -14,7 +12,6 @@ import {
   Table,
   TableBody,
   TableCell,
-  TableContainer,
   TableHead,
   TablePagination,
   TableRow,
@@ -32,6 +29,7 @@ export interface Trainer {
   phoneNumber: string;
   address: string; // Adjust if address is an object
   createdAt: string;
+  status: number;
 }
 
 interface TrainerTableProps {
@@ -58,7 +56,6 @@ export function TrainersTable({
   const handleEdit = React.useCallback(
     (id: string) => {
       router.push(`/dashboard/trainers/form?id=${id}`);
-      console.log(`Edit trainer with id: ${id}`);
     },
     [router]
   );
@@ -98,7 +95,11 @@ export function TrainersTable({
                   <TableCell sx={tableCss.tableCell}>{dayjs(row.createdAt).format('MMM D, YYYY')}</TableCell>
                   <TableCell sx={tableCss.tableCell}>
                     <Stack direction="row" spacing={1} alignItems="center">
-                      <IconButton onClick={() => handleEdit(row.id)}>
+                      <IconButton
+                        onClick={() => {
+                          handleEdit(row.id);
+                        }}
+                      >
                         <PencilSimple />
                       </IconButton>
                     </Stack>
@@ -130,8 +131,13 @@ export function TrainersTable({
         count={count}
         page={page}
         rowsPerPage={rowsPerPage}
-        onPageChange={onPageChange}
-        onRowsPerPageChange={onRowsPerPageChange}
+        onPageChange={(event, newPage) => {
+          onPageChange(event, newPage);
+        }}
+        onRowsPerPageChange={(event) => {
+          const inputEvent = event as React.ChangeEvent<HTMLInputElement>;
+          onRowsPerPageChange(inputEvent);
+        }}
         rowsPerPageOptions={[5, 10, 25]}
       />
     </Card>

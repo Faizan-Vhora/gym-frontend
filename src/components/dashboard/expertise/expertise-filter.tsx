@@ -2,6 +2,7 @@
 
 import * as React from 'react';
 import { Grid, MenuItem, Select, TextField } from '@mui/material';
+import type { SelectChangeEvent } from '@mui/material';
 
 interface ExpertiseFiltersProps {
   onSearchChange: (searchTerm: string) => void;
@@ -15,16 +16,16 @@ export default function ExpertiseFilters({ onSearchChange, onStatusChange }: Exp
   const [searchTerm, setSearchTerm] = React.useState('');
   const [status, setStatus] = React.useState('ALL');
 
-  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
     const value = event.target.value;
     setSearchTerm(value);
     onSearchChange(value);
   };
 
-  const handleStatusChange = (event: React.ChangeEvent<{ value: unknown }>) => {
-    const value = event.target.value as string;
-    setStatus(value);
-    onStatusChange(value);
+  const handleStatusChange = (event: SelectChangeEvent): void => {
+    const newStatus = event.target.value;
+    setStatus(newStatus);
+    onStatusChange(newStatus);
   };
 
   return (

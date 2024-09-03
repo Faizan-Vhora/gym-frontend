@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect } from 'react';
 import {
   Paper,
   Stack,
@@ -16,69 +16,76 @@ import {
 
 import axiosInstance from '@/lib/axios';
 import { ContactUsFilters } from '@/components/dashboard/contact-us/contact-us-filters';
-import { ContactUsEntry, ContactUsTable } from '@/components/dashboard/contact-us/contact-us-table';
+import type { ContactUsEntry } from '@/components/dashboard/contact-us/contact-us-table';
+import { ContactUsTable } from '@/components/dashboard/contact-us/contact-us-table';
 
 export default function Page(): React.JSX.Element {
-  const [entries, setEntries] = useState<ContactUsEntry[]>([]);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState('ALL');
-  const [fromFilter, setFromFilter] = useState('ALL');
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
-  const [count, setCount] = useState<number>(0);
+  const [entries, setEntries] = React.useState<ContactUsEntry[]>([]);
+  const [searchTerm, setSearchTerm] = React.useState('');
+  const [statusFilter, setStatusFilter] = React.useState('ALL');
+  const [fromFilter, setFromFilter] = React.useState('ALL');
+  const [page, setPage] = React.useState(0);
+  const [rowsPerPage, setRowsPerPage] = React.useState(5);
+  const [count, setCount] = React.useState<number>(0);
 
-  useEffect(() => {
-    fetchEntries();
-  }, [page, rowsPerPage, searchTerm, statusFilter, fromFilter]);
-
-  const fetchEntries = async () => {
+  const fetchEntries = useCallback(async (): Promise<void> => {
     try {
-      const response = await axiosInstance.get('/contact-us', {
-        params: {
-          page: page + 1, // Page number (API might expect 1-indexed pages)
-          limit: rowsPerPage, // Number of rows per page
-          search: searchTerm, // Search term
-          type: fromFilter !== 'ALL' ? fromFilter : undefined, // From filter
-          status: statusFilter !== 'ALL' ? statusFilter : undefined, // Status filter
-        },
-      });
+      const response = await axiosInstance.get<{ data: { items: ContactUsEntry[]; meta: { totalItems: number } } }>(
+        '/contact-us',
+        {
+          params: {
+            page: page + 1, // Page number (API might expect 1-indexed pages)
+            limit: rowsPerPage, // Number of rows per page
+            search: searchTerm, // Search term
+            type: fromFilter !== 'ALL' ? fromFilter : undefined, // From filter
+            status: statusFilter !== 'ALL' ? statusFilter : undefined, // Status filter
+          },
+        }
+      );
 
-      // Assuming the API response includes paginated data
       setEntries(response.data.data.items);
       setCount(response.data.data.meta.totalItems); // Total number of items for pagination controls
     } catch (error) {
-      console.error('Failed to fetch data:', error);
+      if (process.env.NODE_ENV !== 'production') {
+        // console.error('Failed to fetch data:', error);
+      }
     }
+  }, [page, rowsPerPage, searchTerm, statusFilter, fromFilter]);
+
+  useEffect(() => {
+    void fetchEntries();
+  }, [fetchEntries]);
+
+  const handleSearchChange = (search: string): void => {
+    setSearchTerm(search);
   };
 
-  const handleSearchChange = (searchTerm: string) => {
-    setSearchTerm(searchTerm);
-  };
-
-  const handleStatusChange = (status: string) => {
+  const handleStatusChange = (status: string): void => {
     setStatusFilter(status);
   };
 
-  const handleFromChange = (type: string) => {
+  const handleFromChange = (type: string): void => {
     setFromFilter(type);
   };
 
-  const handleUpdateStatus = async (id: number, newStatus: ContactUsEntry['status']) => {
+  const handleUpdateStatus = async (id: number, newStatus: ContactUsEntry['status']): Promise<void> => {
     try {
       await axiosInstance.patch(`/contact-us/update-status/${id}`, { status: newStatus });
       setEntries((prevEntries) =>
         prevEntries.map((entry) => (entry.id === id ? { ...entry, status: newStatus } : entry))
       );
     } catch (error) {
-      console.error('Failed to update status:', error);
+      if (process.env.NODE_ENV !== 'production') {
+        // console.error('Failed to update status:', error);
+      }
     }
   };
 
-  const handlePageChange = (newPage: number) => {
+  const handlePageChange = (newPage: number): void => {
     setPage(newPage);
   };
 
-  const handleRowsPerPageChange = (newRowsPerPage: number) => {
+  const handleRowsPerPageChange = (newRowsPerPage: number): void => {
     setRowsPerPage(newRowsPerPage);
     setPage(0); // Reset page to 0 when changing rows per page
   };

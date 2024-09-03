@@ -27,11 +27,12 @@ import tableCss from '@/styles/table-css';
 
 export interface ContactUsEntry {
   id: number;
-  userDetails: { name: string; email: string };
-  from: 'user' | 'trainer' | 'web';
+  user: { fullName: string; email: string };
+  type: 'user' | 'trainer' | 'web';
   status: 'pending' | 'resolved' | 'unresolved';
   message: string;
   createdAt: Date;
+  createdBy: { fullName: string; email: string };
 }
 
 interface ContactUsTableProps {
@@ -55,15 +56,15 @@ export function ContactUsTable({
 }: ContactUsTableProps): React.JSX.Element {
   const [selectedEntry, setSelectedEntry] = React.useState<ContactUsEntry | null>(null);
 
-  const handleViewClick = (entry: ContactUsEntry) => {
+  const handleViewClick = (entry: ContactUsEntry): void => {
     setSelectedEntry(entry);
   };
 
-  const handleClose = () => {
+  const handleClose = (): void => {
     setSelectedEntry(null);
   };
 
-  const handleStatusChange = (id: number, newStatus: ContactUsEntry['status']) => {
+  const handleStatusChange = (id: number, newStatus: ContactUsEntry['status']): void => {
     onUpdateStatus(id, newStatus);
     toast.success('Status updated successfully!'); // Show success toast
   };
@@ -106,7 +107,9 @@ export function ContactUsTable({
                     <TableCell sx={tableCss.tableCell}>
                       <Select
                         value={entry.status}
-                        onChange={(e) => handleStatusChange(entry.id, e.target.value as ContactUsEntry['status'])}
+                        onChange={(e) => {
+                          handleStatusChange(entry.id, e.target.value as ContactUsEntry['status']);
+                        }}
                         displayEmpty
                         fullWidth
                       >
@@ -117,7 +120,11 @@ export function ContactUsTable({
                     </TableCell>
                     <TableCell sx={tableCss.tableCell}>{dayjs(entry.createdAt).format('MMM D, YYYY')}</TableCell>
                     <TableCell sx={tableCss.tableCell}>
-                      <IconButton onClick={() => handleViewClick(entry)}>
+                      <IconButton
+                        onClick={() => {
+                          handleViewClick(entry);
+                        }}
+                      >
                         <EyeIcon />
                       </IconButton>
                     </TableCell>
@@ -133,12 +140,16 @@ export function ContactUsTable({
           count={totalEntries}
           page={page}
           rowsPerPage={rowsPerPage}
-          onPageChange={(e, newPage) => onPageChange(newPage)}
-          onRowsPerPageChange={(e) => onRowsPerPageChange(parseInt(e.target.value, 10))}
+          onPageChange={(e, newPage) => {
+            onPageChange(newPage);
+          }}
+          onRowsPerPageChange={(e) => {
+            onRowsPerPageChange(parseInt(e.target.value, 10));
+          }}
           rowsPerPageOptions={[5, 10, 25]}
         />
 
-        {selectedEntry && (
+        {selectedEntry ? (
           <Modal open onClose={handleClose}>
             <Box
               sx={{
@@ -153,9 +164,9 @@ export function ContactUsTable({
               }}
             >
               <Typography variant="h6" component="h2">
-                Message from {selectedEntry.createdBy.fullName}
+                Message from {selectedEntry.createdBy?.fullName || 'Unknown'}
               </Typography>
-              <Typography sx={{ mt: 2 }}>{selectedEntry.message}</Typography>
+              <Typography sx={{ mt: 2 }}>{selectedEntry.message || 'No message available'}</Typography>
               <Box sx={{ mt: 4 }}>
                 <Button className="common-button" onClick={handleClose} variant="contained" fullWidth>
                   Close
@@ -163,7 +174,7 @@ export function ContactUsTable({
               </Box>
             </Box>
           </Modal>
-        )}
+        ) : null}
       </Card>
       <ToastContainer /> {/* Add ToastContainer to your component tree */}
     </>

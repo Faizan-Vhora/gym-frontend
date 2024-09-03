@@ -56,14 +56,22 @@ export default function CustomerEditForm(): React.JSX.Element {
   useEffect(() => {
     if (id) {
       axiosInstance
-        .get(`/users/${id}`, {
+        .get<{ data: CustomerFormInputs }>(`/users/${id}`, {
           params: { userType: 3 },
         })
         .then((response) => {
           setCustomer(response.data.data);
         })
-        .catch((error) => {
-          console.error('Failed to fetch customer:', error);
+        .catch((error: unknown) => {
+          let errorMessage: string;
+          if (typeof error === 'string') {
+            errorMessage = error;
+          } else {
+            // Handle other types of errors, or set a generic message
+            errorMessage = 'An unexpected error occurred';
+          }
+          // Convert the Error object to a string
+          toast.error(errorMessage);
         });
     }
   }, [id]);
@@ -78,16 +86,15 @@ export default function CustomerEditForm(): React.JSX.Element {
     }
   }, [customer, setValue]);
 
-  const onSubmit = async (data: CustomerFormInputs) => {
+  const onSubmit = async (data: CustomerFormInputs): Promise<void> => {
     try {
       await axiosInstance.put(`/users/${id}`, data, {
         params: { userType: 3 },
       });
       toast.success('Member updated successfully');
       router.push('/dashboard/customers');
-    } catch (error) {
+    } catch (error: unknown) {
       toast.error('Failed to update member');
-      console.error('Failed to update member:', error);
     }
   };
 
@@ -104,24 +111,25 @@ export default function CustomerEditForm(): React.JSX.Element {
           <Stack spacing={3}>
             <FormControl fullWidth required>
               <InputLabel>Full Name</InputLabel>
-              <OutlinedInput {...register('fullName')} label="Full Name" error={!!errors.fullName} />
+              <OutlinedInput {...register('fullName')} label="Full Name" error={Boolean(errors.fullName)} />
+
               {errors.fullName ? <FormHelperText>{errors.fullName.message}</FormHelperText> : null}
             </FormControl>
             <FormControl fullWidth required>
               <InputLabel>Email</InputLabel>
-              <OutlinedInput {...register('email')} label="Email" type="email" error={!!errors.email} />
+              <OutlinedInput {...register('email')} label="Email" type="email" error={Boolean(errors.email)} />
               {errors.email ? <FormHelperText>{errors.email.message}</FormHelperText> : null}
             </FormControl>
             <FormControl fullWidth>
               <InputLabel>Phone Number</InputLabel>
-              <OutlinedInput {...register('phoneNumber')} label="Phone Number" error={!!errors.phoneNumber} />
+              <OutlinedInput {...register('phoneNumber')} label="Phone Number" error={Boolean(errors.phoneNumber)} />
               {errors.phoneNumber ? <FormHelperText>{errors.phoneNumber.message}</FormHelperText> : null}
             </FormControl>
             <FormControl fullWidth>
               <TextField
                 {...register('address')}
                 label="Address"
-                error={!!errors.address}
+                error={Boolean(errors.address)}
                 helperText={errors.address?.message}
                 multiline
                 rows={4} // Increase the number of rows here
@@ -137,7 +145,9 @@ export default function CustomerEditForm(): React.JSX.Element {
           </Button>
           <Button
             variant="outlined"
-            onClick={() => router.push('/dashboard/customers')}
+            onClick={() => {
+              router.push('/dashboard/customers');
+            }}
             sx={{
               borderColor: '#d0021b',
               color: '#d0021b',

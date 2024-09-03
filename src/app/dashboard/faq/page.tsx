@@ -38,7 +38,9 @@ export default function FaqManagementPage(): React.JSX.Element {
         setFaqs(response.data.data.items);
         setTotalItems(response.data.data.meta.totalItems);
       })
-      .catch((error) => console.error('Error fetching FAQs:', error));
+      .catch((error) => {
+        console.error('Error fetching FAQs:', error);
+      });
   }, [page, rowsPerPage, filterType, filterStatus]);
 
   React.useEffect(() => {
@@ -110,7 +112,9 @@ export default function FaqManagementPage(): React.JSX.Element {
         onEdit={handleEdit}
         onDelete={handleDelete}
         onStatusChange={handleStatusChange}
-        onPageChange={(newPage) => setPage(newPage)}
+        onPageChange={(newPage) => {
+          setPage(newPage);
+        }}
         onRowsPerPageChange={(newRowsPerPage) => {
           setRowsPerPage(newRowsPerPage);
           setPage(0); // Reset page when rows per page change

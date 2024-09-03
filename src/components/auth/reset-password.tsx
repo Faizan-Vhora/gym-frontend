@@ -39,7 +39,7 @@ export function ResetPasswordForm(): React.JSX.Element {
 
   React.useEffect(() => {
     // Check the token validity when the component mounts
-    const validateToken = async () => {
+    const validateToken = async (): Promise<void> => {
       if (!token) {
         setError('Invalid token');
         setIsTokenValid(false);
@@ -48,8 +48,7 @@ export function ResetPasswordForm(): React.JSX.Element {
 
       try {
         const response = await axiosInstance.post('/auth/check-reset-password-token', { token });
-        console.log('response', response.data);
-        if (response.status === 201 && response.data.data) {
+        if (response.status === 201 && response.data?.data) {
           setIsTokenValid(true);
         } else {
           setError('The link has expired. Please try again.');
@@ -85,11 +84,11 @@ export function ResetPasswordForm(): React.JSX.Element {
         // Make the API call to reset the password
         const response = await axiosInstance.post('/auth/reset-password', {
           password: values.password,
-          token: token, // Include the token in the payload
+          token, // Include the token in the payload
         });
 
         if (response.status === 201) {
-          toast.success('Mail sent successfully');
+          toast.success('Password reset successfully');
           router.push('/auth/sign-in'); // Redirect to sign-in page
         }
       } catch (err: any) {

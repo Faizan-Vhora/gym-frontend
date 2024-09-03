@@ -10,20 +10,17 @@ import {
   InputLabel,
   MenuItem,
   Select,
-  SelectChangeEvent,
   Stack,
   TextField,
   Typography,
 } from '@mui/material';
-import { z, ZodError, ZodFormattedError } from 'zod';
+import type { SelectChangeEvent } from '@mui/material';
+import { z, ZodError } from 'zod';
+import type { ZodFormattedError } from 'zod';
 
 import axiosInstance from '@/lib/axios';
-import {
-  DiscountEntry,
-  DiscountStatus,
-  DiscountType,
-  UsageLimit,
-} from '@/components/dashboard/discount/discount-table';
+import type { DiscountEntry } from '@/components/dashboard/discount/discount-table';
+import { DiscountStatus, DiscountType, UsageLimit } from '@/components/dashboard/discount/discount-table';
 
 // Validation schemas
 const baseDiscountSchema = z.object({
@@ -55,12 +52,12 @@ export default function DiscountFormPage(): React.JSX.Element {
     description: '',
     status: DiscountStatus.Active,
     isNewUser: false,
-    discountImage: '',
+    discountImageUrl: '',
   });
 
   const [imageFile, setImageFile] = React.useState<File | null>(null);
   const [imagePreview, setImagePreview] = React.useState<string | null>(null);
-  const [errors, setErrors] = React.useState<ZodFormattedError<DiscountSchema>>({});
+  const [errors, setErrors] = React.useState<ZodFormattedError<DiscountSchema> | null>(null);
 
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -87,7 +84,7 @@ export default function DiscountFormPage(): React.JSX.Element {
     }
   }, [discountId]);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     const { name, value } = e.target;
     setDiscount((prevDiscount) => ({
       ...prevDiscount,
@@ -95,7 +92,7 @@ export default function DiscountFormPage(): React.JSX.Element {
     }));
   };
 
-  const handleSelectChange = (e: SelectChangeEvent<unknown>) => {
+  const handleSelectChange = (e: SelectChangeEvent<unknown>): void => {
     const { name, value } = e.target;
     setDiscount((prevDiscount) => ({
       ...prevDiscount,
@@ -125,7 +122,7 @@ export default function DiscountFormPage(): React.JSX.Element {
     try {
       const schema = discountId ? updateDiscountSchema : baseDiscountSchema;
       schema.parse(discount);
-      setErrors({}); // Clear errors if validation passes
+      setErrors(null); // Clear errors if validation passes
       return true;
     } catch (e) {
       if (e instanceof ZodError) {
@@ -141,11 +138,11 @@ export default function DiscountFormPage(): React.JSX.Element {
     const formData = new FormData();
     formData.append('codeName', discount.codeName);
     formData.append('expiryDate', discount.expiryDate);
-    formData.append('discountType', discount.discountType);
-    formData.append('usageLimit', discount.usageLimit);
+    formData.append('discountType', discount.discountType as string); // Ensure proper typing
+    formData.append('usageLimit', discount.usageLimit as string); // Ensure proper typing
     formData.append('discountValue', discount.discountValue.toString());
     formData.append('description', discount.description);
-    formData.append('status', discount.status);
+    formData.append('status', discount.status as string); // Ensure proper typing
     if (imageFile) formData.append('discountImage', imageFile);
 
     try {
@@ -163,7 +160,7 @@ export default function DiscountFormPage(): React.JSX.Element {
 
       router.push('/dashboard/discount');
     } catch (error) {
-      console.error('Error saving discount:', error);
+      // console.error('Error saving discount:', error);
     }
   };
 
@@ -177,8 +174,8 @@ export default function DiscountFormPage(): React.JSX.Element {
         value={discount.codeName}
         onChange={handleInputChange}
         fullWidth
-        error={!!errors.codeName}
-        helperText={errors.codeName?.message}
+        error={Boolean(errors?.codeName)}
+        helperText={errors?.codeName?._errors[0]}
       />
 
       <TextField
@@ -191,8 +188,8 @@ export default function DiscountFormPage(): React.JSX.Element {
         InputLabelProps={{
           shrink: true,
         }}
-        error={!!errors.expiryDate}
-        helperText={errors.expiryDate?.message}
+        error={Boolean(errors?.expiryDate)}
+        helperText={errors?.expiryDate?._errors[0]}
       />
 
       <FormControl variant="outlined" fullWidth>
@@ -203,12 +200,12 @@ export default function DiscountFormPage(): React.JSX.Element {
           value={discount.discountType}
           onChange={handleSelectChange}
           fullWidth
-          error={!!errors.discountType}
+          error={Boolean(errors?.discountType)}
         >
           <MenuItem value={DiscountType.Percentage}>Percentage</MenuItem>
           <MenuItem value={DiscountType.Fix}>Fixed Amount</MenuItem>
         </Select>
-        <FormHelperText>{errors.discountType?.message}</FormHelperText>
+        <FormHelperText>{errors?.discountType?._errors[0]}</FormHelperText>
       </FormControl>
 
       <FormControl variant="outlined" fullWidth>
@@ -219,13 +216,13 @@ export default function DiscountFormPage(): React.JSX.Element {
           value={discount.usageLimit}
           onChange={handleSelectChange}
           fullWidth
-          error={!!errors.usageLimit}
+          error={Boolean(errors?.usageLimit)}
         >
           <MenuItem value={UsageLimit.Once}>Once</MenuItem>
           <MenuItem value={UsageLimit.Twice}>Twice</MenuItem>
           <MenuItem value={UsageLimit.NoLimit}>No Limit</MenuItem>
         </Select>
-        <FormHelperText>{errors.usageLimit?.message}</FormHelperText>
+        <FormHelperText>{errors?.usageLimit?._errors[0]}</FormHelperText>
       </FormControl>
 
       <TextField
@@ -235,8 +232,8 @@ export default function DiscountFormPage(): React.JSX.Element {
         value={discount.discountValue}
         onChange={handleInputChange}
         fullWidth
-        error={!!errors.discountValue}
-        helperText={errors.discountValue?.message}
+        error={Boolean(errors?.discountValue)}
+        helperText={errors?.discountValue?._errors[0]}
       />
 
       <TextField
@@ -245,8 +242,8 @@ export default function DiscountFormPage(): React.JSX.Element {
         value={discount.description}
         onChange={handleInputChange}
         fullWidth
-        error={!!errors.description}
-        helperText={errors.description?.message}
+        error={Boolean(errors?.description)}
+        helperText={errors?.description?._errors[0]}
       />
 
       <Input
@@ -255,7 +252,7 @@ export default function DiscountFormPage(): React.JSX.Element {
         name="discountImage"
         onChange={handleImageChange}
         fullWidth
-        error={!!errors.discountImage}
+        error={Boolean(errors?.discountImage)}
         required={!discountId} // Only required on create, not on update
       />
 
@@ -263,27 +260,13 @@ export default function DiscountFormPage(): React.JSX.Element {
         <img
           src={imagePreview}
           alt="Discount Preview"
-          style={{ width: '100%', maxHeight: '200px', objectFit: 'cover', marginTop: '16px' }}
+          style={{ width: '100%', maxHeight: '200px', objectFit: 'cover', marginTop: '1rem' }}
         />
       )}
 
-      {errors.discountImage && <Typography color="error">{errors.discountImage.message}</Typography>}
-
-      <FormControl variant="outlined" fullWidth>
-        <InputLabel>Status</InputLabel>
-        <Select label="Status" name="status" value={discount.status} onChange={handleSelectChange} fullWidth>
-          <MenuItem value={DiscountStatus.Active}>Active</MenuItem>
-          <MenuItem value={DiscountStatus.Inactive}>Inactive</MenuItem>
-          <MenuItem value={DiscountStatus.Expired}>Expired</MenuItem>
-        </Select>
-      </FormControl>
-
       <Stack direction="row" spacing={2} justifyContent="flex-end">
-        <Button className="common-button" type="submit" variant="contained" color="primary" onClick={handleSave}>
-          {discountId ? 'Update' : 'Create'}
-        </Button>
-        <Button variant="outlined" onClick={() => router.push('/dashboard/discount')}>
-          Cancel
+        <Button onClick={handleSave} variant="contained">
+          {discountId ? 'Update Discount' : 'Create Discount'}
         </Button>
       </Stack>
     </Stack>

@@ -33,23 +33,18 @@ interface ExpertiseTableProps {
   onToggleStatus: (id: number, newStatus: 'active' | 'inactive') => void;
 }
 
-export function ExpertiseTable({
-  entries,
-  page,
-  rowsPerPage,
-  totalEntries,
-  onEdit,
-  onDelete,
-  onToggleStatus,
-}: ExpertiseTableProps): React.JSX.Element {
-  const formatDate = (date: Date | string) => {
-    if (typeof date === 'string') {
-      date = new Date(date);
+export function ExpertiseTable({ entries, onEdit, onDelete, onToggleStatus }: ExpertiseTableProps): React.JSX.Element {
+  const formatDate = (inputDate: Date | string): string => {
+    let date: Date;
+    if (typeof inputDate === 'string') {
+      date = new Date(inputDate);
+    } else {
+      date = inputDate;
     }
     return date.toLocaleDateString();
   };
 
-  const handleToggleStatus = (id: number, currentStatus: 'active' | 'inactive') => {
+  const handleToggleStatus = (id: number, currentStatus: 'active' | 'inactive'): void => {
     const newStatus = currentStatus === 'active' ? 'inactive' : 'active';
     onToggleStatus(id, newStatus);
   };
@@ -60,7 +55,6 @@ export function ExpertiseTable({
         <TableHead>
           <TableRow sx={tableCss.tableRow}>
             <TableCell sx={tableCss.tableHeaderCell}>Title</TableCell>
-
             <TableCell sx={tableCss.tableHeaderCell}>Created At</TableCell>
             <TableCell sx={tableCss.tableHeaderCell}>Actions</TableCell>
             <TableCell sx={tableCss.tableHeaderCell}>Status</TableCell>
@@ -77,13 +71,20 @@ export function ExpertiseTable({
             entries.map((entry) => (
               <TableRow key={entry.id} sx={tableCss.tableRow}>
                 <TableCell sx={tableCss.tableCell}>{entry.title}</TableCell>
-
                 <TableCell sx={tableCss.tableCell}>{formatDate(entry.createdAt)}</TableCell>
                 <TableCell sx={tableCss.tableCell}>
-                  <IconButton onClick={() => onEdit(entry.id)}>
+                  <IconButton
+                    onClick={() => {
+                      onEdit(entry.id);
+                    }}
+                  >
                     <PencilSimple />
                   </IconButton>
-                  <IconButton onClick={() => onDelete(entry.id)}>
+                  <IconButton
+                    onClick={() => {
+                      onDelete(entry.id);
+                    }}
+                  >
                     <Trash />
                   </IconButton>
                 </TableCell>
@@ -92,7 +93,9 @@ export function ExpertiseTable({
                     control={
                       <Switch
                         checked={entry.status === 'active'}
-                        onChange={() => handleToggleStatus(entry.id, entry.status)}
+                        onChange={() => {
+                          handleToggleStatus(entry.id, entry.status);
+                        }}
                         color={entry.status === 'active' ? 'success' : 'error'}
                       />
                     }

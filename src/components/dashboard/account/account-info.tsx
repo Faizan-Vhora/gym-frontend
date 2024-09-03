@@ -10,6 +10,7 @@ import CardContent from '@mui/material/CardContent';
 import Divider from '@mui/material/Divider';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
+import { toast } from 'react-toastify';
 
 import axiosInstance from '@/lib/axios';
 
@@ -24,48 +25,93 @@ export function AccountInfo(): React.JSX.Element {
 
   const [file, setFile] = useState<File | null>(null);
 
+  interface User {
+    fullName: string;
+    email: string;
+    phoneNumber: string;
+    address: string;
+    profileImageUrl: string;
+  }
+
   useEffect(() => {
     // Retrieve user data from localStorage
-    const storedUser = localStorage.getItem('user');
+    const storedUser = localStorage.getItem('user') ?? null;
+
     if (storedUser) {
-      setUser(JSON.parse(storedUser));
+      try {
+        const userData: User | null = JSON.parse(storedUser) as User;
+        setUser(userData);
+      } catch (error) {
+        toast.error(`Failed to parse user data:', error`);
+        // Optionally handle parsing errors here
+      }
     }
   }, []);
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.files && event.target.files[0]) {
-      setFile(event.target.files[0]);
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
+    const selectedFile = event.target.files?.[0];
+    if (selectedFile) {
+      setFile(selectedFile);
     }
   };
 
-  const handleUpload = async () => {
+  interface UserProfileResponse {
+    data: {
+      fullName: string;
+      email: string;
+      phoneNumber: string;
+      address: string;
+      profileImageUrl: string;
+    };
+  }
+
+  const handleUpload = async (): Promise<void> => {
     if (!file || !user) return;
 
     const formData = new FormData();
     formData.append('profileImage', file);
 
     try {
-      const response = await axiosInstance.post('/auth/profile', formData, {
+      const response = await axiosInstance.post<UserProfileResponse>('/auth/profile', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
       });
 
-      // Update local storage with the new avatar URL
+      // Safely access the response data with type assertions
       const newAvatarUrl = response.data.data.profileImageUrl;
       const updatedUser = { ...user, profileImageUrl: newAvatarUrl };
 
       localStorage.setItem('user', JSON.stringify(updatedUser));
       setUser(updatedUser);
     } catch (err) {
-      console.error('Error uploading image:', err);
+      let errorMessage: string;
+      if (err instanceof Error) {
+        errorMessage = err.message; // Safely access message property
+      } else {
+        errorMessage = 'An unexpected error occurred';
+      }
+      toast.error(errorMessage);
     }
   };
 
   useEffect(() => {
     // Automatically upload when a file is selected
     if (file) {
-      handleUpload();
+      const uploadFile = async (): Promise<void> => {
+        try {
+          await handleUpload();
+        } catch (error) {
+          let errorMessage: string;
+          if (error instanceof Error) {
+            errorMessage = error.message; // Safely access message property
+          } else {
+            errorMessage = 'An unexpected error occurred';
+          }
+          toast.error(errorMessage);
+        }
+      };
+      void uploadFile();
     }
   }, [file]);
 

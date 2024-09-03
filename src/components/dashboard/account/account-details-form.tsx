@@ -22,37 +22,71 @@ import { Stack } from '@mui/system';
 
 import axiosInstance from '@/lib/axios';
 
-type User = {
-  id: string;
-  fullName: string;
-  email: string;
-  phoneNumber?: string;
-  address?: string;
-  profileImageUrl: string;
-};
-
 export function AccountDetailsForm(): React.JSX.Element {
   const [user, setUser] = useState<User | null>(null);
   const [file, setFile] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
+  interface User {
+    id: number;
+    fullName: string;
+    email: string;
+    phoneNumber: string;
+    address: string;
+    profileImageUrl: string;
+  }
+
+  const isUser = (data: unknown): data is User => {
+    return (
+      typeof data === 'object' &&
+      data !== null &&
+      'id' in data &&
+      typeof (data as User).id === 'number' &&
+      'fullName' in data &&
+      typeof (data as User).fullName === 'string' &&
+      'email' in data &&
+      typeof (data as User).email === 'string' &&
+      'phoneNumber' in data &&
+      typeof (data as User).phoneNumber === 'string' &&
+      'address' in data &&
+      typeof (data as User).address === 'string' &&
+      'profileImageUrl' in data &&
+      typeof (data as User).profileImageUrl === 'string'
+    );
+  };
+
   useEffect(() => {
-    // Retrieve user data from localStorage
     const storedUser = localStorage.getItem('user');
     if (storedUser) {
-      setUser(JSON.parse(storedUser));
+      try {
+        const parsedUser: unknown = JSON.parse(storedUser);
+        if (isUser(parsedUser)) {
+          setUser(parsedUser);
+        } else {
+          toast.error(`Invalid user data: ${JSON.stringify(parsedUser)}`);
+        }
+      } catch (parseError) {
+        let errorMessage: string;
+        if (parseError instanceof Error) {
+          errorMessage = parseError.message; // Safely access message property
+        } else {
+          errorMessage = 'An unexpected error occurred';
+        }
+        toast.error(errorMessage);
+      }
     }
   }, []);
 
-  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
     const { name, value } = event.target;
     setUser((prevUser) => (prevUser ? { ...prevUser, [name]: value } : null));
   };
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.files && event.target.files[0]) {
-      const selectedFile = event.target.files[0];
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
+    const selectedFile = event.target.files?.[0]; // Renamed variable to avoid conflict
+
+    if (selectedFile) {
       setFile(selectedFile);
 
       // Create a preview URL for the selected image
@@ -61,12 +95,13 @@ export function AccountDetailsForm(): React.JSX.Element {
     }
   };
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>): Promise<void> => {
     event.preventDefault();
     if (!user) return;
 
     setIsSubmitting(true);
     setError(null);
+
     try {
       const formData = new FormData();
       formData.append('fullName', user.fullName);
@@ -78,19 +113,22 @@ export function AccountDetailsForm(): React.JSX.Element {
         formData.append('profileImage', file);
       }
 
-      const response = await axiosInstance.put(`/users/${user.id}`, formData, {
+      const response = await axiosInstance.put<{ data: User }>(`/users/${user.id}`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
       });
 
-      const newUser = response.data.data;
+      const newUser: User = response.data.data;
       setUser(newUser);
       localStorage.setItem('user', JSON.stringify(newUser));
       toast.success('Profile updated successfully');
-    } catch (err: any) {
-      console.error('Update error:', err);
-      toast.error('Failed to update profile');
+    } catch (err: unknown) {
+      let errorMessage = 'An unexpected error occurred';
+      if (err instanceof Error) {
+        errorMessage = err.message;
+      }
+      toast.error(errorMessage);
       setError('Failed to update user details.');
     } finally {
       setIsSubmitting(false);

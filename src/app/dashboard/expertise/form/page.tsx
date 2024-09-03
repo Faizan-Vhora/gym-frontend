@@ -2,8 +2,8 @@
 
 import * as React from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Button, MenuItem, Select, Stack, TextField, Typography } from '@mui/material';
-import { z } from 'zod';
+import { Button, MenuItem, Select, SelectChangeEvent, Stack, TextField, Typography } from '@mui/material';
+import { z, ZodError } from 'zod';
 
 import axiosInstance from '@/lib/axios';
 
@@ -24,7 +24,7 @@ export default function ExpertiseForm(): React.JSX.Element {
     title: '',
     status: 'active',
   });
-  const [errors, setErrors] = React.useState<z.ZodFormattedError<z.object>>({});
+  const [errors, setErrors] = React.useState<Partial<Record<keyof ExpertiseEntry, string[]>>>({});
   const router = useRouter();
   const searchParams = useSearchParams();
   const expertiseId = searchParams.get('id');
@@ -48,7 +48,7 @@ export default function ExpertiseForm(): React.JSX.Element {
     }));
   };
 
-  const handleSelectChange = (e: React.ChangeEvent<{ name?: string; value: unknown }>) => {
+  const handleSelectChange = (e: SelectChangeEvent) => {
     const { name, value } = e.target;
     setExpertise((prevExpertise) => ({
       ...prevExpertise,
@@ -62,8 +62,14 @@ export default function ExpertiseForm(): React.JSX.Element {
       setErrors({});
       return true;
     } catch (e) {
-      if (e instanceof z.ZodError) {
-        setErrors(e.format());
+      if (e instanceof ZodError) {
+        const formattedErrors = Object.fromEntries(
+          Object.entries(e.format()).map(([key, value]) => [
+            key,
+            value as string[], // Cast the value to string[]
+          ])
+        );
+        setErrors(formattedErrors as Partial<Record<keyof ExpertiseEntry, string[]>>);
       }
       return false;
     }
@@ -99,7 +105,7 @@ export default function ExpertiseForm(): React.JSX.Element {
         onChange={handleInputChange}
         fullWidth
         error={!!errors.title}
-        helperText={errors.title?.message}
+        helperText={errors.title?.[0]}
       />
 
       <Select
@@ -118,16 +124,21 @@ export default function ExpertiseForm(): React.JSX.Element {
         <Button className="common-button" type="submit" variant="contained" onClick={handleSave}>
           Save
         </Button>
-        <Button  variant="outlined" onClick={() => router.push('/dashboard/discount')}
-                     sx={{
-                      borderColor: '#d0021b',
-                      color: '#d0021b',
-                      transform: 'skewX(-20deg)',
-                      '&:hover': {
-                        borderColor: 'darkred',
-                        backgroundColor: 'rgba(255, 0, 0, 0.1)',
-                      },
-                    }}>
+        <Button
+          variant="outlined"
+          onClick={() => {
+            router.push('/dashboard/discount');
+          }}
+          sx={{
+            borderColor: '#d0021b',
+            color: '#d0021b',
+            transform: 'skewX(-20deg)',
+            '&:hover': {
+              borderColor: 'darkred',
+              backgroundColor: 'rgba(255, 0, 0, 0.1)',
+            },
+          }}
+        >
           Cancel
         </Button>
       </Stack>

@@ -32,7 +32,9 @@ export default function DiscountManagementPage(): React.JSX.Element {
         setDiscounts(response.data.data.items);
         setTotalItems(response.data.data.meta.totalItems);
       })
-      .catch((error) => console.error('Error fetching discounts:', error));
+      .catch((error) => {
+        console.error('Error fetching discounts:', error);
+      });
   }, [page, rowsPerPage, filterType, search]);
 
   React.useEffect(() => {
@@ -53,7 +55,9 @@ export default function DiscountManagementPage(): React.JSX.Element {
       .then(() => {
         fetchDiscounts();
       })
-      .catch((error) => console.error('Error deleting discount:', error));
+      .catch((error) => {
+        console.error('Error deleting discount:', error);
+      });
   };
 
   const handleStatusChange = (id: number, status: DiscountStatus) => {
@@ -62,7 +66,9 @@ export default function DiscountManagementPage(): React.JSX.Element {
       .then(() => {
         fetchDiscounts();
       })
-      .catch((error) => console.error('Error updating discount status:', error));
+      .catch((error) => {
+        console.error('Error updating discount status:', error);
+      });
   };
 
   const handleFilterChange = (type: string) => {
@@ -93,7 +99,7 @@ export default function DiscountManagementPage(): React.JSX.Element {
       {/* Search Field */}
       <Grid container spacing={2}>
         <Grid className="input-width" item md={6} xs={12}>
-          <TextField variant="outlined" label="Search" fullWidthvalue={search} onChange={handleSearchChange} />
+          <TextField variant="outlined" label="Search" value={search} fullWidth onChange={handleSearchChange} />
         </Grid>
         <Grid item md={6} xs={12}>
           {/* Discount Filter and Search Components */}
@@ -108,7 +114,9 @@ export default function DiscountManagementPage(): React.JSX.Element {
         onEdit={handleEdit}
         onDelete={handleDelete}
         onStatusChange={handleStatusChange}
-        onPageChange={(newPage) => setPage(newPage)}
+        onPageChange={(newPage) => {
+          setPage(newPage);
+        }}
         onRowsPerPageChange={(newRowsPerPage) => {
           setRowsPerPage(newRowsPerPage);
           setPage(0);

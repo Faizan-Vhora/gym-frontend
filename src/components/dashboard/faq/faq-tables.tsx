@@ -1,9 +1,12 @@
-'use client';
-
 import * as React from 'react';
 import {
   Box,
+  Button,
   Card,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
   Divider,
   IconButton,
   MenuItem,
@@ -11,17 +14,16 @@ import {
   Table,
   TableBody,
   TableCell,
-  TableContainer,
   TableHead,
   TablePagination,
   TableRow,
   TableSortLabel,
 } from '@mui/material';
-import { PencilSimple, ToggleLeft, ToggleRight, Trash } from '@phosphor-icons/react';
+import { PencilSimple, Trash } from '@phosphor-icons/react';
 
 import tableCss from '@/styles/table-css';
 
-const statusOptions = ['Active', 'Inactive', 'Archived']; // Add more status options if needed
+const statusOptions = ['Active', 'Inactive', 'Archived'];
 
 export interface FaqEntry {
   id: number;
@@ -66,15 +68,30 @@ export default function FaqTable({
   onStatusChange,
   onPageChange,
   onRowsPerPageChange,
-}: FaqTableProps) {
-  const handleRequestSort = (property: keyof FaqEntry) => {
-    // Add sorting functionality here if needed
+}: FaqTableProps): React.JSX.Element {
+  const [dialogOpen, setDialogOpen] = React.useState(false);
+  const [deleteId, setDeleteId] = React.useState<number | null>(null);
+
+  const handleRequestSort = (_property: keyof FaqEntry): void => {
+    // Function body remains empty or contains code not using _property
   };
 
-  const handleDelete = (id: number) => {
-    if (window.confirm('Are you sure you want to delete this FAQ?')) {
-      onDelete(id);
+  const handleDelete = (id: number): void => {
+    setDeleteId(id);
+    setDialogOpen(true);
+  };
+
+  const handleConfirmDelete = (): void => {
+    if (deleteId !== null) {
+      onDelete(deleteId);
+      setDeleteId(null);
     }
+    setDialogOpen(false);
+  };
+
+  const handleCancelDelete = (): void => {
+    setDeleteId(null);
+    setDialogOpen(false);
   };
 
   return (
@@ -84,16 +101,40 @@ export default function FaqTable({
           <TableHead>
             <TableRow sx={tableCss.tableRow}>
               <TableCell sx={tableCss.tableHeaderCell}>
-                <TableSortLabel onClick={() => handleRequestSort('type')}>Type</TableSortLabel>
+                <TableSortLabel
+                  onClick={() => {
+                    handleRequestSort('type');
+                  }}
+                >
+                  Type
+                </TableSortLabel>
               </TableCell>
               <TableCell sx={tableCss.tableHeaderCell}>
-                <TableSortLabel onClick={() => handleRequestSort('question')}>Question</TableSortLabel>
+                <TableSortLabel
+                  onClick={() => {
+                    handleRequestSort('question');
+                  }}
+                >
+                  Question
+                </TableSortLabel>
               </TableCell>
               <TableCell sx={tableCss.tableHeaderCell}>
-                <TableSortLabel onClick={() => handleRequestSort('answer')}>Answer</TableSortLabel>
+                <TableSortLabel
+                  onClick={() => {
+                    handleRequestSort('answer');
+                  }}
+                >
+                  Answer
+                </TableSortLabel>
               </TableCell>
               <TableCell sx={tableCss.tableHeaderCell}>
-                <TableSortLabel onClick={() => handleRequestSort('status')}>Status</TableSortLabel>
+                <TableSortLabel
+                  onClick={() => {
+                    handleRequestSort('status');
+                  }}
+                >
+                  Status
+                </TableSortLabel>
               </TableCell>
               <TableCell sx={tableCss.tableHeaderCell}>Actions</TableCell>
             </TableRow>
@@ -107,7 +148,9 @@ export default function FaqTable({
                 <TableCell sx={tableCss.tableCell}>
                   <Select
                     value={faq.status}
-                    onChange={(e) => onStatusChange(faq.id, e.target.value as FaqStatus)}
+                    onChange={(e) => {
+                      onStatusChange(faq.id, e.target.value as FaqStatus);
+                    }}
                     fullWidth
                   >
                     {statusOptions.map((status) => (
@@ -118,10 +161,18 @@ export default function FaqTable({
                   </Select>
                 </TableCell>
                 <TableCell sx={tableCss.tableCell}>
-                  <IconButton onClick={() => onEdit(faq.id)}>
+                  <IconButton
+                    onClick={() => {
+                      onEdit(faq.id);
+                    }}
+                  >
                     <PencilSimple />
                   </IconButton>
-                  <IconButton onClick={() => handleDelete(faq.id)}>
+                  <IconButton
+                    onClick={() => {
+                      handleDelete(faq.id);
+                    }}
+                  >
                     <Trash />
                   </IconButton>
                 </TableCell>
@@ -137,11 +188,23 @@ export default function FaqTable({
         count={totalEntries}
         rowsPerPage={rowsPerPage}
         page={page}
-        onPageChange={(event, newPage) => onPageChange(newPage)}
+        onPageChange={(event, newPage) => {
+          onPageChange(newPage);
+        }}
         onRowsPerPageChange={(event) => {
           onRowsPerPageChange(parseInt(event.target.value, 10));
         }}
       />
+      <Dialog open={dialogOpen} onClose={handleCancelDelete}>
+        <DialogTitle>Confirm Deletion</DialogTitle>
+        <DialogContent>Are you sure you want to delete this FAQ?</DialogContent>
+        <DialogActions>
+          <Button onClick={handleCancelDelete}>Cancel</Button>
+          <Button onClick={handleConfirmDelete} color="primary">
+            Confirm
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Card>
   );
 }

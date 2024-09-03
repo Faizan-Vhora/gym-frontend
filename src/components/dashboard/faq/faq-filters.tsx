@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { FormControl, Grid, InputLabel, MenuItem, Select } from '@mui/material';
+import type { SelectChangeEvent } from '@mui/material';
 
 interface FaqFiltersProps {
   onTypeChange: (type: string) => void;
@@ -23,14 +24,15 @@ export function FaqFilters({ onTypeChange, onStatusChange }: FaqFiltersProps): R
   const [type, setType] = React.useState('ALL');
   const [status, setStatus] = React.useState('ALL');
 
-  const handleTypeChange = (e: React.ChangeEvent<{ value: unknown }>) => {
-    const value = e.target.value as string;
+  const handleTypeChange = (e: SelectChangeEvent): void => {
+    const value = e.target.value;
     setType(value);
     onTypeChange(value);
   };
 
-  const handleStatusChange = (e: React.ChangeEvent<{ value: unknown }>) => {
-    const value = e.target.value as string;
+  // Handle status change
+  const handleStatusChange = (e: SelectChangeEvent): void => {
+    const value = e.target.value;
     setStatus(value);
     onStatusChange(value);
   };

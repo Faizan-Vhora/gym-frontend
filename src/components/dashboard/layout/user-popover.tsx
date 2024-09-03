@@ -22,6 +22,12 @@ export interface UserPopoverProps {
   open: boolean;
 }
 
+// Define the structure of the user data
+interface User {
+  fullName: string;
+  email: string;
+}
+
 export function UserPopover({ anchorEl, onClose, open }: UserPopoverProps): React.JSX.Element {
   const { checkSession } = useUser();
   const router = useRouter();
@@ -46,9 +52,9 @@ export function UserPopover({ anchorEl, onClose, open }: UserPopoverProps): Reac
     }
   }, [checkSession, router]);
 
-  // Retrieve user data from localStorage
+  // Retrieve and type user data from localStorage
   const storedUser = typeof window !== 'undefined' ? localStorage.getItem('user') : null;
-  const user = storedUser ? JSON.parse(storedUser) : null;
+  const user: User | null = storedUser ? (JSON.parse(storedUser) as User) : null;
 
   return (
     <Popover

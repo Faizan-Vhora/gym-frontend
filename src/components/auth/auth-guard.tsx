@@ -24,7 +24,7 @@ export function AuthGuard({ children }: AuthGuardProps): React.JSX.Element | nul
     // Define paths that should bypass the authentication check
     const publicPaths = [paths.auth.signIn, paths.auth.resetPassword, paths.auth.forgotPassword];
 
-    if (publicPaths.includes(pathname)) {
+    if (publicPaths.includes(pathname as '/auth/sign-in' | '/auth/forgot-password' | '/auth/reset-password')) {
       setIsChecking(false);
       return;
     }
@@ -32,6 +32,7 @@ export function AuthGuard({ children }: AuthGuardProps): React.JSX.Element | nul
     // If not logged in, redirect to login page
     if (!user || !token) {
       logger.debug('[AuthGuard]: User is not logged in or token is missing, redirecting to sign in');
+      setError('You must be logged in to view this page.');
       router.replace(paths.auth.signIn);
       return;
     }

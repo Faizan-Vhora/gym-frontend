@@ -21,6 +21,8 @@ import { z as zod } from 'zod';
 
 import 'react-toastify/dist/ReactToastify.css';
 
+import axios from 'axios';
+
 import { paths } from '@/paths';
 import axiosInstance from '@/lib/axios';
 import { useAuth } from '@/contexts/auth-context'; // Import the custom hook
@@ -39,7 +41,7 @@ const defaultValues = { email: 'admin@gmail.com', password: '12345678' } satisfi
 
 export function SignInForm(): React.JSX.Element {
   const router = useRouter();
-  const { state, dispatch } = useAuth(); // Get state and dispatch from context
+  const { dispatch } = useAuth();
   const [showPassword, setShowPassword] = React.useState<boolean>(false);
   const [isPending, setIsPending] = React.useState<boolean>(false);
   const [error, setError] = React.useState<string | null>(null);
@@ -76,9 +78,18 @@ export function SignInForm(): React.JSX.Element {
 
         // Redirect to the dashboard
         router.push('/dashboard');
-      } catch (error: any) {
+      } catch (error: unknown) {
         console.error('Login error:', error);
-        setError(error?.response?.data?.message || error.message);
+
+        // Check if the error is an Axios error
+        if (axios.isAxiosError(error)) {
+          setError(error.response?.data?.message || 'An unexpected error occurred');
+        } else if (error instanceof Error) {
+          setError(error.message);
+        } else {
+          setError('An unexpected error occurred');
+        }
+
         dispatch({
           type: 'LOGOUT',
         });

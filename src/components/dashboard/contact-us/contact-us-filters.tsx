@@ -1,5 +1,7 @@
 import * as React from 'react';
+import { useCallback, useState } from 'react';
 import { FormControl, Grid, IconButton, InputAdornment, InputLabel, MenuItem, Select, TextField } from '@mui/material';
+import type { SelectChangeEvent } from '@mui/material';
 import { X as XIcon } from '@phosphor-icons/react'; // Import XIcon from phosphor-react
 import debounce from 'lodash/debounce';
 
@@ -28,37 +30,37 @@ export function ContactUsFilters({
   onStatusChange,
   onFromChange,
 }: ContactUsFiltersProps): React.JSX.Element {
-  const [searchTerm, setSearchTerm] = React.useState('');
-  const [status, setStatus] = React.useState('ALL');
-  const [from, setFrom] = React.useState('ALL');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [status, setStatus] = useState('ALL');
+  const [from, setFrom] = useState('ALL');
 
   // Create a debounced version of the search handler
-  const debouncedSearch = React.useCallback(
+  const debouncedSearch = useCallback(
     debounce((value: string) => {
       onSearchChange(value);
     }, 300), // Adjust the debounce delay as needed
-    [onSearchChange]
+    [onSearchChange] // Ensure onSearchChange is included as a dependency
   );
 
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     const value = e.target.value;
     setSearchTerm(value);
     debouncedSearch(value);
   };
 
-  const handleSearchClear = () => {
+  const handleSearchClear = (): void => {
     setSearchTerm('');
     onSearchChange('');
   };
 
-  const handleStatusChange = (e: React.ChangeEvent<{ value: unknown }>) => {
-    const value = e.target.value as string;
+  const handleStatusChange = (e: SelectChangeEvent): void => {
+    const value = e.target.value;
     setStatus(value);
     onStatusChange(value);
   };
 
-  const handleFromChange = (e: React.ChangeEvent<{ value: unknown }>) => {
-    const value = e.target.value as string;
+  const handleFromChange = (e: SelectChangeEvent): void => {
+    const value = e.target.value;
     setFrom(value);
     onFromChange(value);
   };

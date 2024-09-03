@@ -43,7 +43,7 @@ export default function ExpertisePage(): React.JSX.Element {
           setError('Unexpected data format.');
         }
       } catch (err) {
-        console.error('Error fetching expertise:', err);
+        toast.error(`Error fetching expertise:', ${err}`);
         setError('Failed to load data.');
       } finally {
         setLoading(false);

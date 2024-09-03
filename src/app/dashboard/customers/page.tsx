@@ -21,56 +21,89 @@ export default function Page(): React.JSX.Element {
   const [filter, setFilter] = useState<string>(''); // Search filter
   const [statusFilter, setStatusFilter] = useState<string>('ALL'); // Status filter
 
+  interface CustomerResponse {
+    data: {
+      items: Customer[];
+      meta: { totalItems: number };
+    };
+  }
+
   const fetchCustomers = useCallback(async () => {
     try {
-      const response = await axiosInstance.get('/users', {
+      const response = await axiosInstance.get<CustomerResponse>('/users', {
         params: {
           userType: 3,
-          page: page + 1, // Page is 0-based in MUI, adjust for 1-based API
+          page: page + 1,
           limit: rowsPerPage,
           search: filter,
-          status: statusFilter !== 'ALL' ? statusFilter : undefined, // Status filter
+          status: statusFilter !== 'ALL' ? statusFilter : undefined,
         },
       });
       setCustomers(response.data.data.items);
       setCount(response.data.data.meta.totalItems);
     } catch (error) {
-      console.error('Failed to fetch customers:', error);
+      // Proper error handling
+      const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred';
+      toast.error(`Failed to fetch customers: ${errorMessage}`);
     }
   }, [page, rowsPerPage, filter, statusFilter]);
 
   useEffect(() => {
-    fetchCustomers();
-  }, [fetchCustomers]); // Fetch customers when fetchCustomers changes
+    // Define an async function and invoke it
+    const loadCustomers = async (): Promise<void> => {
+      try {
+        await fetchCustomers();
+      } catch (error: unknown) {
+        let errorMessage: string;
+        if (typeof error === 'string') {
+          errorMessage = error;
+        } else {
+          // Handle other types of errors, or set a generic message
+          errorMessage = 'An unexpected error occurred';
+        }
+        // Convert the Error object to a string
+        toast.error(errorMessage);
+      }
+    };
 
-  const handlePageChange = (event: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => {
+    void loadCustomers();
+  }, [fetchCustomers]);
+
+  const handlePageChange = (event: React.MouseEvent<HTMLButtonElement> | null, newPage: number): void => {
     setPage(newPage);
   };
 
-  const handleRowsPerPageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleRowsPerPageChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
     setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0); // Reset to first page on rows per page change
+    setPage(0);
   };
 
-  const handleFilterChange = (filterText: string) => {
+  const handleFilterChange = (filterText: string): void => {
     setFilter(filterText);
     setPage(0); // Reset to first page on filter change
   };
 
-  const handleStatusChange = (status: string) => {
+  const handleStatusChange = (status: string): void => {
     setStatusFilter(status);
     setPage(0); // Reset to first page on status filter change
   };
 
-  const updateCustomerStatus = async (id: string, currentStatus: number) => {
+  const updateCustomerStatus = async (id: string, currentStatus: number): Promise<void> => {
     const newStatus = currentStatus === 1 ? 2 : 1; // Toggle status
     try {
       await axiosInstance.patch(`/users/update-status/${id}`, { status: newStatus });
       toast.success(`Status updated to ${newStatus === 1 ? 'Active' : 'Inactive'}`);
-      fetchCustomers(); // Refresh customer data
-    } catch (error) {
-      toast.error('Failed to update status');
-      console.error('Failed to update status', error);
+      await fetchCustomers(); // Refresh customer data
+    } catch (error: unknown) {
+      let errorMessage: string;
+      if (typeof error === 'string') {
+        errorMessage = error;
+      } else {
+        // Handle other types of errors, or set a generic message
+        errorMessage = 'An unexpected error occurred';
+      }
+      // Convert the Error object to a string
+      toast.error(errorMessage);
     }
   };
 
@@ -98,10 +131,5 @@ export default function Page(): React.JSX.Element {
       />
       <ToastContainer /> {/* Add ToastContainer here */}
     </Stack>
-
-
-
-
-
   );
 }

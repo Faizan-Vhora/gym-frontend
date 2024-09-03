@@ -12,6 +12,12 @@ import { usePopover } from '@/hooks/use-popover';
 import { MobileNav } from './mobile-nav';
 import { UserPopover } from './user-popover';
 
+// Define a type for the user object
+interface User {
+  profileImageUrl?: string;
+  // Add other user properties if necessary
+}
+
 export function MainNav(): React.JSX.Element {
   const [openNav, setOpenNav] = React.useState<boolean>(false);
 
@@ -19,7 +25,7 @@ export function MainNav(): React.JSX.Element {
 
   // Retrieve user data from localStorage
   const storedUser = typeof window !== 'undefined' ? localStorage.getItem('user') : null;
-  const user = storedUser ? JSON.parse(storedUser) : null;
+  const user: User | null = storedUser ? (JSON.parse(storedUser) as User) : null;
 
   return (
     <React.Fragment>
@@ -47,25 +53,8 @@ export function MainNav(): React.JSX.Element {
             >
               <ListIcon />
             </IconButton>
-            {/* <Tooltip title="Search">
-              <IconButton>
-                <MagnifyingGlassIcon />
-              </IconButton>
-            </Tooltip> */}
           </Stack>
           <Stack sx={{ alignItems: 'center' }} direction="row" spacing={2}>
-            {/* <Tooltip title="Contacts">
-              <IconButton>
-                <UsersIcon />
-              </IconButton>
-            </Tooltip> */}
-            {/* <Tooltip title="Notifications">
-              <Badge badgeContent={4} color="success" variant="dot">
-                <IconButton>
-                  <BellIcon />
-                </IconButton>
-              </Badge>
-            </Tooltip> */}
             <Avatar
               onClick={userPopover.handleOpen}
               ref={userPopover.anchorRef}

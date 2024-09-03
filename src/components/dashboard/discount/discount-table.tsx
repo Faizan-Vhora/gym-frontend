@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Avatar,
   Box,
@@ -44,12 +44,12 @@ export interface DiscountEntry {
   description: string;
   status: DiscountStatus;
   isNewUser: boolean;
-  discountImage: string; // Add this line
+  discountImageUrl: string;
 }
 
 export enum DiscountType {
   Percentage = 'percentage',
-  Fix = 'fix',
+  Fix = 'fixed',
 }
 
 export enum UsageLimit {
@@ -75,23 +75,23 @@ export function DiscountTable({
   onPageChange,
   onRowsPerPageChange,
 }: DiscountTableProps): React.JSX.Element {
-  const [openDialog, setOpenDialog] = React.useState(false);
-  const [selectedImage, setSelectedImage] = React.useState<string | null>(null);
+  const [openDialog, setOpenDialog] = useState<boolean>(false);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
-  const handleChangePage = (event: unknown, newPage: number) => {
+  const handleChangePage = (event: unknown, newPage: number): void => {
     onPageChange(newPage);
   };
 
-  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>): void => {
     onRowsPerPageChange(parseInt(event.target.value, 10));
   };
 
-  const handleAvatarClick = (imageUrl: string) => {
+  const handleAvatarClick = (imageUrl: string): void => {
     setSelectedImage(imageUrl);
     setOpenDialog(true);
   };
 
-  const handleCloseDialog = () => {
+  const handleCloseDialog = (): void => {
     setOpenDialog(false);
     setSelectedImage(null);
   };
@@ -127,7 +127,9 @@ export function DiscountTable({
                       <Avatar
                         src={discount.discountImageUrl}
                         sx={{ height: '50px', width: '50px', cursor: 'pointer' }}
-                        onClick={() => handleAvatarClick(discount.discountImageUrl)}
+                        onClick={() => {
+                          handleAvatarClick(discount.discountImageUrl);
+                        }}
                       />
                     </TableCell>
                     <TableCell sx={tableCss.tableCell}>{discount.codeName}</TableCell>
@@ -138,7 +140,9 @@ export function DiscountTable({
                     <TableCell sx={tableCss.tableCell}>
                       <Select
                         value={discount.status}
-                        onChange={(e) => onStatusChange(discount.id, e.target.value as DiscountStatus)}
+                        onChange={(e) => {
+                          onStatusChange(discount.id, e.target.value as DiscountStatus);
+                        }}
                         fullWidth
                       >
                         <MenuItem value={DiscountStatus.Active}>Active</MenuItem>
@@ -147,10 +151,18 @@ export function DiscountTable({
                       </Select>
                     </TableCell>
                     <TableCell sx={tableCss.tableCell}>
-                      <IconButton onClick={() => onEdit(discount.id)}>
+                      <IconButton
+                        onClick={() => {
+                          onEdit(discount.id);
+                        }}
+                      >
                         <PencilSimple />
                       </IconButton>
-                      <IconButton onClick={() => onDelete(discount.id)}>
+                      <IconButton
+                        onClick={() => {
+                          onDelete(discount.id);
+                        }}
+                      >
                         <Trash />
                       </IconButton>
                     </TableCell>
@@ -176,7 +188,11 @@ export function DiscountTable({
       <Dialog open={openDialog} onClose={handleCloseDialog} maxWidth="md" fullWidth>
         <DialogTitle>Image Preview</DialogTitle>
         <DialogContent>
-          {selectedImage && <img src={selectedImage} alt="Discount Image" style={{ width: '100%', height: 'auto' }} />}
+          {selectedImage ? (
+            <img src={selectedImage} alt="" style={{ width: '100%', height: 'auto' }} />
+          ) : (
+            <p>No image selected</p>
+          )}
         </DialogContent>
       </Dialog>
     </>

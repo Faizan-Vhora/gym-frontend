@@ -151,7 +151,9 @@ export default function FaqForm() {
           </Button>
           <Button
             variant="outlined"
-            onClick={() => router.push('/dashboard/faq')}
+            onClick={() => {
+              router.push('/dashboard/faq');
+            }}
             sx={{
               borderColor: '#d0021b',
               color: '#d0021b',

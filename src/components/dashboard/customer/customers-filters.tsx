@@ -1,32 +1,7 @@
 import * as React from 'react';
-import { FormControl, Grid, InputLabel, TextField } from '@mui/material';
-import Card from '@mui/material/Card';
+import { FormControl, Grid, InputLabel, Select, TextField } from '@mui/material';
+import type { SelectChangeEvent } from '@mui/material';
 import MenuItem from '@mui/material/MenuItem';
-import OutlinedInput from '@mui/material/OutlinedInput';
-import Select from '@mui/material/Select';
-import { styled } from '@mui/material/styles';
-
-// Styled components
-const StyledCard = styled(Card)(({ theme }) => ({
-  padding: theme.spacing(2),
-  display: 'flex',
-  gap: theme.spacing(2),
-  boxShadow: theme.shadows[2],
-}));
-
-const StyledInput = styled(OutlinedInput)(({ theme }) => ({
-  maxWidth: '500px',
-  '& .MuiInputAdornment-root': {
-    color: theme.palette.text.secondary,
-  },
-}));
-
-const StyledSelect = styled(Select)(({ theme }) => ({
-  maxWidth: '300px',
-  '& .MuiSelect-select': {
-    padding: theme.spacing(1),
-  },
-}));
 
 interface CustomersFiltersProps {
   onFilterChange: (filter: string) => void;
@@ -37,14 +12,14 @@ export function CustomersFilters({ onFilterChange, onStatusChange }: CustomersFi
   const [searchTerm, setSearchTerm] = React.useState('');
   const [status, setStatus] = React.useState('ALL');
 
-  const handleFilterChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFilterChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
     const newFilter = event.target.value;
     setSearchTerm(newFilter);
     onFilterChange(newFilter);
   };
 
-  const handleStatusChange = (event: React.ChangeEvent<{ value: unknown }>) => {
-    const newStatus = event.target.value as string;
+  const handleStatusChange = (event: SelectChangeEvent): void => {
+    const newStatus = event.target.value;
     setStatus(newStatus);
     onStatusChange(newStatus);
   };

@@ -2,7 +2,7 @@
 
 import type { User } from '@/types/user';
 import axiosInstance from'@/lib/axios'; // Adjust import path as needed
-import { useRouter } from'next/navigation'; // Importing useRouter hook
+
  
 
 function generateToken(): string {
@@ -93,15 +93,20 @@ class AuthClient {
 
 
   async signOut(): Promise<{ error?: string }> {
-    
-        const response = await axiosInstance.get('/auth/logout');
-     
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
-     
-        return {};
-      }
+    try {
+      await axiosInstance.get('/auth/logout');
+      
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      
+      return {};
+    } catch (error) {
+      // Handle error if needed
+      return { error: 'An error occurred during sign-out.' };
     }
+  }
+  
+  }
    
 
 export const authClient = new AuthClient();
