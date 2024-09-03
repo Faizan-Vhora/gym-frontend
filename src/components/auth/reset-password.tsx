@@ -109,7 +109,7 @@ export function ResetPasswordForm(): React.JSX.Element {
     return (
       <Stack spacing={4}>
         <Alert color="error">{error || 'The link has expired. Please try again.'}</Alert>
-        <Button onClick={() => router.push('/auth/sign-in')} variant="contained">
+        <Button onClick={() => {router.push('/auth/sign-in')}} variant="contained">
           Go to Sign In
         </Button>
       </Stack>

@@ -1,5 +1,6 @@
 'use client';
 
+import * as React from 'react';
 import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -115,24 +116,24 @@ export default function TrainerEditForm() {
           <Stack spacing={3}>
             <FormControl fullWidth required>
               <InputLabel>Full Name</InputLabel>
-              <OutlinedInput {...register('fullName')} label="Full Name" error={!!errors.fullName} />
+              <OutlinedInput {...register('fullName')} label="Full Name" error={Boolean(errors.fullName)} />
               {errors.fullName ? <FormHelperText>{errors.fullName.message}</FormHelperText> : null}
             </FormControl>
             <FormControl fullWidth required>
               <InputLabel>Email</InputLabel>
-              <OutlinedInput {...register('email')} label="Email" type="email" error={!!errors.email} />
+              <OutlinedInput {...register('email')} label="Email" type="email" error={Boolean(errors.email)} />
               {errors.email ? <FormHelperText>{errors.email.message}</FormHelperText> : null}
             </FormControl>
             <FormControl fullWidth>
               <InputLabel>Phone Number</InputLabel>
-              <OutlinedInput {...register('phoneNumber')} label="Phone Number" error={!!errors.phoneNumber} />
+              <OutlinedInput {...register('phoneNumber')} label="Phone Number" error={Boolean(errors.phoneNumber)} />
               {errors.phoneNumber ? <FormHelperText>{errors.phoneNumber.message}</FormHelperText> : null}
             </FormControl>
             <FormControl fullWidth>
               <TextField
                 {...register('address')}
                 label="Address"
-                error={!!errors.address}
+                error={Boolean(errors.address)}
                 helperText={errors.address?.message}
                 multiline
                 rows={4} // Increase the number of rows here

@@ -2,8 +2,9 @@
 
 import * as React from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Button, MenuItem, Select, SelectChangeEvent, Stack, TextField, Typography } from '@mui/material';
+import { Button, MenuItem, Select, Stack, TextField, Typography } from '@mui/material';
 import { z, ZodError } from 'zod';
+import type {SelectChangeEvent}from '@mui/material';
 
 import axiosInstance from '@/lib/axios';
 
@@ -36,7 +37,7 @@ export default function ExpertiseForm(): React.JSX.Element {
         .then((response) => {
           setExpertise(response.data.data);
         })
-        .catch((error) => console.error('Error fetching expertise:', error));
+        .catch((error) => {console.error('Error fetching expertise:', error)});
     }
   }, [expertiseId]);
 
@@ -104,7 +105,7 @@ export default function ExpertiseForm(): React.JSX.Element {
         value={expertise.title}
         onChange={handleInputChange}
         fullWidth
-        error={!!errors.title}
+        error={Boolean(errors.title)}
         helperText={errors.title?.[0]}
       />
 
@@ -114,7 +115,7 @@ export default function ExpertiseForm(): React.JSX.Element {
         value={expertise.status}
         onChange={handleSelectChange}
         fullWidth
-        error={!!errors.status}
+        error={Boolean(errors.status)}
       >
         <MenuItem value="active">Active</MenuItem>
         <MenuItem value="inactive">Inactive</MenuItem>

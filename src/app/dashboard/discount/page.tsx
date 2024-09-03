@@ -7,7 +7,10 @@ import { Plus as PlusIcon } from '@phosphor-icons/react';
 
 import axiosInstance from '@/lib/axios';
 import { DiscountFilter } from '@/components/dashboard/discount/discount-filters';
-import { DiscountEntry, DiscountStatus, DiscountTable } from '@/components/dashboard/discount/discount-table';
+import { DiscountTable } from '@/components/dashboard/discount/discount-table';
+import type {DiscountEntry}from '@/components/dashboard/discount/discount-table';
+import type {DiscountStatus}from '@/components/dashboard/discount/discount-table';
+
 
 export default function DiscountManagementPage(): React.JSX.Element {
   const [discounts, setDiscounts] = React.useState<DiscountEntry[]>([]);

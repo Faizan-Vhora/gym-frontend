@@ -8,8 +8,8 @@ import { toast, ToastContainer } from 'react-toastify';
 
 import axiosInstance from '@/lib/axios';
 import { FaqFilters } from '@/components/dashboard/faq/faq-filters';
-import FaqTable, { FaqEntry, FaqStatus } from '@/components/dashboard/faq/faq-tables';
-
+import FaqTable from '@/components/dashboard/faq/faq-tables';
+import type { FaqEntry, FaqStatus } from '@/components/dashboard/faq/faq-tables';
 import 'react-toastify/dist/ReactToastify.css';
 
 const initialFaqs: FaqEntry[] = [];

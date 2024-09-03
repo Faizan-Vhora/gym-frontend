@@ -80,7 +80,7 @@ export default function DiscountFormPage(): React.JSX.Element {
             setImagePreview(data.discountImageUrl);
           }
         })
-        .catch((error) => console.error('Error fetching discount:', error));
+        .catch((error) => {console.error('Error fetching discount:', error)});
     }
   }, [discountId]);
 
