@@ -2,6 +2,8 @@
 
 import * as React from 'react';
 import { useEffect, useState } from 'react';
+import { Typography } from '@mui/material';
+import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
@@ -12,15 +14,12 @@ import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import Grid from '@mui/material/Unstable_Grid2';
+import { Stack } from '@mui/system';
 import { toast, ToastContainer } from 'react-toastify';
 
-import 'react-toastify/dist/ReactToastify.css';
-
-import { Typography } from '@mui/material';
-import Avatar from '@mui/material/Avatar';
-import { Stack } from '@mui/system';
-
 import axiosInstance from '@/lib/axios';
+
+import 'react-toastify/dist/ReactToastify.css';
 
 export function AccountDetailsForm(): React.JSX.Element {
   const [user, setUser] = useState<User | null>(null);
@@ -37,45 +36,30 @@ export function AccountDetailsForm(): React.JSX.Element {
     profileImageUrl: string;
   }
 
-  const isUser = (data: unknown): data is User => {
-    return (
-      typeof data === 'object' &&
-      data !== null &&
-      'id' in data &&
-      typeof (data as User).id === 'number' &&
-      'fullName' in data &&
-      typeof (data as User).fullName === 'string' &&
-      'email' in data &&
-      typeof (data as User).email === 'string' &&
-      'phoneNumber' in data &&
-      typeof (data as User).phoneNumber === 'string' &&
-      'address' in data &&
-      typeof (data as User).address === 'string' &&
-      'profileImageUrl' in data &&
-      typeof (data as User).profileImageUrl === 'string'
-    );
-  };
-
+  // Fetch user details from the API
   useEffect(() => {
-    const storedUser = localStorage.getItem('user');
-    if (storedUser) {
+    const fetchUserDetails = async (): Promise<void> => {
       try {
-        const parsedUser: unknown = JSON.parse(storedUser);
-        if (isUser(parsedUser)) {
-          setUser(parsedUser);
-        } else {
-          toast.error(`Invalid user data: ${JSON.stringify(parsedUser)}`);
-        }
-      } catch (parseError) {
-        let errorMessage: string;
-        if (parseError instanceof Error) {
-          errorMessage = parseError.message; // Safely access message property
-        } else {
-          errorMessage = 'An unexpected error occurred';
+        const response = await axiosInstance.get<{ data: User }>('/auth/profile');
+        const fetchedUser = response.data.data;
+        setUser(fetchedUser);
+      } catch (err: unknown) {
+        let errorMessage = 'Failed to fetch user details';
+        if (err instanceof Error) {
+          errorMessage = err.message;
         }
         toast.error(errorMessage);
       }
-    }
+    };
+
+    // Call the async function within the useEffect
+    fetchUserDetails().catch((err: unknown) => {
+      let errorMessage = 'Failed to load data.';
+      if (err instanceof Error) {
+        errorMessage = `Error fetching FAQs: ${err.message}`;
+      }
+      toast.error(errorMessage);
+    });
   }, []);
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
@@ -84,7 +68,7 @@ export function AccountDetailsForm(): React.JSX.Element {
   };
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
-    const selectedFile = event.target.files?.[0]; // Renamed variable to avoid conflict
+    const selectedFile = event.target.files?.[0];
 
     if (selectedFile) {
       setFile(selectedFile);
@@ -113,23 +97,23 @@ export function AccountDetailsForm(): React.JSX.Element {
         formData.append('profileImage', file);
       }
 
-      const response = await axiosInstance.put<{ data: User }>(`/users/${user.id}`, formData, {
+      // Update user details via API
+      const response = await axiosInstance.post<{ data: User }>('/auth/profile', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
       });
 
-      const newUser: User = response.data.data;
-      setUser(newUser);
-      localStorage.setItem('user', JSON.stringify(newUser));
+      const updatedUser = response.data.data;
+      setUser(updatedUser);
       toast.success('Profile updated successfully');
     } catch (err: unknown) {
-      let errorMessage = 'An unexpected error occurred';
+      let errorMessage = 'Failed to update user details';
       if (err instanceof Error) {
         errorMessage = err.message;
       }
       toast.error(errorMessage);
-      setError('Failed to update user details.');
+      setError(errorMessage);
     } finally {
       setIsSubmitting(false);
     }
