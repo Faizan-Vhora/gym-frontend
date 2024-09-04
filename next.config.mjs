@@ -15,7 +15,8 @@ const config = {
               pathname: '/public/**',
             },
         ],
-      }
+      },
+    experimental: {esmExternals: false,}
 };
 
 export default config;
