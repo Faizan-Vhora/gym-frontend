@@ -1,6 +1,8 @@
 import * as React from 'react';
-import { FormControl, Grid, InputLabel, MenuItem, Select, TextField } from '@mui/material';
+import { FormControl, Grid, IconButton, InputAdornment, InputLabel, MenuItem, Select, TextField } from '@mui/material';
 import type { SelectChangeEvent } from '@mui/material'; // Importing as a type
+import { X as XIcon } from '@phosphor-icons/react'; // Import XIcon from phosphor-react
+import debounce from 'lodash/debounce';
 
 interface TrainersFiltersProps {
   onFilterChange: (filter: string) => void;
@@ -11,10 +13,18 @@ export function TrainersFilters({ onFilterChange, onStatusChange }: TrainersFilt
   const [searchTerm, setSearchTerm] = React.useState<string>('');
   const [status, setStatus] = React.useState<string>('ALL');
 
+  // Create a debounced version of the search handler
+  const debouncedSearch = React.useCallback(
+    debounce((value: string) => {
+      onFilterChange(value);
+    }, 300), // Adjust the debounce delay as needed
+    [onFilterChange] // Ensure onSearchChange is included as a dependency
+  );
+
   const handleFilterChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
     const newFilter = event.target.value;
     setSearchTerm(newFilter);
-    onFilterChange(newFilter);
+    debouncedSearch(newFilter);
   };
 
   const handleStatusChange = (event: SelectChangeEvent): void => {
@@ -23,10 +33,30 @@ export function TrainersFilters({ onFilterChange, onStatusChange }: TrainersFilt
     onStatusChange(newStatus);
   };
 
+  const handleSearchClear = (): void => {
+    setSearchTerm('');
+    onFilterChange('');
+  };
+
   return (
     <Grid container spacing={2}>
       <Grid item md={6} xs={12}>
-        <TextField label="Search" value={searchTerm} onChange={handleFilterChange} variant="outlined" fullWidth />
+        <TextField
+          label="Search"
+          value={searchTerm}
+          onChange={handleFilterChange}
+          variant="outlined"
+          fullWidth
+          InputProps={{
+            endAdornment: searchTerm && (
+              <InputAdornment position="end">
+                <IconButton onClick={handleSearchClear} edge="end">
+                  <XIcon size={15} /> {/* Adjust size as needed */}
+                </IconButton>
+              </InputAdornment>
+            ),
+          }}
+        />
       </Grid>
       <Grid item md={6} xs={12}>
         <FormControl variant="outlined" fullWidth>

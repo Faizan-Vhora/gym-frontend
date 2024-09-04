@@ -17,11 +17,10 @@ export function AuthGuard({ children }: AuthGuardProps): React.JSX.Element | nul
   const [isChecking, setIsChecking] = React.useState<boolean>(true);
   const [error, setError] = React.useState<string | null>(null);
 
-  const checkPermissions = () => {
+  const checkPermissions = (): void => {
     const user = localStorage.getItem('user');
     const token = localStorage.getItem('token');
 
-    // Define paths that should bypass the authentication check
     const publicPaths = [paths.auth.signIn, paths.auth.resetPassword, paths.auth.forgotPassword];
 
     if (publicPaths.includes(pathname as '/auth/sign-in' | '/auth/forgot-password' | '/auth/reset-password')) {
@@ -29,7 +28,6 @@ export function AuthGuard({ children }: AuthGuardProps): React.JSX.Element | nul
       return;
     }
 
-    // If not logged in, redirect to login page
     if (!user || !token) {
       logger.debug('[AuthGuard]: User is not logged in or token is missing, redirecting to sign in');
       setError('You must be logged in to view this page.');
@@ -42,8 +40,7 @@ export function AuthGuard({ children }: AuthGuardProps): React.JSX.Element | nul
 
   React.useEffect(() => {
     checkPermissions();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pathname]);
+  }, [checkPermissions]);
 
   if (isChecking) {
     return null; // You can show a loading spinner here if desired

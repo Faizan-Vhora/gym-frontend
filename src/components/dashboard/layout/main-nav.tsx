@@ -20,12 +20,16 @@ interface User {
 
 export function MainNav(): React.JSX.Element {
   const [openNav, setOpenNav] = React.useState<boolean>(false);
+  const [user, setUser] = React.useState<User | null>(null);
 
   const userPopover = usePopover<HTMLDivElement>();
 
-  // Retrieve user data from localStorage
-  const storedUser = typeof window !== 'undefined' ? localStorage.getItem('user') : null;
-  const user: User | null = storedUser ? (JSON.parse(storedUser) as User) : null;
+  React.useEffect(() => {
+    // Retrieve user data from localStorage
+    const storedUser = localStorage.getItem('user');
+    const parsedUser = storedUser ? (JSON.parse(storedUser) as User) : null;
+    setUser(parsedUser);
+  }, []);
 
   return (
     <React.Fragment>

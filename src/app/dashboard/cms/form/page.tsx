@@ -1,9 +1,8 @@
 'use client';
 
 import * as React from 'react';
+import dynamic from 'next/dynamic';
 import { useRouter, useSearchParams } from 'next/navigation';
-import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
-import { CKEditor } from '@ckeditor/ckeditor5-react';
 import { Box, Button, CardActions, Typography } from '@mui/material';
 import omit from 'lodash/omit';
 import { toast } from 'react-toastify';
@@ -12,10 +11,11 @@ import 'react-toastify/dist/ReactToastify.css';
 
 import axiosInstance from '@/lib/axios';
 
+const CustomEditor = dynamic(() => import('@/components/ckeditor'), { ssr: false });
+
 interface CmsData {
   title: string;
   text: string;
-  // add other relevant fields
 }
 
 export default function EditPage(): React.JSX.Element {
@@ -67,7 +67,15 @@ export default function EditPage(): React.JSX.Element {
       await axiosInstance.put(`/cms/${cmsId}`, updatedPayload);
       router.push('/dashboard/cms'); // Awaiting to ensure that routing is complete
     } catch (error) {
-      // Handle error gracefully
+      let errorMessage: string;
+      if (typeof error === 'string') {
+        errorMessage = error;
+      } else {
+        // Handle other types of errors, or set a generic message
+        errorMessage = 'An unexpected error occurred';
+      }
+      // Convert the Error object to a string
+      toast.error(errorMessage);
     }
   };
 
@@ -76,19 +84,12 @@ export default function EditPage(): React.JSX.Element {
       <Typography variant="h4" gutterBottom>
         Edit {cmsData.title}
       </Typography>
-      <div style={{ height: '400px' }}>
-        <CKEditor
-          editor={ClassicEditor}
-          data={content}
-          onChange={(event, editor) => {
-            const data = editor.getData();
-            setContent(data);
-          }}
-          config={{
-            toolbar: ['bold', 'italic', 'link', 'bulletedList', 'numberedList', 'blockQuote', 'undo', 'redo'],
-          }}
-        />
-      </div>
+      <CustomEditor
+        data={content}
+        onChange={(data) => {
+          setContent(data);
+        }}
+      />
 
       <CardActions sx={{ justifyContent: 'flex-end' }}>
         <Box sx={{ mt: 3 }}>

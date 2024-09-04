@@ -1,14 +1,17 @@
 import React from 'react';
 import {
+  Box,
+  Card,
+  Divider,
   FormControlLabel,
   IconButton,
-  Paper,
+  Stack,
   Switch,
   Table,
   TableBody,
   TableCell,
-  TableContainer,
   TableHead,
+  TablePagination,
   TableRow,
   Typography,
 } from '@mui/material';
@@ -25,15 +28,28 @@ export interface ExpertiseEntry {
 
 interface ExpertiseTableProps {
   entries: ExpertiseEntry[];
+  count: number;
   page: number;
   rowsPerPage: number;
   totalEntries: number;
+  onPageChange: (event: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => void;
+  onRowsPerPageChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   onEdit: (id: number) => void;
   onDelete: (id: number) => void;
   onToggleStatus: (id: number, newStatus: 'active' | 'inactive') => void;
 }
 
-export function ExpertiseTable({ entries, onEdit, onDelete, onToggleStatus }: ExpertiseTableProps): React.JSX.Element {
+export function ExpertiseTable({
+  entries,
+  count,
+  page,
+  rowsPerPage,
+  onPageChange,
+  onRowsPerPageChange,
+  onEdit,
+  onDelete,
+  onToggleStatus,
+}: ExpertiseTableProps): React.JSX.Element {
   const formatDate = (inputDate: Date | string): string => {
     let date: Date;
     if (typeof inputDate === 'string') {
@@ -50,63 +66,87 @@ export function ExpertiseTable({ entries, onEdit, onDelete, onToggleStatus }: Ex
   };
 
   return (
-    <TableContainer component={Paper}>
-      <Table>
-        <TableHead>
-          <TableRow sx={tableCss.tableRow}>
-            <TableCell sx={tableCss.tableHeaderCell}>Title</TableCell>
-            <TableCell sx={tableCss.tableHeaderCell}>Created At</TableCell>
-            <TableCell sx={tableCss.tableHeaderCell}>Actions</TableCell>
-            <TableCell sx={tableCss.tableHeaderCell}>Status</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {entries.length === 0 ? (
+    <Card>
+      <Box sx={{ overflowX: 'auto' }}>
+        <Table>
+          <TableHead>
             <TableRow sx={tableCss.tableRow}>
-              <TableCell colSpan={4} align="center" sx={tableCss.tableCell}>
-                <Typography variant="body1">No data found</Typography>
+              <TableCell sx={tableCss.tableHeaderCell}>Title</TableCell>
+              <TableCell sx={tableCss.tableHeaderCell}>Created At</TableCell>
+              <TableCell
+                sx={{
+                  ...tableCss.tableHeaderCell,
+                  width: '200px', // Adjust width as needed
+                  whiteSpace: 'nowrap',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                }}
+              >
+                Actions
               </TableCell>
+              <TableCell sx={tableCss.tableHeaderCell}>Status</TableCell>
             </TableRow>
-          ) : (
-            entries.map((entry) => (
-              <TableRow key={entry.id} sx={tableCss.tableRow}>
-                <TableCell sx={tableCss.tableCell}>{entry.title}</TableCell>
-                <TableCell sx={tableCss.tableCell}>{formatDate(entry.createdAt)}</TableCell>
-                <TableCell sx={tableCss.tableCell}>
-                  <IconButton
-                    onClick={() => {
-                      onEdit(entry.id);
-                    }}
-                  >
-                    <PencilSimple />
-                  </IconButton>
-                  <IconButton
-                    onClick={() => {
-                      onDelete(entry.id);
-                    }}
-                  >
-                    <Trash />
-                  </IconButton>
-                </TableCell>
-                <TableCell sx={tableCss.tableCell}>
-                  <FormControlLabel
-                    control={
-                      <Switch
-                        checked={entry.status === 'active'}
-                        onChange={() => {
-                          handleToggleStatus(entry.id, entry.status);
-                        }}
-                        color={entry.status === 'active' ? 'success' : 'error'}
-                      />
-                    }
-                    label={entry.status.charAt(0).toUpperCase() + entry.status.slice(1)}
-                  />
+          </TableHead>
+          <TableBody>
+            {entries.length === 0 ? (
+              <TableRow sx={tableCss.tableRow}>
+                <TableCell colSpan={4} align="center" sx={tableCss.tableCell}>
+                  <Typography variant="body1">No data found</Typography>
                 </TableCell>
               </TableRow>
-            ))
-          )}
-        </TableBody>
-      </Table>
-    </TableContainer>
+            ) : (
+              entries.map((entry) => (
+                <TableRow key={entry.id} sx={tableCss.tableRow}>
+                  <TableCell sx={tableCss.tableCell}>{entry.title}</TableCell>
+                  <TableCell sx={tableCss.tableCell}>{formatDate(entry.createdAt)}</TableCell>
+                  <TableCell sx={tableCss.tableCell}>
+                    <Stack direction="row" spacing={1} alignItems="center">
+                      <IconButton
+                        onClick={() => {
+                          onEdit(entry.id);
+                        }}
+                      >
+                        <PencilSimple />
+                      </IconButton>
+                      <IconButton
+                        onClick={() => {
+                          onDelete(entry.id);
+                        }}
+                      >
+                        <Trash />
+                      </IconButton>
+                    </Stack>
+                  </TableCell>
+                  <TableCell sx={tableCss.tableCell}>
+                    <FormControlLabel
+                      control={
+                        <Switch
+                          checked={entry.status === 'active'}
+                          onChange={() => {
+                            handleToggleStatus(entry.id, entry.status);
+                          }}
+                          color={entry.status === 'active' ? 'success' : 'error'}
+                        />
+                      }
+                      label={entry.status.charAt(0).toUpperCase() + entry.status.slice(1)}
+                    />
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
+          </TableBody>
+        </Table>
+      </Box>
+      <Divider />
+      <TablePagination
+        component="div"
+        count={count}
+        page={page}
+        rowsPerPage={rowsPerPage}
+        onPageChange={onPageChange}
+        onRowsPerPageChange={onRowsPerPageChange}
+        rowsPerPageOptions={[5, 10, 25]}
+      />
+    </Card>
   );
 }

@@ -3,8 +3,9 @@
 import * as React from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Button, MenuItem, Select, Stack, TextField, Typography } from '@mui/material';
+import type { SelectChangeEvent } from '@mui/material';
+import { toast } from 'react-toastify';
 import { z, ZodError } from 'zod';
-import type {SelectChangeEvent}from '@mui/material';
 
 import axiosInstance from '@/lib/axios';
 
@@ -30,18 +31,30 @@ export default function ExpertiseForm(): React.JSX.Element {
   const searchParams = useSearchParams();
   const expertiseId = searchParams.get('id');
 
+  interface FetchExpertiseResponse {
+    data: ExpertiseEntry;
+  }
+
   React.useEffect(() => {
     if (expertiseId) {
       axiosInstance
-        .get(`/expertise/${expertiseId}`)
+        .get<FetchExpertiseResponse>(`/expertise/${expertiseId}`)
         .then((response) => {
           setExpertise(response.data.data);
         })
-        .catch((error) => {console.error('Error fetching expertise:', error)});
+        .catch((error: unknown) => {
+          let errorMessage: string;
+          if (error instanceof Error) {
+            errorMessage = error.message; // Safely access the message property
+          } else {
+            errorMessage = 'An unexpected error occurred'; // Fallback message
+          }
+          toast.error(errorMessage); // Display the error message using toast
+        });
     }
   }, [expertiseId]);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     const { name, value } = e.target;
     setExpertise((prevExpertise) => ({
       ...prevExpertise,
@@ -49,11 +62,11 @@ export default function ExpertiseForm(): React.JSX.Element {
     }));
   };
 
-  const handleSelectChange = (e: SelectChangeEvent) => {
+  const handleSelectChange = (e: SelectChangeEvent): void => {
     const { name, value } = e.target;
     setExpertise((prevExpertise) => ({
       ...prevExpertise,
-      [name as string]: value as string,
+      [name]: value, // TypeScript should infer the correct types
     }));
   };
 
@@ -67,7 +80,7 @@ export default function ExpertiseForm(): React.JSX.Element {
         const formattedErrors = Object.fromEntries(
           Object.entries(e.format()).map(([key, value]) => [
             key,
-            value as string[], // Cast the value to string[]
+            value, // Remove assertion if `value` is already of type `string[]`
           ])
         );
         setErrors(formattedErrors as Partial<Record<keyof ExpertiseEntry, string[]>>);
@@ -76,7 +89,7 @@ export default function ExpertiseForm(): React.JSX.Element {
     }
   };
 
-  const handleSave = async () => {
+  const handleSave = async (): Promise<void> => {
     if (!validate()) return;
 
     try {
@@ -84,14 +97,20 @@ export default function ExpertiseForm(): React.JSX.Element {
       const url = expertise.id ? `/expertise/${expertise.id}` : '/expertise';
 
       await axiosInstance({
-        method: method,
-        url: url,
-        data: expertise,
+        method, // shorthand for method: method
+        url, // shorthand for url: url
+        data: expertise, // no change needed as 'data' is already in the correct format
       });
 
       router.replace('/dashboard/expertise');
-    } catch (error) {
-      console.error('Error saving expertise:', error);
+    } catch (error: unknown) {
+      let errorMessage: string;
+      if (error instanceof Error) {
+        errorMessage = error.message; // Safely access the message property
+      } else {
+        errorMessage = 'An unexpected error occurred'; // Fallback message
+      }
+      toast.error(errorMessage);
     }
   };
 
@@ -128,7 +147,7 @@ export default function ExpertiseForm(): React.JSX.Element {
         <Button
           variant="outlined"
           onClick={() => {
-            router.push('/dashboard/discount');
+            router.push('/dashboard/expertise');
           }}
           sx={{
             borderColor: '#d0021b',

@@ -37,8 +37,12 @@ export function ResetPasswordForm(): React.JSX.Element {
   const token = searchParams.get('token'); // Retrieve the token from URL search params
   const router = useRouter();
 
+  interface CheckTokenResponse {
+    status: number;
+    data: boolean;
+  }
+
   React.useEffect(() => {
-    // Check the token validity when the component mounts
     const validateToken = async (): Promise<void> => {
       if (!token) {
         setError('Invalid token');
@@ -47,7 +51,9 @@ export function ResetPasswordForm(): React.JSX.Element {
       }
 
       try {
-        const response = await axiosInstance.post('/auth/check-reset-password-token', { token });
+        const response = await axiosInstance.post<CheckTokenResponse>('/auth/check-reset-password-token', { token });
+
+        // TypeScript now knows the structure of response.data
         if (response.status === 201 && response.data?.data) {
           setIsTokenValid(true);
         } else {
@@ -60,7 +66,9 @@ export function ResetPasswordForm(): React.JSX.Element {
       }
     };
 
-    validateToken();
+    void (async () => {
+      await validateToken();
+    })();
   }, [token]);
 
   const {
@@ -91,7 +99,14 @@ export function ResetPasswordForm(): React.JSX.Element {
           toast.success('Password reset successfully');
           router.push('/auth/sign-in'); // Redirect to sign-in page
         }
-      } catch (err: any) {
+      } catch (err: unknown) {
+        let errorMessage: string;
+        if (err instanceof Error) {
+          errorMessage = err.message; // Safely access the message property
+        } else {
+          errorMessage = 'An unexpected error occurred'; // Fallback message
+        }
+        toast.error(errorMessage);
         // Handle server-side or network errors
         setFormError('root', { type: 'server', message: 'Failed to reset password. Please try again later.' });
       } finally {
@@ -109,7 +124,12 @@ export function ResetPasswordForm(): React.JSX.Element {
     return (
       <Stack spacing={4}>
         <Alert color="error">{error || 'The link has expired. Please try again.'}</Alert>
-        <Button onClick={() => {router.push('/auth/sign-in')}} variant="contained">
+        <Button
+          onClick={() => {
+            router.push('/auth/sign-in');
+          }}
+          variant="contained"
+        >
           Go to Sign In
         </Button>
       </Stack>

@@ -4,9 +4,13 @@ import * as React from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import {
   Button,
+  CardActions,
+  CardContent,
+  Divider,
   FormControl,
   FormHelperText,
-  Input,
+  Grid,
+  IconButton,
   InputLabel,
   MenuItem,
   Select,
@@ -15,6 +19,8 @@ import {
   Typography,
 } from '@mui/material';
 import type { SelectChangeEvent } from '@mui/material';
+import { Trash } from '@phosphor-icons/react';
+import { toast } from 'react-toastify';
 import { z, ZodError } from 'zod';
 import type { ZodFormattedError } from 'zod';
 
@@ -58,29 +64,53 @@ export default function DiscountFormPage(): React.JSX.Element {
   const [imageFile, setImageFile] = React.useState<File | null>(null);
   const [imagePreview, setImagePreview] = React.useState<string | null>(null);
   const [errors, setErrors] = React.useState<ZodFormattedError<DiscountSchema> | null>(null);
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
 
   const router = useRouter();
   const searchParams = useSearchParams();
   const discountId = searchParams.get('id');
 
+  const handleRemoveImage = () => {
+    setImagePreview(null);
+    setImageFile(null);
+
+    // Optionally clear discountImage if needed
+    setDiscount((prevDiscount) => ({
+      ...prevDiscount,
+      discountImage: '', // Or null if you prefer
+    }));
+  };
+
   React.useEffect(() => {
     if (discountId) {
       axiosInstance
-        .get(`/discount/${discountId}`)
+        .get<{ data: DiscountEntry }>(`/discount/${discountId}`)
         .then((response) => {
-          const data = response.data.data;
-          if (data && typeof data.discountValue === 'string') {
+          const data: DiscountEntry = response.data.data;
+
+          // Convert discountValue to number if needed
+          if (typeof data.discountValue === 'string') {
             data.discountValue = parseFloat(data.discountValue);
           }
+
           setDiscount({
             ...data,
             discountImage: data.discountImageUrl || '',
           });
+
           if (data.discountImageUrl) {
             setImagePreview(data.discountImageUrl);
           }
         })
-        .catch((error) => {console.error('Error fetching discount:', error)});
+        .catch((error: unknown) => {
+          let errorMessage = 'An unexpected error occurred';
+
+          if (error instanceof Error) {
+            errorMessage = `An unexpected error occurred: ${error.message}`;
+          }
+
+          toast.error(errorMessage);
+        });
     }
   }, [discountId]);
 
@@ -100,7 +130,7 @@ export default function DiscountFormPage(): React.JSX.Element {
     }));
   };
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     const file = e.target.files?.[0] || null;
     setImageFile(file);
 
@@ -111,10 +141,16 @@ export default function DiscountFormPage(): React.JSX.Element {
       };
       reader.readAsDataURL(file);
 
+      // Ensure to set the discountImage with a meaningful value if needed
+      // For example, you could set a file URL or keep it null if you do not need it
       setDiscount((prevDiscount) => ({
         ...prevDiscount,
-        discountImage: file.name,
+        discountImage: file.name, // Adjust based on your requirements
       }));
+
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
     }
   };
 
@@ -132,7 +168,7 @@ export default function DiscountFormPage(): React.JSX.Element {
     }
   };
 
-  const handleSave = async () => {
+  const handleSave = async (): Promise<void> => {
     if (!validate()) return;
 
     const formData = new FormData();
@@ -246,27 +282,66 @@ export default function DiscountFormPage(): React.JSX.Element {
         helperText={errors?.description?._errors[0]}
       />
 
-      <Input
-        className="input-file"
-        type="file"
-        name="discountImage"
-        onChange={handleImageChange}
-        fullWidth
-        error={Boolean(errors?.discountImage)}
-        required={!discountId} // Only required on create, not on update
-      />
-
-      {imagePreview && (
-        <img
-          src={imagePreview}
-          alt="Discount Preview"
-          style={{ width: '100%', maxHeight: '200px', objectFit: 'cover', marginTop: '1rem' }}
-        />
-      )}
+      <Grid md={6} xs={12}>
+        <CardContent>
+          <Stack spacing={2} sx={{ alignItems: 'center' }}>
+            <div>
+              {imagePreview && (
+                <div style={{ position: 'relative', width: '100%', maxHeight: '200px', marginTop: '1rem' }}>
+                  <img
+                    src={imagePreview}
+                    alt="Discount Preview"
+                    style={{ width: '100%', maxHeight: '200px', objectFit: 'cover', marginTop: '1rem' }}
+                  />
+                  <IconButton
+                    onClick={handleRemoveImage}
+                    sx={{
+                      position: 'absolute',
+                      top: 0,
+                      right: 0,
+                      color: 'white',
+                      backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                      '&:hover': {
+                        backgroundColor: 'rgba(0, 0, 0, 0.7)',
+                      },
+                    }}
+                  >
+                    <Trash />
+                  </IconButton>
+                </div>
+              )}
+            </div>
+          </Stack>
+        </CardContent>
+        <Divider />
+        <CardActions>
+          <Button component="label" fullWidth variant="text">
+            Upload picture
+            <input type="file" accept="image/*" hidden onChange={handleImageChange} />
+          </Button>
+        </CardActions>
+      </Grid>
 
       <Stack direction="row" spacing={2} justifyContent="flex-end">
-        <Button onClick={handleSave} variant="contained">
+        <Button className="common-button" onClick={handleSave} variant="contained">
           {discountId ? 'Update Discount' : 'Create Discount'}
+        </Button>
+        <Button
+          variant="outlined"
+          onClick={() => {
+            router.push('/dashboard/discount');
+          }}
+          sx={{
+            borderColor: '#d0021b',
+            color: '#d0021b',
+            transform: 'skewX(-20deg)',
+            '&:hover': {
+              borderColor: 'darkred',
+              backgroundColor: 'rgba(255, 0, 0, 0.1)',
+            },
+          }}
+        >
+          Cancel
         </Button>
       </Stack>
     </Stack>

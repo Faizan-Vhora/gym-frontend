@@ -31,6 +31,7 @@ interface User {
 export function UserPopover({ anchorEl, onClose, open }: UserPopoverProps): React.JSX.Element {
   const { checkSession } = useUser();
   const router = useRouter();
+  const [user, setUser] = React.useState<User | null>(null);
 
   const handleSignOut = React.useCallback(async (): Promise<void> => {
     try {
@@ -53,8 +54,12 @@ export function UserPopover({ anchorEl, onClose, open }: UserPopoverProps): Reac
   }, [checkSession, router]);
 
   // Retrieve and type user data from localStorage
-  const storedUser = typeof window !== 'undefined' ? localStorage.getItem('user') : null;
-  const user: User | null = storedUser ? (JSON.parse(storedUser) as User) : null;
+  React.useEffect(() => {
+    // Retrieve user data from localStorage
+    const storedUser = localStorage.getItem('user');
+    const parsedUser = storedUser ? (JSON.parse(storedUser) as User) : null;
+    setUser(parsedUser);
+  }, []);
 
   return (
     <Popover

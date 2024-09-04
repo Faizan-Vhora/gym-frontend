@@ -20,56 +20,107 @@ export default function TrainersPage(): React.JSX.Element {
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [filter, setFilter] = useState(''); // Search filter
   const [statusFilter, setStatusFilter] = useState('ALL'); // Status filter
+  const [error, setError] = React.useState<string | null>(null);
 
+  interface ErrorDetail {
+    code?: string;
+    message?: string;
+    // Add other fields if your API returns additional error details
+  }
+
+  interface TrainerResponseData {
+    data: {
+      items: Trainer[];
+      meta: {
+        totalItems: number;
+      };
+    };
+    errors?: ErrorDetail;
+  }
   // Fetch trainers when page, rowsPerPage, filter, or statusFilter changes
+  const fetchTrainers = React.useCallback(async (): Promise<void> => {
+    try {
+      // Define request parameters
+      const params = {
+        userType: 2, // Assuming userType 2 corresponds to trainers
+        page: page + 1, // Adjust for 1-based API
+        limit: rowsPerPage,
+        search: filter,
+        status: statusFilter !== 'ALL' ? statusFilter : undefined, // Status filter
+      };
+
+      // Perform the API call
+      const response = await axiosInstance.get<TrainerResponseData>('/users', { params });
+
+      // Access and handle response data
+      const { items, meta } = response.data.data;
+      if (Array.isArray(items)) {
+        setTrainers(items); // `items` is of type `Trainer[]`
+        setCount(meta.totalItems); // `meta.totalItems` is of type `number`
+      } else {
+        toast.error(
+          `Unexpected response data format: ${response.data.errors ? JSON.stringify(response.data.errors) : 'No errors available'}`
+        );
+        setError('Unexpected data format.');
+      }
+    } catch (err) {
+      let errorMessage = 'Failed to load data.';
+      if (err instanceof Error) {
+        errorMessage = `Error fetching trainers: ${err.message}`;
+      }
+      toast.error(errorMessage);
+      setError(errorMessage);
+    }
+  }, [page, rowsPerPage, filter, statusFilter]); // Dependencies for memoization
+
   useEffect(() => {
-    const fetchTrainers = async () => {
+    const loadTrainers = async (): Promise<void> => {
       try {
-        const response = await axiosInstance.get('/users', {
-          params: {
-            userType: 2, // Assuming userType 2 corresponds to trainers
-            page: page + 1, // Adjust for 1-based API
-            limit: rowsPerPage,
-            search: filter,
-            status: statusFilter !== 'ALL' ? statusFilter : undefined, // Status filter
-          },
-        });
-        setTrainers(response.data.data.items);
-        setCount(response.data.data.meta.totalItems);
-      } catch (error) {
-        console.error('Failed to fetch trainers:', error);
-        toast.error('Failed to fetch trainers');
+        await fetchTrainers();
+      } catch (err: unknown) {
+        let errorMessage = 'Failed to load data.';
+        if (err instanceof Error) {
+          errorMessage = `Error fetching FAQs: ${err.message}`;
+        }
+        toast.error(errorMessage);
       }
     };
 
-    fetchTrainers();
-  }, [page, rowsPerPage, filter, statusFilter]); // Re-fetch when page, rowsPerPage, filter, or statusFilter changes
+    // Immediately invoke the async function and handle the promise
+    loadTrainers().catch((err: unknown) => {
+      let errorMessage = 'Failed to load data.';
+      if (err instanceof Error) {
+        errorMessage = `Error fetching FAQs: ${err.message}`;
+      }
+      toast.error(errorMessage);
+    });
+  }, [fetchTrainers]);
 
   // Handles page changes triggered by the TablePagination component
-  const handlePageChange = (event: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => {
+  const handlePageChange = (event: React.MouseEvent<HTMLButtonElement> | null, newPage: number): void => {
     setPage(newPage);
   };
 
   // Handles changes to the number of rows displayed per page
-  const handleRowsPerPageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleRowsPerPageChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0); // Reset to first page on rows per page change
   };
 
   // Updates the search filter and resets to the first page
-  const handleFilterChange = (filterText: string) => {
+  const handleFilterChange = (filterText: string): void => {
     setFilter(filterText);
     setPage(0); // Reset to first page on filter change
   };
 
   // Updates the status filter and resets to the first page
-  const handleStatusChange = (status: string) => {
+  const handleStatusChange = (status: string): void => {
     setStatusFilter(status);
     setPage(0); // Reset to first page on status filter change
   };
 
   // Toggles the status of a trainer and updates the UI
-  const updateTrainerStatus = async (id: string, currentStatus: number) => {
+  const updateTrainerStatus = async (id: string, currentStatus: number): Promise<void> => {
     const newStatus = currentStatus === 1 ? 2 : 1; // Toggle status
     try {
       await axiosInstance.patch(`/users/update-status/${id}`, { status: newStatus });
@@ -78,9 +129,12 @@ export default function TrainersPage(): React.JSX.Element {
       setTrainers((prevTrainers) =>
         prevTrainers.map((trainer) => (trainer.id === id ? { ...trainer, status: newStatus } : trainer))
       );
-    } catch (error) {
-      toast.error('Failed to update status');
-      console.error('Failed to update status', error);
+    } catch (err: unknown) {
+      let errorMessage = 'Failed to load data.';
+      if (err instanceof Error) {
+        errorMessage = `Error fetching FAQs: ${err.message}`;
+      }
+      setError(errorMessage);
     }
   };
 
@@ -106,6 +160,7 @@ export default function TrainersPage(): React.JSX.Element {
         onRowsPerPageChange={handleRowsPerPageChange}
         updateTrainerStatus={updateTrainerStatus}
       />
+      {error && <div className="error-message">{error}</div>}
       <ToastContainer /> {/* Add ToastContainer here */}
     </Stack>
   );

@@ -19,7 +19,7 @@ export const paths = {
   },
   cms: {
     cms: '/dashboard/cms',
-    cmsEditPage: '/dashboard/cms/form',
+    cmsEditPage: (id?: number) => `/dashboard/cms/form?id=${id}`,
   },
   experties: {
     experties: '/dashboard/expertise',

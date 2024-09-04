@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
+import Image from 'next/image';
 import {
-  Avatar,
   Box,
   Card,
   Dialog,
@@ -44,7 +44,8 @@ export interface DiscountEntry {
   description: string;
   status: DiscountStatus;
   isNewUser: boolean;
-  discountImageUrl: string;
+  discountImageUrl?: string;
+  discountImage?: string;
 }
 
 export enum DiscountType {
@@ -123,12 +124,15 @@ export function DiscountTable({
               ) : (
                 discounts.map((discount) => (
                   <TableRow key={discount.id} sx={tableCss.tableRow}>
-                    <TableCell sx={tableCss.tableCell}>
-                      <Avatar
-                        src={discount.discountImageUrl}
-                        sx={{ height: '50px', width: '50px', cursor: 'pointer' }}
+                    <TableCell>
+                      <Image
+                        src={discount?.discountImageUrl || ''}
+                        alt="Discount Preview"
+                        width={50}
+                        height={50}
+                        style={{ marginTop: '1rem' }}
                         onClick={() => {
-                          handleAvatarClick(discount.discountImageUrl);
+                          handleAvatarClick(discount.discountImageUrl || '');
                         }}
                       />
                     </TableCell>

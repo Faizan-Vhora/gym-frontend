@@ -18,11 +18,10 @@ import { EyeSlash as EyeSlashIcon } from '@phosphor-icons/react/dist/ssr/EyeSlas
 import { Controller, useForm } from 'react-hook-form';
 import { toast, ToastContainer } from 'react-toastify';
 import { z as zod } from 'zod';
+
 import type { Customer } from '@/components/dashboard/customer/customers-table';
 
 import 'react-toastify/dist/ReactToastify.css';
-
-import axios from 'axios';
 
 import { paths } from '@/paths';
 import axiosInstance from '@/lib/axios';
@@ -53,23 +52,31 @@ export function SignInForm(): React.JSX.Element {
     formState: { errors },
   } = useForm<Values>({ defaultValues, resolver: zodResolver(schema) });
 
+  interface LoginResponseData {
+    data: {
+      access_token: {
+        token: string;
+      };
+      user: Customer; // Replace with the actual type for the user
+    };
+  }
+
   const onSubmit = React.useCallback(
     async (values: Values): Promise<void> => {
       setIsPending(true); // Set pending state
       setError(null); // Clear previous errors
-  
-      try {
-        const response = await axiosInstance.post('/auth/login', values);
-  
-        // Extract token and user from response
-        const token: string = response.data.data.access_token.token as string;
 
-        const user: Customer = response.data.data.user as Customer;
-  
+      try {
+        const response = await axiosInstance.post<LoginResponseData>('/auth/login', values);
+
+        // Extract token and user from response
+        const token: string = response.data.data.access_token.token;
+        const user: Customer = response.data.data.user;
+
         // Store the token and user in localStorage
         localStorage.setItem('token', token);
         localStorage.setItem('user', JSON.stringify(user));
-  
+
         // Store the token and user in global state using the reducer
         dispatch({
           type: 'LOGIN_SUCCESS',
@@ -78,24 +85,24 @@ export function SignInForm(): React.JSX.Element {
             user,
           },
         });
-  
+
         // Show a success toast message
         toast.success('Logged in successfully!');
-  
+
         // Redirect to the dashboard
         router.push('/dashboard');
-      } catch (error: unknown) {
+      } catch (err: unknown) {
         toast.error(`Login error:, error`);
-  
+
         // Check if the error is an Axios error
-        if (axios.isAxiosError(error)) {
-          setError(error.response?.data?.message || 'An unexpected error occurred');
-        } else if (error instanceof Error) {
-          setError(error.message);
+        if (err instanceof Error) {
+          // Handle other types of errors
+          setError(err.message);
         } else {
-          setError('An unexpected error occurred');
+          // For any other types of errors
+          setError('An unknown error occurred');
         }
-  
+
         // Dispatch a logout action in case of error
         dispatch({
           type: 'LOGOUT',

@@ -18,6 +18,7 @@ import {
   TablePagination,
   TableRow,
   TableSortLabel,
+  Typography,
 } from '@mui/material';
 import { PencilSimple, Trash } from '@phosphor-icons/react';
 
@@ -140,44 +141,52 @@ export default function FaqTable({
             </TableRow>
           </TableHead>
           <TableBody>
-            {faqs.map((faq) => (
-              <TableRow key={faq.id} sx={tableCss.tableRow}>
-                <TableCell sx={tableCss.tableCell}>{faq.type}</TableCell>
-                <TableCell sx={tableCss.tableCell}>{faq.question}</TableCell>
-                <TableCell sx={tableCss.tableCell}>{faq.answer}</TableCell>
-                <TableCell sx={tableCss.tableCell}>
-                  <Select
-                    value={faq.status}
-                    onChange={(e) => {
-                      onStatusChange(faq.id, e.target.value as FaqStatus);
-                    }}
-                    fullWidth
-                  >
-                    {statusOptions.map((status) => (
-                      <MenuItem key={status} value={status.toLowerCase()}>
-                        {status}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </TableCell>
-                <TableCell sx={tableCss.tableCell}>
-                  <IconButton
-                    onClick={() => {
-                      onEdit(faq.id);
-                    }}
-                  >
-                    <PencilSimple />
-                  </IconButton>
-                  <IconButton
-                    onClick={() => {
-                      handleDelete(faq.id);
-                    }}
-                  >
-                    <Trash />
-                  </IconButton>
+            {faqs.length === 0 ? (
+              <TableRow sx={tableCss.tableRow}>
+                <TableCell colSpan={7} align="center">
+                  <Typography variant="body1">No data found</Typography>
                 </TableCell>
               </TableRow>
-            ))}
+            ) : (
+              faqs.map((faq) => (
+                <TableRow key={faq.id} sx={tableCss.tableRow}>
+                  <TableCell sx={tableCss.tableCell}>{faq.type}</TableCell>
+                  <TableCell sx={tableCss.tableCell}>{faq.question}</TableCell>
+                  <TableCell sx={tableCss.tableCell}>{faq.answer}</TableCell>
+                  <TableCell sx={tableCss.tableCell}>
+                    <Select
+                      value={faq.status}
+                      onChange={(e) => {
+                        onStatusChange(faq.id, e.target.value as FaqStatus);
+                      }}
+                      fullWidth
+                    >
+                      {statusOptions.map((status) => (
+                        <MenuItem key={status} value={status.toLowerCase()}>
+                          {status}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </TableCell>
+                  <TableCell sx={tableCss.tableCell}>
+                    <IconButton
+                      onClick={() => {
+                        onEdit(faq.id);
+                      }}
+                    >
+                      <PencilSimple />
+                    </IconButton>
+                    <IconButton
+                      onClick={() => {
+                        handleDelete(faq.id);
+                      }}
+                    >
+                      <Trash />
+                    </IconButton>
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
           </TableBody>
         </Table>
       </Box>

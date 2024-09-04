@@ -53,7 +53,14 @@ export function ResetPasswordForm(): React.JSX.Element {
           //   router.push('/password-reset-confirmation');
           // }, 2000);
         }
-      } catch (err: any) {
+      } catch (err: unknown) {
+        let errorMessage: string;
+        if (err instanceof Error) {
+          errorMessage = err.message; // Safely access the message property
+        } else {
+          errorMessage = 'An unexpected error occurred'; // Fallback message
+        }
+        toast.error(errorMessage);
         setFormError('root', { type: 'server', message: 'Failed to send recovery link. Please try again later.' });
       } finally {
         setIsPending(false);

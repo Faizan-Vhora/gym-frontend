@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Button, Stack, TablePagination, Typography } from '@mui/material';
+import { Button, Stack, Typography } from '@mui/material';
 import { Plus as PlusIcon } from '@phosphor-icons/react/dist/ssr/Plus';
 import { toast, ToastContainer } from 'react-toastify'; // Import the toast function
 
@@ -11,7 +11,8 @@ import 'react-toastify/dist/ReactToastify.css';
 
 import axiosInstance from '@/lib/axios';
 import ExpertiseFilters from '@/components/dashboard/expertise/expertise-filter';
-import { ExpertiseEntry, ExpertiseTable } from '@/components/dashboard/expertise/expertise-table';
+import { ExpertiseTable } from '@/components/dashboard/expertise/expertise-table';
+import type { ExpertiseEntry } from '@/components/dashboard/expertise/expertise-table';
 
 export default function ExpertisePage(): React.JSX.Element {
   const [entries, setEntries] = useState<ExpertiseEntry[]>([]);
@@ -24,8 +25,24 @@ export default function ExpertisePage(): React.JSX.Element {
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
+  interface ErrorDetail {
+    code?: string;
+    message?: string;
+    // Add other fields if your API returns additional error details
+  }
+
+  interface ExpertiseResponse {
+    data: {
+      items: ExpertiseEntry[];
+      meta: {
+        totalItems: number;
+      };
+    };
+    errors?: ErrorDetail; // Define this if your API returns errors in a structured format
+  }
+
   useEffect(() => {
-    const fetchEntries = async () => {
+    const fetchEntries: () => Promise<void> = async () => {
       setLoading(true);
       try {
         const params = {
@@ -34,41 +51,58 @@ export default function ExpertisePage(): React.JSX.Element {
           status: statusFilter !== 'ALL' ? statusFilter : undefined,
           search: searchTerm,
         };
-        const response = await axiosInstance.get('/expertise', { params });
-        if (response.data.data.items && Array.isArray(response.data.data.items)) {
-          setEntries(response.data.data.items);
-          setTotalEntries(response.data.data.meta.totalItems); // Assuming the API returns total count
+        const response = await axiosInstance.get<ExpertiseResponse>('/expertise', { params });
+
+        const { items, meta } = response.data.data;
+        if (Array.isArray(items)) {
+          setEntries(items);
+          setTotalEntries(meta.totalItems); // Assuming the API returns total count
         } else {
-          console.error('Unexpected response data format:', response.data.errors);
+          toast.error(
+            `Unexpected response data format: ${response.data.errors ? JSON.stringify(response.data.errors) : 'No errors available'}`
+          );
           setError('Unexpected data format.');
         }
       } catch (err) {
-        toast.error(`Error fetching expertise:', ${err}`);
-        setError('Failed to load data.');
+        let errorMessage = 'Failed to load data.';
+        if (err instanceof Error) {
+          errorMessage = `Error fetching expertise: ${err.message}`;
+        }
+        toast.error(errorMessage);
+        setError(errorMessage);
       } finally {
         setLoading(false);
       }
     };
-    fetchEntries();
+
+    fetchEntries().catch((err: unknown) => {
+      let errorMessage: string;
+      if (err instanceof Error) {
+        errorMessage = err.message; // Safely access the message property
+      } else {
+        errorMessage = 'An unexpected error occurred'; // Fallback message
+      }
+      toast.error(errorMessage);
+    });
   }, [searchTerm, statusFilter, page, rowsPerPage]);
 
-  const handleSearchChange = (searchTerm: string) => {
-    setSearchTerm(searchTerm);
+  const handleSearchChange: (newSearchTerm: string) => void = (newSearchTerm) => {
+    setSearchTerm(newSearchTerm);
   };
 
-  const handleStatusChange = (status: string) => {
+  const handleStatusChange: (status: string) => void = (status) => {
     setStatusFilter(status);
   };
 
-  const handleAddClick = () => {
+  const handleAddClick: () => void = () => {
     router.push('/dashboard/expertise/form');
   };
 
-  const handleEdit = (id: number) => {
+  const handleEdit: (id: number) => void = (id) => {
     router.push(`/dashboard/expertise/form?id=${id}`);
   };
 
-  const handleDelete = async (id: number) => {
+  const handleDelete: (id: number) => Promise<void> = async (id) => {
     try {
       await axiosInstance.delete(`/expertise/${id}`);
       // Trigger a refetch to refresh data
@@ -76,11 +110,10 @@ export default function ExpertisePage(): React.JSX.Element {
       setPage(0);
     } catch (err) {
       toast.error('Failed to delete Expertise');
-      console.error('Error deleting expertise:', err);
     }
   };
 
-  const handleToggleStatus = async (id: number) => {
+  const handleToggleStatus: (id: number) => Promise<void> = async (id) => {
     const entry = entries.find((entry) => entry.id === id);
     if (!entry) return;
 
@@ -89,20 +122,27 @@ export default function ExpertisePage(): React.JSX.Element {
       await axiosInstance.patch(`/expertise/update-status/${id}`, { status: newStatus });
       // Optimistically update the status in the UI
       setEntries((prevEntries) =>
-        prevEntries.map((entry) => (entry.id === id ? { ...entry, status: newStatus } : entry))
+        prevEntries.map((currentEntry) =>
+          currentEntry.id === id ? { ...currentEntry, status: newStatus } : currentEntry
+        )
       );
       toast.success(`Status updated to ${newStatus === 'active' ? 'Active' : 'Inactive'}`);
     } catch (err) {
       toast.error('Failed to update status');
-      console.error('Error toggling status:', err);
     }
   };
 
-  const handlePageChange = (event: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => {
+  const handlePageChange: (event: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => void = (
+    event,
+    newPage
+  ) => {
+    // Function implementation here
     setPage(newPage);
   };
 
-  const handleRowsPerPageChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleRowsPerPageChange: (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void = (
+    event
+  ) => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0); // Reset to first page when rows per page changes
   };
@@ -119,7 +159,7 @@ export default function ExpertisePage(): React.JSX.Element {
           variant="contained"
           onClick={handleAddClick}
         >
-          Add Expertise
+          Add
         </Button>
       </Stack>
       <ExpertiseFilters onSearchChange={handleSearchChange} onStatusChange={handleStatusChange} />
@@ -130,23 +170,17 @@ export default function ExpertisePage(): React.JSX.Element {
       ) : (
         <ExpertiseTable
           entries={entries}
+          count={totalEntries}
           page={page}
           rowsPerPage={rowsPerPage}
+          onPageChange={handlePageChange}
+          onRowsPerPageChange={handleRowsPerPageChange}
           totalEntries={totalEntries}
           onEdit={handleEdit}
           onDelete={handleDelete}
           onToggleStatus={handleToggleStatus}
         />
       )}
-      <TablePagination
-        component="div"
-        count={totalEntries}
-        page={page}
-        onPageChange={handlePageChange}
-        rowsPerPage={rowsPerPage}
-        onRowsPerPageChange={handleRowsPerPageChange}
-        rowsPerPageOptions={[5, 10, 25]}
-      />
       <ToastContainer /> {/* Add ToastContainer here */}
     </Stack>
   );

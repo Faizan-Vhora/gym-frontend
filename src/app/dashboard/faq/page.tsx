@@ -10,6 +10,7 @@ import axiosInstance from '@/lib/axios';
 import { FaqFilters } from '@/components/dashboard/faq/faq-filters';
 import FaqTable from '@/components/dashboard/faq/faq-tables';
 import type { FaqEntry, FaqStatus } from '@/components/dashboard/faq/faq-tables';
+
 import 'react-toastify/dist/ReactToastify.css';
 
 const initialFaqs: FaqEntry[] = [];
@@ -17,72 +18,130 @@ const initialFaqs: FaqEntry[] = [];
 export default function FaqManagementPage(): React.JSX.Element {
   const [faqs, setFaqs] = React.useState<FaqEntry[]>(initialFaqs);
   const [page, setPage] = React.useState<number>(0);
+  const [searchTerm, setSearchTerm] = React.useState('');
   const [totalItems, setTotalItems] = React.useState<number>(0);
   const [rowsPerPage, setRowsPerPage] = React.useState<number>(5);
   const [filterType, setFilterType] = React.useState<string>('ALL');
   const [filterStatus, setFilterStatus] = React.useState<string>('ALL');
+  const [error, setError] = React.useState<string | null>(null);
 
   const router = useRouter();
 
-  const fetchFaqs = React.useCallback(() => {
-    const params = {
-      page: page + 1, // Adjusted to match typical API's 1-based page indexing
-      limit: rowsPerPage,
-      type: filterType !== 'ALL' ? filterType : undefined,
-      status: filterStatus !== 'ALL' ? filterStatus : undefined,
-    };
+  interface ErrorDetail {
+    code?: string;
+    message?: string;
+    // Add other fields if your API returns additional error details
+  }
 
-    axiosInstance
-      .get('/faq', { params })
-      .then((response) => {
-        setFaqs(response.data.data.items);
-        setTotalItems(response.data.data.meta.totalItems);
-      })
-      .catch((error) => {
-        console.error('Error fetching FAQs:', error);
-      });
-  }, [page, rowsPerPage, filterType, filterStatus]);
+  interface FaqResponseData {
+    data: {
+      items: FaqEntry[];
+      meta: {
+        totalItems: number;
+      };
+    };
+    errors?: ErrorDetail;
+  }
+
+  const fetchFaqs = React.useCallback(async (): Promise<void> => {
+    try {
+      const params = {
+        page: page + 1, // Adjusted to match typical API's 1-based page indexing
+        limit: rowsPerPage,
+        search: searchTerm, // Search term
+        type: filterType !== 'ALL' ? filterType : undefined,
+        status: filterStatus !== 'ALL' ? filterStatus : undefined,
+      };
+
+      const response = await axiosInstance.get<FaqResponseData>('/faq', { params });
+
+      const { items, meta } = response.data.data;
+      if (Array.isArray(items)) {
+        setFaqs(items); // `items` is of type `FaqEntry[]`
+        setTotalItems(meta.totalItems); // `meta.totalItems` is of type `number`
+      } else {
+        toast.error(
+          `Unexpected response data format: ${response.data.errors ? JSON.stringify(response.data.errors) : 'No errors available'}`
+        );
+        setError('Unexpected data format.');
+      }
+    } catch (err) {
+      let errorMessage = 'Failed to load data.';
+      if (err instanceof Error) {
+        errorMessage = `Error fetching FAQs: ${err.message}`;
+      }
+      setError(errorMessage);
+    }
+  }, [page, rowsPerPage, searchTerm, filterType, filterStatus]);
 
   React.useEffect(() => {
-    fetchFaqs();
+    const loadFaqs = async (): Promise<void> => {
+      try {
+        await fetchFaqs();
+      } catch (err: unknown) {
+        let errorMessage = 'Failed to load data.';
+        if (err instanceof Error) {
+          errorMessage = `Error fetching FAQs: ${err.message}`;
+        }
+        toast.error(errorMessage);
+      }
+    };
+
+    // Immediately invoke the async function and handle the promise
+    loadFaqs().catch((err: unknown) => {
+      let errorMessage = 'Failed to load data.';
+      if (err instanceof Error) {
+        errorMessage = `Error fetching FAQs: ${err.message}`;
+      }
+      toast.error(errorMessage);
+    });
   }, [fetchFaqs]);
 
-  const handleAddClick = () => {
+  const handleAddClick = (): void => {
     router.push('/dashboard/faq/form');
   };
 
-  const handleEdit = (id: number) => {
+  const handleEdit = (id: number): void => {
     router.push(`/dashboard/faq/form?id=${id}`);
   };
 
-  const handleDelete = async (id: number) => {
+  const handleDelete = async (id: number): Promise<void> => {
     try {
       await axiosInstance.delete(`/faq/${id}`);
-      fetchFaqs(); // Refresh the FAQ list after deletion
-      toast.success(`FAQ deleted Successfully`);
-    } catch (error) {
-      toast.error('Failed to delete FAQ');
-      console.error('Error deleting FAQ:', error);
+      await fetchFaqs(); // Ensure fetchFaqs() is awaited to refresh the FAQ list
+      toast.success('FAQ deleted successfully');
+    } catch (err: unknown) {
+      let errorMessage = 'Failed to delete FAQ.';
+      if (err instanceof Error) {
+        errorMessage = `Error deleting FAQ: ${err.message}`;
+      }
+      toast.error(errorMessage);
     }
   };
+  const handleSearchChange = (search: string): void => {
+    setSearchTerm(search);
+  };
 
-  const handleStatusChange = async (id: number, status: FaqStatus) => {
+  const handleStatusChange = async (id: number, status: FaqStatus): Promise<void> => {
     try {
       await axiosInstance.patch(`/faq/update-status/${id}`, { status });
       setFaqs((prevFaqs) => prevFaqs.map((faq) => (faq.id === id ? { ...faq, status } : faq)));
-      toast.success(`Status updated Successfully`);
-    } catch (error) {
-      toast.error('Failed to update status');
-      console.error('Error updating FAQ status:', error);
+      toast.success('Status updated successfully');
+    } catch (err: unknown) {
+      let errorMessage = 'Failed to load data.';
+      if (err instanceof Error) {
+        errorMessage = `Error fetching expertise: ${err.message}`;
+      }
+      toast.error(errorMessage);
     }
   };
 
-  const handleTypeChange = (type: string) => {
+  const handleTypeChange = (type: string): void => {
     setFilterType(type);
     setPage(0); // Reset page when filter type changes
   };
 
-  const handleStatusChangeFilter = (status: string) => {
+  const handleStatusChangeFilter = (status: string): void => {
     setFilterStatus(status);
     setPage(0); // Reset page when filter status changes
   };
@@ -103,7 +162,11 @@ export default function FaqManagementPage(): React.JSX.Element {
           Add
         </Button>
       </Stack>
-      <FaqFilters onTypeChange={handleTypeChange} onStatusChange={handleStatusChangeFilter} />
+      <FaqFilters
+        onSearchChange={handleSearchChange}
+        onTypeChange={handleTypeChange}
+        onStatusChange={handleStatusChangeFilter}
+      />
       <FaqTable
         faqs={faqs}
         page={page}
@@ -120,6 +183,7 @@ export default function FaqManagementPage(): React.JSX.Element {
           setPage(0); // Reset page when rows per page change
         }}
       />
+      {error && <div className="error-message">{error}</div>}
       <ToastContainer />
     </Stack>
   );

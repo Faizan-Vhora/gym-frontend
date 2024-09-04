@@ -4,13 +4,12 @@ import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import { Button, Grid, Stack, TextField, Typography } from '@mui/material';
 import { Plus as PlusIcon } from '@phosphor-icons/react';
+import { toast } from 'react-toastify';
 
 import axiosInstance from '@/lib/axios';
 import { DiscountFilter } from '@/components/dashboard/discount/discount-filters';
 import { DiscountTable } from '@/components/dashboard/discount/discount-table';
-import type {DiscountEntry}from '@/components/dashboard/discount/discount-table';
-import type {DiscountStatus}from '@/components/dashboard/discount/discount-table';
-
+import type { DiscountEntry, DiscountStatus } from '@/components/dashboard/discount/discount-table';
 
 export default function DiscountManagementPage(): React.JSX.Element {
   const [discounts, setDiscounts] = React.useState<DiscountEntry[]>([]);
@@ -21,9 +20,22 @@ export default function DiscountManagementPage(): React.JSX.Element {
   const [search, setSearch] = React.useState<string>('');
   const router = useRouter();
 
-  const fetchDiscounts = React.useCallback(() => {
+  interface DiscountItem extends DiscountEntry {
+    // If DiscountItem should extend DiscountEntry, you can use inheritance
+  }
+
+  interface FetchDiscountsResponse {
+    data: {
+      items: DiscountItem[];
+      meta: {
+        totalItems: number;
+      };
+    };
+  }
+
+  const fetchDiscounts = React.useCallback((): void => {
     axiosInstance
-      .get('/discount', {
+      .get<FetchDiscountsResponse>('/discount', {
         params: {
           page: page + 1, // API pages are often 1-indexed
           limit: rowsPerPage,
@@ -35,8 +47,16 @@ export default function DiscountManagementPage(): React.JSX.Element {
         setDiscounts(response.data.data.items);
         setTotalItems(response.data.data.meta.totalItems);
       })
-      .catch((error) => {
-        console.error('Error fetching discounts:', error);
+      .catch((error: unknown) => {
+        let errorMessage: string;
+        if (typeof error === 'string') {
+          errorMessage = error;
+        } else {
+          // Handle other types of errors, or set a generic message
+          errorMessage = 'An unexpected error occurred';
+        }
+        // Convert the Error object to a string
+        toast.error(errorMessage);
       });
   }, [page, rowsPerPage, filterType, search]);
 
@@ -44,42 +64,58 @@ export default function DiscountManagementPage(): React.JSX.Element {
     fetchDiscounts();
   }, [fetchDiscounts]);
 
-  const handleAddClick = () => {
+  const handleAddClick = (): void => {
     router.push('/dashboard/discount/form');
   };
 
-  const handleEdit = (id: number) => {
+  const handleEdit = (id: number): void => {
     router.push(`/dashboard/discount/form?id=${id}`);
   };
 
-  const handleDelete = (id: number) => {
+  const handleDelete = (id: number): void => {
     axiosInstance
       .delete(`/discount/${id}`)
       .then(() => {
         fetchDiscounts();
       })
-      .catch((error) => {
-        console.error('Error deleting discount:', error);
+      .catch((error: unknown) => {
+        let errorMessage: string;
+        if (typeof error === 'string') {
+          errorMessage = error;
+        } else {
+          // Handle other types of errors, or set a generic message
+          errorMessage = 'An unexpected error occurred';
+        }
+        // Convert the Error object to a string
+        toast.error(errorMessage);
       });
   };
 
-  const handleStatusChange = (id: number, status: DiscountStatus) => {
+  const handleStatusChange = (id: number, status: DiscountStatus): void => {
     axiosInstance
       .patch(`/discount/update-status/${id}`, { status })
       .then(() => {
         fetchDiscounts();
       })
-      .catch((error) => {
-        console.error('Error updating discount status:', error);
+      .catch((error: unknown) => {
+        let errorMessage: string;
+        if (typeof error === 'string') {
+          errorMessage = error;
+        } else {
+          // Handle other types of errors, or set a generic message
+          errorMessage = 'An unexpected error occurred';
+        }
+        // Convert the Error object to a string
+        toast.error(errorMessage);
       });
   };
 
-  const handleFilterChange = (type: string) => {
+  const handleFilterChange = (type: string): void => {
     setFilterType(type);
     setPage(0);
   };
 
-  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
     setSearch(event.target.value);
     setPage(0);
   };

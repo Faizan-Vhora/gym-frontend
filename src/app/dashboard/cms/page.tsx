@@ -1,42 +1,16 @@
+// CmsPage.tsx
 'use client';
 
 import * as React from 'react';
-import { useRouter } from 'next/navigation';
-import { Box, Card, IconButton, Typography } from '@mui/material';
-import { PencilSimple } from '@phosphor-icons/react';
+import { Box, Stack, Typography } from '@mui/material';
 
 import axiosInstance from '@/lib/axios';
+import CmsSection from '@/components/dashboard/cms/cms-section'; // Adjust the path as needed
 
 interface CmsItem {
   id: number;
   title: string;
   text: string;
-}
-
-interface CmsSectionProps {
-  id: number;
-  title: string;
-  content: string;
-}
-
-function CmsSection({ id, title, content }: CmsSectionProps): React.JSX.Element {
-  const router = useRouter();
-
-  const handleEditClick = (): void => {
-    router.push(`/dashboard/cms/form?id=${id}`);
-  };
-
-  return (
-    <Card sx={{ marginBottom: 2, padding: 2, position: 'relative' }}>
-      <Typography variant="h6">{title}</Typography>
-      <IconButton sx={{ position: 'absolute', top: 8, right: 8 }} onClick={handleEditClick}>
-        <PencilSimple />
-      </IconButton>
-      <Box sx={{ marginTop: 2 }}>
-        <Typography>{content}</Typography>
-      </Box>
-    </Card>
-  );
 }
 
 export default function CmsPage(): React.JSX.Element {
@@ -72,10 +46,17 @@ export default function CmsPage(): React.JSX.Element {
   }, []);
 
   return (
-    <Box sx={{ padding: 4 }}>
-      {aboutUsId !== null && <CmsSection id={aboutUsId} title="About Us" content={aboutUsContent} />}
-      {termsId !== null && <CmsSection id={termsId} title="Terms and Conditions" content={termsContent} />}
-      {/* Add more sections as needed */}
-    </Box>
+    <Stack spacing={3}>
+      <Stack direction="row" spacing={3}>
+        <Stack spacing={1} sx={{ flex: '1 1 auto' }}>
+          <Typography variant="h4">CMS Management</Typography>
+        </Stack>
+      </Stack>
+      <Box sx={{ padding: 4 }}>
+        {aboutUsId !== null && <CmsSection id={aboutUsId} title="About Us" content={aboutUsContent} />}
+        {termsId !== null && <CmsSection id={termsId} title="Terms and Conditions" content={termsContent} />}
+        {/* Add more sections as needed */}
+      </Box>
+    </Stack>
   );
 }

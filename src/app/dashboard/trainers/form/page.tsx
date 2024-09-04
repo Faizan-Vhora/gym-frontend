@@ -27,6 +27,8 @@ import axiosInstance from '@/lib/axios';
 
 import 'react-toastify/dist/ReactToastify.css';
 
+import type { Trainer } from '@/components/dashboard/trainer/trainer-table';
+
 const trainerSchema = z.object({
   fullName: z.string().min(1, 'Full Name is required'),
   email: z.string().email('Invalid email address'),
@@ -37,12 +39,11 @@ const trainerSchema = z.object({
 
 type TrainerFormInputs = z.infer<typeof trainerSchema>;
 
-export default function TrainerEditForm() {
+export default function TrainerEditForm(): React.JSX.Element {
   const searchParams = useSearchParams();
   const id = searchParams.get('id');
   const router = useRouter();
   const [trainer, setTrainer] = useState<TrainerFormInputs | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
   const {
@@ -58,16 +59,23 @@ export default function TrainerEditForm() {
   useEffect(() => {
     if (id) {
       axiosInstance
-        .get(`/users/${id}`, {
+        .get<{ data: Trainer }>(`/users/${id}`, {
           params: {
             userType: 3,
           },
         })
         .then((response) => {
-          setTrainer(response.data.data);
+          const fetchedData: Trainer = response.data.data;
+          setTrainer(fetchedData);
         })
-        .catch((error) => {
-          console.error('Failed to fetch trainer:', error);
+        .catch((err: unknown) => {
+          let errorMessage: string;
+          if (err instanceof Error) {
+            errorMessage = err.message; // Safely access the message property
+          } else {
+            errorMessage = 'An unexpected error occurred'; // Fallback message
+          }
+          toast.error(errorMessage);
         });
     }
   }, [id]);
@@ -82,8 +90,7 @@ export default function TrainerEditForm() {
     }
   }, [trainer, setValue]);
 
-  const onSubmit = async (data: TrainerFormInputs) => {
-    setIsSubmitting(true);
+  const onSubmit = async (data: TrainerFormInputs): Promise<void> => {
     setError(null);
 
     try {
@@ -94,12 +101,15 @@ export default function TrainerEditForm() {
       });
       toast.success('Trainer updated successfully');
       router.push('/dashboard/trainers'); // Redirect to the listing page after successful update
-    } catch (error) {
-      console.error('Failed to update trainer:', error);
-      toast.error('Failed to update trainer');
+    } catch (err: unknown) {
+      let errorMessage: string;
+      if (err instanceof Error) {
+        errorMessage = err.message; // Safely access the message property
+      } else {
+        errorMessage = 'An unexpected error occurred'; // Fallback message
+      }
+      toast.error(errorMessage);
       setError('Failed to update trainer details.');
-    } finally {
-      setIsSubmitting(false);
     }
   };
 
@@ -149,7 +159,9 @@ export default function TrainerEditForm() {
           </Button>
           <Button
             variant="outlined"
-            onClick={() => router.push('/dashboard/trainers')}
+            onClick={() => {
+              router.push('/dashboard/trainers');
+            }}
             sx={{
               borderColor: '#d0021b',
               color: '#d0021b',
@@ -164,6 +176,7 @@ export default function TrainerEditForm() {
           </Button>
         </CardActions>
       </Card>
+      {error && <div className="error-message">{error}</div>}
       <ToastContainer />
     </Box>
   );

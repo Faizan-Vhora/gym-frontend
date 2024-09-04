@@ -1,6 +1,5 @@
 'use client';
 
-
 import * as React from 'react';
 import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -30,6 +29,7 @@ import axiosInstance from '@/lib/axios';
 import 'react-toastify/dist/ReactToastify.css';
 
 import { FaqStatus, FaqType } from '@/components/dashboard/faq/faq-tables';
+import type { FaqEntry } from '@/components/dashboard/faq/faq-tables';
 
 // Define validation schemas
 const faqSchema = z.object({
@@ -41,7 +41,7 @@ const faqSchema = z.object({
 
 type FaqFormInputs = z.infer<typeof faqSchema>;
 
-export default function FaqForm() {
+export default function FaqForm(): React.JSX.Element {
   const searchParams = useSearchParams();
   const id = searchParams.get('id');
   const router = useRouter();
@@ -62,12 +62,20 @@ export default function FaqForm() {
   useEffect(() => {
     if (id) {
       axiosInstance
-        .get(`/faq/${id}`)
+        .get<{ data: FaqEntry }>(`/faq/${id}`)
         .then((response) => {
-          setFaq(response.data.data);
+          // Type assertion to ensure data conforms to FaqData
+          const fetchedData: FaqEntry = response.data.data;
+          setFaq(fetchedData);
         })
-        .catch((error) => {
-          console.error('Failed to fetch FAQ:', error);
+        .catch((err: unknown) => {
+          let errorMessage: string;
+          if (err instanceof Error) {
+            errorMessage = err.message; // Safely access the message property
+          } else {
+            errorMessage = 'An unexpected error occurred'; // Fallback message
+          }
+          toast.error(errorMessage);
         });
     }
   }, [id]);
@@ -81,7 +89,7 @@ export default function FaqForm() {
     }
   }, [faq, setValue]);
 
-  const onSubmit = async (data: FaqFormInputs) => {
+  const onSubmit = async (data: FaqFormInputs): Promise<void> => {
     setIsSubmitting(true);
     setError(null);
 
@@ -96,9 +104,14 @@ export default function FaqForm() {
       });
       toast.success('FAQ saved successfully');
       router.push('/dashboard/faq'); // Redirect to the listing page after successful save
-    } catch (error) {
-      console.error('Failed to save FAQ:', error);
-      toast.error('Failed to save FAQ');
+    } catch (err: unknown) {
+      let errorMessage: string;
+      if (err instanceof Error) {
+        errorMessage = err.message; // Safely access the message property
+      } else {
+        errorMessage = 'An unexpected error occurred'; // Fallback message
+      }
+      toast.error(errorMessage);
       setError('Failed to save FAQ details.');
     } finally {
       setIsSubmitting(false);
@@ -118,17 +131,17 @@ export default function FaqForm() {
           <Stack spacing={3}>
             <FormControl fullWidth required>
               <InputLabel>Question</InputLabel>
-              <OutlinedInput {...register('question')} label="Question" error={!!errors.question} />
+              <OutlinedInput {...register('question')} label="Question" error={Boolean(errors.question)} />
               {errors.question ? <FormHelperText>{errors.question.message}</FormHelperText> : null}
             </FormControl>
             <FormControl fullWidth required>
               <InputLabel>Answer</InputLabel>
-              <OutlinedInput {...register('answer')} label="Answer" multiline rows={4} error={!!errors.answer} />
+              <OutlinedInput {...register('answer')} label="Answer" multiline rows={4} error={Boolean(errors.answer)} />
               {errors.answer ? <FormHelperText>{errors.answer.message}</FormHelperText> : null}
             </FormControl>
             <FormControl fullWidth>
               <InputLabel>Type</InputLabel>
-              <Select {...register('type')} label="Type" defaultValue={faq?.type || ''} error={!!errors.type}>
+              <Select {...register('type')} label="Type" defaultValue={faq?.type || ''} error={Boolean(errors.type)}>
                 <MenuItem value={FaqType.General}>{FaqType.General}</MenuItem>
                 <MenuItem value={FaqType.User}>{FaqType.User}</MenuItem>
                 <MenuItem value={FaqType.Trainer}>{FaqType.Trainer}</MenuItem>
@@ -137,7 +150,12 @@ export default function FaqForm() {
             </FormControl>
             <FormControl fullWidth>
               <InputLabel>Status</InputLabel>
-              <Select {...register('status')} label="Status" defaultValue={faq?.status || ''} error={!!errors.status}>
+              <Select
+                {...register('status')}
+                label="Status"
+                defaultValue={faq?.status || ''}
+                error={Boolean(errors.status)}
+              >
                 <MenuItem value={FaqStatus.Active}>{FaqStatus.Active}</MenuItem>
                 <MenuItem value={FaqStatus.Inactive}>{FaqStatus.Inactive}</MenuItem>
                 <MenuItem value={FaqStatus.Archived}>{FaqStatus.Archived}</MenuItem>
@@ -170,6 +188,7 @@ export default function FaqForm() {
           </Button>
         </CardActions>
       </Card>
+      {error && <div className="error-message">{error}</div>}
       <ToastContainer />
     </Box>
   );
