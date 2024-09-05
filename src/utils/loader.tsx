@@ -18,7 +18,7 @@ export const CustomLoader = () => {
       }}
     >
       <img
-        src="/assets/loader2.gif" // Replace with your custom loader image path
+        src="/assets/loader5.gif" // Replace with your custom loader image path
         alt="Loading"
         style={{ width: '200px', height: '200px' }} // Customize size
       />
