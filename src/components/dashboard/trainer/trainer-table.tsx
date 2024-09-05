@@ -104,7 +104,7 @@ export function TrainersTable({
                       </IconButton>
                     </Stack>
                   </TableCell>
-                  <TableCell sx={tableCss.tableCell}>
+                  <TableCell>
                     <FormControlLabel
                       control={
                         <Switch

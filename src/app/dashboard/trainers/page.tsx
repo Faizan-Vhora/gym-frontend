@@ -8,6 +8,8 @@ import { toast, ToastContainer } from 'react-toastify';
 
 import 'react-toastify/dist/ReactToastify.css';
 
+import { CustomLoader } from '@/utils/loader';
+
 import axiosInstance from '@/lib/axios';
 import { TrainersFilters } from '@/components/dashboard/trainer/trainer-filters';
 import { TrainersTable } from '@/components/dashboard/trainer/trainer-table';
@@ -21,6 +23,7 @@ export default function TrainersPage(): React.JSX.Element {
   const [filter, setFilter] = useState(''); // Search filter
   const [statusFilter, setStatusFilter] = useState('ALL'); // Status filter
   const [error, setError] = React.useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
 
   interface ErrorDetail {
     code?: string;
@@ -39,6 +42,7 @@ export default function TrainersPage(): React.JSX.Element {
   }
   // Fetch trainers when page, rowsPerPage, filter, or statusFilter changes
   const fetchTrainers = React.useCallback(async (): Promise<void> => {
+    setLoading(true);
     try {
       // Define request parameters
       const params = {
@@ -70,6 +74,8 @@ export default function TrainersPage(): React.JSX.Element {
       }
       toast.error(errorMessage);
       setError(errorMessage);
+    } finally {
+      setLoading(false);
     }
   }, [page, rowsPerPage, filter, statusFilter]); // Dependencies for memoization
 
@@ -151,15 +157,19 @@ export default function TrainersPage(): React.JSX.Element {
         onFilterChange={handleFilterChange}
         onStatusChange={handleStatusChange} // Pass status change handler
       />
-      <TrainersTable
-        count={count}
-        page={page}
-        rowsPerPage={rowsPerPage}
-        rows={trainers}
-        onPageChange={handlePageChange}
-        onRowsPerPageChange={handleRowsPerPageChange}
-        updateTrainerStatus={updateTrainerStatus}
-      />
+      {loading ? (
+        <CustomLoader />
+      ) : (
+        <TrainersTable
+          count={count}
+          page={page}
+          rowsPerPage={rowsPerPage}
+          rows={trainers}
+          onPageChange={handlePageChange}
+          onRowsPerPageChange={handleRowsPerPageChange}
+          updateTrainerStatus={updateTrainerStatus}
+        />
+      )}
       {error && <div className="error-message">{error}</div>}
       <ToastContainer /> {/* Add ToastContainer here */}
     </Stack>

@@ -3,11 +3,13 @@
 import * as React from 'react';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Button, Stack, Typography } from '@mui/material';
+import { Alert, Button, Stack, Typography } from '@mui/material';
 import { Plus as PlusIcon } from '@phosphor-icons/react/dist/ssr/Plus';
 import { toast, ToastContainer } from 'react-toastify'; // Import the toast function
 
 import 'react-toastify/dist/ReactToastify.css';
+
+import { CustomLoader } from '@/utils/loader';
 
 import axiosInstance from '@/lib/axios';
 import ExpertiseFilters from '@/components/dashboard/expertise/expertise-filter';
@@ -164,9 +166,7 @@ export default function ExpertisePage(): React.JSX.Element {
       </Stack>
       <ExpertiseFilters onSearchChange={handleSearchChange} onStatusChange={handleStatusChange} />
       {loading ? (
-        <Typography>Loading...</Typography>
-      ) : error ? (
-        <Typography color="error">{error}</Typography>
+        <CustomLoader />
       ) : (
         <ExpertiseTable
           entries={entries}
@@ -181,6 +181,7 @@ export default function ExpertisePage(): React.JSX.Element {
           onToggleStatus={handleToggleStatus}
         />
       )}
+      {error ? <Alert color="error">{error}</Alert> : null}
       <ToastContainer /> {/* Add ToastContainer here */}
     </Stack>
   );

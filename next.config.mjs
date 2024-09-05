@@ -4,7 +4,7 @@ const config = {
         remotePatterns: [
           {
             protocol: 'http',
-            hostname: '192.168.1.16',
+            hostname: '18.217.76.208',
             port: '3001',
             pathname: '/public/**',
           },

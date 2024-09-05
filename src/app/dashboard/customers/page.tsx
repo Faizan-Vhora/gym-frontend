@@ -8,6 +8,8 @@ import { toast, ToastContainer } from 'react-toastify'; // Import the toast func
 
 import 'react-toastify/dist/ReactToastify.css';
 
+import { CustomLoader } from '@/utils/loader';
+
 import axiosInstance from '@/lib/axios';
 import { CustomersFilters } from '@/components/dashboard/customer/customers-filters';
 import { CustomersTable } from '@/components/dashboard/customer/customers-table';
@@ -20,6 +22,7 @@ export default function Page(): React.JSX.Element {
   const [rowsPerPage, setRowsPerPage] = useState<number>(5);
   const [filter, setFilter] = useState<string>(''); // Search filter
   const [statusFilter, setStatusFilter] = useState<string>('ALL'); // Status filter
+  const [loading, setLoading] = useState(true);
 
   interface CustomerResponse {
     data: {
@@ -29,6 +32,7 @@ export default function Page(): React.JSX.Element {
   }
 
   const fetchCustomers = useCallback(async () => {
+    setLoading(true);
     try {
       const response = await axiosInstance.get<CustomerResponse>('/users', {
         params: {
@@ -45,6 +49,8 @@ export default function Page(): React.JSX.Element {
       // Proper error handling
       const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred';
       toast.error(`Failed to fetch customers: ${errorMessage}`);
+    } finally {
+      setLoading(false);
     }
   }, [page, rowsPerPage, filter, statusFilter]);
 
@@ -120,15 +126,19 @@ export default function Page(): React.JSX.Element {
         onFilterChange={handleFilterChange}
         onStatusChange={handleStatusChange} // Pass status change handler
       />
-      <CustomersTable
-        count={count}
-        page={page}
-        rowsPerPage={rowsPerPage}
-        rows={customers}
-        onPageChange={handlePageChange}
-        onRowsPerPageChange={handleRowsPerPageChange}
-        updateCustomerStatus={updateCustomerStatus}
-      />
+      {loading ? (
+        <CustomLoader />
+      ) : (
+        <CustomersTable
+          count={count}
+          page={page}
+          rowsPerPage={rowsPerPage}
+          rows={customers}
+          onPageChange={handlePageChange}
+          onRowsPerPageChange={handleRowsPerPageChange}
+          updateCustomerStatus={updateCustomerStatus}
+        />
+      )}
       <ToastContainer /> {/* Add ToastContainer here */}
     </Stack>
   );

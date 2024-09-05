@@ -128,7 +128,7 @@ export function CustomersTable({
                     </Stack>
                   </TableCell>
 
-                  <TableCell sx={tableCss.tableCell}>
+                  <TableCell>
                     <FormControlLabel
                       control={
                         <Switch

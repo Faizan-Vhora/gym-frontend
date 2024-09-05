@@ -18,11 +18,12 @@ export default function ExpertiseFilters({ onSearchChange, onStatusChange }: Exp
   const [searchTerm, setSearchTerm] = React.useState('');
   const [status, setStatus] = React.useState('ALL');
 
-  const debouncedSearch = React.useCallback(
-    debounce((value: string) => {
-      onSearchChange(value);
-    }, 300), // Adjust the debounce delay as needed
-    [onSearchChange] // Ensure onSearchChange is included as a dependency
+  const debouncedSearch = React.useMemo(
+    () =>
+      debounce((value: string) => {
+        onSearchChange(value);
+      }, 300), // Adjust the debounce delay as needed
+    [onSearchChange] // Ensure onFilterChange is included as a dependency
   );
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>): void => {

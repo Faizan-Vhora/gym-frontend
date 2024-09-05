@@ -2,6 +2,7 @@
 
 import * as React from 'react';
 import { useCallback, useEffect } from 'react';
+import { CustomLoader } from '@/utils/loader';
 import {
   Paper,
   Stack,
@@ -27,8 +28,10 @@ export default function Page(): React.JSX.Element {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [count, setCount] = React.useState<number>(0);
+  const [loading, setLoading] = React.useState(true);
 
   const fetchEntries = useCallback(async (): Promise<void> => {
+    setLoading(true);
     try {
       const response = await axiosInstance.get<{ data: { items: ContactUsEntry[]; meta: { totalItems: number } } }>(
         '/contact-us',
@@ -49,6 +52,8 @@ export default function Page(): React.JSX.Element {
       if (process.env.NODE_ENV !== 'production') {
         // console.error('Failed to fetch data:', error);
       }
+    } finally {
+      setLoading(false);
     }
   }, [page, rowsPerPage, searchTerm, statusFilter, fromFilter]);
 
@@ -102,7 +107,9 @@ export default function Page(): React.JSX.Element {
         onStatusChange={handleStatusChange}
         onFromChange={handleFromChange}
       />
-      {entries.length === 0 ? (
+      {loading ? (
+        <CustomLoader />
+      ) : entries.length === 0 ? (
         <TableContainer component={Paper}>
           <Table sx={{ minWidth: '800px' }}>
             <TableHead>

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useCallback, useState } from 'react';
+import { useState } from 'react';
 import { FormControl, Grid, IconButton, InputAdornment, InputLabel, MenuItem, Select, TextField } from '@mui/material';
 import type { SelectChangeEvent } from '@mui/material';
 import { X as XIcon } from '@phosphor-icons/react'; // Import XIcon from phosphor-react
@@ -35,11 +35,12 @@ export function ContactUsFilters({
   const [from, setFrom] = useState('ALL');
 
   // Create a debounced version of the search handler
-  const debouncedSearch = useCallback(
-    debounce((value: string) => {
-      onSearchChange(value);
-    }, 300), // Adjust the debounce delay as needed
-    [onSearchChange] // Ensure onSearchChange is included as a dependency
+  const debouncedSearch = React.useMemo(
+    () =>
+      debounce((value: string) => {
+        onSearchChange(value);
+      }, 300), // Adjust the debounce delay as needed
+    [onSearchChange] // Ensure onFilterChange is included as a dependency
   );
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>): void => {

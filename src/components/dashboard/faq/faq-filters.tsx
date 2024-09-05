@@ -28,12 +28,13 @@ export function FaqFilters({ onSearchChange, onTypeChange, onStatusChange }: Faq
   const [type, setType] = React.useState('ALL');
   const [status, setStatus] = React.useState('ALL');
 
-  // Create a debounced version of the search handler
-  const debouncedSearch = React.useCallback(
-    debounce((value: string) => {
-      onSearchChange(value);
-    }, 300), // Adjust the debounce delay as needed
-    [onSearchChange] // Ensure onSearchChange is included as a dependency
+  //Create a debounced version of the search handler
+  const debouncedSearch = React.useMemo(
+    () =>
+      debounce((value: string) => {
+        onSearchChange(value);
+      }, 300), // Adjust the debounce delay as needed
+    [onSearchChange] // Ensure onFilterChange is included as a dependency
   );
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>): void => {

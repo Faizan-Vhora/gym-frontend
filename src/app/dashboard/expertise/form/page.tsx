@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Button, MenuItem, Select, Stack, TextField, Typography } from '@mui/material';
+import { Button, Card, CardContent, CardHeader, Divider, MenuItem, Select, Stack, TextField } from '@mui/material';
 import type { SelectChangeEvent } from '@mui/material';
 import { toast } from 'react-toastify';
 import { z, ZodError } from 'zod';
@@ -115,53 +115,57 @@ export default function ExpertiseForm(): React.JSX.Element {
   };
 
   return (
-    <Stack spacing={3}>
-      <Typography variant="h4">{expertise.id ? 'Edit Expertise' : 'Create Expertise'}</Typography>
+    <Card>
+      <CardHeader title={expertise.id ? 'Edit Expertise' : 'Create Expertise'} />
+      <Divider />
+      <CardContent>
+        <Stack spacing={3}>
+          <TextField
+            label="Title"
+            name="title"
+            value={expertise.title}
+            onChange={handleInputChange}
+            fullWidth
+            error={Boolean(errors.title)}
+            helperText={errors.title?.[0]}
+          />
 
-      <TextField
-        label="Title"
-        name="title"
-        value={expertise.title}
-        onChange={handleInputChange}
-        fullWidth
-        error={Boolean(errors.title)}
-        helperText={errors.title?.[0]}
-      />
+          <Select
+            label="Status"
+            name="status"
+            value={expertise.status}
+            onChange={handleSelectChange}
+            fullWidth
+            error={Boolean(errors.status)}
+          >
+            <MenuItem value="active">Active</MenuItem>
+            <MenuItem value="inactive">Inactive</MenuItem>
+          </Select>
 
-      <Select
-        label="Status"
-        name="status"
-        value={expertise.status}
-        onChange={handleSelectChange}
-        fullWidth
-        error={Boolean(errors.status)}
-      >
-        <MenuItem value="active">Active</MenuItem>
-        <MenuItem value="inactive">Inactive</MenuItem>
-      </Select>
-
-      <Stack direction="row" spacing={2} justifyContent="flex-end">
-        <Button className="common-button" type="submit" variant="contained" onClick={handleSave}>
-          Save
-        </Button>
-        <Button
-          variant="outlined"
-          onClick={() => {
-            router.push('/dashboard/expertise');
-          }}
-          sx={{
-            borderColor: '#d0021b',
-            color: '#d0021b',
-            transform: 'skewX(-20deg)',
-            '&:hover': {
-              borderColor: 'darkred',
-              backgroundColor: 'rgba(255, 0, 0, 0.1)',
-            },
-          }}
-        >
-          Cancel
-        </Button>
-      </Stack>
-    </Stack>
+          <Stack direction="row" spacing={2} justifyContent="flex-end">
+            <Button className="common-button" type="submit" variant="contained" onClick={handleSave}>
+              Save
+            </Button>
+            <Button
+              variant="outlined"
+              onClick={() => {
+                router.push('/dashboard/expertise');
+              }}
+              sx={{
+                borderColor: '#d0021b',
+                color: '#d0021b',
+                transform: 'skewX(-20deg)',
+                '&:hover': {
+                  borderColor: 'darkred',
+                  backgroundColor: 'rgba(255, 0, 0, 0.1)',
+                },
+              }}
+            >
+              Cancel
+            </Button>
+          </Stack>
+        </Stack>
+      </CardContent>
+    </Card>
   );
 }

@@ -4,8 +4,10 @@ import * as React from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import {
   Button,
+  Card,
   CardActions,
   CardContent,
+  CardHeader,
   Divider,
   FormControl,
   FormHelperText,
@@ -16,7 +18,6 @@ import {
   Select,
   Stack,
   TextField,
-  Typography,
 } from '@mui/material';
 import type { SelectChangeEvent } from '@mui/material';
 import { Trash } from '@phosphor-icons/react';
@@ -201,149 +202,153 @@ export default function DiscountFormPage(): React.JSX.Element {
   };
 
   return (
-    <Stack spacing={3}>
-      <Typography variant="h4">{discountId ? 'Edit Discount' : 'Create Discount'}</Typography>
+    <Card>
+      <CardHeader title={discountId ? 'Edit Discount' : 'Create Discount'} />
+      <Divider />
+      <CardContent>
+        <Stack spacing={3}>
+          <TextField
+            label="Code Name"
+            name="codeName"
+            value={discount.codeName}
+            onChange={handleInputChange}
+            fullWidth
+            error={Boolean(errors?.codeName)}
+            helperText={errors?.codeName?._errors[0]}
+          />
 
-      <TextField
-        label="Code Name"
-        name="codeName"
-        value={discount.codeName}
-        onChange={handleInputChange}
-        fullWidth
-        error={Boolean(errors?.codeName)}
-        helperText={errors?.codeName?._errors[0]}
-      />
+          <TextField
+            label="Expiry Date"
+            name="expiryDate"
+            type="date"
+            value={discount.expiryDate}
+            onChange={handleInputChange}
+            fullWidth
+            InputLabelProps={{
+              shrink: true,
+            }}
+            error={Boolean(errors?.expiryDate)}
+            helperText={errors?.expiryDate?._errors[0]}
+          />
 
-      <TextField
-        label="Expiry Date"
-        name="expiryDate"
-        type="date"
-        value={discount.expiryDate}
-        onChange={handleInputChange}
-        fullWidth
-        InputLabelProps={{
-          shrink: true,
-        }}
-        error={Boolean(errors?.expiryDate)}
-        helperText={errors?.expiryDate?._errors[0]}
-      />
+          <FormControl variant="outlined" fullWidth>
+            <InputLabel>Discount Type</InputLabel>
+            <Select
+              label="Discount Type"
+              name="discountType"
+              value={discount.discountType}
+              onChange={handleSelectChange}
+              fullWidth
+              error={Boolean(errors?.discountType)}
+            >
+              <MenuItem value={DiscountType.Percentage}>Percentage</MenuItem>
+              <MenuItem value={DiscountType.Fix}>Fixed Amount</MenuItem>
+            </Select>
+            <FormHelperText>{errors?.discountType?._errors[0]}</FormHelperText>
+          </FormControl>
 
-      <FormControl variant="outlined" fullWidth>
-        <InputLabel>Discount Type</InputLabel>
-        <Select
-          label="Discount Type"
-          name="discountType"
-          value={discount.discountType}
-          onChange={handleSelectChange}
-          fullWidth
-          error={Boolean(errors?.discountType)}
-        >
-          <MenuItem value={DiscountType.Percentage}>Percentage</MenuItem>
-          <MenuItem value={DiscountType.Fix}>Fixed Amount</MenuItem>
-        </Select>
-        <FormHelperText>{errors?.discountType?._errors[0]}</FormHelperText>
-      </FormControl>
+          <FormControl variant="outlined" fullWidth>
+            <InputLabel>Usage Limit</InputLabel>
+            <Select
+              label="Usage Limit"
+              name="usageLimit"
+              value={discount.usageLimit}
+              onChange={handleSelectChange}
+              fullWidth
+              error={Boolean(errors?.usageLimit)}
+            >
+              <MenuItem value={UsageLimit.Once}>Once</MenuItem>
+              <MenuItem value={UsageLimit.Twice}>Twice</MenuItem>
+              <MenuItem value={UsageLimit.NoLimit}>No Limit</MenuItem>
+            </Select>
+            <FormHelperText>{errors?.usageLimit?._errors[0]}</FormHelperText>
+          </FormControl>
 
-      <FormControl variant="outlined" fullWidth>
-        <InputLabel>Usage Limit</InputLabel>
-        <Select
-          label="Usage Limit"
-          name="usageLimit"
-          value={discount.usageLimit}
-          onChange={handleSelectChange}
-          fullWidth
-          error={Boolean(errors?.usageLimit)}
-        >
-          <MenuItem value={UsageLimit.Once}>Once</MenuItem>
-          <MenuItem value={UsageLimit.Twice}>Twice</MenuItem>
-          <MenuItem value={UsageLimit.NoLimit}>No Limit</MenuItem>
-        </Select>
-        <FormHelperText>{errors?.usageLimit?._errors[0]}</FormHelperText>
-      </FormControl>
+          <TextField
+            label="Discount Value"
+            name="discountValue"
+            type="number"
+            value={discount.discountValue}
+            onChange={handleInputChange}
+            fullWidth
+            error={Boolean(errors?.discountValue)}
+            helperText={errors?.discountValue?._errors[0]}
+          />
 
-      <TextField
-        label="Discount Value"
-        name="discountValue"
-        type="number"
-        value={discount.discountValue}
-        onChange={handleInputChange}
-        fullWidth
-        error={Boolean(errors?.discountValue)}
-        helperText={errors?.discountValue?._errors[0]}
-      />
+          <TextField
+            label="Description"
+            name="description"
+            value={discount.description}
+            onChange={handleInputChange}
+            fullWidth
+            error={Boolean(errors?.description)}
+            helperText={errors?.description?._errors[0]}
+          />
 
-      <TextField
-        label="Description"
-        name="description"
-        value={discount.description}
-        onChange={handleInputChange}
-        fullWidth
-        error={Boolean(errors?.description)}
-        helperText={errors?.description?._errors[0]}
-      />
-
-      <Grid md={6} xs={12}>
-        <CardContent>
-          <Stack spacing={2} sx={{ alignItems: 'center' }}>
-            <div>
-              {imagePreview && (
-                <div style={{ position: 'relative', width: '100%', maxHeight: '200px', marginTop: '1rem' }}>
-                  <img
-                    src={imagePreview}
-                    alt="Discount Preview"
-                    style={{ width: '100%', maxHeight: '200px', objectFit: 'cover', marginTop: '1rem' }}
-                  />
-                  <IconButton
-                    onClick={handleRemoveImage}
-                    sx={{
-                      position: 'absolute',
-                      top: 0,
-                      right: 0,
-                      color: 'white',
-                      backgroundColor: 'rgba(0, 0, 0, 0.5)',
-                      '&:hover': {
-                        backgroundColor: 'rgba(0, 0, 0, 0.7)',
-                      },
-                    }}
-                  >
-                    <Trash />
-                  </IconButton>
+          <Grid md={6} xs={12}>
+            <CardContent>
+              <Stack spacing={2} sx={{ alignItems: 'center' }}>
+                <div>
+                  {imagePreview && (
+                    <div style={{ position: 'relative', width: '100%', maxHeight: '200px', marginTop: '1rem' }}>
+                      <img
+                        src={imagePreview}
+                        alt="Discount Preview"
+                        style={{ width: '100%', maxHeight: '200px', objectFit: 'cover', marginTop: '1rem' }}
+                      />
+                      <IconButton
+                        onClick={handleRemoveImage}
+                        sx={{
+                          position: 'absolute',
+                          top: 0,
+                          right: 0,
+                          color: 'white',
+                          backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                          '&:hover': {
+                            backgroundColor: 'rgba(0, 0, 0, 0.7)',
+                          },
+                        }}
+                      >
+                        <Trash />
+                      </IconButton>
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
-          </Stack>
-        </CardContent>
-        <Divider />
-        <CardActions>
-          <Button component="label" fullWidth variant="text">
-            Upload picture
-            <input type="file" accept="image/*" hidden onChange={handleImageChange} />
-          </Button>
-        </CardActions>
-      </Grid>
+              </Stack>
+            </CardContent>
+            <Divider />
+            <CardActions>
+              <Button component="label" fullWidth variant="text">
+                Upload picture
+                <input type="file" accept="image/*" hidden onChange={handleImageChange} />
+              </Button>
+            </CardActions>
+          </Grid>
 
-      <Stack direction="row" spacing={2} justifyContent="flex-end">
-        <Button className="common-button" onClick={handleSave} variant="contained">
-          {discountId ? 'Update Discount' : 'Create Discount'}
-        </Button>
-        <Button
-          variant="outlined"
-          onClick={() => {
-            router.push('/dashboard/discount');
-          }}
-          sx={{
-            borderColor: '#d0021b',
-            color: '#d0021b',
-            transform: 'skewX(-20deg)',
-            '&:hover': {
-              borderColor: 'darkred',
-              backgroundColor: 'rgba(255, 0, 0, 0.1)',
-            },
-          }}
-        >
-          Cancel
-        </Button>
-      </Stack>
-    </Stack>
+          <Stack direction="row" spacing={2} justifyContent="flex-end">
+            <Button className="common-button" onClick={handleSave} variant="contained">
+              {discountId ? 'Update Discount' : 'Create Discount'}
+            </Button>
+            <Button
+              variant="outlined"
+              onClick={() => {
+                router.push('/dashboard/discount');
+              }}
+              sx={{
+                borderColor: '#d0021b',
+                color: '#d0021b',
+                transform: 'skewX(-20deg)',
+                '&:hover': {
+                  borderColor: 'darkred',
+                  backgroundColor: 'rgba(255, 0, 0, 0.1)',
+                },
+              }}
+            >
+              Cancel
+            </Button>
+          </Stack>
+        </Stack>
+      </CardContent>
+    </Card>
   );
 }

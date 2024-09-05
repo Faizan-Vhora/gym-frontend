@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 100">
+  <style>
+    @keyframes lift {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+    .character { animation: lift 1.5s ease-in-out infinite; }
+    @keyframes pulse {
+      0%, 100% { opacity: 0.7; }
+      50% { opacity: 1; }
+    }
+    .pulse { animation: pulse 1s infinite; }
+  </style>
+  
+  <!-- Background -->
+  <!-- <rect width="200" height="100" fill="#1a1a1a"/> -->
+  
+  <!-- Character -->
+  <g class="character">
+    <circle cx="100" cy="40" r="15" fill="#ff3333"/> <!-- Head -->
+    <rect x="90" y="55" width="20" height="25" fill="#ff3333"/> <!-- Body -->
+    <line x1="70" y1="60" x2="130" y2="60" stroke="#000000" stroke-width="5"/> <!-- Barbell -->
+    <circle cx="65" cy="60" r="10" fill="#000000"/> <!-- Left weight -->
+    <circle cx="135" cy="60" r="10" fill="#000000"/> <!-- Right weight -->
+  </g>
+  
+  
+  
+  <!-- <script type="text/ecmascript">
+    <![CDATA[
+      var progress = 0;
+      function updateProgress() {
+        progress = (progress + 1) % 101;
+        document.getElementById('progress').textContent = progress;
+      }
+      setInterval(updateProgress, 50);
+    ]]>
+  </script> -->
+</svg>

@@ -141,7 +141,7 @@ export function DiscountTable({
                     <TableCell sx={tableCss.tableCell}>{discount.discountType}</TableCell>
                     <TableCell sx={tableCss.tableCell}>{discount.usageLimit}</TableCell>
                     <TableCell sx={tableCss.tableCell}>{discount.discountValue}</TableCell>
-                    <TableCell sx={tableCss.tableCell}>
+                    <TableCell>
                       <Select
                         value={discount.status}
                         onChange={(e) => {
@@ -154,7 +154,7 @@ export function DiscountTable({
                         <MenuItem value={DiscountStatus.Expired}>Expired</MenuItem>
                       </Select>
                     </TableCell>
-                    <TableCell sx={tableCss.tableCell}>
+                    <TableCell>
                       <IconButton
                         onClick={() => {
                           onEdit(discount.id);

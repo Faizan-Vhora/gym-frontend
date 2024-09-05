@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
-import { Button, Stack, Typography } from '@mui/material';
+import { Alert, Button, Stack, Typography } from '@mui/material';
 import { Plus as PlusIcon } from '@phosphor-icons/react';
 import { toast, ToastContainer } from 'react-toastify';
 
@@ -12,6 +12,8 @@ import FaqTable from '@/components/dashboard/faq/faq-tables';
 import type { FaqEntry, FaqStatus } from '@/components/dashboard/faq/faq-tables';
 
 import 'react-toastify/dist/ReactToastify.css';
+
+import { CustomLoader } from '@/utils/loader';
 
 const initialFaqs: FaqEntry[] = [];
 
@@ -24,6 +26,7 @@ export default function FaqManagementPage(): React.JSX.Element {
   const [filterType, setFilterType] = React.useState<string>('ALL');
   const [filterStatus, setFilterStatus] = React.useState<string>('ALL');
   const [error, setError] = React.useState<string | null>(null);
+  const [loading, setLoading] = React.useState(true);
 
   const router = useRouter();
 
@@ -44,6 +47,7 @@ export default function FaqManagementPage(): React.JSX.Element {
   }
 
   const fetchFaqs = React.useCallback(async (): Promise<void> => {
+    setLoading(true);
     try {
       const params = {
         page: page + 1, // Adjusted to match typical API's 1-based page indexing
@@ -71,6 +75,8 @@ export default function FaqManagementPage(): React.JSX.Element {
         errorMessage = `Error fetching FAQs: ${err.message}`;
       }
       setError(errorMessage);
+    } finally {
+      setLoading(false);
     }
   }, [page, rowsPerPage, searchTerm, filterType, filterStatus]);
 
@@ -167,23 +173,27 @@ export default function FaqManagementPage(): React.JSX.Element {
         onTypeChange={handleTypeChange}
         onStatusChange={handleStatusChangeFilter}
       />
-      <FaqTable
-        faqs={faqs}
-        page={page}
-        rowsPerPage={rowsPerPage}
-        totalEntries={totalItems} // Display the total number of entries
-        onEdit={handleEdit}
-        onDelete={handleDelete}
-        onStatusChange={handleStatusChange}
-        onPageChange={(newPage) => {
-          setPage(newPage);
-        }}
-        onRowsPerPageChange={(newRowsPerPage) => {
-          setRowsPerPage(newRowsPerPage);
-          setPage(0); // Reset page when rows per page change
-        }}
-      />
-      {error && <div className="error-message">{error}</div>}
+      {loading ? (
+        <CustomLoader />
+      ) : (
+        <FaqTable
+          faqs={faqs}
+          page={page}
+          rowsPerPage={rowsPerPage}
+          totalEntries={totalItems} // Display the total number of entries
+          onEdit={handleEdit}
+          onDelete={handleDelete}
+          onStatusChange={handleStatusChange}
+          onPageChange={(newPage) => {
+            setPage(newPage);
+          }}
+          onRowsPerPageChange={(newRowsPerPage) => {
+            setRowsPerPage(newRowsPerPage);
+            setPage(0); // Reset page when rows per page change
+          }}
+        />
+      )}
+      {error ? <Alert color="error">{error}</Alert> : null}
       <ToastContainer />
     </Stack>
   );

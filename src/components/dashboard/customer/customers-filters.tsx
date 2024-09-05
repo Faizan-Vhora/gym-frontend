@@ -15,11 +15,12 @@ export function CustomersFilters({ onFilterChange, onStatusChange }: CustomersFi
   const [status, setStatus] = React.useState('ALL');
 
   // Create a debounced version of the search handler
-  const debouncedSearch = React.useCallback(
-    debounce((value: string) => {
-      onFilterChange(value);
-    }, 300), // Adjust the debounce delay as needed
-    [onFilterChange] // Ensure onSearchChange is included as a dependency
+  const debouncedSearch = React.useMemo(
+    () =>
+      debounce((value: string) => {
+        onFilterChange(value);
+      }, 300), // Adjust the debounce delay as needed
+    [onFilterChange] // Ensure onFilterChange is included as a dependency
   );
 
   const handleFilterChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
