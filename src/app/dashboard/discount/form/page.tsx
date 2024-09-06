@@ -2,6 +2,7 @@
 
 import * as React from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { CustomLoader } from '@/utils/loader';
 import {
   Button,
   Card,
@@ -21,7 +22,10 @@ import {
 } from '@mui/material';
 import type { SelectChangeEvent } from '@mui/material';
 import { Trash } from '@phosphor-icons/react';
-import { toast } from 'react-toastify';
+import { toast, ToastContainer } from 'react-toastify'; // Import the toast function
+
+import 'react-toastify/dist/ReactToastify.css';
+
 import { z, ZodError } from 'zod';
 import type { ZodFormattedError } from 'zod';
 
@@ -71,6 +75,7 @@ export default function DiscountFormPage(): React.JSX.Element {
   const [imageFile, setImageFile] = React.useState<File | null>(null);
   const [imagePreview, setImagePreview] = React.useState<string | null>(null);
   const [errors, setErrors] = React.useState<ZodFormattedError<DiscountSchema> | null>(null);
+  const [loading, setLoading] = React.useState(false);
   const fileInputRef = React.useRef<HTMLInputElement>(null);
 
   const router = useRouter();
@@ -125,7 +130,7 @@ export default function DiscountFormPage(): React.JSX.Element {
     const { name, value } = e.target;
     setDiscount((prevDiscount) => ({
       ...prevDiscount,
-      [name]: name === 'discountValue' ? parseFloat(value) : value,
+      [name]: name === 'discountValue' ? Number(value) : value,
     }));
     if (name === 'codeName') {
       // Automatically capitalize the codeName
@@ -176,6 +181,8 @@ export default function DiscountFormPage(): React.JSX.Element {
   const validate = (): boolean => {
     try {
       const schema = discountId ? updateDiscountSchema : baseDiscountSchema;
+      discount.discountValue = Number(discount.discountValue);
+      console.log('discount_data', discount);
       schema.parse(discount);
       setErrors(null); // Clear errors if validation passes
       return true;
@@ -199,7 +206,7 @@ export default function DiscountFormPage(): React.JSX.Element {
     formData.append('description', discount.description);
     formData.append('status', discount.status as string); // Ensure proper typing
     if (imageFile) formData.append('discountImage', imageFile);
-
+    setLoading(true); // Start loading state
     try {
       const method = discount.id ? 'put' : 'post';
       const url = discount.id ? `/discount/${discount.id}` : '/discount';
@@ -214,8 +221,16 @@ export default function DiscountFormPage(): React.JSX.Element {
       });
 
       router.push('/dashboard/discount');
-    } catch (error) {
-      // console.error('Error saving discount:', error);
+    } catch (err) {
+      let errorMessage = 'Failed to load data.';
+      if (err instanceof Error) {
+        errorMessage = `${err.message}`;
+      } else {
+        errorMessage = 'An unexpected error occurred'; // Fallback message
+      }
+      toast.error(errorMessage);
+    } finally {
+      setLoading(false); // End loading state
     }
   };
 
@@ -365,8 +380,10 @@ export default function DiscountFormPage(): React.JSX.Element {
               Cancel
             </Button>
           </Stack>
+          {loading && <CustomLoader />}
         </Stack>
       </CardContent>
+      <ToastContainer />
     </Card>
   );
 }
