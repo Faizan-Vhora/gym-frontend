@@ -31,7 +31,13 @@ import { DiscountStatus, DiscountType, UsageLimit } from '@/components/dashboard
 
 // Validation schemas
 const baseDiscountSchema = z.object({
-  codeName: z.string().min(1, 'Code Name is required'),
+  codeName: z
+    .string()
+    .regex(
+      /^[A-Z0-9][A-Z0-9-_]{4,9}$/,
+      'Promo code must be 5-10 characters long, and can only contain letters, numbers, hyphens, and underscores.'
+    )
+    .transform((val) => val.toUpperCase()),
   expiryDate: z.string().min(1, 'Expiry Date is required'),
   discountType: z.nativeEnum(DiscountType, { errorMap: () => ({ message: 'Discount Type is required' }) }),
   usageLimit: z.nativeEnum(UsageLimit, { errorMap: () => ({ message: 'Usage Limit is required' }) }),
@@ -121,6 +127,18 @@ export default function DiscountFormPage(): React.JSX.Element {
       ...prevDiscount,
       [name]: name === 'discountValue' ? parseFloat(value) : value,
     }));
+    if (name === 'codeName') {
+      // Automatically capitalize the codeName
+      setDiscount((prev) => ({
+        ...prev,
+        [name]: value.toUpperCase(),
+      }));
+    } else {
+      setDiscount((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
+    }
   };
 
   const handleSelectChange = (e: SelectChangeEvent<unknown>): void => {
