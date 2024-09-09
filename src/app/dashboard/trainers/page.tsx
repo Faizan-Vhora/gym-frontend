@@ -4,11 +4,14 @@ import * as React from 'react';
 import { useEffect, useState } from 'react';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
+import { Plus as PlusIcon } from '@phosphor-icons/react';
 import { toast, ToastContainer } from 'react-toastify';
 
 import 'react-toastify/dist/ReactToastify.css';
 
+import { useRouter } from 'next/navigation';
 import { CustomLoader } from '@/utils/loader';
+import { Alert, Button } from '@mui/material';
 
 import axiosInstance from '@/lib/axios';
 import { TrainersFilters } from '@/components/dashboard/trainer/trainer-filters';
@@ -24,6 +27,7 @@ export default function TrainersPage(): React.JSX.Element {
   const [statusFilter, setStatusFilter] = useState('ALL'); // Status filter
   const [error, setError] = React.useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const router = useRouter();
 
   interface ErrorDetail {
     code?: string;
@@ -102,6 +106,10 @@ export default function TrainersPage(): React.JSX.Element {
     });
   }, [fetchTrainers]);
 
+  const handleAddClick = (): void => {
+    router.push('/dashboard/trainers/form');
+  };
+
   // Handles page changes triggered by the TablePagination component
   const handlePageChange = (event: React.MouseEvent<HTMLButtonElement> | null, newPage: number): void => {
     setPage(newPage);
@@ -152,6 +160,14 @@ export default function TrainersPage(): React.JSX.Element {
             Trainers
           </Typography>
         </Stack>
+        <Button
+          className="common-button"
+          startIcon={<PlusIcon fontSize="var(--icon-fontSize-md)" />}
+          variant="contained"
+          onClick={handleAddClick}
+        >
+          Add
+        </Button>
       </Stack>
       <TrainersFilters
         onFilterChange={handleFilterChange}
@@ -170,7 +186,7 @@ export default function TrainersPage(): React.JSX.Element {
           updateTrainerStatus={updateTrainerStatus}
         />
       )}
-      {error && <div className="error-message">{error}</div>}
+      {error ? <Alert color="error">{error}</Alert> : null}
       <ToastContainer /> {/* Add ToastContainer here */}
     </Stack>
   );

@@ -2,6 +2,7 @@
 
 import * as React from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { CustomLoader } from '@/utils/loader';
 import { Button, Card, CardContent, CardHeader, Divider, MenuItem, Select, Stack, TextField } from '@mui/material';
 import type { SelectChangeEvent } from '@mui/material';
 import { toast } from 'react-toastify';
@@ -27,6 +28,7 @@ export default function ExpertiseForm(): React.JSX.Element {
     status: 'active',
   });
   const [errors, setErrors] = React.useState<Partial<Record<keyof ExpertiseEntry, string[]>>>({});
+  const [loading, setLoading] = React.useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
   const expertiseId = searchParams.get('id');
@@ -91,7 +93,7 @@ export default function ExpertiseForm(): React.JSX.Element {
 
   const handleSave = async (): Promise<void> => {
     if (!validate()) return;
-
+    setLoading(true);
     try {
       const method = expertise.id ? 'put' : 'post';
       const url = expertise.id ? `/expertise/${expertise.id}` : '/expertise';
@@ -164,6 +166,7 @@ export default function ExpertiseForm(): React.JSX.Element {
               Cancel
             </Button>
           </Stack>
+          {loading && <CustomLoader />}
         </Stack>
       </CardContent>
     </Card>

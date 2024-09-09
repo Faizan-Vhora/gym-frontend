@@ -182,7 +182,6 @@ export default function DiscountFormPage(): React.JSX.Element {
     try {
       const schema = discountId ? updateDiscountSchema : baseDiscountSchema;
       discount.discountValue = Number(discount.discountValue);
-      console.log('discount_data', discount);
       schema.parse(discount);
       setErrors(null); // Clear errors if validation passes
       return true;
@@ -224,7 +223,7 @@ export default function DiscountFormPage(): React.JSX.Element {
     } catch (err) {
       let errorMessage = 'Failed to load data.';
       if (err instanceof Error) {
-        errorMessage = `${err.message}`;
+        errorMessage = err.message;
       } else {
         errorMessage = 'An unexpected error occurred'; // Fallback message
       }
@@ -353,7 +352,7 @@ export default function DiscountFormPage(): React.JSX.Element {
             <CardActions>
               <Button component="label" fullWidth variant="text">
                 Upload picture
-                <input type="file" accept="image/*" hidden onChange={handleImageChange} />
+                <input type="file" accept="image/*" hidden onChange={handleImageChange} required />
               </Button>
             </CardActions>
           </Grid>

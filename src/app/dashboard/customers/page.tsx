@@ -4,11 +4,14 @@ import * as React from 'react';
 import { useCallback, useEffect, useState } from 'react';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
+import { Plus as PlusIcon } from '@phosphor-icons/react';
 import { toast, ToastContainer } from 'react-toastify'; // Import the toast function
 
 import 'react-toastify/dist/ReactToastify.css';
 
+import { useRouter } from 'next/navigation';
 import { CustomLoader } from '@/utils/loader';
+import { Button } from '@mui/material';
 
 import axiosInstance from '@/lib/axios';
 import { CustomersFilters } from '@/components/dashboard/customer/customers-filters';
@@ -23,6 +26,7 @@ export default function Page(): React.JSX.Element {
   const [filter, setFilter] = useState<string>(''); // Search filter
   const [statusFilter, setStatusFilter] = useState<string>('ALL'); // Status filter
   const [loading, setLoading] = useState(true);
+  const router = useRouter();
 
   interface CustomerResponse {
     data: {
@@ -75,6 +79,10 @@ export default function Page(): React.JSX.Element {
     void loadCustomers();
   }, [fetchCustomers]);
 
+  const handleAddClick = (): void => {
+    router.push('/dashboard/customers/form');
+  };
+
   const handlePageChange = (event: React.MouseEvent<HTMLButtonElement> | null, newPage: number): void => {
     setPage(newPage);
   };
@@ -121,6 +129,14 @@ export default function Page(): React.JSX.Element {
             Members
           </Typography>
         </Stack>
+        <Button
+          className="common-button"
+          startIcon={<PlusIcon fontSize="var(--icon-fontSize-md)" />}
+          variant="contained"
+          onClick={handleAddClick}
+        >
+          Add
+        </Button>
       </Stack>
       <CustomersFilters
         onFilterChange={handleFilterChange}

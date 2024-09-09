@@ -29,6 +29,7 @@ export interface Trainer {
   phoneNumber: string;
   address: string; // Adjust if address is an object
   createdAt: string;
+  updatedAt: string;
   status: number;
 }
 
@@ -69,7 +70,7 @@ export function TrainersTable({
               <TableCell sx={tableCss.tableHeaderCell}>User Details</TableCell>
               <TableCell sx={tableCss.tableHeaderCell}>Address</TableCell>
               <TableCell sx={tableCss.tableHeaderCell}>Phone</TableCell>
-              <TableCell sx={tableCss.tableHeaderCell}>Signed Up</TableCell>
+              <TableCell sx={tableCss.tableHeaderCell}>Updated At</TableCell>
               <TableCell sx={tableCss.tableHeaderCell}>Actions</TableCell>
               <TableCell sx={tableCss.tableHeaderCell}>Status</TableCell>
             </TableRow>
@@ -92,7 +93,7 @@ export function TrainersTable({
                   </TableCell>
                   <TableCell sx={tableCss.tableCell}>{row.address || '-'}</TableCell>
                   <TableCell sx={tableCss.tableCell}>{row.phoneNumber || '-'}</TableCell>
-                  <TableCell sx={tableCss.tableCell}>{dayjs(row.createdAt).format('MMM D, YYYY')}</TableCell>
+                  <TableCell sx={tableCss.tableCell}>{dayjs(row.updatedAt).format('MMM D, YYYY')}</TableCell>
                   <TableCell sx={tableCss.tableCell}>
                     <Stack direction="row" spacing={1} alignItems="center">
                       <IconButton

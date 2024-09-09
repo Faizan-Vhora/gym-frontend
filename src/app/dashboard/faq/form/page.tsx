@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
+  Alert,
   Box,
   Button,
   Card,
@@ -28,6 +29,8 @@ import axiosInstance from '@/lib/axios';
 
 import 'react-toastify/dist/ReactToastify.css';
 
+import { CustomLoader } from '@/utils/loader';
+
 import { FaqStatus, FaqType } from '@/components/dashboard/faq/faq-tables';
 import type { FaqEntry } from '@/components/dashboard/faq/faq-tables';
 
@@ -48,6 +51,7 @@ export default function FaqForm(): React.JSX.Element {
   const [faq, setFaq] = useState<FaqFormInputs | null>(null);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = React.useState(false);
 
   const {
     register,
@@ -61,6 +65,7 @@ export default function FaqForm(): React.JSX.Element {
 
   useEffect(() => {
     if (id) {
+      setLoading(true);
       axiosInstance
         .get<{ data: FaqEntry }>(`/faq/${id}`)
         .then((response) => {
@@ -76,6 +81,9 @@ export default function FaqForm(): React.JSX.Element {
             errorMessage = 'An unexpected error occurred'; // Fallback message
           }
           toast.error(errorMessage);
+        })
+        .finally(() => {
+          setLoading(false); // End loading state
         });
     }
   }, [id]);
@@ -92,6 +100,7 @@ export default function FaqForm(): React.JSX.Element {
   const onSubmit = async (data: FaqFormInputs): Promise<void> => {
     setIsSubmitting(true);
     setError(null);
+    setLoading(true);
 
     try {
       const method = id ? 'put' : 'post';
@@ -115,11 +124,12 @@ export default function FaqForm(): React.JSX.Element {
       setError('Failed to save FAQ details.');
     } finally {
       setIsSubmitting(false);
+      setLoading(true);
     }
   };
 
   if (!faq && id) {
-    return <div>Loading...</div>;
+    return <div>{loading && <CustomLoader />}</div>;
   }
 
   return (
@@ -188,7 +198,8 @@ export default function FaqForm(): React.JSX.Element {
           </Button>
         </CardActions>
       </Card>
-      {error && <div className="error-message">{error}</div>}
+      {loading && <CustomLoader />}
+      {error ? <Alert color="error">{error}</Alert> : null}
       <ToastContainer />
     </Box>
   );
