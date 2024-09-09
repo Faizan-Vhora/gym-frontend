@@ -22,6 +22,6 @@ export function isNavItemActive({
 
     return false;
   }
-
-  return pathname === href;
+  return pathname === href || (pathname.startsWith(href) && href !== '/dashboard');
+  
 }

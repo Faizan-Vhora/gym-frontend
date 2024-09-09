@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useRouter } from 'next/navigation';
 import {
   Box,
   Button,
@@ -72,6 +73,7 @@ export default function FaqTable({
 }: FaqTableProps): React.JSX.Element {
   const [dialogOpen, setDialogOpen] = React.useState(false);
   const [deleteId, setDeleteId] = React.useState<number | null>(null);
+  const router = useRouter();
 
   const handleRequestSort = (_property: keyof FaqEntry): void => {
     // Function body remains empty or contains code not using _property
@@ -93,6 +95,10 @@ export default function FaqTable({
   const handleCancelDelete = (): void => {
     setDeleteId(null);
     setDialogOpen(false);
+  };
+
+  const handleRowClick = (id: number) => {
+    router.push(`/dashboard/faq/form?id=${id}`); // Replace with the actual path to your form page
   };
 
   return (
@@ -149,7 +155,13 @@ export default function FaqTable({
               </TableRow>
             ) : (
               faqs.map((faq) => (
-                <TableRow key={faq.id} sx={tableCss.tableRow}>
+                <TableRow
+                  key={faq.id}
+                  sx={tableCss.tableRow}
+                  onClick={() => {
+                    handleRowClick(faq.id);
+                  }}
+                >
                   <TableCell sx={tableCss.tableCell}>{faq.type}</TableCell>
                   <TableCell sx={tableCss.tableCell}>{faq.question}</TableCell>
                   <TableCell sx={tableCss.tableCell}>{faq.answer}</TableCell>

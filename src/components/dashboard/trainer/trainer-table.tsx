@@ -61,6 +61,10 @@ export function TrainersTable({
     [router]
   );
 
+  const handleRowClick = (id: string) => {
+    router.push(`/dashboard/trainers/form?id=${id}`); // Replace with the actual path to your form page
+  };
+
   return (
     <Card>
       <Box sx={{ overflowX: 'auto' }}>
@@ -84,7 +88,14 @@ export function TrainersTable({
               </TableRow>
             ) : (
               rows.map((row) => (
-                <TableRow hover key={row.id} sx={tableCss.tableRow}>
+                <TableRow
+                  hover
+                  key={row.id}
+                  sx={tableCss.tableRow}
+                  onClick={() => {
+                    handleRowClick(row.id);
+                  }}
+                >
                   <TableCell sx={tableCss.tableCell}>
                     <Typography variant="subtitle2">{row.fullName}</Typography>
                     <Typography color="textSecondary" variant="body2">

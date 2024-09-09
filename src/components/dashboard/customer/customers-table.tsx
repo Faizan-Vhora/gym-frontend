@@ -19,7 +19,6 @@ import {
 } from '@mui/material';
 import { PencilSimple } from '@phosphor-icons/react';
 import dayjs from 'dayjs';
-import { toast } from 'react-toastify';
 
 import tableCss from '@/styles/table-css';
 
@@ -31,6 +30,7 @@ export interface Customer {
   address: string;
   createdAt: string;
   updatedAt: string;
+  memberId: string;
   status: number; // Ensure this is part of the interface
 }
 
@@ -58,10 +58,13 @@ export function CustomersTable({
   const handleEdit = React.useCallback(
     (id: string) => {
       router.push(`/dashboard/customers/form?id=${id}`);
-      toast.success(`Edit customer with id: ${id}`);
     },
     [router]
   );
+
+  const handleRowClick = (id: string) => {
+    router.push(`/dashboard/customers/form?id=${id}`); // Replace with the actual path to your form page
+  };
 
   return (
     <Card>
@@ -96,11 +99,21 @@ export function CustomersTable({
               </TableRow>
             ) : (
               rows.map((row) => (
-                <TableRow hover key={row.id} sx={tableCss.tableRow}>
+                <TableRow
+                  hover
+                  key={row.id}
+                  sx={tableCss.tableRow}
+                  onClick={() => {
+                    handleRowClick(row.id);
+                  }}
+                >
                   <TableCell sx={tableCss.tableCell}>
                     <Typography variant="subtitle2">{row.fullName}</Typography>
                     <Typography color="textSecondary" variant="body2">
                       {row.email}
+                    </Typography>
+                    <Typography color="textSecondary" variant="body2">
+                      {row.memberId}
                     </Typography>
                   </TableCell>
 
