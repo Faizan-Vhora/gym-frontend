@@ -3,7 +3,11 @@ import { useRouter } from 'next/navigation';
 import { getStatusText } from '@/utils/userstatus';
 import {
   Box,
+  // Button,
   Card,
+  // Dialog,
+  // DialogActions,
+  // DialogContent,
   Divider,
   FormControlLabel,
   IconButton,
@@ -32,6 +36,7 @@ export interface Customer {
   updatedAt: string;
   memberId: string;
   status: number; // Ensure this is part of the interface
+  qrCodeImageUrl: string;
 }
 
 interface CustomersTableProps {
@@ -54,7 +59,8 @@ export function CustomersTable({
   updateCustomerStatus, // Added prop
 }: CustomersTableProps): React.JSX.Element {
   const router = useRouter();
-
+  // const [open, setOpen] = React.useState(false);
+  // const [selectedImage, setSelectedImage] = React.useState('');
   const handleEdit = React.useCallback(
     (id: string) => {
       router.push(`/dashboard/customers/form?id=${id}`);
@@ -62,9 +68,19 @@ export function CustomersTable({
     [router]
   );
 
-  const handleRowClick = (id: string) => {
+  const handleRowClick = (id: string): void => {
     router.push(`/dashboard/customers/form?id=${id}`); // Replace with the actual path to your form page
   };
+
+  // const handleAvatarClick = (imageUrl: string): void => {
+  //   setSelectedImage(imageUrl);
+  //   setOpen(true);
+  // };
+
+  // const handleClose = (): void => {
+  //   setOpen(false);
+  //   setSelectedImage('');
+  // };
 
   return (
     <Card>
@@ -99,65 +115,79 @@ export function CustomersTable({
               </TableRow>
             ) : (
               rows.map((row) => (
-                <TableRow
-                  hover
-                  key={row.id}
-                  sx={tableCss.tableRow}
-                  onClick={() => {
-                    handleRowClick(row.id);
-                  }}
-                >
-                  <TableCell sx={tableCss.tableCell}>
-                    <Typography variant="subtitle2">{row.fullName}</Typography>
-                    <Typography color="textSecondary" variant="body2">
-                      {row.email}
-                    </Typography>
-                    <Typography color="textSecondary" variant="body2">
-                      {row.memberId}
-                    </Typography>
-                  </TableCell>
-
-                  <TableCell
-                    sx={{
-                      ...tableCss.tableCell,
-                      width: '50px !important',
-                      whiteSpace: 'nowrap',
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis !important',
+                <>
+                  {/* <TableCell sx={tableCss.tableCell}>
+                    <Image
+                      src={row?.qrCodeImageUrl || ''}
+                      alt="QR Code Preview"
+                      width={50}
+                      height={50}
+                      style={{ marginTop: '1rem' }}
+                      onClick={() => {
+                        handleAvatarClick(row.qrCodeImageUrl || '');
+                      }}
+                    />
+                  </TableCell> */}
+                  <TableRow
+                    hover
+                    key={row.id}
+                    sx={tableCss.tableRow}
+                    onClick={() => {
+                      handleRowClick(row.id);
                     }}
                   >
-                    {row.address || '-'}
-                  </TableCell>
-                  <TableCell sx={tableCss.tableCell}>{row.phoneNumber || '-'}</TableCell>
-                  <TableCell sx={tableCss.tableCell}>{dayjs(row.updatedAt).format('MMM D, YYYY')}</TableCell>
-                  <TableCell sx={tableCss.tableCell}>
-                    <Stack direction="row" spacing={1} alignItems="center">
-                      <IconButton
-                        onClick={() => {
-                          handleEdit(row.id);
-                        }}
-                      >
-                        <PencilSimple />
-                      </IconButton>
-                    </Stack>
-                  </TableCell>
+                    <TableCell sx={tableCss.tableCell}>
+                      <Typography variant="subtitle2">{row.fullName}</Typography>
+                      <Typography color="textSecondary" variant="body2">
+                        {row.email}
+                      </Typography>
+                      <Typography color="textSecondary" variant="body2">
+                        {row.memberId}
+                      </Typography>
+                    </TableCell>
 
-                  <TableCell>
-                    <FormControlLabel
-                      control={
-                        <Switch
-                          checked={row.status === 1}
-                          onChange={(event) => {
-                            event.stopPropagation();
-                            updateCustomerStatus(row.id, row.status);
+                    <TableCell
+                      sx={{
+                        ...tableCss.tableCell,
+                        width: '50px !important',
+                        whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis !important',
+                      }}
+                    >
+                      {row.address || '-'}
+                    </TableCell>
+                    <TableCell sx={tableCss.tableCell}>{row.phoneNumber || '-'}</TableCell>
+                    <TableCell sx={tableCss.tableCell}>{dayjs(row.updatedAt).format('MMM D, YYYY')}</TableCell>
+                    <TableCell sx={tableCss.tableCell}>
+                      <Stack direction="row" spacing={1} alignItems="center">
+                        <IconButton
+                          onClick={() => {
+                            handleEdit(row.id);
                           }}
-                          color={row.status === 1 ? 'success' : 'error'}
-                        />
-                      }
-                      label={getStatusText(row.status)}
-                    />
-                  </TableCell>
-                </TableRow>
+                        >
+                          <PencilSimple />
+                        </IconButton>
+                      </Stack>
+                    </TableCell>
+
+                    <TableCell>
+                      <FormControlLabel
+                        control={
+                          <Switch
+                            checked={row.status === 1}
+                            onChange={(event) => {
+                              event.stopPropagation();
+                              updateCustomerStatus(row.id, row.status);
+                            }}
+                            color={row.status === 1 ? 'success' : 'error'}
+                          />
+                        }
+                        label={getStatusText(row.status)}
+                      />
+                    </TableCell>
+                  </TableRow>
+                </>
               ))
             )}
           </TableBody>
@@ -173,6 +203,18 @@ export function CustomersTable({
         onRowsPerPageChange={onRowsPerPageChange}
         rowsPerPageOptions={[5, 10, 25]}
       />
+
+      {/* Modal for QR Code Preview */}
+      {/* <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
+        <DialogContent>
+          <img src={selectedImage} alt="QR Code" style={{ width: '50%', height: 'auto', objectFit: 'contain' }} />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose} color="primary">
+            Close
+          </Button>
+        </DialogActions>
+      </Dialog> */}
     </Card>
   );
 }

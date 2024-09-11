@@ -31,6 +31,7 @@ export interface Trainer {
   createdAt: string;
   updatedAt: string;
   status: number;
+  memberId: string;
 }
 
 interface TrainerTableProps {
@@ -61,7 +62,7 @@ export function TrainersTable({
     [router]
   );
 
-  const handleRowClick = (id: string) => {
+  const handleRowClick = (id: string): void => {
     router.push(`/dashboard/trainers/form?id=${id}`); // Replace with the actual path to your form page
   };
 
@@ -100,6 +101,9 @@ export function TrainersTable({
                     <Typography variant="subtitle2">{row.fullName}</Typography>
                     <Typography color="textSecondary" variant="body2">
                       {row.email}
+                    </Typography>
+                    <Typography color="textSecondary" variant="body2">
+                      {row.memberId}
                     </Typography>
                   </TableCell>
                   <TableCell sx={tableCss.tableCell}>{row.address || '-'}</TableCell>

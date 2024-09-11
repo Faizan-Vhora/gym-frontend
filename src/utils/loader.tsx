@@ -1,7 +1,7 @@
 import React from 'react';
-import { Box } from '@mui/material'; // Optional, for Material-UI styling
+import { Box } from '@mui/material';
 
-export const CustomLoader = () => {
+export const CustomLoader: React.FC = (): React.JSX.Element => {
   return (
     <Box
       sx={{
@@ -23,12 +23,5 @@ export const CustomLoader = () => {
         style={{ width: '200px', height: '200px' }} // Customize size
       />
     </Box>
-    // <Box display="flex" justifyContent="center" alignItems="center" height="100%">
-    //   <img
-    //     src="/assets/Jumpingball.gif" // Replace with your custom image path
-    //     alt="Loading"
-    //     style={{ width: '100px', height: '100px' }} // Customize size
-    //   />
-    // </Box>
   );
 };

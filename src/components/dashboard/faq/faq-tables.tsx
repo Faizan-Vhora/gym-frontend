@@ -97,7 +97,7 @@ export default function FaqTable({
     setDialogOpen(false);
   };
 
-  const handleRowClick = (id: number) => {
+  const handleRowClick = (id: number): void => {
     router.push(`/dashboard/faq/form?id=${id}`); // Replace with the actual path to your form page
   };
 

@@ -28,7 +28,7 @@ export const paths = {
 
   customers: {
     customers: '/dashboard/customers',
-    customersForm: (id?: number) => `/dashboard/customers/form/${id}`
+    customersForm: (id?: number) => `/dashboard/customers/form/${id}`,
   },
 
   trainers: {
