@@ -128,20 +128,32 @@ export function CustomersTable({
                       }}
                     />
                   </TableCell> */}
-                  <TableRow
-                    hover
-                    key={row.id}
-                    sx={tableCss.tableRow}
-                    onClick={() => {
-                      handleRowClick(row.id);
-                    }}
-                  >
+                  <TableRow hover key={row.id} sx={tableCss.tableRow}>
                     <TableCell sx={tableCss.tableCell}>
-                      <Typography variant="subtitle2">{row.fullName}</Typography>
-                      <Typography color="textSecondary" variant="body2">
+                      <Typography
+                        variant="subtitle2"
+                        onClick={() => {
+                          handleRowClick(row.id);
+                        }}
+                      >
+                        {row.fullName}
+                      </Typography>
+                      <Typography
+                        color="textSecondary"
+                        variant="body2"
+                        onClick={() => {
+                          handleRowClick(row.id);
+                        }}
+                      >
                         {row.email}
                       </Typography>
-                      <Typography color="textSecondary" variant="body2">
+                      <Typography
+                        color="textSecondary"
+                        variant="body2"
+                        onClick={() => {
+                          handleRowClick(row.id);
+                        }}
+                      >
                         {row.memberId}
                       </Typography>
                     </TableCell>

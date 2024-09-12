@@ -8,6 +8,7 @@ import MenuItem from '@mui/material/MenuItem';
 import MenuList from '@mui/material/MenuList';
 import Popover from '@mui/material/Popover';
 import Typography from '@mui/material/Typography';
+import { LockSimple } from '@phosphor-icons/react';
 import { SignOut as SignOutIcon } from '@phosphor-icons/react/dist/ssr/SignOut';
 import { User as UserIcon } from '@phosphor-icons/react/dist/ssr/User';
 
@@ -94,6 +95,12 @@ export function UserPopover({ anchorEl, onClose, open }: UserPopoverProps): Reac
             <UserIcon fontSize="var(--icon-fontSize-md)" />
           </ListItemIcon>
           Profile
+        </MenuItem>
+        <MenuItem component={RouterLink} href={paths.dashboard.changePassword} onClick={onClose}>
+          <ListItemIcon>
+            <LockSimple fontSize="var(--icon-fontSize-md)" />
+          </ListItemIcon>
+          Change Password
         </MenuItem>
         <MenuItem onClick={handleSignOut}>
           <ListItemIcon>

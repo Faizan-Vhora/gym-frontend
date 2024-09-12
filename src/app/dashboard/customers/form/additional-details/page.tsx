@@ -244,114 +244,95 @@ export default function CustomerEditForm(): React.JSX.Element {
                 </Grid>
               )}
               <Grid item md={8} xs={12} marginTop={5} marginLeft={id ? 0 : 2}>
-                <Grid container spacing={10}>
+                <Grid container spacing={4}>
                   {id && (
                     <>
-                      <Grid item md={6} xs={12}>
-                        <Grid container spacing={4}>
-                          <Grid p={2}>
-                            <FormControl fullWidth>
-                              <InputLabel>Phone Number</InputLabel>
-                              <OutlinedInput
-                                {...register('phoneNumber')}
-                                label="Phone Number"
-                                error={Boolean(errors.phoneNumber)}
-                              />
-                              {errors.phoneNumber?.message && (
-                                <FormHelperText>{errors.phoneNumber.message}</FormHelperText>
-                              )}
-                            </FormControl>
-                          </Grid>
-
-                          <Grid p={2}>
-                            <FormControl fullWidth>
-                              <Controller
-                                name="dateOfBirth"
-                                control={control}
-                                defaultValue={
-                                  customer?.dateOfBirth ? dayjs(customer.dateOfBirth).format('YYYY-MM-DD') : ''
-                                }
-                                render={({ field }) => (
-                                  <TextField
-                                    {...field}
-                                    label="Date of Birth"
-                                    type="date"
-                                    fullWidth
-                                    InputLabelProps={{
-                                      shrink: true,
-                                    }}
-                                    error={Boolean(errors.dateOfBirth)}
-                                    helperText={errors.dateOfBirth ? errors.dateOfBirth.message : ''}
-                                    inputProps={{
-                                      shrink: true,
-                                    }}
-                                    onChange={(e) => {
-                                      const value = e.target.value;
-                                      const date = new Date(value);
-                                      if (date > new Date()) {
-                                        // Handle the case where the selected date is in the future
-                                        toast.error('Date of birth cannot be in the future');
-                                        return;
-                                      }
-                                      field.onChange(e);
-                                    }}
-                                  />
-                                )}
-                              />
-                              {errors.dateOfBirth?.message && (
-                                <FormHelperText error>{errors.dateOfBirth.message}</FormHelperText>
-                              )}
-                            </FormControl>
-                          </Grid>
-
-                          <Grid p={2}>
-                            <FormControl fullWidth>
-                              <Controller
-                                name="gender"
-                                control={control}
-                                defaultValue={customer?.gender} // Replace fetchedData.gender with the actual value from your backend response
-                                render={({ field }) => (
-                                  <RadioGroup {...field} row>
-                                    <FormControlLabel value="male" control={<Radio />} label="Male" />
-                                    <FormControlLabel value="female" control={<Radio />} label="Female" />
-                                  </RadioGroup>
-                                )}
-                              />
-                              {errors.gender?.message && <FormHelperText error>{errors.gender.message}</FormHelperText>}
-                            </FormControl>
-                          </Grid>
-                        </Grid>
+                      <Grid item md={6} p={2}>
+                        <FormControl fullWidth>
+                          <InputLabel>Zipcode</InputLabel>
+                          <OutlinedInput {...register('zipCode')} label="Zipcode" error={Boolean(errors.zipCode)} />
+                          {errors.zipCode?.message && <FormHelperText error>{errors.zipCode.message}</FormHelperText>}
+                        </FormControl>
                       </Grid>
-                      <Grid item md={6} xs={12}>
-                        <Grid container spacing={4}>
-                          <Grid p={2}>
-                            <FormControl fullWidth>
-                              <InputLabel>Zipcode</InputLabel>
-                              <OutlinedInput {...register('zipCode')} label="Zipcode" error={Boolean(errors.zipCode)} />
-                              {errors.zipCode?.message && (
-                                <FormHelperText error>{errors.zipCode.message}</FormHelperText>
-                              )}
-                            </FormControl>
-                          </Grid>
-
-                          <Grid p={2}>
-                            <FormControl fullWidth>
+                      <Grid item md={6} p={2}>
+                        <FormControl fullWidth>
+                          <Controller
+                            name="dateOfBirth"
+                            control={control}
+                            defaultValue={customer?.dateOfBirth ? dayjs(customer.dateOfBirth).format('YYYY-MM-DD') : ''}
+                            render={({ field }) => (
                               <TextField
-                                {...register('address')}
-                                label="Address"
-                                error={Boolean(errors.address)}
-                                helperText={errors.address?.message}
-                                multiline
-                                rows={4} // Increase the number of rows here
-                                variant="outlined"
+                                {...field}
+                                label="Date of Birth"
+                                type="date"
                                 fullWidth
+                                InputLabelProps={{
+                                  shrink: true,
+                                }}
+                                error={Boolean(errors.dateOfBirth)}
+                                helperText={errors.dateOfBirth ? errors.dateOfBirth.message : ''}
+                                inputProps={{
+                                  shrink: true,
+                                }}
+                                onChange={(e) => {
+                                  const value = e.target.value;
+                                  const date = new Date(value);
+                                  if (date > new Date()) {
+                                    // Handle the case where the selected date is in the future
+                                    toast.error('Date of birth cannot be in the future');
+                                    return;
+                                  }
+                                  field.onChange(e);
+                                }}
                               />
-                              {errors.address?.message && (
-                                <FormHelperText error>{errors.address.message}</FormHelperText>
-                              )}
-                            </FormControl>
-                          </Grid>
-                        </Grid>
+                            )}
+                          />
+                          {errors.dateOfBirth?.message && (
+                            <FormHelperText error>{errors.dateOfBirth.message}</FormHelperText>
+                          )}
+                        </FormControl>
+                      </Grid>
+                      <Grid item md={6} p={2}>
+                        <FormControl fullWidth>
+                          <InputLabel>Phone Number</InputLabel>
+                          <OutlinedInput
+                            {...register('phoneNumber')}
+                            label="Phone Number"
+                            error={Boolean(errors.phoneNumber)}
+                          />
+                          {errors.phoneNumber?.message && <FormHelperText>{errors.phoneNumber.message}</FormHelperText>}
+                        </FormControl>
+                      </Grid>
+                      <Grid item md={6} p={2}>
+                        <FormControl fullWidth>
+                          <Controller
+                            name="gender"
+                            control={control}
+                            defaultValue={customer?.gender} // Replace fetchedData.gender with the actual value from your backend response
+                            render={({ field }) => (
+                              <RadioGroup {...field} row>
+                                <FormControlLabel value="male" control={<Radio />} label="Male" />
+                                <FormControlLabel value="female" control={<Radio />} label="Female" />
+                              </RadioGroup>
+                            )}
+                          />
+                          {errors.gender?.message && <FormHelperText error>{errors.gender.message}</FormHelperText>}
+                        </FormControl>
+                      </Grid>
+                      <Grid item md={12} p={2}>
+                        <FormControl fullWidth>
+                          <TextField
+                            {...register('address')}
+                            label="Address"
+                            error={Boolean(errors.address)}
+                            helperText={errors.address?.message}
+                            multiline
+                            rows={4} // Increase the number of rows here
+                            variant="outlined"
+                            fullWidth
+                          />
+                          {errors.address?.message && <FormHelperText error>{errors.address.message}</FormHelperText>}
+                        </FormControl>
                       </Grid>
                     </>
                   )}

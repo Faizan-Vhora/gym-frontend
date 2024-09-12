@@ -36,9 +36,17 @@ export const paths = {
     trainersForm: (id?: number) => `/dashboard/trainers/form/${id}`
   },
 
+  membershipPlan: {
+    membershipPlan: '/dashboard/membership-plan',
+    PlanForm: (id?: number) => `/dashboard/membership-plan/form/${id}`
+  },
+
+
+
   dashboard: {
     dashboard: '/dashboard',
     account: '/dashboard/account',
+    changePassword: '/dashboard/change-password',
     integrations: '/dashboard/integrations',
     settings: '/dashboard/settings'
   },

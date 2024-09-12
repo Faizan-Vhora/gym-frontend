@@ -56,7 +56,7 @@ export function AccountDetailsForm(): React.JSX.Element {
     fetchUserDetails().catch((err: unknown) => {
       let errorMessage = 'Failed to load data.';
       if (err instanceof Error) {
-        errorMessage = `Error fetching FAQs: ${err.message}`;
+        errorMessage = `Error fetching Account Details: ${err.message}`;
       }
       toast.error(errorMessage);
     });

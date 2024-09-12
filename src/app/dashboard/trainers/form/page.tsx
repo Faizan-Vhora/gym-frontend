@@ -216,7 +216,7 @@ export default function TrainerEditForm(): React.JSX.Element {
             <Grid container spacing={10}>
               {id && (
                 <Grid item md={4} xs={12}>
-                  <Card>
+                  <Card sx={{ marginBottom: '40px' }}>
                     <CardContent>
                       <Stack spacing={2} sx={{ alignItems: 'center' }}>
                         <div>
@@ -255,13 +255,37 @@ export default function TrainerEditForm(): React.JSX.Element {
                       </Button>
                     </CardActions>
                   </Card>
+                  <Card
+                    sx={{
+                      background: 'linear-gradient(135deg, #8B0000, #000000)', // Darker, classic red with black
+                      boxShadow: '0px 3px 15px rgba(0, 0, 0, 0.3)', // Softer, wider shadow for a timeless feel
+                      borderRadius: '8px', // Slightly rounded corners for a refined look
+                      padding: '16px', // Ensure good spacing inside the card
+                      color: 'white', // Keeps the text readable on dark background
+                      fontFamily: '"Georgia", serif', // Optional: Use a serif font for a classic text style
+                    }}
+                  >
+                    <CardContent>
+                      <Stack spacing={2} sx={{ alignItems: 'center' }}>
+                        <div>
+                          <div style={{ position: 'relative', width: '100%', maxHeight: '200px', marginTop: '1rem' }}>
+                            <img
+                              src={trainer?.qrCodeImageUrl || '/assets/User@3x-1.png'}
+                              alt="QR Preview"
+                              style={{ width: '100%', maxHeight: '200px', objectFit: 'cover', marginTop: '1rem' }}
+                            />
+                          </div>
+                        </div>
+                      </Stack>
+                    </CardContent>
+                  </Card>
                 </Grid>
               )}
-              <Grid item md={8} xs={12} marginTop={5} marginLeft={id ? 0 : 2}>
+              <Grid item md={id ? 8 : 12} xs={12} marginTop={3} marginLeft={id ? 0 : 2}>
                 <Grid container spacing={10}>
-                  <Grid item md={6} xs={12}>
+                  <Grid item md={12} xs={12}>
                     <Grid container spacing={4}>
-                      <Grid p={2}>
+                      <Grid item md={id ? 6 : 4} p={2}>
                         <FormControl fullWidth required>
                           <InputLabel>Full Name</InputLabel>
                           <OutlinedInput
@@ -272,7 +296,7 @@ export default function TrainerEditForm(): React.JSX.Element {
                           {errors.fullName?.message && <FormHelperText error>{errors.fullName.message}</FormHelperText>}
                         </FormControl>
                       </Grid>
-                      <Grid p={2}>
+                      <Grid item md={id ? 6 : 4} p={2}>
                         <FormControl fullWidth required>
                           <InputLabel>Email</InputLabel>
                           <OutlinedInput
@@ -287,7 +311,7 @@ export default function TrainerEditForm(): React.JSX.Element {
                           {errors.email?.message && <FormHelperText error>{errors.email.message}</FormHelperText>}
                         </FormControl>
                       </Grid>
-                      <Grid p={2}>
+                      <Grid item md={id ? 6 : 4} p={2}>
                         <Controller
                           name="password"
                           control={control}
@@ -318,14 +342,18 @@ export default function TrainerEditForm(): React.JSX.Element {
                           )}
                         />
                       </Grid>
-                    </Grid>
-                  </Grid>
-
-                  {id && (
-                    <>
-                      <Grid item md={6} xs={12}>
-                        <Grid container spacing={4}>
-                          <Grid p={2}>
+                      {id && (
+                        <>
+                          <Grid item md={6} p={2}>
+                            <FormControl fullWidth>
+                              <InputLabel>Zipcode</InputLabel>
+                              <OutlinedInput {...register('zipCode')} label="Zipcode" error={Boolean(errors.zipCode)} />
+                              {errors.zipCode?.message && (
+                                <FormHelperText error>{errors.zipCode.message}</FormHelperText>
+                              )}
+                            </FormControl>
+                          </Grid>
+                          <Grid item md={6} p={2}>
                             <FormControl fullWidth>
                               <Controller
                                 name="dateOfBirth"
@@ -365,16 +393,7 @@ export default function TrainerEditForm(): React.JSX.Element {
                               )}
                             </FormControl>
                           </Grid>
-                          <Grid p={2}>
-                            <FormControl fullWidth>
-                              <InputLabel>Zipcode</InputLabel>
-                              <OutlinedInput {...register('zipCode')} label="Zipcode" error={Boolean(errors.zipCode)} />
-                              {errors.zipCode?.message && (
-                                <FormHelperText error>{errors.zipCode.message}</FormHelperText>
-                              )}
-                            </FormControl>
-                          </Grid>
-                          <Grid p={2}>
+                          <Grid item md={6} p={2}>
                             <FormControl fullWidth>
                               <Controller
                                 name="gender"
@@ -390,11 +409,20 @@ export default function TrainerEditForm(): React.JSX.Element {
                               {errors.gender?.message && <FormHelperText error>{errors.gender.message}</FormHelperText>}
                             </FormControl>
                           </Grid>
-                        </Grid>
-                      </Grid>
-                      <Grid item md={12} xs={12}>
-                        <Grid container spacing={4}>
-                          <Grid p={2}>
+                          <Grid item md={6} p={2}>
+                            <FormControl fullWidth>
+                              <InputLabel>Phone Number</InputLabel>
+                              <OutlinedInput
+                                {...register('phoneNumber')}
+                                label="Phone Number"
+                                error={Boolean(errors.phoneNumber)}
+                              />
+                              {errors.phoneNumber?.message && (
+                                <FormHelperText>{errors.phoneNumber.message}</FormHelperText>
+                              )}
+                            </FormControl>
+                          </Grid>
+                          <Grid item md={12} p={2}>
                             <FormControl fullWidth>
                               <TextField
                                 {...register('address')}
@@ -411,10 +439,10 @@ export default function TrainerEditForm(): React.JSX.Element {
                               )}
                             </FormControl>
                           </Grid>
-                        </Grid>
-                      </Grid>
-                    </>
-                  )}
+                        </>
+                      )}
+                    </Grid>
+                  </Grid>
                 </Grid>
               </Grid>
             </Grid>
