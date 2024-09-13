@@ -29,7 +29,7 @@ import { CustomLoader } from '@/utils/loader';
 import { useForm } from 'react-hook-form'; // Import useForm here
 
 import { toast, ToastContainer } from 'react-toastify';
-import { z, ZodError } from 'zod';
+import { z } from 'zod';
 
 export default function MembershipPlanEditForm(): React.JSX.Element {
   const searchParams = useSearchParams();
@@ -94,40 +94,11 @@ export default function MembershipPlanEditForm(): React.JSX.Element {
     }
   }, [membershipPlan, setValue]);
 
-  const validate = (): boolean => {
-    // Check if membershipPlan is null or undefined
-    if (!membershipPlan) {
-      setError('Membership plan is required');
-      return false;
-    }
-
-    try {
-      const schema = MembershipPlanSchema;
-
-      // Validate the membership plan
-      schema.parse(membershipPlan);
-
-      setError(null);
-      return true;
-    } catch (e: unknown) {
-      if (e instanceof ZodError) {
-        let errorMessage = 'Failed to create membership plan.';
-        if (e instanceof Error) {
-          errorMessage = `Error creating membership plan: ${e.message}`;
-        }
-        toast.error(errorMessage);
-      }
-
-      return false;
-    }
-  };
-
   const onSubmit = async (data: MembershipPlanFormInputs): Promise<void> => {
-    if (!validate()) return;
     setIsSubmitting(true);
     setError(null);
     setLoading(true);
-
+    console.log('data', data);
     try {
       const method = id ? 'put' : 'post';
       const url = id ? `/membership-types/${id}` : '/membership-types';

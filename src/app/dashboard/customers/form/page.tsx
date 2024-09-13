@@ -24,6 +24,7 @@ import {
   RadioGroup,
   Stack,
   TextField,
+  Typography,
 } from '@mui/material';
 import { Eye as EyeIcon } from '@phosphor-icons/react/dist/ssr/Eye';
 import { EyeSlash as EyeSlashIcon } from '@phosphor-icons/react/dist/ssr/EyeSlash';
@@ -36,16 +37,20 @@ import axiosInstance from '@/lib/axios';
 import 'react-toastify/dist/ReactToastify.css';
 
 import { CustomLoader } from '@/utils/loader';
+import { padding } from '@mui/system';
 import { Trash } from '@phosphor-icons/react';
 import dayjs from 'dayjs';
 
 import type { Customer } from '@/components/dashboard/customer/customers-table';
+import MembershipPlanCard from '@/components/dashboard/membership-plan/membership-card';
+import { MembershipPlans } from '@/components/dashboard/membership-plan/membership-plan-table';
 
 export default function CustomerEditForm(): React.JSX.Element {
   const searchParams = useSearchParams();
   const id = searchParams.get('id');
   const router = useRouter();
   const [customer, setCustomer] = useState<CustomerFormInputs | null>(null);
+  const [customerS, setCustomerS] = useState<CustomerS | null>(null);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = React.useState(false);
@@ -53,6 +58,34 @@ export default function CustomerEditForm(): React.JSX.Element {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [imageFile, setImageFile] = React.useState<File | null>(null);
   const [redirectTo, setRedirectTo] = useState<'customers' | 'additional-details'>('customers');
+  const [plans, setPlans] = useState<PlanI[]>([]);
+
+  interface CustomerS {
+    id: string;
+    fullName: string;
+    email: string;
+    phoneNumber: string;
+    address: string;
+    createdAt: string;
+    updatedAt: string;
+    memberId: string;
+    status: number; // Ensure this is part of the interface
+    qrCodeImageUrl: string;
+    membership: {
+      startDate: Date;
+      expiryDate: Date;
+      status: string;
+      paymentStatus: string;
+      membershipType: {
+        id: string;
+        title: string;
+        durationInMonths: number;
+        description: string;
+        cost: number;
+        paymentFrequency: string;
+      };
+    };
+  }
 
   const customerSchema = z.object({
     fullName: z.string().min(1, 'Full Name is required'),
@@ -93,11 +126,12 @@ export default function CustomerEditForm(): React.JSX.Element {
   useEffect(() => {
     if (id) {
       axiosInstance
-        .get<{ data: CustomerFormInputs }>(`/users/${id}`, {
+        .get<{ data: CustomerS }>(`/users/${id}`, {
           params: { userType: 3 },
         })
         .then((response) => {
           setCustomer(response.data.data);
+          setCustomerS(response.data.data);
         })
         .catch((err: unknown) => {
           let errorMessage: string;
@@ -125,6 +159,40 @@ export default function CustomerEditForm(): React.JSX.Element {
       setValue('dateOfBirth', customer.dateOfBirth || '');
     }
   }, [customer, setValue]);
+
+  interface MembershipPlanResponse {
+    data: MembershipPlans[];
+  }
+  interface PlanI {
+    id: string;
+    title: string;
+    durationInMonths: number;
+    description: string;
+    cost: number;
+    paymentFrequency: string;
+  }
+
+  useEffect(() => {
+    const fetchPlans = async () => {
+      try {
+        const response = await axiosInstance.get<MembershipPlanResponse>('/membership-types/dropdown');
+        setPlans(response.data.data);
+        setLoading(true);
+      } catch (err: unknown) {
+        let errorMessage: string;
+        if (err instanceof Error) {
+          errorMessage = err.message;
+        } else {
+          errorMessage = 'An unexpected error occurred';
+        }
+        toast.error(errorMessage);
+        setError(errorMessage);
+      } finally {
+        setLoading(false);
+      }
+    };
+    void fetchPlans();
+  }, []);
 
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
     const file = event.target.files?.[0];
@@ -205,6 +273,31 @@ export default function CustomerEditForm(): React.JSX.Element {
   if (!customer && id) {
     return <div>Loading...</div>;
   }
+
+  const handleButtonClick = async (planId: string) => {
+    try {
+      // Call the API to update the membership plan
+      await axiosInstance.post(`/users/assign-membership`, { user: Number(id), membershipType: Number(planId) });
+      toast.success('Plan updated successfully');
+
+      // Fetch the updated user data after the plan update
+      const response = await axiosInstance.get<{ data: CustomerS }>(`/users/${id}`, {
+        params: { userType: 3 },
+      });
+
+      // Update the customerS state with the new data
+      setCustomer(response.data.data);
+      setCustomerS(response.data.data);
+    } catch (err: unknown) {
+      let errorMessage: string;
+      if (err instanceof Error) {
+        errorMessage = err.message;
+      } else {
+        errorMessage = 'An unexpected error occurred';
+      }
+      toast.error(errorMessage);
+    }
+  };
 
   return (
     <Box component="form" onSubmit={handleSubmit((data) => onSubmit(data, redirectTo))}>
@@ -499,6 +592,61 @@ export default function CustomerEditForm(): React.JSX.Element {
             Cancel
           </Button>
         </Stack>
+        <Divider />
+        <Box>
+          {customerS?.membership && (
+            <Grid container>
+              <Grid container spacing={2} justifyContent="center" sx={{ margin: '10px' }}>
+                <Grid item xs={12} sm={6} md={4} key={customerS?.membership?.membershipType?.id} padding={5}>
+                  <MembershipPlanCard
+                    title={customerS.membership.membershipType.title}
+                    durationInMonths={customerS?.membership?.membershipType?.durationInMonths}
+                    description={customerS?.membership?.membershipType?.description}
+                    cost={customerS?.membership?.membershipType?.cost}
+                    onlyShow={false}
+                    onButtonClick={(): void => {}}
+                  />
+                </Grid>
+                <Grid></Grid>
+                <ToastContainer />
+              </Grid>
+            </Grid>
+          )}
+
+          <Card>
+            <CardHeader title="Available plans" />
+            <Grid container>
+              <Grid container spacing={2} justifyContent="center" sx={{ margin: '10px' }}>
+                {plans.length > 0 ? (
+                  plans
+                    .filter((ele: any) => ele.id != customerS?.membership?.membershipType?.id)
+                    .map((plan: PlanI) => (
+                      <Grid item xs={12} sm={6} md={4} key={plan.id} padding={5}>
+                        <MembershipPlanCard
+                          title={plan.title}
+                          durationInMonths={plan.durationInMonths}
+                          description={plan.description}
+                          cost={plan.cost}
+                          onlyShow={true}
+                          onButtonClick={() => {
+                            handleButtonClick(plan.id);
+                          }}
+                        />
+                      </Grid>
+                    ))
+                ) : (
+                  <Typography variant="h6" color="text.secondary" align="center">
+                    No membership plans available.
+                  </Typography>
+                )}
+
+                <ToastContainer />
+              </Grid>
+            </Grid>
+          </Card>
+        </Box>
+        <Divider />
+
         {loading && <CustomLoader />}
         {error ? <Alert color="error">{error}</Alert> : null}
       </Card>

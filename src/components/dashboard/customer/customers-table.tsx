@@ -3,11 +3,7 @@ import { useRouter } from 'next/navigation';
 import { getStatusText } from '@/utils/userstatus';
 import {
   Box,
-  // Button,
   Card,
-  // Dialog,
-  // DialogActions,
-  // DialogContent,
   Divider,
   FormControlLabel,
   IconButton,
@@ -37,6 +33,20 @@ export interface Customer {
   memberId: string;
   status: number; // Ensure this is part of the interface
   qrCodeImageUrl: string;
+  membership: {
+    startDate: Date;
+    expiryDate: Date;
+    status: string;
+    paymentStatus: string;
+    membershipType: {
+      id: string;
+      title: string;
+      durationInMonths: number;
+      description: string;
+      cost: number;
+      paymentFrequency: string;
+    };
+  };
 }
 
 interface CustomersTableProps {
@@ -59,8 +69,7 @@ export function CustomersTable({
   updateCustomerStatus, // Added prop
 }: CustomersTableProps): React.JSX.Element {
   const router = useRouter();
-  // const [open, setOpen] = React.useState(false);
-  // const [selectedImage, setSelectedImage] = React.useState('');
+
   const handleEdit = React.useCallback(
     (id: string) => {
       router.push(`/dashboard/customers/form?id=${id}`);
@@ -71,16 +80,6 @@ export function CustomersTable({
   const handleRowClick = (id: string): void => {
     router.push(`/dashboard/customers/form?id=${id}`); // Replace with the actual path to your form page
   };
-
-  // const handleAvatarClick = (imageUrl: string): void => {
-  //   setSelectedImage(imageUrl);
-  //   setOpen(true);
-  // };
-
-  // const handleClose = (): void => {
-  //   setOpen(false);
-  //   setSelectedImage('');
-  // };
 
   return (
     <Card>
@@ -102,7 +101,7 @@ export function CustomersTable({
               </TableCell>
               <TableCell sx={tableCss.tableHeaderCell}>Phone</TableCell>
               <TableCell sx={tableCss.tableHeaderCell}>Updated At</TableCell>
-              <TableCell sx={tableCss.tableHeaderCell}>Actions</TableCell>
+              <TableCell sx={tableCss.tableHeaderCell}>Membership Type</TableCell>
               <TableCell sx={tableCss.tableHeaderCell}>Status</TableCell>
             </TableRow>
           </TableHead>
@@ -116,18 +115,6 @@ export function CustomersTable({
             ) : (
               rows.map((row) => (
                 <>
-                  {/* <TableCell sx={tableCss.tableCell}>
-                    <Image
-                      src={row?.qrCodeImageUrl || ''}
-                      alt="QR Code Preview"
-                      width={50}
-                      height={50}
-                      style={{ marginTop: '1rem' }}
-                      onClick={() => {
-                        handleAvatarClick(row.qrCodeImageUrl || '');
-                      }}
-                    />
-                  </TableCell> */}
                   <TableRow hover key={row.id} sx={tableCss.tableRow}>
                     <TableCell sx={tableCss.tableCell}>
                       <Typography
@@ -171,17 +158,7 @@ export function CustomersTable({
                     </TableCell>
                     <TableCell sx={tableCss.tableCell}>{row.phoneNumber || '-'}</TableCell>
                     <TableCell sx={tableCss.tableCell}>{dayjs(row.updatedAt).format('MMM D, YYYY')}</TableCell>
-                    <TableCell sx={tableCss.tableCell}>
-                      <Stack direction="row" spacing={1} alignItems="center">
-                        <IconButton
-                          onClick={() => {
-                            handleEdit(row.id);
-                          }}
-                        >
-                          <PencilSimple />
-                        </IconButton>
-                      </Stack>
-                    </TableCell>
+                    <TableCell sx={tableCss.tableCell}>{row?.membership?.membershipType?.title || '-'}</TableCell>
 
                     <TableCell>
                       <FormControlLabel
@@ -215,18 +192,6 @@ export function CustomersTable({
         onRowsPerPageChange={onRowsPerPageChange}
         rowsPerPageOptions={[5, 10, 25]}
       />
-
-      {/* Modal for QR Code Preview */}
-      {/* <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
-        <DialogContent>
-          <img src={selectedImage} alt="QR Code" style={{ width: '50%', height: 'auto', objectFit: 'contain' }} />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose} color="primary">
-            Close
-          </Button>
-        </DialogActions>
-      </Dialog> */}
     </Card>
   );
 }

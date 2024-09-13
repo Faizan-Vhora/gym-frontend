@@ -37,6 +37,8 @@ import { CustomLoader } from '@/utils/loader';
 import { Trash } from '@phosphor-icons/react';
 import dayjs from 'dayjs';
 
+import { Customer } from '@/components/dashboard/customer/customers-table';
+
 export default function CustomerEditForm(): React.JSX.Element {
   const searchParams = useSearchParams();
   const id = searchParams.get('id');
@@ -48,6 +50,7 @@ export default function CustomerEditForm(): React.JSX.Element {
 
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [imageFile, setImageFile] = React.useState<File | null>(null);
+  const [redirectTo, setRedirectTo] = useState<'customers' | 'membership-form'>('customers');
 
   const customerSchema = z.object({
     fullName: z.string().min(1, 'Full Name is required'),
@@ -129,12 +132,16 @@ export default function CustomerEditForm(): React.JSX.Element {
     }
   };
 
+  interface CustomerData {
+    data: Customer;
+  }
+
   const handleRemoveImage = (): void => {
     setImagePreview(null);
     setImageFile(null);
   };
 
-  const onSubmit = async (data: CustomerFormInputs): Promise<void> => {
+  const onSubmit = async (data: CustomerFormInputs, destination: string): Promise<void> => {
     setIsSubmitting(true);
     setError(null);
     setLoading(true);
@@ -164,7 +171,7 @@ export default function CustomerEditForm(): React.JSX.Element {
       const method = id ? 'put' : 'post';
       const url = id ? `/users/${id}` : '/users';
 
-      await axiosInstance({
+      const response: { data: CustomerData } = await axiosInstance({
         method,
         url,
         data: formData,
@@ -172,7 +179,11 @@ export default function CustomerEditForm(): React.JSX.Element {
       });
       toast.success('Member saved successfully');
 
-      router.push('/dashboard/customers'); // Redirect to the listing page after successful save
+      if (destination === 'customers') {
+        router.push('/dashboard/customers');
+      } else if (destination === 'additional-details') {
+        router.push(`/dashboard/customers/form/membership-form?id=${response?.data?.data?.id}`);
+      }
     } catch (err: unknown) {
       let errorMessage: string;
       if (err instanceof Error) {
@@ -193,7 +204,7 @@ export default function CustomerEditForm(): React.JSX.Element {
   }
 
   return (
-    <Box component="form" onSubmit={handleSubmit(onSubmit)}>
+    <Box component="form" onSubmit={handleSubmit((data) => onSubmit(data, redirectTo))}>
       <Card>
         <CardHeader title="Additional Details" />
         <Divider />
@@ -343,8 +354,26 @@ export default function CustomerEditForm(): React.JSX.Element {
         </CardContent>
         <Divider />
         <Stack direction="row" spacing={2} justifyContent="flex-end" p={3}>
-          <Button className="common-button" type="submit" variant="contained" disabled={isSubmitting}>
+          <Button
+            className="common-button"
+            type="submit"
+            variant="contained"
+            onClick={() => {
+              setRedirectTo('customers');
+            }}
+          >
             Update
+          </Button>
+          <Button
+            className="common-button"
+            type="submit"
+            variant="contained"
+            onClick={() => {
+              setRedirectTo('membership-form');
+            }}
+            disabled={isSubmitting}
+          >
+            Choose Membership Plan
           </Button>
           <Button
             variant="outlined"
