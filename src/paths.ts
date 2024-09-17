@@ -42,6 +42,10 @@ export const paths = {
   },
 
 
+  services: {
+    services: '/dashboard/services',
+    ServicesForm: (id?: number) => `/dashboard/services/form/${id}`
+  },
 
   dashboard: {
     dashboard: '/dashboard',

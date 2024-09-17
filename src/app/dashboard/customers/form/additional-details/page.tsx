@@ -181,7 +181,7 @@ export default function CustomerEditForm(): React.JSX.Element {
 
       if (destination === 'customers') {
         router.push('/dashboard/customers');
-      } else if (destination === 'additional-details') {
+      } else if (destination === 'membership-form') {
         router.push(`/dashboard/customers/form/membership-form?id=${response?.data?.data?.id}`);
       }
     } catch (err: unknown) {

@@ -20,14 +20,40 @@ interface PlanI {
   paymentFrequency: string;
 }
 
-const MembershipPlans = () => {
+interface CustomerS {
+  id: string;
+  fullName: string;
+  email: string;
+  phoneNumber: string;
+  address: string;
+  createdAt: string;
+  updatedAt: string;
+  memberId: string;
+  status: number; // Ensure this is part of the interface
+  qrCodeImageUrl: string;
+  membership: {
+    startDate: Date;
+    expiryDate: Date;
+    status: string;
+    paymentStatus: string;
+    membershipType: {
+      id: string;
+      title: string;
+      durationInMonths: number;
+      description: string;
+      cost: number;
+      paymentFrequency: string;
+    };
+  };
+}
+
+const MembershipPlansForm: React.FC = () => {
+  const searchParams = useSearchParams();
+  const id = searchParams.get('id');
   const [plans, setPlans] = useState<PlanI[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const searchParams = useSearchParams();
-  const Memberid = searchParams.get('id');
   const router = useRouter();
-
   interface MembershipPlanResponse {
     data: MembershipPlans[];
   }
@@ -54,6 +80,30 @@ const MembershipPlans = () => {
     };
     void fetchPlans();
   }, []);
+
+  const handleButtonClick = async (planId: string) => {
+    try {
+      // Call the API to update the membership plan
+      await axiosInstance.post(`/users/assign-membership`, { user: Number(id), membershipType: Number(planId) });
+      toast.success('Plan updated successfully');
+
+      // Fetch the updated user data after the plan update
+      await axiosInstance.get<{ data: CustomerS }>(`/users/${id}`, {
+        params: { userType: 3 },
+      });
+
+      router.push('/dashboard/customers');
+      // Update the customerS state with the new data
+    } catch (err: unknown) {
+      let errorMessage: string;
+      if (err instanceof Error) {
+        errorMessage = err.message;
+      } else {
+        errorMessage = 'An unexpected error occurred';
+      }
+      toast.error(errorMessage);
+    }
+  };
 
   if (loading) {
     return (
@@ -105,8 +155,7 @@ const MembershipPlans = () => {
                 cost={plan.cost}
                 onlyShow={true}
                 onButtonClick={() => {
-                  // Handle button click here
-                  console.log(`Choosing plan with ID: ${plan.id}`);
+                  void handleButtonClick(plan.id);
                 }}
               />
             </Grid>
@@ -123,4 +172,4 @@ const MembershipPlans = () => {
   );
 };
 
-export default MembershipPlans;
+export default MembershipPlansForm;

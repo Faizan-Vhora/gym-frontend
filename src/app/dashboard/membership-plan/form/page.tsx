@@ -98,7 +98,7 @@ export default function MembershipPlanEditForm(): React.JSX.Element {
     setIsSubmitting(true);
     setError(null);
     setLoading(true);
-    console.log('data', data);
+
     try {
       const method = id ? 'put' : 'post';
       const url = id ? `/membership-types/${id}` : '/membership-types';

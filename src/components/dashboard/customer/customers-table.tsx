@@ -6,8 +6,6 @@ import {
   Card,
   Divider,
   FormControlLabel,
-  IconButton,
-  Stack,
   Switch,
   Table,
   TableBody,
@@ -17,7 +15,6 @@ import {
   TableRow,
   Typography,
 } from '@mui/material';
-import { PencilSimple } from '@phosphor-icons/react';
 import dayjs from 'dayjs';
 
 import tableCss from '@/styles/table-css';
@@ -69,13 +66,6 @@ export function CustomersTable({
   updateCustomerStatus, // Added prop
 }: CustomersTableProps): React.JSX.Element {
   const router = useRouter();
-
-  const handleEdit = React.useCallback(
-    (id: string) => {
-      router.push(`/dashboard/customers/form?id=${id}`);
-    },
-    [router]
-  );
 
   const handleRowClick = (id: string): void => {
     router.push(`/dashboard/customers/form?id=${id}`); // Replace with the actual path to your form page

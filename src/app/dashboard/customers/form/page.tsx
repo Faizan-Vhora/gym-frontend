@@ -37,7 +37,6 @@ import axiosInstance from '@/lib/axios';
 import 'react-toastify/dist/ReactToastify.css';
 
 import { CustomLoader } from '@/utils/loader';
-import { padding } from '@mui/system';
 import { Trash } from '@phosphor-icons/react';
 import dayjs from 'dayjs';
 
@@ -288,6 +287,7 @@ export default function CustomerEditForm(): React.JSX.Element {
       // Update the customerS state with the new data
       setCustomer(response.data.data);
       setCustomerS(response.data.data);
+      router.push('/dashboard/customers');
     } catch (err: unknown) {
       let errorMessage: string;
       if (err instanceof Error) {
@@ -592,60 +592,66 @@ export default function CustomerEditForm(): React.JSX.Element {
             Cancel
           </Button>
         </Stack>
-        <Divider />
-        <Box>
-          {customerS?.membership && (
-            <Grid container>
-              <Grid container spacing={2} justifyContent="center" sx={{ margin: '10px' }}>
-                <Grid item xs={12} sm={6} md={4} key={customerS?.membership?.membershipType?.id} padding={5}>
-                  <MembershipPlanCard
-                    title={customerS.membership.membershipType.title}
-                    durationInMonths={customerS?.membership?.membershipType?.durationInMonths}
-                    description={customerS?.membership?.membershipType?.description}
-                    cost={customerS?.membership?.membershipType?.cost}
-                    onlyShow={false}
-                    onButtonClick={(): void => {}}
-                  />
+        {id && (
+          <>
+            <Divider />
+            <Box>
+              {customerS?.membership && (
+                <Grid container>
+                  <Grid container spacing={2} justifyContent="center" sx={{ margin: '10px' }}>
+                    <Grid item xs={12} sm={6} md={4} key={customerS?.membership?.membershipType?.id} padding={5}>
+                      <MembershipPlanCard
+                        title={customerS.membership.membershipType.title}
+                        durationInMonths={customerS?.membership?.membershipType?.durationInMonths}
+                        description={customerS?.membership?.membershipType?.description}
+                        cost={customerS?.membership?.membershipType?.cost}
+                        onlyShow={false}
+                        onButtonClick={(): void => {
+                          undefined;
+                        }}
+                      />
+                    </Grid>
+                    <Grid></Grid>
+                    <ToastContainer />
+                  </Grid>
                 </Grid>
-                <Grid></Grid>
-                <ToastContainer />
-              </Grid>
-            </Grid>
-          )}
+              )}
 
-          <Card>
-            <CardHeader title="Available plans" />
-            <Grid container>
-              <Grid container spacing={2} justifyContent="center" sx={{ margin: '10px' }}>
-                {plans.length > 0 ? (
-                  plans
-                    .filter((ele: any) => ele.id != customerS?.membership?.membershipType?.id)
-                    .map((plan: PlanI) => (
-                      <Grid item xs={12} sm={6} md={4} key={plan.id} padding={5}>
-                        <MembershipPlanCard
-                          title={plan.title}
-                          durationInMonths={plan.durationInMonths}
-                          description={plan.description}
-                          cost={plan.cost}
-                          onlyShow={true}
-                          onButtonClick={() => {
-                            handleButtonClick(plan.id);
-                          }}
-                        />
-                      </Grid>
-                    ))
-                ) : (
-                  <Typography variant="h6" color="text.secondary" align="center">
-                    No membership plans available.
-                  </Typography>
-                )}
+              <Card>
+                <CardHeader title="Available plans" />
+                <Grid container>
+                  <Grid container spacing={2} justifyContent="center" sx={{ margin: '10px' }}>
+                    {plans.length > 0 ? (
+                      plans
+                        .filter((ele: PlanI) => ele.id !== customerS?.membership?.membershipType?.id)
+                        .map((plan: PlanI) => (
+                          <Grid item xs={12} sm={6} md={4} key={plan.id} padding={5}>
+                            <MembershipPlanCard
+                              title={plan.title}
+                              durationInMonths={plan.durationInMonths}
+                              description={plan.description}
+                              cost={plan.cost}
+                              onlyShow={true}
+                              onButtonClick={() => {
+                                void handleButtonClick(plan.id);
+                              }}
+                            />
+                          </Grid>
+                        ))
+                    ) : (
+                      <Typography variant="h6" color="text.secondary" align="center">
+                        No membership plans available.
+                      </Typography>
+                    )}
 
-                <ToastContainer />
-              </Grid>
-            </Grid>
-          </Card>
-        </Box>
-        <Divider />
+                    <ToastContainer />
+                  </Grid>
+                </Grid>
+              </Card>
+            </Box>
+            <Divider />
+          </>
+        )}
 
         {loading && <CustomLoader />}
         {error ? <Alert color="error">{error}</Alert> : null}

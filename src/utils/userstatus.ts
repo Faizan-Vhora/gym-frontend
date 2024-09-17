@@ -3,21 +3,18 @@ export enum UserStatus {
   Inactive = 2
 }
 
-export enum UserStatusString {
-  Active = 'active',
-  Inactive = 'inactive'
-}
+export type UserStatusString = 'active' | 'inactive';
 
-export const getStatusStringText = (status: UserStatusString): string => {
+export function getStatusStringText(status: UserStatusString): string {
   switch (status) {
-    case UserStatusString.Active:
+    case 'active':
       return 'Active';
-    case UserStatusString.Inactive:
+    case 'inactive':
       return 'Inactive';
     default:
       return 'Unknown';
   }
-};
+}
 
 // Explicitly specify the return type as string
 export const getStatusText = (status: UserStatus): string => {
