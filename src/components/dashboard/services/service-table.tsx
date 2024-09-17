@@ -95,7 +95,7 @@ export function ServicesTable({
                   <TableCell sx={tableCss.tableCell}>{row.description || '-'}</TableCell>
                   <TableCell sx={tableCss.tableCell}>{dayjs(row.updatedAt).format('MMM D, YYYY')}</TableCell>
 
-                  <TableCell>
+                  <TableCell sx={tableCss.tableCell}>
                     <FormControlLabel
                       control={
                         <Switch
