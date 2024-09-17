@@ -166,6 +166,7 @@ export default function CustomerEditForm(): React.JSX.Element {
     id: string;
     title: string;
     durationInMonths: number;
+    expiryDate: Date;
     description: string;
     cost: number;
     paymentFrequency: string;
@@ -275,8 +276,13 @@ export default function CustomerEditForm(): React.JSX.Element {
 
   const handleButtonClick = async (planId: string) => {
     try {
+      const startDate = new Date().toISOString().slice(0, 10);
       // Call the API to update the membership plan
-      await axiosInstance.post(`/users/assign-membership`, { user: Number(id), membershipType: Number(planId) });
+      await axiosInstance.post(`/users/assign-membership`, {
+        user: Number(id),
+        membershipType: Number(planId),
+        startDate: startDate,
+      });
       toast.success('Plan updated successfully');
 
       // Fetch the updated user data after the plan update
@@ -603,6 +609,7 @@ export default function CustomerEditForm(): React.JSX.Element {
                       <MembershipPlanCard
                         title={customerS.membership.membershipType.title}
                         durationInMonths={customerS?.membership?.membershipType?.durationInMonths}
+                        expiryDate={customerS?.membership?.expiryDate}
                         description={customerS?.membership?.membershipType?.description}
                         cost={customerS?.membership?.membershipType?.cost}
                         onlyShow={false}
@@ -629,6 +636,7 @@ export default function CustomerEditForm(): React.JSX.Element {
                             <MembershipPlanCard
                               title={plan.title}
                               durationInMonths={plan.durationInMonths}
+                              expiryDate={plan.expiryDate}
                               description={plan.description}
                               cost={plan.cost}
                               onlyShow={true}

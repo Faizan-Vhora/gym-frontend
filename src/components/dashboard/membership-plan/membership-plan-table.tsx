@@ -29,6 +29,7 @@ export interface MembershipPlans {
   title: string;
   cost: number;
   durationInMonths: number;
+  expiryDate: Date;
   paymentFrequency: string;
   createdAt: string;
   updatedAt: string;

@@ -148,7 +148,14 @@ export function CustomersTable({
                     </TableCell>
                     <TableCell sx={tableCss.tableCell}>{row.phoneNumber || '-'}</TableCell>
                     <TableCell sx={tableCss.tableCell}>{dayjs(row.updatedAt).format('MMM D, YYYY')}</TableCell>
-                    <TableCell sx={tableCss.tableCell}>{row?.membership?.membershipType?.title || '-'}</TableCell>
+                    <TableCell sx={tableCss.tableCell}>
+                      {row?.membership?.membershipType?.title || '-'}
+                      {row?.membership?.expiryDate && !isNaN(new Date(row?.membership?.expiryDate).getTime()) && (
+                        <Typography color="textSecondary" variant="body2">
+                          {new Date(row?.membership?.expiryDate).toLocaleDateString()}
+                        </Typography>
+                      )}
+                    </TableCell>
 
                     <TableCell>
                       <FormControlLabel

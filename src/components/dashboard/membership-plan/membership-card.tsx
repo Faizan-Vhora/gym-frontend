@@ -1,10 +1,10 @@
-// components/MembershipPlanCard.tsx
 import React from 'react';
 import { Button, Card, CardContent, CardProps, Typography } from '@mui/material';
 
 interface MembershipPlanCardProps extends CardProps {
   title: string;
   durationInMonths: number;
+  expiryDate?: Date; // Make expiryDate optional
   description: string;
   cost: number;
   onlyShow: boolean;
@@ -14,12 +14,17 @@ interface MembershipPlanCardProps extends CardProps {
 const MembershipPlanCard: React.FC<MembershipPlanCardProps> = ({
   title,
   durationInMonths,
+  expiryDate,
   description,
   cost,
   onlyShow,
   onButtonClick,
   ...cardProps
 }) => {
+  // Check if expiryDate is a valid Date object and format it
+  const isExpiryDateValid = expiryDate && !isNaN(new Date(expiryDate).getTime());
+  const formattedExpiryDate = isExpiryDateValid ? new Date(expiryDate).toLocaleDateString() : '';
+
   return (
     <Card style={{ height: '100%', display: 'flex', flexDirection: 'column' }} {...cardProps}>
       <CardContent style={{ flexGrow: 1 }}>
@@ -29,6 +34,11 @@ const MembershipPlanCard: React.FC<MembershipPlanCardProps> = ({
         <Typography color="text.secondary" gutterBottom>
           Duration: {durationInMonths} months
         </Typography>
+        {isExpiryDateValid && (
+          <Typography color="text.secondary" gutterBottom>
+            Expiry Date: {formattedExpiryDate}
+          </Typography>
+        )}
         <Typography variant="body2" paragraph>
           {description}
         </Typography>
