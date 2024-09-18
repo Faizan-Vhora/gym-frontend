@@ -25,6 +25,7 @@ export default function Page(): React.JSX.Element {
   const [rowsPerPage, setRowsPerPage] = useState<number>(5);
   const [filter, setFilter] = useState<string>(''); // Search filter
   const [statusFilter, setStatusFilter] = useState<string>('ALL'); // Status filter
+  const [membershipFilter, setMembershipFilter] = useState<string>('ALL'); // Membership type filter
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
@@ -45,6 +46,7 @@ export default function Page(): React.JSX.Element {
           limit: rowsPerPage,
           search: filter,
           status: statusFilter !== 'ALL' ? statusFilter : undefined,
+          memberShipTypeId: membershipFilter !== 'ALL' ? Number(membershipFilter) : undefined,
         },
       });
       setCustomers(response.data.data.items);
@@ -56,7 +58,7 @@ export default function Page(): React.JSX.Element {
     } finally {
       setLoading(false);
     }
-  }, [page, rowsPerPage, filter, statusFilter]);
+  }, [page, rowsPerPage, filter, statusFilter, membershipFilter]); // Include membershipFilter here
 
   useEffect(() => {
     // Define an async function and invoke it
@@ -102,6 +104,11 @@ export default function Page(): React.JSX.Element {
     setPage(0); // Reset to first page on status filter change
   };
 
+  const handleMembershipTypeChange = (membershipType: string): void => {
+    setMembershipFilter(membershipType);
+    setPage(0); // Reset to first page on membership type filter change
+  };
+
   const updateCustomerStatus = async (id: string, currentStatus: number): Promise<void> => {
     const newStatus = currentStatus === 1 ? 2 : 1; // Toggle status
     try {
@@ -141,6 +148,7 @@ export default function Page(): React.JSX.Element {
       <CustomersFilters
         onFilterChange={handleFilterChange}
         onStatusChange={handleStatusChange} // Pass status change handler
+        onMembershipTypeChange={handleMembershipTypeChange} // Pass membership type change handler
       />
       {loading ? (
         <CustomLoader />

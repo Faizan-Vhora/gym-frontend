@@ -13,7 +13,7 @@ const createError = (message: string): Error => {
 };
 
 const axiosInstance = axios.create({
-  baseURL: 'http://3.138.244.242:3001/',
+  baseURL: 'http://localhost:3001/',
 });
 
 // Adding an Authorization header if a token exists

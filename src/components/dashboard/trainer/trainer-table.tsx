@@ -76,8 +76,8 @@ export function TrainersTable({
               <TableCell sx={tableCss.tableHeaderCell}>Address</TableCell>
               <TableCell sx={tableCss.tableHeaderCell}>Phone</TableCell>
               <TableCell sx={tableCss.tableHeaderCell}>Updated At</TableCell>
-              <TableCell sx={tableCss.tableHeaderCell}>Actions</TableCell>
               <TableCell sx={tableCss.tableHeaderCell}>Status</TableCell>
+              <TableCell sx={tableCss.tableHeaderCell}>Actions</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -96,6 +96,7 @@ export function TrainersTable({
                       onClick={() => {
                         handleRowClick(row.id);
                       }}
+                      style={{ cursor: 'pointer' }}
                     >
                       {row.fullName}
                     </Typography>
@@ -105,34 +106,15 @@ export function TrainersTable({
                       onClick={() => {
                         handleRowClick(row.id);
                       }}
+                      style={{ cursor: 'pointer' }}
                     >
                       {row.email}
-                    </Typography>
-                    <Typography
-                      color="textSecondary"
-                      variant="body2"
-                      onClick={() => {
-                        handleRowClick(row.id);
-                      }}
-                    >
-                      {row.memberId}
                     </Typography>
                   </TableCell>
                   <TableCell sx={tableCss.tableCell}>{row.address || '-'}</TableCell>
                   <TableCell sx={tableCss.tableCell}>{row.phoneNumber || '-'}</TableCell>
                   <TableCell sx={tableCss.tableCell}>{dayjs(row.updatedAt).format('MMM D, YYYY')}</TableCell>
                   <TableCell sx={tableCss.tableCell}>
-                    <Stack direction="row" spacing={1} alignItems="center">
-                      <IconButton
-                        onClick={() => {
-                          handleEdit(row.id);
-                        }}
-                      >
-                        <PencilSimple />
-                      </IconButton>
-                    </Stack>
-                  </TableCell>
-                  <TableCell>
                     <FormControlLabel
                       control={
                         <Switch
@@ -146,6 +128,17 @@ export function TrainersTable({
                       }
                       label={getStatusText(row.status)}
                     />
+                  </TableCell>
+                  <TableCell sx={tableCss.tableCell}>
+                    <Stack direction="row" spacing={1} alignItems="center">
+                      <IconButton
+                        onClick={() => {
+                          handleEdit(row.id);
+                        }}
+                      >
+                        <PencilSimple />
+                      </IconButton>
+                    </Stack>
                   </TableCell>
                 </TableRow>
               ))

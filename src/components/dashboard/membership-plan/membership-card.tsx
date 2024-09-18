@@ -1,5 +1,6 @@
 import React from 'react';
 import { Button, Card, CardContent, CardProps, Typography } from '@mui/material';
+import dayjs from 'dayjs';
 
 interface MembershipPlanCardProps extends CardProps {
   title: string;
@@ -23,7 +24,7 @@ const MembershipPlanCard: React.FC<MembershipPlanCardProps> = ({
 }) => {
   // Check if expiryDate is a valid Date object and format it
   const isExpiryDateValid = expiryDate && !isNaN(new Date(expiryDate).getTime());
-  const formattedExpiryDate = isExpiryDateValid ? new Date(expiryDate).toLocaleDateString() : '';
+  const formattedExpiryDate = isExpiryDateValid ? dayjs(expiryDate).format('MMM D, YYYY') : '';
 
   return (
     <Card style={{ height: '100%', display: 'flex', flexDirection: 'column' }} {...cardProps}>

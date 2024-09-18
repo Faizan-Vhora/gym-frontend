@@ -35,6 +35,7 @@ import axiosInstance from '@/lib/axios';
 
 import 'react-toastify/dist/ReactToastify.css';
 
+import { REGEX_VALIDATION } from '@/utils/constant';
 import { CustomLoader } from '@/utils/loader';
 import { Trash } from '@phosphor-icons/react';
 import dayjs from 'dayjs';
@@ -55,9 +56,26 @@ export default function TrainerEditForm(): React.JSX.Element {
   const [redirectTo, setRedirectTo] = useState<'trainers' | 'additional-details'>('trainers');
 
   const trainerSchema = z.object({
-    fullName: z.string().min(1, 'Full Name is required'),
-    email: z.string().email('Invalid email address'),
-    phoneNumber: z.string().optional(),
+    fullName: z
+      .string()
+      .min(1, 'Full Name is required')
+      .regex(REGEX_VALIDATION.FULL_NAME, 'Full Name should not contain numbers or special characters'),
+    email: z.string().min(1, { message: 'Email is required' }).email(),
+    phoneNumber: z
+      .string()
+      .optional()
+      .refine(
+        (value) => {
+          if (value) {
+            // Define your regex here
+            return REGEX_VALIDATION.PHONE_NUMBER.test(value); // Example regex for a 10-digit phone number
+          }
+          return true; // If value is undefined or empty, skip regex validation
+        },
+        {
+          message: 'Invalid phone number format',
+        }
+      ),
     address: z.string().optional(),
     password: id
       ? z.string().optional()
@@ -68,7 +86,21 @@ export default function TrainerEditForm(): React.JSX.Element {
     profileImage: z.string().optional(),
     profileImageUrl: z.string().optional(), // Update field name
     gender: z.string().optional(), // Add gender field
-    zipCode: z.string().optional(), // Add zipcode field
+    zipCode: z
+      .string()
+      .optional()
+      .refine(
+        (value) => {
+          if (value) {
+            // Define your regex here
+            return REGEX_VALIDATION.ZIP_CODE.test(value); // Example regex for a 10-digit phone number
+          }
+          return true; // If value is undefined or empty, skip regex validation
+        },
+        {
+          message: 'Invalid Zip Code format',
+        }
+      ), // Add zipcode field
     qrCodeImageUrl: z.string().optional(),
     dateOfBirth: z.string().optional(),
   });
@@ -286,7 +318,7 @@ export default function TrainerEditForm(): React.JSX.Element {
                   <Grid item md={12} xs={12}>
                     <Grid container spacing={4}>
                       <Grid item md={id ? 6 : 4} p={2}>
-                        <FormControl fullWidth required>
+                        <FormControl fullWidth required error={Boolean(errors.fullName)}>
                           <InputLabel>Full Name</InputLabel>
                           <OutlinedInput
                             {...register('fullName', { required: 'Full name is required' })}
@@ -297,17 +329,9 @@ export default function TrainerEditForm(): React.JSX.Element {
                         </FormControl>
                       </Grid>
                       <Grid item md={id ? 6 : 4} p={2}>
-                        <FormControl fullWidth required>
+                        <FormControl fullWidth required error={Boolean(errors.email)}>
                           <InputLabel>Email</InputLabel>
-                          <OutlinedInput
-                            {...register('email', {
-                              required: 'Email is required',
-                              pattern: { value: /^\S+@\S+$/i, message: 'Invalid email address' },
-                            })}
-                            label="Email"
-                            type="email"
-                            error={Boolean(errors.email)}
-                          />
+                          <OutlinedInput {...register('email')} label="Email" type="email" />
                           {errors.email?.message && <FormHelperText error>{errors.email.message}</FormHelperText>}
                         </FormControl>
                       </Grid>
@@ -345,7 +369,7 @@ export default function TrainerEditForm(): React.JSX.Element {
                       {id && (
                         <>
                           <Grid item md={6} p={2}>
-                            <FormControl fullWidth>
+                            <FormControl fullWidth error={Boolean(errors.zipCode)}>
                               <InputLabel>Zipcode</InputLabel>
                               <OutlinedInput {...register('zipCode')} label="Zipcode" error={Boolean(errors.zipCode)} />
                               {errors.zipCode?.message && (
@@ -410,7 +434,7 @@ export default function TrainerEditForm(): React.JSX.Element {
                             </FormControl>
                           </Grid>
                           <Grid item md={6} p={2}>
-                            <FormControl fullWidth>
+                            <FormControl fullWidth error={Boolean(errors.phoneNumber)}>
                               <InputLabel>Phone Number</InputLabel>
                               <OutlinedInput
                                 {...register('phoneNumber')}

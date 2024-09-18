@@ -6,6 +6,8 @@ import {
   Card,
   Divider,
   FormControlLabel,
+  IconButton,
+  Stack,
   Switch,
   Table,
   TableBody,
@@ -15,6 +17,7 @@ import {
   TableRow,
   Typography,
 } from '@mui/material';
+import { PencilSimple } from '@phosphor-icons/react';
 import dayjs from 'dayjs';
 
 import tableCss from '@/styles/table-css';
@@ -67,6 +70,13 @@ export function CustomersTable({
 }: CustomersTableProps): React.JSX.Element {
   const router = useRouter();
 
+  const handleEdit = React.useCallback(
+    (id: string) => {
+      router.push(`/dashboard/customers/form?id=${id}`);
+    },
+    [router]
+  );
+
   const handleRowClick = (id: string): void => {
     router.push(`/dashboard/customers/form?id=${id}`); // Replace with the actual path to your form page
   };
@@ -91,8 +101,9 @@ export function CustomersTable({
               </TableCell>
               <TableCell sx={tableCss.tableHeaderCell}>Phone</TableCell>
               <TableCell sx={tableCss.tableHeaderCell}>Updated At</TableCell>
-              <TableCell sx={tableCss.tableHeaderCell}>Membership Type</TableCell>
+              <TableCell sx={tableCss.tableHeaderCell}>Membership Plan</TableCell>
               <TableCell sx={tableCss.tableHeaderCell}>Status</TableCell>
+              <TableCell sx={tableCss.tableHeaderCell}>Actions</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -112,6 +123,7 @@ export function CustomersTable({
                         onClick={() => {
                           handleRowClick(row.id);
                         }}
+                        style={{ cursor: 'pointer' }}
                       >
                         {row.fullName}
                       </Typography>
@@ -121,17 +133,9 @@ export function CustomersTable({
                         onClick={() => {
                           handleRowClick(row.id);
                         }}
+                        style={{ cursor: 'pointer' }}
                       >
                         {row.email}
-                      </Typography>
-                      <Typography
-                        color="textSecondary"
-                        variant="body2"
-                        onClick={() => {
-                          handleRowClick(row.id);
-                        }}
-                      >
-                        {row.memberId}
                       </Typography>
                     </TableCell>
 
@@ -149,10 +153,12 @@ export function CustomersTable({
                     <TableCell sx={tableCss.tableCell}>{row.phoneNumber || '-'}</TableCell>
                     <TableCell sx={tableCss.tableCell}>{dayjs(row.updatedAt).format('MMM D, YYYY')}</TableCell>
                     <TableCell sx={tableCss.tableCell}>
-                      {row?.membership?.membershipType?.title || '-'}
+                      <Typography color="black" variant="subtitle2">
+                        {row?.membership?.membershipType?.title || '-'}
+                      </Typography>
                       {row?.membership?.expiryDate && !isNaN(new Date(row?.membership?.expiryDate).getTime()) && (
                         <Typography color="textSecondary" variant="body2">
-                          {new Date(row?.membership?.expiryDate).toLocaleDateString()}
+                          Exp: {dayjs(row?.membership?.expiryDate).format('MMM D, YYYY')}
                         </Typography>
                       )}
                     </TableCell>
@@ -171,6 +177,17 @@ export function CustomersTable({
                         }
                         label={getStatusText(row.status)}
                       />
+                    </TableCell>
+                    <TableCell sx={tableCss.tableCell}>
+                      <Stack direction="row" spacing={1} alignItems="center">
+                        <IconButton
+                          onClick={() => {
+                            handleEdit(row.id);
+                          }}
+                        >
+                          <PencilSimple />
+                        </IconButton>
+                      </Stack>
                     </TableCell>
                   </TableRow>
                 </>
