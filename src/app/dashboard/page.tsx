@@ -1,9 +1,13 @@
+'use client';
+
 import * as React from 'react';
-import type { Metadata } from 'next';
+// import type { Metadata } from 'next';
 import Grid from '@mui/material/Unstable_Grid2';
 import dayjs from 'dayjs';
+import { toast } from 'react-toastify';
 
-import { config } from '@/config';
+// import { config } from '@/config';
+import axiosInstance from '@/lib/axios';
 import { Budget } from '@/components/dashboard/overview/budget';
 import { LatestOrders } from '@/components/dashboard/overview/latest-orders';
 import { LatestProducts } from '@/components/dashboard/overview/latest-products';
@@ -13,16 +17,50 @@ import { TotalCustomers } from '@/components/dashboard/overview/total-customers'
 import { TotalProfit } from '@/components/dashboard/overview/total-profit';
 import { Traffic } from '@/components/dashboard/overview/traffic';
 
-export const metadata = { title: `Dashboard | ${config.site.name}` } satisfies Metadata;
+// export const metadata = { title: `Dashboard | ${config.site.name}` } satisfies Metadata;
 
 export default function Page(): React.JSX.Element {
+  const [totalCustomers, setTotalCustomers] = React.useState<number | null>(null);
+  const [diff, setDiff] = React.useState<number>(0);
+  const [trend, setTrend] = React.useState<'up' | 'down'>('up');
+
+  interface Progress {
+    trendType: 'up' | 'down';
+    diffValue: number;
+  }
+
+  interface TotalCustomerResponse {
+    totalMembers: number;
+    progress: Progress;
+  }
+
+  React.useEffect(() => {
+    const fetchTotalMembers = async (): Promise<void> => {
+      try {
+        const response = await axiosInstance.get<{ data: TotalCustomerResponse }>('/deshboard/total-members-count');
+
+        const totalCustomerData = response.data.data;
+
+        const { totalMembers, progress } = totalCustomerData;
+
+        setTotalCustomers(totalMembers);
+        setDiff(progress.diffValue);
+        setTrend(progress.trendType);
+      } catch (error) {
+        toast.error('Failed to load total members count');
+      }
+    };
+
+    void fetchTotalMembers();
+  }, []);
+
   return (
     <Grid container spacing={3}>
       <Grid lg={3} sm={6} xs={12}>
         <Budget diff={12} trend="up" sx={{ height: '100%' }} value="$24k" />
       </Grid>
       <Grid lg={3} sm={6} xs={12}>
-        <TotalCustomers diff={16} trend="down" sx={{ height: '100%' }} value="1.6k" />
+        <TotalCustomers diff={diff} trend={trend} sx={{ height: '100%' }} value={totalCustomers} />
       </Grid>
       <Grid lg={3} sm={6} xs={12}>
         <TasksProgress sx={{ height: '100%' }} value={75.5} />
