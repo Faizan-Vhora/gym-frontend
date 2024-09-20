@@ -32,6 +32,10 @@ export interface Trainer {
   updatedAt: string;
   status: number;
   memberId: string;
+  expertise: string;
+  aboutMe: string;
+  experience: number;
+  fees: number;
 }
 
 interface TrainerTableProps {

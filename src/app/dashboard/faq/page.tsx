@@ -14,6 +14,7 @@ import type { FaqEntry, FaqStatus } from '@/components/dashboard/faq/faq-tables'
 import 'react-toastify/dist/ReactToastify.css';
 
 import { CustomLoader } from '@/utils/loader';
+import Swal from 'sweetalert2';
 
 const initialFaqs: FaqEntry[] = [];
 
@@ -113,9 +114,24 @@ export default function FaqManagementPage(): React.JSX.Element {
 
   const handleDelete = async (id: number): Promise<void> => {
     try {
-      await axiosInstance.delete(`/faq/${id}`);
-      await fetchFaqs(); // Ensure fetchFaqs() is awaited to refresh the FAQ list
-      toast.success('FAQ deleted successfully');
+      // Show confirmation dialog
+      const result = await Swal.fire({
+        title: 'Are you sure?',
+        text: 'You are about to delete this FAQ. This action cannot be undone.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, delete it!',
+        cancelButtonText: 'No, cancel!',
+      });
+
+      // If confirmed, proceed with deletion
+      if (result.isConfirmed) {
+        await axiosInstance.delete(`/faq/${id}`);
+        await fetchFaqs(); // Refresh FAQ list
+        toast.success('FAQ deleted successfully');
+      }
     } catch (err: unknown) {
       let errorMessage = 'Failed to delete FAQ.';
       if (err instanceof Error) {
@@ -124,21 +140,36 @@ export default function FaqManagementPage(): React.JSX.Element {
       toast.error(errorMessage);
     }
   };
+
   const handleSearchChange = (search: string): void => {
     setSearchTerm(search);
   };
 
   const handleStatusChange = async (id: number, status: FaqStatus): Promise<void> => {
-    try {
-      await axiosInstance.patch(`/faq/update-status/${id}`, { status });
-      setFaqs((prevFaqs) => prevFaqs.map((faq) => (faq.id === id ? { ...faq, status } : faq)));
-      toast.success('Status updated successfully');
-    } catch (err: unknown) {
-      let errorMessage = 'Failed to load data.';
-      if (err instanceof Error) {
-        errorMessage = `Error fetching expertise: ${err.message}`;
+    // Show confirmation dialog
+    const result = await Swal.fire({
+      title: 'Are you sure?',
+      text: `You are about to ${status} this FAQ.`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: `Yes, ${status} it!`,
+    });
+
+    // If confirmed, proceed with the status update
+    if (result.isConfirmed) {
+      try {
+        await axiosInstance.patch(`/faq/update-status/${id}`, { status: status });
+        setFaqs((prevFaqs) => prevFaqs.map((faq) => (faq.id === id ? { ...faq, status } : faq)));
+        toast.success('Status updated successfully');
+      } catch (err: unknown) {
+        let errorMessage = 'Failed to load data.';
+        if (err instanceof Error) {
+          errorMessage = `Error fetching FAQ: ${err.message}`;
+        }
+        toast.error(errorMessage);
       }
-      toast.error(errorMessage);
     }
   };
 

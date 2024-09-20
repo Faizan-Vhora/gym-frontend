@@ -156,11 +156,14 @@ export function CustomersTable({
                       <Typography color="black" variant="subtitle2">
                         {row?.membership?.membershipType?.title || '-'}
                       </Typography>
-                      {row?.membership?.expiryDate && !isNaN(new Date(row?.membership?.expiryDate).getTime()) && (
-                        <Typography color="textSecondary" variant="body2">
-                          Exp: {dayjs(row?.membership?.expiryDate).format('MMM D, YYYY')}
-                        </Typography>
-                      )}
+
+                      {row?.membership?.membershipType?.title &&
+                        row?.membership?.expiryDate &&
+                        !isNaN(new Date(row?.membership?.expiryDate).getTime()) && (
+                          <Typography color="textSecondary" variant="body2">
+                            Exp: {dayjs(row?.membership?.expiryDate).format('MMM D, YYYY')}
+                          </Typography>
+                        )}
                     </TableCell>
 
                     <TableCell>

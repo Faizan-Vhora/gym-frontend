@@ -15,11 +15,11 @@ import {
   Divider,
   FormControl,
   FormHelperText,
+  Grid,
   InputLabel,
   MenuItem,
   OutlinedInput,
   Select,
-  Stack,
 } from '@mui/material';
 import { useForm } from 'react-hook-form';
 import { toast, ToastContainer } from 'react-toastify';
@@ -135,44 +135,64 @@ export default function FaqForm(): React.JSX.Element {
   return (
     <Box component="form" onSubmit={handleSubmit(onSubmit)}>
       <Card>
-        <CardHeader title={id ? 'Edit FAQ' : 'Create FAQ'} subheader="Fill in the FAQ details" />
+        <CardHeader title={id ? 'Edit FAQ' : 'Create FAQ'} />
         <Divider />
         <CardContent>
-          <Stack spacing={3}>
-            <FormControl fullWidth required>
-              <InputLabel>Question</InputLabel>
-              <OutlinedInput {...register('question')} label="Question" error={Boolean(errors.question)} />
-              {errors.question ? <FormHelperText>{errors.question.message}</FormHelperText> : null}
-            </FormControl>
-            <FormControl fullWidth required>
-              <InputLabel>Answer</InputLabel>
-              <OutlinedInput {...register('answer')} label="Answer" multiline rows={4} error={Boolean(errors.answer)} />
-              {errors.answer ? <FormHelperText>{errors.answer.message}</FormHelperText> : null}
-            </FormControl>
-            <FormControl fullWidth>
-              <InputLabel>Type</InputLabel>
-              <Select {...register('type')} label="Type" defaultValue={faq?.type || ''} error={Boolean(errors.type)}>
-                <MenuItem value={FaqType.General}>{FaqType.General}</MenuItem>
-                <MenuItem value={FaqType.User}>{FaqType.User}</MenuItem>
-                <MenuItem value={FaqType.Trainer}>{FaqType.Trainer}</MenuItem>
-              </Select>
-              {errors.type ? <FormHelperText>{errors.type.message}</FormHelperText> : null}
-            </FormControl>
-            <FormControl fullWidth>
-              <InputLabel>Status</InputLabel>
-              <Select
-                {...register('status')}
-                label="Status"
-                defaultValue={faq?.status || ''}
-                error={Boolean(errors.status)}
-              >
-                <MenuItem value={FaqStatus.Active}>{FaqStatus.Active}</MenuItem>
-                <MenuItem value={FaqStatus.Inactive}>{FaqStatus.Inactive}</MenuItem>
-                <MenuItem value={FaqStatus.Archived}>{FaqStatus.Archived}</MenuItem>
-              </Select>
-              {errors.status ? <FormHelperText>{errors.status.message}</FormHelperText> : null}
-            </FormControl>
-          </Stack>
+          <Grid container spacing={3}>
+            <Grid item xs={12} sm={4}>
+              <FormControl fullWidth required error={Boolean(errors.question)}>
+                <InputLabel>Question</InputLabel>
+                <OutlinedInput {...register('question')} label="Question" error={Boolean(errors.question)} />
+                {errors.question ? <FormHelperText>{errors.question.message}</FormHelperText> : null}
+              </FormControl>
+            </Grid>
+
+            {/* <Grid item xs={12} sm={4}>
+              <FormControl fullWidth>
+                <InputLabel>Status</InputLabel>
+                <Select
+                  {...register('status')}
+                  label="Status"
+                  defaultValue={faq?.status || FaqStatus.Active} // Set default to Active if no status is provided
+                  error={Boolean(errors.status)}
+                >
+                  <MenuItem value={FaqStatus.Active}>Active</MenuItem>
+                  <MenuItem value={FaqStatus.Inactive}>Inactive</MenuItem>
+                  <MenuItem value={FaqStatus.Archived}>Archived</MenuItem>
+                </Select>
+                {errors.status ? <FormHelperText>{errors.status.message}</FormHelperText> : null}
+              </FormControl>
+            </Grid> */}
+            <Grid item xs={12} sm={4}>
+              <FormControl fullWidth>
+                <InputLabel>Type</InputLabel>
+                <Select
+                  {...register('type')}
+                  label="Type"
+                  defaultValue={faq?.type || FaqType.General}
+                  error={Boolean(errors.type)}
+                >
+                  <MenuItem value={FaqType.General}>General</MenuItem>
+                  <MenuItem value={FaqType.User}>User</MenuItem>
+                  <MenuItem value={FaqType.Trainer}>Trainer</MenuItem>
+                </Select>
+                {errors.type ? <FormHelperText>{errors.type.message}</FormHelperText> : null}
+              </FormControl>
+            </Grid>
+            <Grid item xs={12} sm={12}>
+              <FormControl fullWidth required error={Boolean(errors.answer)}>
+                <InputLabel>Answer</InputLabel>
+                <OutlinedInput
+                  {...register('answer')}
+                  label="Answer"
+                  multiline
+                  rows={4}
+                  error={Boolean(errors.answer)}
+                />
+                {errors.answer ? <FormHelperText>{errors.answer.message}</FormHelperText> : null}
+              </FormControl>
+            </Grid>
+          </Grid>
         </CardContent>
         <Divider />
         <CardActions sx={{ justifyContent: 'flex-end' }}>

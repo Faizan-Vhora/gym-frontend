@@ -12,6 +12,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { useRouter } from 'next/navigation';
 import { CustomLoader } from '@/utils/loader';
 import { Alert, Button } from '@mui/material';
+import Swal from 'sweetalert2';
 
 import axiosInstance from '@/lib/axios';
 import { TrainersFilters } from '@/components/dashboard/trainer/trainer-filters';
@@ -136,19 +137,34 @@ export default function TrainersPage(): React.JSX.Element {
   // Toggles the status of a trainer and updates the UI
   const updateTrainerStatus = async (id: string, currentStatus: number): Promise<void> => {
     const newStatus = currentStatus === 1 ? 2 : 1; // Toggle status
-    try {
-      await axiosInstance.patch(`/users/update-status/${id}`, { status: newStatus });
-      toast.success(`Status updated to ${newStatus === 1 ? 'Active' : 'Inactive'}`);
-      // Update local state directly instead of re-fetching
-      setTrainers((prevTrainers) =>
-        prevTrainers.map((trainer) => (trainer.id === id ? { ...trainer, status: newStatus } : trainer))
-      );
-    } catch (err: unknown) {
-      let errorMessage = 'Failed to load data.';
-      if (err instanceof Error) {
-        errorMessage = `Error fetching FAQs: ${err.message}`;
+
+    // Show confirmation dialog
+    const result = await Swal.fire({
+      title: 'Are you sure?',
+      text: `You are about to ${newStatus === 1 ? 'activate' : 'deactivate'} this trainer.`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: `Yes, ${newStatus === 1 ? 'activate' : 'deactivate'} it!`,
+    });
+
+    // If confirmed, proceed with the status update
+    if (result.isConfirmed) {
+      try {
+        await axiosInstance.patch(`/users/update-status/${id}`, { status: newStatus });
+        toast.success(`Status updated to ${newStatus === 1 ? 'Active' : 'Inactive'}`);
+        // Update local state directly instead of re-fetching
+        setTrainers((prevTrainers) =>
+          prevTrainers.map((trainer) => (trainer.id === id ? { ...trainer, status: newStatus } : trainer))
+        );
+      } catch (err: unknown) {
+        let errorMessage = 'Failed to load data.';
+        if (err instanceof Error) {
+          errorMessage = `Error fetching trainers: ${err.message}`;
+        }
+        toast.error(errorMessage);
       }
-      setError(errorMessage);
     }
   };
 

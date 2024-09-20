@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import {
   Box,
   Card,
@@ -19,6 +20,7 @@ import {
   Typography,
 } from '@mui/material';
 import { PencilSimple, Trash } from '@phosphor-icons/react';
+import dayjs from 'dayjs';
 
 import tableCss from '@/styles/table-css';
 
@@ -76,6 +78,7 @@ export function DiscountTable({
   onPageChange,
   onRowsPerPageChange,
 }: DiscountTableProps): React.JSX.Element {
+  const router = useRouter();
   const [openDialog, setOpenDialog] = useState<boolean>(false);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
@@ -97,6 +100,16 @@ export function DiscountTable({
     setSelectedImage(null);
   };
 
+  const handleRowClick = (id: number): void => {
+    router.push(`/dashboard/discount/form?id=${id}`); // Replace with the actual path to your form page
+  };
+
+  const usageLimitDisplay: Record<UsageLimit, string> = {
+    [UsageLimit.Once]: 'Once',
+    [UsageLimit.Twice]: 'Twice',
+    [UsageLimit.NoLimit]: 'No Limit',
+  };
+
   return (
     <>
       <Card>
@@ -104,7 +117,7 @@ export function DiscountTable({
           <Table>
             <TableHead>
               <TableRow sx={tableCss.tableRow}>
-                <TableCell sx={tableCss.tableHeaderCell}>Image</TableCell>
+                <TableCell sx={tableCss.tableHeaderCell}>Discount Image</TableCell>
                 <TableCell sx={tableCss.tableHeaderCell}>Code Name</TableCell>
                 <TableCell sx={tableCss.tableHeaderCell}>Expiry Date</TableCell>
                 <TableCell sx={tableCss.tableHeaderCell}>Discount Type</TableCell>
@@ -136,11 +149,25 @@ export function DiscountTable({
                         }}
                       />
                     </TableCell>
-                    <TableCell sx={tableCss.tableCell}>{discount.codeName}</TableCell>
-                    <TableCell sx={tableCss.tableCell}>{new Date(discount.expiryDate).toLocaleDateString()}</TableCell>
-                    <TableCell sx={tableCss.tableCell}>{discount.discountType}</TableCell>
-                    <TableCell sx={tableCss.tableCell}>{discount.usageLimit}</TableCell>
-                    <TableCell sx={tableCss.tableCell}>{discount.discountValue}</TableCell>
+                    <TableCell
+                      sx={tableCss.tableCell}
+                      onClick={() => {
+                        handleRowClick(discount.id);
+                      }}
+                      style={{ cursor: 'pointer' }}
+                    >
+                      {discount.codeName}
+                    </TableCell>
+                    <TableCell sx={tableCss.tableCell}>{dayjs(discount.expiryDate).format('MMM D, YYYY')}</TableCell>
+                    <TableCell sx={tableCss.tableCell}>
+                      {discount.discountType === DiscountType.Percentage ? 'Percentage' : 'Fixed'}
+                    </TableCell>
+                    <TableCell sx={tableCss.tableCell}>{usageLimitDisplay[discount.usageLimit]}</TableCell>
+                    <TableCell sx={tableCss.tableCell}>
+                      {discount.discountType === DiscountType.Percentage
+                        ? `${Math.floor(discount.discountValue)}%` // Remove decimal points and display percentage
+                        : `$${discount.discountValue}`}{' '}
+                    </TableCell>
                     <TableCell>
                       <Select
                         value={discount.status}

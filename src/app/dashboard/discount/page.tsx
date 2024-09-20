@@ -3,14 +3,17 @@
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import { CustomLoader } from '@/utils/loader';
-import { Button, Grid, Stack, TextField, Typography } from '@mui/material';
-import { Plus as PlusIcon } from '@phosphor-icons/react';
+import { Button, Grid, IconButton, InputAdornment, Stack, TextField, Typography } from '@mui/material';
+import { Plus as PlusIcon, X as XIcon } from '@phosphor-icons/react'; // Import XIcon from phosphor-react
+
+import debounce from 'lodash/debounce';
 import { toast } from 'react-toastify';
+import Swal from 'sweetalert2';
 
 import axiosInstance from '@/lib/axios';
 import { DiscountFilter } from '@/components/dashboard/discount/discount-filters';
-import { DiscountTable } from '@/components/dashboard/discount/discount-table';
-import type { DiscountEntry, DiscountStatus } from '@/components/dashboard/discount/discount-table';
+import { DiscountStatus, DiscountTable } from '@/components/dashboard/discount/discount-table';
+import type { DiscountEntry } from '@/components/dashboard/discount/discount-table';
 
 export default function DiscountManagementPage(): React.JSX.Element {
   const [discounts, setDiscounts] = React.useState<DiscountEntry[]>([]);
@@ -98,42 +101,64 @@ export default function DiscountManagementPage(): React.JSX.Element {
     router.push(`/dashboard/discount/form?id=${id}`);
   };
 
-  const handleDelete = (id: number): void => {
-    axiosInstance
-      .delete(`/discount/${id}`)
-      .then(() => {
-        void fetchDiscounts();
-      })
-      .catch((error: unknown) => {
-        let errorMessage: string;
-        if (typeof error === 'string') {
-          errorMessage = error;
-        } else {
-          // Handle other types of errors, or set a generic message
-          errorMessage = 'An unexpected error occurred';
-        }
-        // Convert the Error object to a string
-        toast.error(errorMessage);
-      });
+  const handleDelete = async (id: number): Promise<void> => {
+    const result = await Swal.fire({
+      title: 'Are you sure?',
+      text: 'You will not be able to recover this discount!',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, delete it!',
+      cancelButtonText: 'No, cancel',
+    });
+
+    if (result.isConfirmed) {
+      try {
+        // Proceed with deletion if confirmed
+        await axiosInstance.delete(`/discount/${id}`);
+        // Swal.fire('Deleted!', 'The discount has been deleted.', 'success');
+        await fetchDiscounts(); // Refresh the discount list
+      } catch (error: unknown) {
+        // let errorMessage: string;
+        // if (typeof error === 'string') {
+        //   errorMessage = error;
+        // } else {
+        //   errorMessage = 'An unexpected error occurred';
+        // }
+        // Swal.fire('Error', errorMessage, 'error'); // Show error alert
+      }
+    }
   };
 
-  const handleStatusChange = (id: number, status: DiscountStatus): void => {
-    axiosInstance
-      .patch(`/discount/update-status/${id}`, { status })
-      .then(() => {
-        void fetchDiscounts();
-      })
-      .catch((error: unknown) => {
-        let errorMessage: string;
-        if (typeof error === 'string') {
-          errorMessage = error;
-        } else {
-          // Handle other types of errors, or set a generic message
-          errorMessage = 'An unexpected error occurred';
-        }
-        // Convert the Error object to a string
-        toast.error(errorMessage);
-      });
+  const handleStatusChange = async (id: number, status: DiscountStatus): Promise<void> => {
+    const result = await Swal.fire({
+      title: 'Are you sure?',
+      text: `Do you want to ${status === DiscountStatus.Active ? 'activate' : 'deactivate'} this discount?`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, change it!',
+      cancelButtonText: 'No, cancel',
+    });
+
+    if (result.isConfirmed) {
+      try {
+        // Proceed with status change if confirmed
+        await axiosInstance.patch(`/discount/update-status/${id}`, { status });
+        // Swal.fire('Updated!', 'The discount status has been changed.', 'success');
+        await fetchDiscounts(); // Refresh the list
+      } catch (error: unknown) {
+        // let errorMessage: string;
+        // if (typeof error === 'string') {
+        //   errorMessage = error;
+        // } else {
+        //   errorMessage = 'An unexpected error occurred';
+        // }
+        // Swal.fire('Error', errorMessage, 'error'); // Show error alert
+      }
+    }
   };
 
   const handleFilterChange = (type: string): void => {
@@ -141,8 +166,30 @@ export default function DiscountManagementPage(): React.JSX.Element {
     setPage(0);
   };
 
-  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
-    setSearch(event.target.value);
+  const handleSearchChange = (value: string) => {
+    setSearch(value);
+    setPage(0);
+    // Call your search function here, e.g., fetchResults(value);
+  };
+
+  // Debounced search function
+  const debouncedSearch = React.useCallback(
+    debounce((value: string) => {
+      handleSearchChange(value);
+    }, 200), // Adjust the debounce delay as needed
+    []
+  );
+
+  // Effect for cleanup
+  React.useEffect(() => {
+    return () => {
+      debouncedSearch.cancel();
+    };
+  }, [debouncedSearch]);
+
+  // Clear search input
+  const handleClearSearch = () => {
+    setSearch('');
     setPage(0);
   };
 
@@ -163,8 +210,25 @@ export default function DiscountManagementPage(): React.JSX.Element {
       </Stack>
       {/* Search Field */}
       <Grid container spacing={2}>
-        <Grid className="input-width" item md={6} xs={12}>
-          <TextField variant="outlined" label="Search" value={search} fullWidth onChange={handleSearchChange} />
+        <Grid item md={6} xs={12}>
+          <TextField
+            variant="outlined"
+            label="Search"
+            value={search}
+            fullWidth
+            onChange={(e) => {
+              handleSearchChange(e.target.value);
+            }}
+            InputProps={{
+              endAdornment: search && (
+                <InputAdornment position="end">
+                  <IconButton onClick={handleClearSearch} edge="end">
+                    <XIcon size={15} /> {/* Adjust size as needed */}
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
+          />
         </Grid>
         <Grid item md={6} xs={12}>
           {/* Discount Filter and Search Components */}

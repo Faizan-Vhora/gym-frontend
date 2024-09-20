@@ -10,6 +10,7 @@ import {
   // DialogContent,
   Divider,
   FormControlLabel,
+  IconButton,
   Switch,
   Table,
   TableBody,
@@ -19,7 +20,7 @@ import {
   TableRow,
   Typography,
 } from '@mui/material';
-import { CurrencyDollar } from '@phosphor-icons/react';
+import { CurrencyDollar, PencilSimple, Trash } from '@phosphor-icons/react';
 import dayjs from 'dayjs';
 
 import tableCss from '@/styles/table-css';
@@ -37,11 +38,25 @@ export interface MembershipPlans {
   status: string;
 }
 
+const formatPaymentFrequency = (value: string | undefined): string => {
+  const formattedValue = value?.toLowerCase();
+
+  if (formattedValue === 'yearly') {
+    return 'Yearly';
+  }
+  if (formattedValue === 'monthly') {
+    return 'Monthly';
+  }
+  return ''; // Return empty string or any default value if not 'yearly' or 'monthly'
+};
+
 interface MembershipPlanTableProps {
   count: number;
   page: number;
   rowsPerPage: number;
   rows: MembershipPlans[];
+  onEdit: (id: string) => void;
+  onDelete: (id: string) => void;
   onPageChange: (event: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => void;
   onRowsPerPageChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   updatePlanStatus: (id: string, currentStatus: string) => void; // Added prop
@@ -52,6 +67,8 @@ export function MembershipPlanTable({
   page,
   rowsPerPage,
   rows,
+  onEdit,
+  onDelete,
   onPageChange,
   onRowsPerPageChange,
   updatePlanStatus, // Added prop
@@ -77,6 +94,7 @@ export function MembershipPlanTable({
               <TableCell sx={tableCss.tableHeaderCell}>Description</TableCell>
               <TableCell sx={tableCss.tableHeaderCell}>Status</TableCell>
               <TableCell sx={tableCss.tableHeaderCell}>Update At</TableCell>
+              <TableCell sx={tableCss.tableHeaderCell}>Action</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -89,18 +107,6 @@ export function MembershipPlanTable({
             ) : (
               rows.map((row) => (
                 <>
-                  {/* <TableCell sx={tableCss.tableCell}>
-                        <Image
-                          src={row?.qrCodeImageUrl || ''}
-                          alt="QR Code Preview"
-                          width={50}
-                          height={50}
-                          style={{ marginTop: '1rem' }}
-                          onClick={() => {
-                            handleAvatarClick(row.qrCodeImageUrl || '');
-                          }}
-                        />
-                      </TableCell> */}
                   <TableRow hover key={row.id} sx={tableCss.tableRow}>
                     <TableCell sx={tableCss.tableCell}>
                       <Typography
@@ -108,6 +114,7 @@ export function MembershipPlanTable({
                         onClick={() => {
                           handleRowClick(row.id);
                         }}
+                        style={{ cursor: 'pointer' }}
                       >
                         {row.title}
                       </Typography>
@@ -118,11 +125,11 @@ export function MembershipPlanTable({
                       {row.cost}
                     </TableCell>
 
-                    <TableCell sx={tableCss.tableCell}>{row.durationInMonths}</TableCell>
-                    <TableCell sx={tableCss.tableCell}>{row.paymentFrequency}</TableCell>
+                    <TableCell sx={tableCss.tableCell}>{row.durationInMonths} months</TableCell>
+                    <TableCell sx={tableCss.tableCell}>{formatPaymentFrequency(row.paymentFrequency)}</TableCell>
                     <TableCell sx={tableCss.tableCell}>{row.description}</TableCell>
 
-                    <TableCell>
+                    <TableCell sx={tableCss.tableCell}>
                       <FormControlLabel
                         control={
                           <Switch
@@ -138,6 +145,22 @@ export function MembershipPlanTable({
                       />
                     </TableCell>
                     <TableCell sx={tableCss.tableCell}>{dayjs(row.updatedAt).format('MMM D, YYYY')}</TableCell>
+                    <TableCell sx={tableCss.tableCell}>
+                      <IconButton
+                        onClick={() => {
+                          onEdit(row.id);
+                        }}
+                      >
+                        <PencilSimple />
+                      </IconButton>
+                      <IconButton
+                        onClick={() => {
+                          onDelete(row.id);
+                        }}
+                      >
+                        <Trash />
+                      </IconButton>
+                    </TableCell>
                   </TableRow>
                 </>
               ))

@@ -2,30 +2,50 @@
 
 import * as React from 'react';
 import { useEffect, useState } from 'react';
-import { Typography } from '@mui/material';
+import { useRouter } from 'next/navigation';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Alert, FormHelperText, Grid } from '@mui/material';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
-import CardHeader from '@mui/material/CardHeader';
-import Divider from '@mui/material/Divider';
 import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
 import OutlinedInput from '@mui/material/OutlinedInput';
-import Grid from '@mui/material/Unstable_Grid2';
 import { Stack } from '@mui/system';
+import { Controller, useForm } from 'react-hook-form';
 import { toast, ToastContainer } from 'react-toastify';
+import { z } from 'zod';
 
 import axiosInstance from '@/lib/axios';
 
 import 'react-toastify/dist/ReactToastify.css';
 
+const REGEX_VALIDATION = {
+  FULL_NAME: /^[A-Za-z\s]+$/, // Example regex for full name
+  PHONE_NUMBER: /^\d{10}$/, // Example regex for 10-digit phone number
+};
+
+const accountDetailsSchema = z.object({
+  fullName: z
+    .string()
+    .min(1, 'Full Name is required')
+    .regex(REGEX_VALIDATION.FULL_NAME, 'Full Name should not contain numbers or special characters'),
+  email: z.string().min(1, 'Email is required').email(),
+  phoneNumber: z
+    .string()
+    .optional()
+    .refine((value) => !value || REGEX_VALIDATION.PHONE_NUMBER.test(value), { message: 'Invalid phone number format' }),
+  address: z.string().optional(),
+  profileImageUrl: z.string().optional(),
+});
+
 export function AccountDetailsForm(): React.JSX.Element {
   const [user, setUser] = useState<User | null>(null);
   const [file, setFile] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
 
   interface User {
     id: number;
@@ -43,6 +63,7 @@ export function AccountDetailsForm(): React.JSX.Element {
         const response = await axiosInstance.get<{ data: User }>('/auth/profile');
         const fetchedUser = response.data.data;
         setUser(fetchedUser);
+        reset(fetchedUser); // Reset the form with fetched user data
       } catch (err: unknown) {
         let errorMessage = 'Failed to fetch user details';
         if (err instanceof Error) {
@@ -52,7 +73,6 @@ export function AccountDetailsForm(): React.JSX.Element {
       }
     };
 
-    // Call the async function within the useEffect
     fetchUserDetails().catch((err: unknown) => {
       let errorMessage = 'Failed to load data.';
       if (err instanceof Error) {
@@ -62,10 +82,21 @@ export function AccountDetailsForm(): React.JSX.Element {
     });
   }, []);
 
-  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
-    const { name, value } = event.target;
-    setUser((prevUser) => (prevUser ? { ...prevUser, [name]: value } : null));
-  };
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+    reset, // Get reset function from useForm
+  } = useForm<User>({
+    resolver: zodResolver(accountDetailsSchema),
+    defaultValues: {
+      fullName: '',
+      email: '',
+      phoneNumber: '',
+      address: '',
+      profileImageUrl: '',
+    },
+  });
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
     const selectedFile = event.target.files?.[0];
@@ -79,19 +110,15 @@ export function AccountDetailsForm(): React.JSX.Element {
     }
   };
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>): Promise<void> => {
-    event.preventDefault();
-    if (!user) return;
-
+  const onSubmit = async (data: User): Promise<void> => {
     setIsSubmitting(true);
-    setError(null);
 
     try {
       const formData = new FormData();
-      formData.append('fullName', user.fullName);
-      formData.append('email', user.email);
-      formData.append('phoneNumber', user.phoneNumber || '');
-      formData.append('address', user.address || '');
+      formData.append('fullName', data.fullName);
+      formData.append('email', data.email);
+      formData.append('phoneNumber', data.phoneNumber || '');
+      formData.append('address', data.address || '');
 
       if (file) {
         formData.append('profileImage', file);
@@ -107,13 +134,13 @@ export function AccountDetailsForm(): React.JSX.Element {
       const updatedUser = response.data.data;
       setUser(updatedUser);
       toast.success('Profile updated successfully');
+      router.push('/dashboard');
     } catch (err: unknown) {
       let errorMessage = 'Failed to update user details';
       if (err instanceof Error) {
         errorMessage = err.message;
       }
       toast.error(errorMessage);
-      setError(errorMessage);
     } finally {
       setIsSubmitting(false);
     }
@@ -124,81 +151,91 @@ export function AccountDetailsForm(): React.JSX.Element {
   }
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit(onSubmit)}>
       <Card>
-        <CardHeader subheader="The information can be edited" title="Profile" />
-        <Divider />
         <CardContent>
           <Grid container spacing={3}>
-            <Grid md={6} xs={12}>
-              <FormControl fullWidth required>
-                <InputLabel>Full Name</InputLabel>
-                <OutlinedInput value={user.fullName} label="Full Name" name="fullName" onChange={handleInputChange} />
-              </FormControl>
-            </Grid>
-            <Grid md={6} xs={12}>
-              <FormControl fullWidth required>
-                <InputLabel>Email</InputLabel>
-                <OutlinedInput
-                  value={user.email}
-                  label="Email"
-                  name="email"
-                  type="email"
-                  onChange={handleInputChange}
-                />
-              </FormControl>
-            </Grid>
-            <Grid md={6} xs={12}>
-              <FormControl fullWidth>
-                <InputLabel>Phone Number</InputLabel>
-                <OutlinedInput
-                  value={user.phoneNumber || ''}
-                  label="Phone Number"
-                  name="phoneNumber"
-                  type="tel"
-                  onChange={handleInputChange}
-                />
-              </FormControl>
-            </Grid>
-            <Grid md={6} xs={12}>
-              <FormControl fullWidth>
-                <InputLabel>Address</InputLabel>
-                <OutlinedInput value={user.address || ''} label="Address" name="address" onChange={handleInputChange} />
-              </FormControl>
-            </Grid>
-            <Grid md={6} xs={12}>
-              <CardContent>
-                <Stack spacing={2} sx={{ alignItems: 'center' }}>
-                  <div>
-                    <Avatar src={user.profileImageUrl} sx={{ height: '80px', width: '80px' }} />
-                  </div>
-                  <Stack spacing={1} sx={{ textAlign: 'center' }}>
-                    <Typography variant="h5">{user.fullName}</Typography>
-                    <Typography color="text.secondary" variant="body2">
-                      {user.address}
-                    </Typography>
+            {/* Profile Image and Upload */}
+            <Grid item md={4} xs={12}>
+              <Card>
+                <CardContent>
+                  <Stack spacing={2} sx={{ alignItems: 'center' }}>
+                    <Avatar src={user.profileImageUrl} sx={{ height: '100px', width: '100px' }} />
                   </Stack>
-                </Stack>
-              </CardContent>
-              <Divider />
-              <CardActions>
-                <Button component="label" fullWidth variant="text">
-                  Upload picture
-                  <input type="file" accept="image/*" hidden onChange={handleFileChange} />
-                </Button>
-              </CardActions>
+                </CardContent>
+                <CardActions>
+                  <Button component="label" fullWidth variant="contained">
+                    {user.profileImageUrl ? 'Change Profile Image' : 'Upload Profile Image'}
+                    <input type="file" accept="image/*" hidden onChange={handleFileChange} />
+                  </Button>
+                </CardActions>
+              </Card>
+            </Grid>
+
+            {/* Form Inputs for User Information */}
+            <Grid item md={8} xs={12}>
+              <Grid container spacing={3}>
+                <Grid item md={6} xs={12}>
+                  <FormControl fullWidth required error={Boolean(errors.fullName)}>
+                    <InputLabel>Full Name</InputLabel>
+                    <Controller
+                      name="fullName"
+                      control={control}
+                      render={({ field }) => <OutlinedInput {...field} label="Full Name" />}
+                    />
+                    {errors.fullName?.message && <FormHelperText error>{errors.fullName.message}</FormHelperText>}
+                  </FormControl>
+                </Grid>
+
+                <Grid item md={6} xs={12}>
+                  <FormControl fullWidth required error={Boolean(errors.email)}>
+                    <InputLabel>Email</InputLabel>
+                    <Controller
+                      name="email"
+                      control={control}
+                      render={({ field }) => <OutlinedInput {...field} label="Email" type="email" />}
+                    />
+                    {errors.email?.message && <FormHelperText error>{errors.email.message}</FormHelperText>}
+                  </FormControl>
+                </Grid>
+
+                <Grid item md={6} xs={12}>
+                  <FormControl fullWidth error={Boolean(errors.phoneNumber)}>
+                    <InputLabel>Phone Number</InputLabel>
+                    <Controller
+                      name="phoneNumber"
+                      control={control}
+                      render={({ field }) => <OutlinedInput {...field} label="Phone Number" type="tel" />}
+                    />
+                    {errors.phoneNumber?.message && <FormHelperText error>{errors.phoneNumber.message}</FormHelperText>}
+                  </FormControl>
+                </Grid>
+
+                <Grid item md={12} xs={12}>
+                  <FormControl fullWidth error={Boolean(errors.address)}>
+                    <InputLabel>Address</InputLabel>
+                    <Controller
+                      name="address"
+                      control={control}
+                      render={({ field }) => <OutlinedInput {...field} label="Address" />}
+                    />
+                    {errors.address && <Alert severity="error">{errors.address.message}</Alert>}
+                  </FormControl>
+                </Grid>
+              </Grid>
             </Grid>
           </Grid>
         </CardContent>
-        <Divider />
+
+        {/* Save Button */}
         <CardActions sx={{ justifyContent: 'flex-end' }}>
           <Button className="common-button" variant="contained" type="submit" disabled={isSubmitting}>
             {isSubmitting ? 'Saving...' : 'Save details'}
           </Button>
         </CardActions>
-        {error && <div style={{ color: 'red' }}>{error}</div>}
+
+        <ToastContainer />
       </Card>
-      <ToastContainer />
     </form>
   );
 }

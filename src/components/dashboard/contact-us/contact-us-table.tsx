@@ -45,6 +45,12 @@ interface ContactUsTableProps {
   onRowsPerPageChange: (newRowsPerPage: number) => void;
 }
 
+const typeDictionary = {
+  user: 'User',
+  trainer: 'Trainer',
+  web: 'Web',
+};
+
 export function ContactUsTable({
   entries,
   page,
@@ -86,7 +92,7 @@ export function ContactUsTable({
             <TableBody>
               {entries.length === 0 ? (
                 <TableRow sx={tableCss.tableRow}>
-                  <TableCell colSpan={5} align="center">
+                  <TableCell sx={tableCss.tableCell} colSpan={5} align="center">
                     <Typography variant="body1">No data found</Typography>
                   </TableCell>
                 </TableRow>
@@ -103,7 +109,7 @@ export function ContactUsTable({
                         </Box>
                       </Stack>
                     </TableCell>
-                    <TableCell sx={tableCss.tableCell}>{entry.type}</TableCell>
+                    <TableCell sx={tableCss.tableCell}>{typeDictionary[entry.type]}</TableCell>
                     <TableCell sx={tableCss.tableCell}>
                       <Select
                         value={entry.status}

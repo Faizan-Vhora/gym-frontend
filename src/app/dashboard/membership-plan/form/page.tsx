@@ -15,8 +15,11 @@ import {
   FormControl,
   FormHelperText,
   Grid,
+  InputAdornment,
   InputLabel,
+  MenuItem,
   OutlinedInput,
+  Select,
   Stack,
   TextField,
 } from '@mui/material';
@@ -25,6 +28,7 @@ import axiosInstance from '@/lib/axios';
 
 import 'react-toastify/dist/ReactToastify.css';
 
+import { REGEX_VALIDATION } from '@/utils/constant';
 import { CustomLoader } from '@/utils/loader';
 import { useForm } from 'react-hook-form'; // Import useForm here
 
@@ -41,12 +45,12 @@ export default function MembershipPlanEditForm(): React.JSX.Element {
   const [loading, setLoading] = React.useState(false);
 
   const MembershipPlanSchema = z.object({
-    title: z.string().min(1, 'Title is required'),
+    title: z
+      .string()
+      .min(1, 'Title is required')
+      .regex(REGEX_VALIDATION.FULL_NAME, 'Title should not contain numbers or special characters'),
     cost: z.coerce.number().min(1, 'Cost is required'),
-    durationInMonths: z.coerce
-      .number()
-      .min(1, 'Duration must be at least 1 month')
-      .max(12, 'Duration cannot be more than 12 months'),
+    durationInMonths: z.coerce.number(),
     description: z.string().optional(),
     paymentFrequency: z.string(),
     status: z.string().optional(),
@@ -144,20 +148,29 @@ export default function MembershipPlanEditForm(): React.JSX.Element {
                   <Grid item md={12} xs={12}>
                     <Grid container spacing={4}>
                       <Grid item md={6} p={2}>
-                        <FormControl fullWidth required>
+                        <FormControl fullWidth required error={Boolean(errors.title)}>
                           <InputLabel>Title</InputLabel>
                           <OutlinedInput {...register('title')} label="title" error={Boolean(errors.title)} />
                           {errors.title?.message && <FormHelperText error>{errors.title.message}</FormHelperText>}
                         </FormControl>
                       </Grid>
                       <Grid item md={6} p={2}>
-                        <FormControl fullWidth required>
+                        <FormControl fullWidth required error={Boolean(errors.cost)}>
                           <InputLabel>Cost</InputLabel>
                           <OutlinedInput
                             {...register('cost')}
-                            label="cost"
+                            label="Cost"
                             type="number"
                             error={Boolean(errors.cost)}
+                            // Prevent negative values in input
+                            onInput={(e) => {
+                              const input = e.target as HTMLInputElement;
+                              if (parseFloat(input.value) < 0) {
+                                input.value = ''; // Clear input if negative value
+                              }
+                            }}
+                            // Add $ symbol before the input
+                            startAdornment={<InputAdornment position="start">$</InputAdornment>}
                           />
                           {errors.cost?.message && <FormHelperText error>{errors.cost.message}</FormHelperText>}
                         </FormControl>
@@ -170,6 +183,12 @@ export default function MembershipPlanEditForm(): React.JSX.Element {
                             label="Duration in Months"
                             type="number"
                             error={Boolean(errors.durationInMonths)}
+                            onInput={(e) => {
+                              const input = e.target as HTMLInputElement;
+                              if (parseFloat(input.value) < 0) {
+                                input.value = ''; // Clear input if negative value
+                              }
+                            }}
                           />
                           {errors.durationInMonths?.message && (
                             <FormHelperText error>{errors.durationInMonths.message}</FormHelperText>
@@ -177,15 +196,18 @@ export default function MembershipPlanEditForm(): React.JSX.Element {
                         </FormControl>
                       </Grid>
                       <Grid item md={6} p={2}>
-                        <FormControl fullWidth>
+                        <FormControl fullWidth error={Boolean(errors.paymentFrequency)} required>
                           <InputLabel>Payment Frequency</InputLabel>
-                          <OutlinedInput
+                          <Select
                             {...register('paymentFrequency')}
                             label="Payment Frequency"
-                            error={Boolean(errors.paymentFrequency)}
-                          />
+                            defaultValue="" // Set default value to be empty or one of the options
+                          >
+                            <MenuItem value="monthly">Monthly</MenuItem>
+                            <MenuItem value="yearly">Yearly</MenuItem>
+                          </Select>
                           {errors.paymentFrequency?.message && (
-                            <FormHelperText>{errors.paymentFrequency.message}</FormHelperText>
+                            <FormHelperText error>{errors.paymentFrequency.message}</FormHelperText>
                           )}
                         </FormControl>
                       </Grid>

@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { Grid, IconButton, InputAdornment, MenuItem, Select, TextField } from '@mui/material';
+import { FormControl, Grid, IconButton, InputAdornment, InputLabel, MenuItem, Select, TextField } from '@mui/material';
 import type { SelectChangeEvent } from '@mui/material';
 import { X as XIcon } from '@phosphor-icons/react'; // Import XIcon from phosphor-react
 import debounce from 'lodash/debounce';
@@ -70,12 +70,14 @@ export default function ExpertiseFilters({ onSearchChange, onStatusChange }: Exp
         />
       </Grid>
       <Grid item md={6} xs={12}>
-        <Select label="Status" value={status} onChange={handleStatusChange} variant="outlined" fullWidth>
-          <MenuItem value="ALL">All</MenuItem>
-          <MenuItem value="active">Active</MenuItem>
-          <MenuItem value="inactive">Inactive</MenuItem>
-        </Select>
-        {/* </Stack> */}
+        <FormControl fullWidth variant="outlined">
+          <InputLabel>Status</InputLabel>
+          <Select label="Status" value={status} onChange={handleStatusChange} variant="outlined" fullWidth>
+            <MenuItem value="ALL">All</MenuItem>
+            <MenuItem value="active">Active</MenuItem>
+            <MenuItem value="inactive">Inactive</MenuItem>
+          </Select>
+        </FormControl>
       </Grid>
     </Grid>
   );

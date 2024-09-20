@@ -48,20 +48,10 @@ export function ResetPasswordForm(): React.JSX.Element {
 
         if (response.status === 201) {
           toast.success('Mail sent successfully');
-          // Redirect to a confirmation page after a delay
-          // setTimeout(() => {
-          //   router.push('/password-reset-confirmation');
-          // }, 2000);
         }
       } catch (err: unknown) {
-        let errorMessage: string;
-        if (err instanceof Error) {
-          errorMessage = err.message; // Safely access the message property
-        } else {
-          errorMessage = 'An unexpected error occurred'; // Fallback message
-        }
-        toast.error(errorMessage);
-        setFormError('root', { type: 'server', message: 'Failed to send recovery link. Please try again later.' });
+        // Handle server-side or network errors
+        setFormError('root', { type: 'server', message: 'Failed to send mail. Please try again later.' });
       } finally {
         setIsPending(false);
       }
@@ -93,7 +83,7 @@ export function ResetPasswordForm(): React.JSX.Element {
             <Button
               variant="outlined"
               onClick={() => {
-                router.push('/dashboard/cms');
+                router.push('/auth/sign-in');
               }}
               sx={{
                 borderColor: '#d0021b',

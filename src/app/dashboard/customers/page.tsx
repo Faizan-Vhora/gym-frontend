@@ -12,6 +12,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { useRouter } from 'next/navigation';
 import { CustomLoader } from '@/utils/loader';
 import { Button } from '@mui/material';
+import Swal from 'sweetalert2';
 
 import axiosInstance from '@/lib/axios';
 import { CustomersFilters } from '@/components/dashboard/customer/customers-filters';
@@ -111,20 +112,33 @@ export default function Page(): React.JSX.Element {
 
   const updateCustomerStatus = async (id: string, currentStatus: number): Promise<void> => {
     const newStatus = currentStatus === 1 ? 2 : 1; // Toggle status
-    try {
-      await axiosInstance.patch(`/users/update-status/${id}`, { status: newStatus });
-      toast.success(`Status updated to ${newStatus === 1 ? 'Active' : 'Inactive'}`);
-      await fetchCustomers(); // Refresh customer data
-    } catch (error: unknown) {
-      let errorMessage: string;
-      if (typeof error === 'string') {
-        errorMessage = error;
-      } else {
-        // Handle other types of errors, or set a generic message
-        errorMessage = 'An unexpected error occurred';
+
+    // Show confirmation dialog
+    const result = await Swal.fire({
+      title: 'Are you sure?',
+      text: `You are about to ${newStatus === 1 ? 'activate' : 'deactivate'} this customer.`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: `Yes, ${newStatus === 1 ? 'activate' : 'deactivate'} it!`,
+    });
+
+    // If confirmed, proceed with the status update
+    if (result.isConfirmed) {
+      try {
+        await axiosInstance.patch(`/users/update-status/${id}`, { status: newStatus });
+        toast.success(`Status updated to ${newStatus === 1 ? 'Active' : 'Inactive'}`);
+        await fetchCustomers(); // Refresh customer data
+      } catch (error: unknown) {
+        let errorMessage: string;
+        if (typeof error === 'string') {
+          errorMessage = error;
+        } else {
+          errorMessage = 'An unexpected error occurred';
+        }
+        toast.error(errorMessage);
       }
-      // Convert the Error object to a string
-      toast.error(errorMessage);
     }
   };
 

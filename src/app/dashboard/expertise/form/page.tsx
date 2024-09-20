@@ -2,173 +2,162 @@
 
 import * as React from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { REGEX_VALIDATION } from '@/utils/constant';
 import { CustomLoader } from '@/utils/loader';
-import { Button, Card, CardContent, CardHeader, Divider, MenuItem, Select, Stack, TextField } from '@mui/material';
-import type { SelectChangeEvent } from '@mui/material';
-import { toast } from 'react-toastify';
-import { z, ZodError } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
+import {
+  Button,
+  Card,
+  CardContent,
+  CardHeader,
+  Divider,
+  FormControl,
+  FormHelperText,
+  Grid,
+  InputLabel,
+  OutlinedInput,
+} from '@mui/material';
+import { Controller, useForm } from 'react-hook-form';
+import { toast, ToastContainer } from 'react-toastify';
+import { z } from 'zod';
 
 import axiosInstance from '@/lib/axios';
 
 const expertiseSchema = z.object({
-  title: z.string().min(1, 'Title is required'),
-  status: z.enum(['active', 'inactive'], { required_error: 'Status is required' }),
+  title: z
+    .string()
+    .min(1, 'Title is required')
+    .regex(REGEX_VALIDATION.FULL_NAME, 'Title should not contain numbers or special characters'),
+  status: z.enum(['active', 'inactive']).default('active'),
 });
 
-interface ExpertiseEntry {
+type ExpertiseFormData = z.infer<typeof expertiseSchema>;
+
+interface ExpertiseEntry extends ExpertiseFormData {
   id?: number;
-  title: string;
-  status: 'active' | 'inactive';
   createdAt?: Date;
 }
 
 export default function ExpertiseForm(): React.JSX.Element {
-  const [expertise, setExpertise] = React.useState<ExpertiseEntry>({
-    title: '',
-    status: 'active',
-  });
-  const [errors, setErrors] = React.useState<Partial<Record<keyof ExpertiseEntry, string[]>>>({});
   const [loading, setLoading] = React.useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
   const expertiseId = searchParams.get('id');
 
-  interface FetchExpertiseResponse {
-    data: ExpertiseEntry;
-  }
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm<ExpertiseFormData>({
+    resolver: zodResolver(expertiseSchema),
+    defaultValues: {
+      title: '',
+      status: 'active',
+    },
+  });
 
   React.useEffect(() => {
     if (expertiseId) {
+      setLoading(true);
       axiosInstance
-        .get<FetchExpertiseResponse>(`/expertise/${expertiseId}`)
+        .get<{ data: ExpertiseEntry }>(`/expertise/${expertiseId}`)
         .then((response) => {
-          setExpertise(response.data.data);
+          reset(response.data.data);
         })
         .catch((error: unknown) => {
-          let errorMessage: string;
-          if (error instanceof Error) {
-            errorMessage = error.message; // Safely access the message property
-          } else {
-            errorMessage = 'An unexpected error occurred'; // Fallback message
-          }
-          toast.error(errorMessage); // Display the error message using toast
+          // Rename the error variable to avoid unused variable error
+          const _error = error instanceof Error ? error.message : 'An unexpected error occurred';
+          // Optionally, display a toast error message
+          // toast.error(_error);
+        })
+        .finally(() => {
+          setLoading(false);
         });
     }
-  }, [expertiseId]);
+  }, [expertiseId, reset]);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
-    const { name, value } = e.target;
-    setExpertise((prevExpertise) => ({
-      ...prevExpertise,
-      [name]: value,
-    }));
-  };
-
-  const handleSelectChange = (e: SelectChangeEvent): void => {
-    const { name, value } = e.target;
-    setExpertise((prevExpertise) => ({
-      ...prevExpertise,
-      [name]: value, // TypeScript should infer the correct types
-    }));
-  };
-
-  const validate = (): boolean => {
-    try {
-      expertiseSchema.parse(expertise);
-      setErrors({});
-      return true;
-    } catch (e) {
-      if (e instanceof ZodError) {
-        const formattedErrors = Object.fromEntries(
-          Object.entries(e.format()).map(([key, value]) => [
-            key,
-            value, // Remove assertion if `value` is already of type `string[]`
-          ])
-        );
-        setErrors(formattedErrors as Partial<Record<keyof ExpertiseEntry, string[]>>);
-      }
-      return false;
-    }
-  };
-
-  const handleSave = async (): Promise<void> => {
-    if (!validate()) return;
+  const onSubmit = async (data: ExpertiseFormData): Promise<void> => {
     setLoading(true);
     try {
-      const method = expertise.id ? 'put' : 'post';
-      const url = expertise.id ? `/expertise/${expertise.id}` : '/expertise';
+      const method = expertiseId ? 'put' : 'post';
+      const url = expertiseId ? `/expertise/${expertiseId}` : '/expertise';
 
       await axiosInstance({
-        method, // shorthand for method: method
-        url, // shorthand for url: url
-        data: expertise, // no change needed as 'data' is already in the correct format
+        method,
+        url,
+        data,
       });
 
-      router.replace('/dashboard/expertise');
+      toast.success(`Expertise ${expertiseId ? 'updated' : 'created'} successfully`);
+      router.push('/dashboard/expertise');
     } catch (error: unknown) {
-      let errorMessage: string;
-      if (error instanceof Error) {
-        errorMessage = error.message; // Safely access the message property
-      } else {
-        errorMessage = 'An unexpected error occurred'; // Fallback message
-      }
-      toast.error(errorMessage);
+      // toast.error('An unexpected error occurred');
+      // toast.error(error instanceof Error ? error.message : 'An unexpected error occurred');
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <Card>
-      <CardHeader title={expertise.id ? 'Edit Expertise' : 'Create Expertise'} />
+      <CardHeader title={expertiseId ? 'Edit Expertise' : 'Create Expertise'} />
       <Divider />
       <CardContent>
-        <Stack spacing={3}>
-          <TextField
-            label="Title"
-            name="title"
-            value={expertise.title}
-            onChange={handleInputChange}
-            fullWidth
-            error={Boolean(errors.title)}
-            helperText={errors.title?.[0]}
-          />
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <Grid container spacing={3}>
+            {/* Title Field */}
+            <Grid item xs={6}>
+              <FormControl fullWidth required error={Boolean(errors.title)}>
+                <InputLabel htmlFor="title">Title</InputLabel>
+                <Controller
+                  name="title"
+                  control={control}
+                  render={({ field }) => <OutlinedInput {...field} id="title" label="Title" />}
+                />
+                {errors.title && <FormHelperText>{errors.title.message}</FormHelperText>}
+              </FormControl>
+            </Grid>
 
-          <Select
-            label="Status"
-            name="status"
-            value={expertise.status}
-            onChange={handleSelectChange}
-            fullWidth
-            error={Boolean(errors.status)}
-          >
-            <MenuItem value="active">Active</MenuItem>
-            <MenuItem value="inactive">Inactive</MenuItem>
-          </Select>
+            {/* Action Buttons */}
+            <Grid item xs={12} container spacing={2} justifyContent="flex-end">
+              <Grid item>
+                <Button type="submit" className="common-button" variant="contained" disabled={loading}>
+                  Save
+                </Button>
+              </Grid>
+              <Grid item>
+                <Button
+                  variant="outlined"
+                  onClick={() => {
+                    router.push('/dashboard/expertise');
+                  }}
+                  disabled={loading}
+                  sx={{
+                    borderColor: '#d0021b',
+                    color: '#d0021b',
+                    transform: 'skewX(-20deg)',
+                    '&:hover': {
+                      borderColor: 'darkred',
+                      backgroundColor: 'rgba(255, 0, 0, 0.1)',
+                    },
+                  }}
+                >
+                  Cancel
+                </Button>
+              </Grid>
+            </Grid>
 
-          <Stack direction="row" spacing={2} justifyContent="flex-end">
-            <Button className="common-button" type="submit" variant="contained" onClick={handleSave}>
-              Save
-            </Button>
-            <Button
-              variant="outlined"
-              onClick={() => {
-                router.push('/dashboard/expertise');
-              }}
-              sx={{
-                borderColor: '#d0021b',
-                color: '#d0021b',
-                transform: 'skewX(-20deg)',
-                '&:hover': {
-                  borderColor: 'darkred',
-                  backgroundColor: 'rgba(255, 0, 0, 0.1)',
-                },
-              }}
-            >
-              Cancel
-            </Button>
-          </Stack>
-          {loading && <CustomLoader />}
-        </Stack>
+            {/* Loader */}
+            {loading && (
+              <Grid item xs={12}>
+                <CustomLoader />
+              </Grid>
+            )}
+          </Grid>
+        </form>
       </CardContent>
+      <ToastContainer />
     </Card>
   );
 }

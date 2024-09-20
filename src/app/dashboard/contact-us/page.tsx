@@ -14,6 +14,7 @@ import {
   TableRow,
   Typography,
 } from '@mui/material';
+import Swal from 'sweetalert2';
 
 import axiosInstance from '@/lib/axios';
 import { ContactUsFilters } from '@/components/dashboard/contact-us/contact-us-filters';
@@ -74,14 +75,27 @@ export default function Page(): React.JSX.Element {
   };
 
   const handleUpdateStatus = async (id: number, newStatus: ContactUsEntry['status']): Promise<void> => {
-    try {
-      await axiosInstance.patch(`/contact-us/update-status/${id}`, { status: newStatus });
-      setEntries((prevEntries) =>
-        prevEntries.map((entry) => (entry.id === id ? { ...entry, status: newStatus } : entry))
-      );
-    } catch (error) {
-      if (process.env.NODE_ENV !== 'production') {
-        // console.error('Failed to update status:', error);
+    const result = await Swal.fire({
+      title: 'Are you sure?',
+      text: `Do you want to change the status?`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, update it!',
+      cancelButtonText: 'No, cancel!',
+    });
+
+    if (result.isConfirmed) {
+      try {
+        await axiosInstance.patch(`/contact-us/update-status/${id}`, { status: newStatus });
+        setEntries((prevEntries) =>
+          prevEntries.map((entry) => (entry.id === id ? { ...entry, status: newStatus } : entry))
+        );
+        // Swal.fire('Updated!', 'The status has been updated.', 'success');
+      } catch (error) {
+        // Swal.fire('Error!', 'Failed to update status.', 'error');
+        if (process.env.NODE_ENV !== 'production') {
+          // console.error('Failed to update status:', error);
+        }
       }
     }
   };

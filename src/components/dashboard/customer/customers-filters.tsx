@@ -66,7 +66,7 @@ export function CustomersFilters({
   React.useEffect(() => {
     const fetchMembershipTitles = async () => {
       try {
-        const response = await axiosInstance.get('/membership-types/dropdown'); // Replace with your API endpoint
+        const response = await axiosInstance.get<{ data: MembershipPlans[] }>('/membership-types/dropdown'); // Type the response
         setMembershipTypes(response.data.data);
       } catch (err: unknown) {
         let errorMessage: string;
@@ -81,7 +81,6 @@ export function CustomersFilters({
 
     void fetchMembershipTitles();
   }, []);
-
   return (
     <Grid container spacing={2}>
       <Grid item md={4} xs={12}>

@@ -1,4 +1,5 @@
 import React from 'react';
+import { useRouter } from 'next/navigation';
 import {
   Box,
   Card,
@@ -16,6 +17,7 @@ import {
   Typography,
 } from '@mui/material';
 import { PencilSimple, Trash } from '@phosphor-icons/react';
+import dayjs from 'dayjs';
 
 import tableCss from '@/styles/table-css';
 
@@ -50,19 +52,24 @@ export function ExpertiseTable({
   onDelete,
   onToggleStatus,
 }: ExpertiseTableProps): React.JSX.Element {
-  const formatDate = (inputDate: Date | string): string => {
-    let date: Date;
-    if (typeof inputDate === 'string') {
-      date = new Date(inputDate);
-    } else {
-      date = inputDate;
-    }
-    return date.toLocaleDateString();
-  };
+  const router = useRouter();
+  // const formatDate = (inputDate: Date | string): string => {
+  //   let date: Date;
+  //   if (typeof inputDate === 'string') {
+  //     date = new Date(inputDate);
+  //   } else {
+  //     date = inputDate;
+  //   }
+  //   return date.toLocaleDateString();
+  // };
 
   const handleToggleStatus = (id: number, currentStatus: 'active' | 'inactive'): void => {
     const newStatus = currentStatus === 'active' ? 'inactive' : 'active';
     onToggleStatus(id, newStatus);
+  };
+
+  const handleRowClick = (id: number): void => {
+    router.push(`/dashboard/expertise/form?id=${id}`); // Replace with the actual path to your form page
   };
 
   return (
@@ -97,8 +104,31 @@ export function ExpertiseTable({
             ) : (
               entries.map((entry) => (
                 <TableRow key={entry.id} sx={tableCss.tableRow}>
-                  <TableCell sx={tableCss.tableCell}>{entry.title}</TableCell>
-                  <TableCell sx={tableCss.tableCell}>{formatDate(entry.createdAt)}</TableCell>
+                  <TableCell
+                    sx={tableCss.tableCell}
+                    onClick={() => {
+                      handleRowClick(entry.id);
+                    }}
+                    style={{ cursor: 'pointer' }}
+                  >
+                    {entry.title}
+                  </TableCell>
+                  <TableCell sx={tableCss.tableCell}>{dayjs(entry.createdAt).format('MMM D, YYYY')}</TableCell>
+
+                  <TableCell sx={tableCss.tableCell}>
+                    <FormControlLabel
+                      control={
+                        <Switch
+                          checked={entry.status === 'active'}
+                          onChange={() => {
+                            handleToggleStatus(entry.id, entry.status);
+                          }}
+                          color={entry.status === 'active' ? 'success' : 'error'}
+                        />
+                      }
+                      label={entry.status.charAt(0).toUpperCase() + entry.status.slice(1)}
+                    />
+                  </TableCell>
                   <TableCell sx={tableCss.tableCell}>
                     <Stack direction="row" spacing={1} alignItems="center">
                       <IconButton
@@ -116,20 +146,6 @@ export function ExpertiseTable({
                         <Trash />
                       </IconButton>
                     </Stack>
-                  </TableCell>
-                  <TableCell sx={tableCss.tableCell}>
-                    <FormControlLabel
-                      control={
-                        <Switch
-                          checked={entry.status === 'active'}
-                          onChange={() => {
-                            handleToggleStatus(entry.id, entry.status);
-                          }}
-                          color={entry.status === 'active' ? 'success' : 'error'}
-                        />
-                      }
-                      label={entry.status.charAt(0).toUpperCase() + entry.status.slice(1)}
-                    />
                   </TableCell>
                 </TableRow>
               ))

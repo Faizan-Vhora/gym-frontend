@@ -12,6 +12,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { useRouter } from 'next/navigation';
 import { CustomLoader } from '@/utils/loader';
 import { Button } from '@mui/material';
+import Swal from 'sweetalert2';
 
 import axiosInstance from '@/lib/axios';
 import { MembershipPlanFilters } from '@/components/dashboard/membership-plan/mebership-plan-filters';
@@ -55,7 +56,7 @@ export default function MembershipPlanPage(): React.JSX.Element {
     } finally {
       setLoading(false);
     }
-  }, [page, rowsPerPage, statusFilter]);
+  }, [page, rowsPerPage, searchTerm, statusFilter]);
 
   useEffect(() => {
     // Define an async function and invoke it
@@ -103,20 +104,67 @@ export default function MembershipPlanPage(): React.JSX.Element {
 
   const updatePlanStatus = async (id: string, currentStatus: string): Promise<void> => {
     const newStatus = currentStatus === 'active' ? 'inactive' : 'active'; // Toggle status
-    try {
-      await axiosInstance.patch(`/membership-types/update-status/${id}`, { status: newStatus });
-      toast.success(`Status updated to ${newStatus === 'active' ? 'Active' : 'Inactive'}`);
-      await fetchMembershipPlans(); // Refresh customer data
-    } catch (error: unknown) {
-      let errorMessage: string;
-      if (typeof error === 'string') {
-        errorMessage = error;
-      } else {
-        // Handle other types of errors, or set a generic message
-        errorMessage = 'An unexpected error occurred';
+
+    // Show confirmation dialog
+    const result = await Swal.fire({
+      title: 'Are you sure?',
+      text: `You are about to ${newStatus === 'active' ? 'activate' : 'deactivate'} this membership plan.`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: `Yes, ${newStatus === 'active' ? 'activate' : 'deactivate'} it!`,
+    });
+
+    // If confirmed, proceed with the status update
+    if (result.isConfirmed) {
+      try {
+        await axiosInstance.patch(`/membership-types/update-status/${id}`, { status: newStatus });
+        toast.success(`Status updated to ${newStatus === 'active' ? 'Active' : 'Inactive'}`);
+        await fetchMembershipPlans(); // Refresh data
+      } catch (error: unknown) {
+        let errorMessage: string;
+        if (typeof error === 'string') {
+          errorMessage = error;
+        } else {
+          errorMessage = 'An unexpected error occurred';
+        }
+        toast.error(errorMessage);
       }
-      // Convert the Error object to a string
-      toast.error(errorMessage);
+    }
+  };
+
+  const handleEdit = (id: string): void => {
+    router.push(`/dashboard/membership-plan/form?id=${id}`);
+  };
+
+  const handleDelete = async (id: string): Promise<void> => {
+    // Show confirmation dialog
+    const result = await Swal.fire({
+      title: 'Are you sure?',
+      text: "You won't be able to revert this!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, delete it!',
+    });
+
+    // If confirmed, proceed with the deletion
+    if (result.isConfirmed) {
+      try {
+        await axiosInstance.delete(`/membership-types/${id}`);
+        toast.success('Membership plan deleted successfully');
+        await fetchMembershipPlans(); // Refresh data
+      } catch (error: unknown) {
+        let errorMessage: string;
+        if (typeof error === 'string') {
+          errorMessage = error;
+        } else {
+          errorMessage = 'An unexpected error occurred';
+        }
+        toast.error(errorMessage);
+      }
     }
   };
 
@@ -149,6 +197,8 @@ export default function MembershipPlanPage(): React.JSX.Element {
           page={page}
           rowsPerPage={rowsPerPage}
           rows={membershipPlans}
+          onEdit={handleEdit}
+          onDelete={handleDelete}
           onPageChange={handlePageChange}
           onRowsPerPageChange={handleRowsPerPageChange}
           updatePlanStatus={updatePlanStatus}

@@ -10,6 +10,7 @@ import { toast, ToastContainer } from 'react-toastify'; // Import the toast func
 import 'react-toastify/dist/ReactToastify.css';
 
 import { CustomLoader } from '@/utils/loader';
+import Swal from 'sweetalert2';
 
 import axiosInstance from '@/lib/axios';
 import ExpertiseFilters from '@/components/dashboard/expertise/expertise-filter';
@@ -105,13 +106,28 @@ export default function ExpertisePage(): React.JSX.Element {
   };
 
   const handleDelete: (id: number) => Promise<void> = async (id) => {
-    try {
-      await axiosInstance.delete(`/expertise/${id}`);
-      // Trigger a refetch to refresh data
-      toast.success(`Expertise deleted successfully`);
-      setPage(0);
-    } catch (err) {
-      toast.error('Failed to delete Expertise');
+    // Prompt user with SweetAlert2 confirmation dialog
+    const result = await Swal.fire({
+      title: 'Are you sure?',
+      text: 'This action cannot be undone.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, delete it!',
+      cancelButtonText: 'Cancel',
+    });
+
+    if (result.isConfirmed) {
+      try {
+        await axiosInstance.delete(`/expertise/${id}`);
+        setEntries((prevEntries) => prevEntries.filter((entry) => entry.id !== id));
+        // Trigger a refetch to refresh data
+        toast.success('Expertise deleted successfully');
+        setPage(0); // Reset or update the page state if necessary
+      } catch (err) {
+        toast.error('Failed to delete Expertise');
+      }
     }
   };
 
@@ -119,18 +135,32 @@ export default function ExpertisePage(): React.JSX.Element {
     const entry = entries.find((entry) => entry.id === id);
     if (!entry) return;
 
-    try {
-      const newStatus = entry.status === 'active' ? 'inactive' : 'active';
-      await axiosInstance.patch(`/expertise/update-status/${id}`, { status: newStatus });
-      // Optimistically update the status in the UI
-      setEntries((prevEntries) =>
-        prevEntries.map((currentEntry) =>
-          currentEntry.id === id ? { ...currentEntry, status: newStatus } : currentEntry
-        )
-      );
-      toast.success(`Status updated to ${newStatus === 'active' ? 'Active' : 'Inactive'}`);
-    } catch (err) {
-      toast.error('Failed to update status');
+    // Prompt user with SweetAlert2 confirmation dialog
+    const result = await Swal.fire({
+      title: 'Are you sure?',
+      text: `You are about to change the status to ${entry.status === 'active' ? 'inactive' : 'active'}.`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, change it!',
+      cancelButtonText: 'Cancel',
+    });
+
+    if (result.isConfirmed) {
+      try {
+        const newStatus = entry.status === 'active' ? 'inactive' : 'active';
+        await axiosInstance.patch(`/expertise/update-status/${id}`, { status: newStatus });
+        // Optimistically update the status in the UI
+        setEntries((prevEntries) =>
+          prevEntries.map((currentEntry) =>
+            currentEntry.id === id ? { ...currentEntry, status: newStatus } : currentEntry
+          )
+        );
+        toast.success(`Status updated to ${newStatus === 'active' ? 'Active' : 'Inactive'}`);
+      } catch (err) {
+        toast.error('Failed to update status');
+      }
     }
   };
 

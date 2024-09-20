@@ -2,12 +2,7 @@ import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import {
   Box,
-  Button,
   Card,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
   Divider,
   IconButton,
   MenuItem,
@@ -71,30 +66,17 @@ export default function FaqTable({
   onPageChange,
   onRowsPerPageChange,
 }: FaqTableProps): React.JSX.Element {
-  const [dialogOpen, setDialogOpen] = React.useState(false);
-  const [deleteId, setDeleteId] = React.useState<number | null>(null);
   const router = useRouter();
 
   const handleRequestSort = (_property: keyof FaqEntry): void => {
     // Function body remains empty or contains code not using _property
   };
 
-  const handleDelete = (id: number): void => {
-    setDeleteId(id);
-    setDialogOpen(true);
-  };
-
-  const handleConfirmDelete = (): void => {
-    if (deleteId !== null) {
-      onDelete(deleteId);
-      setDeleteId(null);
-    }
-    setDialogOpen(false);
-  };
-
-  const handleCancelDelete = (): void => {
-    setDeleteId(null);
-    setDialogOpen(false);
+  const typeMappings: Record<string, string> = {
+    general: 'General',
+    user: 'User',
+    trainer: 'Trainer',
+    // Add other mappings as needed
   };
 
   const handleRowClick = (id: number): void => {
@@ -155,14 +137,17 @@ export default function FaqTable({
               </TableRow>
             ) : (
               faqs.map((faq) => (
-                <TableRow
-                  key={faq.id}
-                  sx={tableCss.tableRow}
-                  onClick={() => {
-                    handleRowClick(faq.id);
-                  }}
-                >
-                  <TableCell sx={tableCss.tableCell}>{faq.type}</TableCell>
+                <TableRow key={faq.id} sx={tableCss.tableRow}>
+                  <TableCell
+                    sx={tableCss.tableCell}
+                    onClick={() => {
+                      handleRowClick(faq.id);
+                    }}
+                    style={{ cursor: 'pointer' }}
+                  >
+                    {typeMappings[faq.type.toLowerCase()] || faq.type}
+                    {/* Fallback to original type if it's not in the mapping */}
+                  </TableCell>
                   <TableCell sx={tableCss.tableCell}>{faq.question}</TableCell>
                   <TableCell sx={tableCss.tableCell}>{faq.answer}</TableCell>
                   <TableCell sx={tableCss.tableCell}>
@@ -190,7 +175,7 @@ export default function FaqTable({
                     </IconButton>
                     <IconButton
                       onClick={() => {
-                        handleDelete(faq.id);
+                        onDelete(faq.id);
                       }}
                     >
                       <Trash />
@@ -216,16 +201,6 @@ export default function FaqTable({
           onRowsPerPageChange(parseInt(event.target.value, 10));
         }}
       />
-      <Dialog open={dialogOpen} onClose={handleCancelDelete}>
-        <DialogTitle>Confirm Deletion</DialogTitle>
-        <DialogContent>Are you sure you want to delete this FAQ?</DialogContent>
-        <DialogActions>
-          <Button onClick={handleCancelDelete}>Cancel</Button>
-          <Button onClick={handleConfirmDelete} color="primary">
-            Confirm
-          </Button>
-        </DialogActions>
-      </Dialog>
     </Card>
   );
 }

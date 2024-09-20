@@ -28,6 +28,7 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { Eye as EyeIcon } from '@phosphor-icons/react/dist/ssr/Eye';
 import { EyeSlash as EyeSlashIcon } from '@phosphor-icons/react/dist/ssr/EyeSlash';
 import { Controller, useForm } from 'react-hook-form';
@@ -40,8 +41,11 @@ import 'react-toastify/dist/ReactToastify.css';
 
 import { REGEX_VALIDATION } from '@/utils/constant';
 import { CustomLoader } from '@/utils/loader';
+// import { DatePicker } from '@mui/x-date-pickers';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { Trash } from '@phosphor-icons/react';
-import dayjs from 'dayjs';
+import dayjs, { Dayjs } from 'dayjs';
 
 import type { Customer } from '@/components/dashboard/customer/customers-table';
 import MembershipPlanCard from '@/components/dashboard/membership-plan/membership-card';
@@ -268,7 +272,7 @@ export default function CustomerEditForm(): React.JSX.Element {
       { key: 'gender', value: data.gender },
       { key: 'password', value: data.password },
       { key: 'profileImage', value: imageFile }, // Ensure imageFile is properly set
-      { key: 'dateOfBirth', value: data.dateOfBirth ? dayjs(data.dateOfBirth).format('MM-DD-YYYY') : '' }, // Convert Date to YYYY-MM-DD
+      { key: 'dateOfBirth', value: data.dateOfBirth }, // Convert Date to YYYY-MM-DD
     ];
 
     fields.forEach(({ key, value }): void => {
@@ -503,44 +507,41 @@ export default function CustomerEditForm(): React.JSX.Element {
                               </FormControl>
                             </Grid>
                             <Grid item md={6} p={2}>
-                              <FormControl fullWidth>
-                                <Controller
-                                  name="dateOfBirth"
-                                  control={control}
-                                  defaultValue={
-                                    customer?.dateOfBirth ? dayjs(customer.dateOfBirth).format('YYYY-MM-DD') : ''
-                                  }
-                                  render={({ field }) => (
-                                    <TextField
-                                      {...field}
-                                      label="Date of Birth"
-                                      type="date"
-                                      fullWidth
-                                      InputLabelProps={{
-                                        shrink: true,
-                                      }}
-                                      error={Boolean(errors.dateOfBirth)}
-                                      helperText={errors.dateOfBirth ? errors.dateOfBirth.message : ''}
-                                      inputProps={{
-                                        shrink: true,
-                                      }}
-                                      onChange={(e) => {
-                                        const value = e.target.value;
-                                        const date = new Date(value);
-                                        if (date > new Date()) {
-                                          // Handle the case where the selected date is in the future
-                                          toast.error('Date of birth cannot be in the future');
-                                          return;
-                                        }
-                                        field.onChange(e);
-                                      }}
-                                    />
-                                  )}
-                                />
-                                {errors.dateOfBirth ? (
-                                  <FormHelperText>{errors.dateOfBirth.message}</FormHelperText>
-                                ) : null}
-                              </FormControl>
+                              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                <FormControl fullWidth>
+                                  <Controller
+                                    name="dateOfBirth"
+                                    control={control}
+                                    render={({ field, fieldState }) => {
+                                      const errorMessage = fieldState.error ? fieldState.error.message : '';
+
+                                      return (
+                                        <DatePicker
+                                          disableFuture
+                                          format="MM-DD-YYYY"
+                                          views={['year', 'month', 'day']}
+                                          defaultValue={customer?.dateOfBirth ? dayjs(customer.dateOfBirth) : null}
+                                          label="Date of Birth"
+                                          value={customer?.dateOfBirth ? dayjs(customer.dateOfBirth) : null}
+                                          onChange={(newValue: Dayjs | null) => {
+                                            if (newValue) {
+                                              field.onChange(newValue.format('YYYY-MM-DD'));
+                                            }
+                                          }}
+                                          slotProps={{
+                                            textField: {
+                                              fullWidth: true,
+                                              error: Boolean(fieldState.error),
+                                              helperText: errorMessage,
+                                            },
+                                          }}
+                                        />
+                                      );
+                                    }}
+                                  />
+                                  {errors.dateOfBirth && <FormHelperText>{errors.dateOfBirth.message}</FormHelperText>}
+                                </FormControl>
+                              </LocalizationProvider>
                             </Grid>
                             <Grid item md={6} p={2}>
                               <FormControl fullWidth>
@@ -648,8 +649,8 @@ export default function CustomerEditForm(): React.JSX.Element {
         )}
         {tab === 1 && (
           <>
-            <Box>
-              {customerS?.membership && (
+            <Box p={2}>
+              {customerS?.membership?.membershipType && (
                 <Grid container>
                   <Grid container spacing={2} justifyContent="center" sx={{ margin: '10px' }}>
                     <Grid item xs={12} sm={6} md={4} key={customerS?.membership?.membershipType?.id} padding={5}>

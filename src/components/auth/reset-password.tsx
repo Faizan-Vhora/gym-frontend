@@ -89,24 +89,17 @@ export function ResetPasswordForm(): React.JSX.Element {
       setError(null); // Clear previous errors
 
       try {
-        // Make the API call to reset the password
         const response = await axiosInstance.post('/auth/reset-password', {
           password: values.password,
           token, // Include the token in the payload
         });
 
         if (response.status === 201) {
+          // Optionally show a success message
           toast.success('Password reset successfully');
-          router.push('/auth/sign-in'); // Redirect to sign-in page
+          router.replace('/auth/sign-in'); // Redirect to sign-in page
         }
       } catch (err: unknown) {
-        let errorMessage: string;
-        if (err instanceof Error) {
-          errorMessage = err.message; // Safely access the message property
-        } else {
-          errorMessage = 'An unexpected error occurred'; // Fallback message
-        }
-        toast.error(errorMessage);
         // Handle server-side or network errors
         setFormError('root', { type: 'server', message: 'Failed to reset password. Please try again later.' });
       } finally {
