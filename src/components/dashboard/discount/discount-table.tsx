@@ -169,7 +169,7 @@ export function DiscountTable({
                         : `$${discount.discountValue}`}{' '}
                     </TableCell>
                     <TableCell>
-                      <Select
+                      <Select sx={{height:'40px'}}
                         value={discount.status}
                         onChange={(e) => {
                           onStatusChange(discount.id, e.target.value as DiscountStatus);

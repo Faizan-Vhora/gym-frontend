@@ -11,13 +11,14 @@ import 'react-toastify/dist/ReactToastify.css';
 
 import { useRouter } from 'next/navigation';
 import { CustomLoader } from '@/utils/loader';
-import { Button } from '@mui/material';
+import { Button, Card } from '@mui/material';
 import Swal from 'sweetalert2';
 
 import axiosInstance from '@/lib/axios';
 import { CustomersFilters } from '@/components/dashboard/customer/customers-filters';
 import { CustomersTable } from '@/components/dashboard/customer/customers-table';
 import type { Customer } from '@/components/dashboard/customer/customers-table';
+import { margin } from '@mui/system';
 
 export default function Page(): React.JSX.Element {
   const [customers, setCustomers] = useState<Customer[]>([]);
@@ -159,15 +160,20 @@ export default function Page(): React.JSX.Element {
           Add
         </Button>
       </Stack>
-      <CustomersFilters
+      <Card >
+   
+      <Stack sx={{padding:'30px'}}>
+      <CustomersFilters 
         onFilterChange={handleFilterChange}
         onStatusChange={handleStatusChange} // Pass status change handler
         onMembershipTypeChange={handleMembershipTypeChange} // Pass membership type change handler
       />
+      </Stack>
+     
       {loading ? (
         <CustomLoader />
       ) : (
-        <CustomersTable
+        <CustomersTable 
           count={count}
           page={page}
           rowsPerPage={rowsPerPage}
@@ -177,6 +183,8 @@ export default function Page(): React.JSX.Element {
           updateCustomerStatus={updateCustomerStatus}
         />
       )}
+
+      </Card>
       <ToastContainer /> {/* Add ToastContainer here */}
     </Stack>
   );

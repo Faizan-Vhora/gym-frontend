@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
-import { Alert, Button, Stack, Typography } from '@mui/material';
+import { Alert, Button, Card, Stack, Typography } from '@mui/material';
 import { Plus as PlusIcon } from '@phosphor-icons/react';
 import { toast, ToastContainer } from 'react-toastify';
 
@@ -199,11 +199,16 @@ export default function FaqManagementPage(): React.JSX.Element {
           Add
         </Button>
       </Stack>
+      <Card>
+
+       <Stack sx={{padding:'30px'}}>
+
       <FaqFilters
         onSearchChange={handleSearchChange}
         onTypeChange={handleTypeChange}
         onStatusChange={handleStatusChangeFilter}
       />
+       </Stack>
       {loading ? (
         <CustomLoader />
       ) : (
@@ -224,6 +229,7 @@ export default function FaqManagementPage(): React.JSX.Element {
           }}
         />
       )}
+      </Card>
       {error ? <Alert color="error">{error}</Alert> : null}
       <ToastContainer />
     </Stack>

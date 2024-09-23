@@ -11,13 +11,14 @@ import 'react-toastify/dist/ReactToastify.css';
 
 import { useRouter } from 'next/navigation';
 import { CustomLoader } from '@/utils/loader';
-import { Alert, Button } from '@mui/material';
+import { Alert, Button, Card } from '@mui/material';
 import Swal from 'sweetalert2';
 
 import axiosInstance from '@/lib/axios';
 import { TrainersFilters } from '@/components/dashboard/trainer/trainer-filters';
 import { TrainersTable } from '@/components/dashboard/trainer/trainer-table';
 import type { Trainer } from '@/components/dashboard/trainer/trainer-table';
+import { padding } from '@mui/system';
 
 export default function TrainersPage(): React.JSX.Element {
   const [trainers, setTrainers] = useState<Trainer[]>([]);
@@ -185,13 +186,17 @@ export default function TrainersPage(): React.JSX.Element {
           Add
         </Button>
       </Stack>
+      <Card >
+        <Stack sx ={{padding:'30px'}}>
       <TrainersFilters
         onFilterChange={handleFilterChange}
         onStatusChange={handleStatusChange} // Pass status change handler
       />
+        </Stack>
       {loading ? (
         <CustomLoader />
       ) : (
+        
         <TrainersTable
           count={count}
           page={page}
@@ -202,6 +207,7 @@ export default function TrainersPage(): React.JSX.Element {
           updateTrainerStatus={updateTrainerStatus}
         />
       )}
+     </Card>
       {error ? <Alert color="error">{error}</Alert> : null}
       <ToastContainer /> {/* Add ToastContainer here */}
     </Stack>

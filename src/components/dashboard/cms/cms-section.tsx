@@ -17,18 +17,18 @@ const CmsSection: React.FC<CmsSectionProps> = ({ id, title, content }) => {
   };
 
   return (
-    <Card sx={{ marginBottom: 2, padding: 2, position: 'relative' }}>
+    <Card sx={{ marginBottom: 2, padding: 10, position: 'relative',          marginTop: 2,
+      maxHeight: '350px', // Adjust the height as needed
+      overflowY: 'scroll',
+      textOverflow: 'ellipsis',
+      whiteSpace: 'nowrap', }}>
       <Typography variant="h6">{title}</Typography>
       <IconButton sx={{ position: 'absolute', top: 8, right: 8 }} onClick={handleEditClick}>
         <PencilSimple />
       </IconButton>
       <Box
         sx={{
-          marginTop: 2,
-          maxHeight: '100px', // Adjust the height as needed
-          overflow: 'hidden',
-          textOverflow: 'ellipsis',
-          whiteSpace: 'nowrap',
+
         }}
         dangerouslySetInnerHTML={{ __html: content }}
       />

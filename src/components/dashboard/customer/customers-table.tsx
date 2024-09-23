@@ -82,9 +82,9 @@ export function CustomersTable({
   };
 
   return (
-    <Card>
-      <Box sx={{ overflowX: 'auto' }}>
-        <Table>
+    <Stack >
+      <Box sx={{ overflowX: 'auto', marginTop:'30px' }}>
+        <Table >
           <TableHead>
             <TableRow sx={tableCss.tableRow}>
               <TableCell sx={tableCss.tableHeaderCell}>User Details</TableCell>
@@ -209,6 +209,6 @@ export function CustomersTable({
         onRowsPerPageChange={onRowsPerPageChange}
         rowsPerPageOptions={[5, 10, 25]}
       />
-    </Card>
+    </Stack>
   );
 }

@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Alert, Button, Stack, Typography } from '@mui/material';
+import { Alert, Button, Card, Stack, Typography } from '@mui/material';
 import { Plus as PlusIcon } from '@phosphor-icons/react/dist/ssr/Plus';
 import { toast, ToastContainer } from 'react-toastify'; // Import the toast function
 
@@ -194,7 +194,11 @@ export default function ExpertisePage(): React.JSX.Element {
           Add
         </Button>
       </Stack>
+      <Card>
+        <Stack sx={{padding:'30px'}}>
+          
       <ExpertiseFilters onSearchChange={handleSearchChange} onStatusChange={handleStatusChange} />
+        </Stack>
       {loading ? (
         <CustomLoader />
       ) : (
@@ -211,6 +215,7 @@ export default function ExpertisePage(): React.JSX.Element {
           onToggleStatus={handleToggleStatus}
         />
       )}
+      </Card>
       {error ? <Alert color="error">{error}</Alert> : null}
       <ToastContainer /> {/* Add ToastContainer here */}
     </Stack>

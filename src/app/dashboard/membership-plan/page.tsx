@@ -11,13 +11,14 @@ import 'react-toastify/dist/ReactToastify.css';
 
 import { useRouter } from 'next/navigation';
 import { CustomLoader } from '@/utils/loader';
-import { Button } from '@mui/material';
+import { Button, Card } from '@mui/material';
 import Swal from 'sweetalert2';
 
 import axiosInstance from '@/lib/axios';
 import { MembershipPlanFilters } from '@/components/dashboard/membership-plan/mebership-plan-filters';
 import { MembershipPlanTable } from '@/components/dashboard/membership-plan/membership-plan-table';
 import type { MembershipPlans } from '@/components/dashboard/membership-plan/membership-plan-table';
+import { padding } from '@mui/system';
 
 export default function MembershipPlanPage(): React.JSX.Element {
   const [membershipPlans, setMembershipPlans] = useState<MembershipPlans[]>([]);
@@ -185,10 +186,15 @@ export default function MembershipPlanPage(): React.JSX.Element {
           Add
         </Button>
       </Stack>
+      <Card>
+
+      <Stack sx={{padding:'30px'}}>
+
       <MembershipPlanFilters
         onSearchChange={handleSearchChange}
         onStatusChange={handleStatusChange} // Pass status change handler
       />
+      </Stack>
       {loading ? (
         <CustomLoader />
       ) : (
@@ -204,6 +210,7 @@ export default function MembershipPlanPage(): React.JSX.Element {
           updatePlanStatus={updatePlanStatus}
         />
       )}
+      </Card>
       <ToastContainer /> {/* Add ToastContainer here */}
     </Stack>
   );

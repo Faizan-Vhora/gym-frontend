@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import { CustomLoader } from '@/utils/loader';
-import { Button, Grid, IconButton, InputAdornment, Stack, TextField, Typography } from '@mui/material';
+import { Button, Card, Grid, IconButton, InputAdornment, Stack, TextField, Typography } from '@mui/material';
 import { Plus as PlusIcon, X as XIcon } from '@phosphor-icons/react'; // Import XIcon from phosphor-react
 
 import debounce from 'lodash/debounce';
@@ -208,7 +208,10 @@ export default function DiscountManagementPage(): React.JSX.Element {
           Add
         </Button>
       </Stack>
+      <Card>
+      
       {/* Search Field */}
+      <Stack sx={{padding:'30px'}}>
       <Grid container spacing={2}>
         <Grid item md={6} xs={12}>
           <TextField
@@ -235,6 +238,7 @@ export default function DiscountManagementPage(): React.JSX.Element {
           <DiscountFilter onFilterChange={handleFilterChange} />
         </Grid>
       </Grid>
+      </Stack>
       {loading ? (
         <CustomLoader />
       ) : (
@@ -255,6 +259,7 @@ export default function DiscountManagementPage(): React.JSX.Element {
           }}
         />
       )}
+      </Card>
     </Stack>
   );
 }

@@ -142,9 +142,9 @@ const TrainerAdditionalForm: React.FC = () => {
     <Box component="form" onSubmit={handleSubmit(onSubmit)}>
       <Card>
         <CardContent>
-          <Grid container spacing={2}>
+          <Grid container spacing={8}>
             {/* Expertise List */}
-            <Grid item md={4} xs={12}>
+            <Grid item md={5} xs={12}>
               <FormControl fullWidth>
                 <Box
                   sx={{
@@ -173,9 +173,10 @@ const TrainerAdditionalForm: React.FC = () => {
                 </Box>
               </FormControl>
             </Grid>
-
+            <Grid item md={7} xs={12}>
+            <Grid container spacing={2}>
             {/* Experience Selector */}
-            <Grid item md={4} xs={12}>
+            <Grid item md={6} xs={12}>
               <FormControl required fullWidth>
                 <InputLabel htmlFor="experience">Experience (Years)</InputLabel>
                 <OutlinedInput
@@ -189,7 +190,7 @@ const TrainerAdditionalForm: React.FC = () => {
             </Grid>
 
             {/* Fees Field */}
-            <Grid item md={4} xs={12}>
+            <Grid item md={6} xs={12}>
               <FormControl required fullWidth>
                 <InputLabel htmlFor="fees">Fees</InputLabel>
                 <OutlinedInput
@@ -205,7 +206,7 @@ const TrainerAdditionalForm: React.FC = () => {
             </Grid>
 
             {/* About Me Field */}
-            <Grid item xs={12}>
+            <Grid item md={12} xs={12}>
               <TextField
                 {...register('aboutMe')}
                 label="About Me"
@@ -217,10 +218,14 @@ const TrainerAdditionalForm: React.FC = () => {
                 variant="outlined"
               />
             </Grid>
+            </Grid>
+            </Grid>
+
+
           </Grid>
         </CardContent>
         <Divider />
-        <CardActions sx={{ justifyContent: 'flex-end' }}>
+        <CardActions sx={{ justifyContent: 'flex-end',padding:"15px 30px" }}>
           <Button className="common-button" variant="contained" type="submit" disabled={isSubmitting}>
             Save
           </Button>
