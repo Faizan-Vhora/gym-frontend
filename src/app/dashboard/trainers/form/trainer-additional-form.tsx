@@ -123,7 +123,7 @@ const TrainerAdditionalForm: React.FC = () => {
         ...data,
       });
       toast.success('Profile updated successfully!');
-      router.push('/dashboard/trainer');
+      router.push('/dashboard/trainers');
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'An unexpected error occurred';
       toast.error(errorMessage);
@@ -221,13 +221,14 @@ const TrainerAdditionalForm: React.FC = () => {
         </CardContent>
         <Divider />
         <CardActions sx={{ justifyContent: 'flex-end' }}>
-          <Button variant="contained" type="submit" disabled={isSubmitting}>
+          <Button className="common-button" variant="contained" type="submit" disabled={isSubmitting}>
             Save
           </Button>
           <Button
+            className="common-button"
             variant="outlined"
             onClick={() => {
-              router.push('/dashboard/trainer');
+              router.push('/dashboard/trainers');
             }}
           >
             Cancel
