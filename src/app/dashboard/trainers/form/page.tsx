@@ -201,7 +201,7 @@ export default function TrainerEditForm(): React.JSX.Element {
       { key: 'email', value: data.email },
       { key: 'phoneNumber', value: data.phoneNumber },
       { key: 'address', value: data.address },
-      { key: 'userType', value: '3' }, // Static value
+      { key: 'userType', value: '2' }, // Static value
       { key: 'zipCode', value: data.zipCode },
       { key: 'gender', value: data.gender },
       { key: 'password', value: data.password },

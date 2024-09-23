@@ -269,6 +269,7 @@ export default function DiscountFormPage(): React.JSX.Element {
               <Grid container spacing={3}>
                 <Grid item md={6} xs={12}>
                   <TextField
+                    required
                     label="Code Name"
                     name="codeName"
                     value={discount.codeName}
@@ -280,7 +281,7 @@ export default function DiscountFormPage(): React.JSX.Element {
                 </Grid>
                 <Grid item md={6} xs={12}>
                   <LocalizationProvider dateAdapter={AdapterDayjs}>
-                    <FormControl fullWidth>
+                    <FormControl fullWidth required>
                       <Controller
                         name="expiryDate"
                         control={control}
@@ -317,7 +318,7 @@ export default function DiscountFormPage(): React.JSX.Element {
                 </Grid>
 
                 <Grid item md={6} xs={12}>
-                  <FormControl variant="outlined" fullWidth>
+                  <FormControl variant="outlined" fullWidth required>
                     <InputLabel>Discount Type</InputLabel>
                     <Select
                       label="Discount Type"
@@ -335,7 +336,7 @@ export default function DiscountFormPage(): React.JSX.Element {
                 </Grid>
 
                 <Grid item xs={12} md={6}>
-                  <FormControl variant="outlined" fullWidth>
+                  <FormControl variant="outlined" fullWidth required>
                     <InputLabel>Usage Limit</InputLabel>
                     <Select
                       label="Usage Limit"
@@ -354,6 +355,7 @@ export default function DiscountFormPage(): React.JSX.Element {
                 </Grid>
                 <Grid item xs={12} md={6}>
                   <TextField
+                    required
                     label="Discount Value"
                     name="discountValue"
                     type="number"
