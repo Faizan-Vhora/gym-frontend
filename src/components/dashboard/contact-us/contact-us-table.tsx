@@ -111,7 +111,7 @@ export function ContactUsTable({
                     </TableCell>
                     <TableCell sx={tableCss.tableCell}>{typeDictionary[entry.type]}</TableCell>
                     <TableCell sx={tableCss.tableCell}>
-                      <Select
+                      <Select sx={{height:'40px'}}
                         value={entry.status}
                         onChange={(e) => {
                           handleStatusChange(entry.id, e.target.value as ContactUsEntry['status']);

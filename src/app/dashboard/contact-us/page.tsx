@@ -4,6 +4,7 @@ import * as React from 'react';
 import { useCallback, useEffect } from 'react';
 import { CustomLoader } from '@/utils/loader';
 import {
+  Card,
   Paper,
   Stack,
   Table,
@@ -110,17 +111,24 @@ export default function Page(): React.JSX.Element {
   };
 
   return (
+
     <Stack spacing={3}>
       <Stack direction="row" spacing={3}>
         <Stack spacing={1} sx={{ flex: '1 1 auto' }}>
           <Typography variant="h4">Contact Us</Typography>
         </Stack>
       </Stack>
+
+
+      <Card>
+      {/* Search Field */}
+      <Stack sx={{padding:'30px'}}>
       <ContactUsFilters
         onSearchChange={handleSearchChange}
         onStatusChange={handleStatusChange}
         onFromChange={handleFromChange}
       />
+      </Stack>
       {loading ? (
         <CustomLoader />
       ) : entries.length === 0 ? (
@@ -157,6 +165,7 @@ export default function Page(): React.JSX.Element {
           onRowsPerPageChange={handleRowsPerPageChange}
         />
       )}
+      </Card>
     </Stack>
   );
 }

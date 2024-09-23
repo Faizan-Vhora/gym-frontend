@@ -651,7 +651,7 @@ export default function CustomerEditForm(): React.JSX.Element {
                 <Grid container>
                   <Grid container spacing={2} justifyContent="center" sx={{ margin: '10px' }}>
                     <Grid item xs={12} sm={6} md={4} key={customerS?.membership?.membershipType?.id} padding={5}>
-                      <MembershipPlanCard
+                      <MembershipPlanCard sx={{border:'2px solid blue'}}
                         title={customerS.membership.membershipType.title}
                         durationInMonths={customerS?.membership?.membershipType?.durationInMonths}
                         expiryDate={customerS?.membership?.expiryDate}
