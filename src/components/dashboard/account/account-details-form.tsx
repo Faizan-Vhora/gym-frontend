@@ -4,7 +4,7 @@ import * as React from 'react';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Alert, FormHelperText, Grid } from '@mui/material';
+import { FormHelperText, Grid } from '@mui/material';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
@@ -44,7 +44,7 @@ const accountDetailsSchema = z.object({
         message: 'Invalid phone number format',
       }
     ),
-  address: z.string().optional(),
+  address: z.string().nullable(),
 });
 
 export function AccountDetailsForm(): React.JSX.Element {
@@ -69,7 +69,6 @@ export function AccountDetailsForm(): React.JSX.Element {
       try {
         const response = await axiosInstance.get<{ data: User }>('/auth/profile');
         const fetchedUser = response.data.data;
-        console.log('updated user', fetchedUser);
         setUser(fetchedUser);
         reset(fetchedUser); // Reset the form with fetched user data
       } catch (err: unknown) {
@@ -119,8 +118,6 @@ export function AccountDetailsForm(): React.JSX.Element {
   };
 
   const onSubmit = async (data: User): Promise<void> => {
-    console.log('inside onSubmit');
-    console.log('data', data);
     setIsSubmitting(true);
 
     try {
@@ -152,7 +149,7 @@ export function AccountDetailsForm(): React.JSX.Element {
 
       const updatedUser = response.data.data;
       setUser(updatedUser);
-      console.log('updated user', updatedUser);
+
       toast.success('Profile updated successfully');
       router.push('/dashboard');
     } catch (err: unknown) {
@@ -239,7 +236,7 @@ export function AccountDetailsForm(): React.JSX.Element {
                       control={control}
                       render={({ field }) => <OutlinedInput {...field} label="Address" />}
                     />
-                    {errors.address && <Alert severity="error">{errors.address.message}</Alert>}
+                    {errors.address?.message && <FormHelperText error>{errors.address.message}</FormHelperText>}
                   </FormControl>
                 </Grid>
               </Grid>

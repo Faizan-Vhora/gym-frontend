@@ -19,7 +19,6 @@ import {
   TextField,
 } from '@mui/material';
 import type { SelectChangeEvent } from '@mui/material';
-import { Trash } from '@phosphor-icons/react';
 import { toast, ToastContainer } from 'react-toastify'; // Import the toast function
 
 import 'react-toastify/dist/ReactToastify.css';
@@ -187,7 +186,7 @@ export default function DiscountFormPage(): React.JSX.Element {
     }
   };
 
-  const onSubmit = async (data: DiscountSchema): Promise<void> => {
+  const onSubmit = async (): Promise<void> => {
     if (!validate()) return;
 
     const formData = new FormData();

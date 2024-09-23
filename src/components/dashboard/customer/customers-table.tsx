@@ -3,7 +3,6 @@ import { useRouter } from 'next/navigation';
 import { getStatusText } from '@/utils/userstatus';
 import {
   Box,
-  Card,
   Divider,
   FormControlLabel,
   IconButton,
@@ -83,9 +82,9 @@ export function CustomersTable({
   };
 
   return (
-    <Stack >
-      <Box sx={{ overflowX: 'auto', marginTop:'30px' }}>
-        <Table >
+    <Stack>
+      <Box sx={{ overflowX: 'auto', marginTop: '30px' }}>
+        <Table>
           <TableHead>
             <TableRow sx={tableCss.tableRow}>
               <TableCell sx={tableCss.tableHeaderCell}>User Details</TableCell>

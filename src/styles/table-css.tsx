@@ -1,5 +1,3 @@
-import { padding } from "@mui/system";
-
 const tableCss = {
   tableCell: {
     padding: '12px 30px',
@@ -15,7 +13,7 @@ const tableCss = {
     fontWeight: 'bold',
     fontSize: '14px',
     // padding: '16px',
-    padding:'16px 30px',
+    padding: '16px 30px',
     backgroundColor: '#f9fafb !important', // Dark blue background for header
     color: '#667085 !important', // White text color
     borderBottom: '2px solid #ddd', // Light border at the bottom of the header
