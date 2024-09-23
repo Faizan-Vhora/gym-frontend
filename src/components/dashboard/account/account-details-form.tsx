@@ -22,10 +22,7 @@ import axiosInstance from '@/lib/axios';
 
 import 'react-toastify/dist/ReactToastify.css';
 
-const REGEX_VALIDATION = {
-  FULL_NAME: /^[A-Za-z\s]+$/, // Example regex for full name
-  PHONE_NUMBER: /^\d{10}$/, // Example regex for 10-digit phone number
-};
+import { REGEX_VALIDATION } from '@/utils/constant';
 
 const accountDetailsSchema = z.object({
   fullName: z
@@ -35,24 +32,34 @@ const accountDetailsSchema = z.object({
   email: z.string().min(1, 'Email is required').email(),
   phoneNumber: z
     .string()
-    .optional()
-    .refine((value) => !value || REGEX_VALIDATION.PHONE_NUMBER.test(value), { message: 'Invalid phone number format' }),
+    .nullable() // Allow phoneNumber to be null
+    .refine(
+      (value) => {
+        if (value) {
+          return REGEX_VALIDATION.PHONE_NUMBER.test(value); // Validate if not null
+        }
+        return true; // If value is null, validation passes
+      },
+      {
+        message: 'Invalid phone number format',
+      }
+    ),
   address: z.string().optional(),
-  profileImageUrl: z.string().optional(),
 });
 
 export function AccountDetailsForm(): React.JSX.Element {
   const [user, setUser] = useState<User | null>(null);
   const [file, setFile] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [changeProfileImage, setChangeProfileImage] = React.useState(false);
   const router = useRouter();
 
   interface User {
     id: number;
     fullName: string;
     email: string;
-    phoneNumber: string;
-    address: string;
+    phoneNumber: string | null;
+    address: string | null;
     profileImageUrl: string;
   }
 
@@ -62,6 +69,7 @@ export function AccountDetailsForm(): React.JSX.Element {
       try {
         const response = await axiosInstance.get<{ data: User }>('/auth/profile');
         const fetchedUser = response.data.data;
+        console.log('updated user', fetchedUser);
         setUser(fetchedUser);
         reset(fetchedUser); // Reset the form with fetched user data
       } catch (err: unknown) {
@@ -90,11 +98,10 @@ export function AccountDetailsForm(): React.JSX.Element {
   } = useForm<User>({
     resolver: zodResolver(accountDetailsSchema),
     defaultValues: {
-      fullName: '',
-      email: '',
-      phoneNumber: '',
-      address: '',
-      profileImageUrl: '',
+      fullName: user?.fullName || '',
+      email: user?.email || '',
+      phoneNumber: user?.phoneNumber || '', // Ensure this is initialized
+      address: user?.address || '',
     },
   });
 
@@ -107,23 +114,35 @@ export function AccountDetailsForm(): React.JSX.Element {
       // Create a preview URL for the selected image
       const imageUrl = URL.createObjectURL(selectedFile);
       setUser((prevUser) => (prevUser ? { ...prevUser, profileImageUrl: imageUrl } : null));
+      setChangeProfileImage(true);
     }
   };
 
   const onSubmit = async (data: User): Promise<void> => {
+    console.log('inside onSubmit');
+    console.log('data', data);
     setIsSubmitting(true);
 
     try {
       const formData = new FormData();
-      formData.append('fullName', data.fullName);
-      formData.append('email', data.email);
-      formData.append('phoneNumber', data.phoneNumber || '');
-      formData.append('address', data.address || '');
 
-      if (file) {
-        formData.append('profileImage', file);
-      }
+      const fields = [
+        { key: 'fullName', value: data.fullName },
+        { key: 'email', value: data.email },
+        { key: 'phoneNumber', value: data.phoneNumber || '' },
+        { key: 'address', value: data.address },
 
+        { key: 'profileImage', value: file }, // Ensure imageFile is properly set
+
+        { key: 'changeProfileImage', value: changeProfileImage ? 'true' : 'false' }, // Convert boolean to string
+      ];
+
+      fields.forEach(({ key, value }): void => {
+        // Only append valid values
+        if (value !== undefined && value !== null) {
+          formData.append(key, value);
+        }
+      });
       // Update user details via API
       const response = await axiosInstance.post<{ data: User }>('/auth/profile', formData, {
         headers: {
@@ -133,6 +152,7 @@ export function AccountDetailsForm(): React.JSX.Element {
 
       const updatedUser = response.data.data;
       setUser(updatedUser);
+      console.log('updated user', updatedUser);
       toast.success('Profile updated successfully');
       router.push('/dashboard');
     } catch (err: unknown) {
@@ -160,7 +180,7 @@ export function AccountDetailsForm(): React.JSX.Element {
               <Card>
                 <CardContent>
                   <Stack spacing={2} sx={{ alignItems: 'center' }}>
-                    <Avatar src={user.profileImageUrl} sx={{ height: '100px', width: '100px' }} />
+                    <Avatar src={user.profileImageUrl || ''} sx={{ height: '100px', width: '100px' }} />
                   </Stack>
                 </CardContent>
                 <CardActions>

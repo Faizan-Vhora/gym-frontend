@@ -62,6 +62,7 @@ export default function TrainerEditForm(): React.JSX.Element {
   const [imageFile, setImageFile] = React.useState<File | null>(null);
   const [redirectTo, setRedirectTo] = useState<'trainers' | 'additional-details'>('trainers');
   const [tab, setTab] = useState(0); // State to control the active tab
+  const [changeProfileImage, setChangeProfileImage] = React.useState(false);
 
   const trainerSchema = z.object({
     fullName: z
@@ -175,6 +176,7 @@ export default function TrainerEditForm(): React.JSX.Element {
         setImageFile(file);
       };
       reader.readAsDataURL(file);
+      setChangeProfileImage(true);
     }
   };
 
@@ -185,6 +187,7 @@ export default function TrainerEditForm(): React.JSX.Element {
   const handleRemoveImage = (): void => {
     setImagePreview(null);
     setImageFile(null);
+    setChangeProfileImage(true);
   };
 
   const onSubmit = async (data: TrainerFormInputs, destination: string): Promise<void> => {
@@ -199,20 +202,21 @@ export default function TrainerEditForm(): React.JSX.Element {
       { key: 'email', value: data.email },
       { key: 'phoneNumber', value: data.phoneNumber },
       { key: 'address', value: data.address },
-      { key: 'userType', value: '2' }, // Static value
+      { key: 'userType', value: '3' }, // Static value
       { key: 'zipCode', value: data.zipCode },
       { key: 'gender', value: data.gender },
       { key: 'password', value: data.password },
       { key: 'profileImage', value: imageFile }, // Ensure imageFile is properly set
-      { key: 'dateOfBirth', value: data.dateOfBirth }, // Convert Date to YYYY-MM-DD
+      { key: 'dateOfBirth', value: data.dateOfBirth },
+      { key: 'changeProfileImage', value: changeProfileImage ? 'true' : 'false' }, // Convert boolean to string
     ];
 
-    fields.forEach(({ key, value }) => {
-      if (value) {
+    fields.forEach(({ key, value }): void => {
+      // Only append valid values
+      if (value !== undefined && value !== null) {
         formData.append(key, value);
       }
     });
-
     try {
       const method = id ? 'put' : 'post';
       const url = id ? `/users/${id}` : '/users';
@@ -272,45 +276,38 @@ export default function TrainerEditForm(): React.JSX.Element {
                   {id && (
                     <Grid item md={4} xs={12}>
                       <Card sx={{ marginBottom: '40px' }}>
+                        <CardActions>
+                          <Button component="label" fullWidth variant="text">
+                            Upload picture
+                            <input
+                              type="file"
+                              accept="image/*"
+                              hidden
+                              onChange={handleImageChange}
+                              style={{ display: 'none' }}
+                            />
+                          </Button>
+                        </CardActions>
                         <CardContent>
-                          <Stack spacing={2} sx={{ alignItems: 'center' }}>
-                            <div>
-                              <div
-                                style={{ position: 'relative', width: '100%', maxHeight: '200px', marginTop: '1rem' }}
-                              >
+                          <Stack sx={{ alignItems: 'center' }}>
+                            {imagePreview && (
+                              <Stack spacing={1} mt={2}>
                                 <img
                                   src={imagePreview || '/assets/User@3x-1.png'}
                                   alt="Profile Preview"
                                   style={{ width: '100%', maxHeight: '200px', objectFit: 'cover', marginTop: '1rem' }}
                                 />
-                                {imagePreview && ( // Conditionally render IconButton
-                                  <IconButton
-                                    onClick={handleRemoveImage}
-                                    sx={{
-                                      position: 'absolute',
-                                      top: 0,
-                                      right: 0,
-                                      color: 'white',
-                                      backgroundColor: 'rgba(0, 0, 0, 0.5)',
-                                      '&:hover': {
-                                        backgroundColor: 'rgba(0, 0, 0, 0.7)',
-                                      },
-                                    }}
-                                  >
-                                    {/* Add your icon here, for example: */}
-                                    <Trash />
-                                  </IconButton>
-                                )}
-                              </div>
-                            </div>
+                                <Button color="error" startIcon={<Trash />} onClick={handleRemoveImage}>
+                                  Remove Image
+                                </Button>
+                              </Stack>
+                              // <div
+                              //   style={{ position: 'relative', width: '100%', maxHeight: '200px', marginTop: '1rem' }}
+                              // >
+                              // </div>
+                            )}
                           </Stack>
                         </CardContent>
-                        <CardActions>
-                          <Button component="label" fullWidth variant="text">
-                            Upload picture
-                            <input type="file" accept="image/*" hidden onChange={handleImageChange} />
-                          </Button>
-                        </CardActions>
                       </Card>
                       <Card
                         sx={{

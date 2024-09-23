@@ -67,7 +67,9 @@ export function SignInForm(): React.JSX.Element {
       setError(null); // Clear previous errors
 
       try {
-        const response = await axiosInstance.post<LoginResponseData>('/auth/login', values);
+        const updatedValues = { ...values, userType: 1 };
+
+        const response = await axiosInstance.post<LoginResponseData>('/auth/login', updatedValues);
 
         // Extract token and user from response
         const token: string = response.data.data.access_token.token;

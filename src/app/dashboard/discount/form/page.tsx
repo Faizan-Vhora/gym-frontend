@@ -24,6 +24,11 @@ import { toast, ToastContainer } from 'react-toastify'; // Import the toast func
 
 import 'react-toastify/dist/ReactToastify.css';
 
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import dayjs, { Dayjs } from 'dayjs';
+import { Controller, useForm } from 'react-hook-form';
 import { z, ZodError } from 'zod';
 import type { ZodFormattedError } from 'zod';
 
@@ -80,14 +85,16 @@ export default function DiscountFormPage(): React.JSX.Element {
   const searchParams = useSearchParams();
   const discountId = searchParams.get('id');
 
-  const handleRemoveImage = () => {
-    setImagePreview(null);
-    setImageFile(null);
-    setDiscount((prevDiscount) => ({
-      ...prevDiscount,
-      discountImage: '', // Or null if you prefer
-    }));
-  };
+  const { control, handleSubmit } = useForm<DiscountSchema>();
+
+  // const handleRemoveImage = () => {
+  //   setImagePreview(null);
+  //   setImageFile(null);
+  //   setDiscount((prevDiscount) => ({
+  //     ...prevDiscount,
+  //     discountImage: '', // Or null if you prefer
+  //   }));
+  // };
 
   React.useEffect(() => {
     if (discountId) {
@@ -180,7 +187,7 @@ export default function DiscountFormPage(): React.JSX.Element {
     }
   };
 
-  const handleSave = async (): Promise<void> => {
+  const onSubmit = async (data: DiscountSchema): Promise<void> => {
     if (!validate()) return;
 
     const formData = new FormData();
@@ -221,172 +228,195 @@ export default function DiscountFormPage(): React.JSX.Element {
   };
 
   return (
-    <Card>
-      <CardHeader title={discountId ? 'Edit Discount' : 'Create Discount'} />
-      <Divider />
-      <CardContent>
-        <Grid container spacing={3}>
-          <Grid item md={4} xs={12}>
-            <Card
-              sx={{
-                marginBottom: '40px',
-              }}
-            >
-              <CardContent>
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleImageChange}
-                  ref={fileInputRef}
-                  style={{ display: 'none' }}
-                />
-                <Button component="label" fullWidth variant="text">
-                  Upload picture
-                  <input type="file" accept="image/*" hidden onChange={handleImageChange} />
-                </Button>
-                {imagePreview && (
-                  <Stack spacing={1} mt={2}>
-                    <img
-                      src={imagePreview}
-                      alt="Preview"
-                      style={{ width: '100%', maxHeight: '200px', objectFit: 'cover', marginTop: '1rem' }}
-                    />
-                    <Button color="error" startIcon={<Trash />} onClick={handleRemoveImage}>
-                      Remove Image
-                    </Button>
-                  </Stack>
-                )}
-                {errors?.discountImage && <FormHelperText error>{errors?.discountImage?._errors[0]}</FormHelperText>}
-              </CardContent>
-            </Card>
-          </Grid>
-
-          <Grid item md={8} xs={12}>
-            <Grid container spacing={3}>
-              <Grid item md={6} xs={12}>
-                <TextField
-                  label="Code Name"
-                  name="codeName"
-                  value={discount.codeName}
-                  onChange={handleInputChange}
-                  fullWidth
-                  error={Boolean(errors?.codeName)}
-                  helperText={errors?.codeName?._errors[0]}
-                />
-              </Grid>
-              <Grid item md={6} xs={12}>
-                <TextField
-                  label="Expiry Date"
-                  name="expiryDate"
-                  type="date"
-                  value={discount.expiryDate}
-                  onChange={handleInputChange}
-                  fullWidth
-                  InputLabelProps={{ shrink: true }}
-                  error={Boolean(errors?.expiryDate)}
-                  helperText={errors?.expiryDate?._errors[0]}
-                />
-              </Grid>
-
-              <Grid item md={6} xs={12}>
-                <FormControl variant="outlined" fullWidth>
-                  <InputLabel>Discount Type</InputLabel>
-                  <Select
-                    label="Discount Type"
-                    name="discountType"
-                    value={discount.discountType}
-                    onChange={handleSelectChange}
-                    fullWidth
-                    error={Boolean(errors?.discountType)}
-                  >
-                    <MenuItem value={DiscountType.Percentage}>Percentage</MenuItem>
-                    <MenuItem value={DiscountType.Fix}>Fixed Amount</MenuItem>
-                  </Select>
-                  <FormHelperText>{errors?.discountType?._errors[0]}</FormHelperText>
-                </FormControl>
-              </Grid>
-
-              <Grid item xs={12} md={6}>
-                <FormControl variant="outlined" fullWidth>
-                  <InputLabel>Usage Limit</InputLabel>
-                  <Select
-                    label="Usage Limit"
-                    name="usageLimit"
-                    value={discount.usageLimit}
-                    onChange={handleSelectChange}
-                    fullWidth
-                    error={Boolean(errors?.usageLimit)}
-                  >
-                    <MenuItem value={UsageLimit.Once}>Once</MenuItem>
-                    <MenuItem value={UsageLimit.Twice}>Twice</MenuItem>
-                    <MenuItem value={UsageLimit.NoLimit}>No Limit</MenuItem>
-                  </Select>
-                  <FormHelperText>{errors?.usageLimit?._errors[0]}</FormHelperText>
-                </FormControl>
-              </Grid>
-              <Grid item xs={12} md={6}>
-                <TextField
-                  label="Discount Value"
-                  name="discountValue"
-                  type="number"
-                  value={discount.discountValue}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                    const value = e.target.value;
-
-                    // Ensure the value is non-negative before updating state
-                    if (Number(value) >= 0) {
-                      handleInputChange(e); // Call your existing input change handler
-                    }
-                  }}
-                  fullWidth
-                  error={Boolean(errors?.discountValue)}
-                  helperText={errors?.discountValue?._errors[0]}
-                />
-              </Grid>
-
-              <Grid item xs={12} md={12}>
-                <TextField
-                  label="Description"
-                  name="description"
-                  value={discount.description}
-                  onChange={handleInputChange}
-                  fullWidth
-                  error={Boolean(errors?.description)}
-                  helperText={errors?.description?._errors[0]}
-                />
-              </Grid>
-            </Grid>
-          </Grid>
-
-          <Grid item xs={12}>
-            <Stack direction="row" spacing={2} justifyContent="flex-end" p={3}>
-              <Button variant="contained" className="common-button" onClick={handleSave} disabled={loading}>
-                {discountId ? 'Update Discount' : 'Save Discount'}
-              </Button>
-              <Button
-                variant="outlined"
-                onClick={() => {
-                  router.push('/dashboard/discount');
-                }}
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <Card>
+        <CardHeader title={discountId ? 'Edit Discount' : 'Create Discount'} />
+        <Divider />
+        <CardContent>
+          <Grid container spacing={3}>
+            <Grid item md={4} xs={12}>
+              <Card
                 sx={{
-                  borderColor: '#d0021b',
-                  color: '#d0021b',
-                  transform: 'skewX(-20deg)',
-                  '&:hover': {
-                    borderColor: 'darkred',
-                    backgroundColor: 'rgba(255, 0, 0, 0.1)',
-                  },
+                  marginBottom: '40px',
                 }}
               >
-                Cancel
-              </Button>
-            </Stack>
+                <CardContent>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageChange}
+                    ref={fileInputRef}
+                    style={{ display: 'none' }}
+                  />
+                  <Button component="label" fullWidth variant="text">
+                    Upload picture
+                    <input type="file" accept="image/*" hidden onChange={handleImageChange} />
+                  </Button>
+                  {imagePreview && (
+                    <Stack spacing={1} mt={2}>
+                      <img
+                        src={imagePreview}
+                        alt="Preview"
+                        style={{ width: '100%', maxHeight: '200px', objectFit: 'cover', marginTop: '1rem' }}
+                      />
+                    </Stack>
+                  )}
+                  {errors?.discountImage && <FormHelperText error>{errors?.discountImage?._errors[0]}</FormHelperText>}
+                </CardContent>
+              </Card>
+            </Grid>
+
+            <Grid item md={8} xs={12}>
+              <Grid container spacing={3}>
+                <Grid item md={6} xs={12}>
+                  <TextField
+                    label="Code Name"
+                    name="codeName"
+                    value={discount.codeName}
+                    onChange={handleInputChange}
+                    fullWidth
+                    error={Boolean(errors?.codeName)}
+                    helperText={errors?.codeName?._errors[0]}
+                  />
+                </Grid>
+                <Grid item md={6} xs={12}>
+                  <LocalizationProvider dateAdapter={AdapterDayjs}>
+                    <FormControl fullWidth>
+                      <Controller
+                        name="expiryDate"
+                        control={control}
+                        render={({ field, fieldState }) => {
+                          const errorMessage = fieldState.error ? fieldState.error.message : '';
+
+                          return (
+                            <DatePicker
+                              disablePast
+                              format="MM-DD-YYYY"
+                              views={['year', 'month', 'day']}
+                              defaultValue={discount?.expiryDate ? dayjs(discount.expiryDate) : null}
+                              label="Expiry Date"
+                              value={discount?.expiryDate ? dayjs(discount.expiryDate) : null}
+                              onChange={(newValue: Dayjs | null) => {
+                                if (newValue) {
+                                  field.onChange(newValue.format('YYYY-MM-DD'));
+                                }
+                              }}
+                              slotProps={{
+                                textField: {
+                                  fullWidth: true,
+                                  error: Boolean(fieldState.error),
+                                  helperText: errorMessage,
+                                },
+                              }}
+                            />
+                          );
+                        }}
+                      />
+                      {errors?.expiryDate && <FormHelperText error>{errors.expiryDate._errors[0]}</FormHelperText>}
+                    </FormControl>
+                  </LocalizationProvider>
+                </Grid>
+
+                <Grid item md={6} xs={12}>
+                  <FormControl variant="outlined" fullWidth>
+                    <InputLabel>Discount Type</InputLabel>
+                    <Select
+                      label="Discount Type"
+                      name="discountType"
+                      value={discount.discountType}
+                      onChange={handleSelectChange}
+                      fullWidth
+                      error={Boolean(errors?.discountType)}
+                    >
+                      <MenuItem value={DiscountType.Percentage}>Percentage</MenuItem>
+                      <MenuItem value={DiscountType.Fix}>Fixed Amount</MenuItem>
+                    </Select>
+                    <FormHelperText>{errors?.discountType?._errors[0]}</FormHelperText>
+                  </FormControl>
+                </Grid>
+
+                <Grid item xs={12} md={6}>
+                  <FormControl variant="outlined" fullWidth>
+                    <InputLabel>Usage Limit</InputLabel>
+                    <Select
+                      label="Usage Limit"
+                      name="usageLimit"
+                      value={discount.usageLimit}
+                      onChange={handleSelectChange}
+                      fullWidth
+                      error={Boolean(errors?.usageLimit)}
+                    >
+                      <MenuItem value={UsageLimit.Once}>Once</MenuItem>
+                      <MenuItem value={UsageLimit.Twice}>Twice</MenuItem>
+                      <MenuItem value={UsageLimit.NoLimit}>No Limit</MenuItem>
+                    </Select>
+                    <FormHelperText>{errors?.usageLimit?._errors[0]}</FormHelperText>
+                  </FormControl>
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <TextField
+                    label="Discount Value"
+                    name="discountValue"
+                    type="number"
+                    value={discount.discountValue}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                      const value = e.target.value;
+
+                      // Ensure the value is non-negative before updating state
+                      if (Number(value) >= 0) {
+                        handleInputChange(e); // Call your existing input change handler
+                      }
+                    }}
+                    fullWidth
+                    error={Boolean(errors?.discountValue)}
+                    helperText={errors?.discountValue?._errors[0]}
+                  />
+                </Grid>
+
+                <Grid item xs={12} md={12}>
+                  <TextField
+                    label="Description"
+                    name="description"
+                    value={discount.description}
+                    onChange={handleInputChange}
+                    fullWidth
+                    error={Boolean(errors?.description)}
+                    helperText={errors?.description?._errors[0]}
+                  />
+                </Grid>
+              </Grid>
+            </Grid>
+
+            <Grid item xs={12}>
+              <Stack direction="row" spacing={2} justifyContent="flex-end" p={3}>
+                <Button type="submit" variant="contained" className="common-button" disabled={loading}>
+                  {discountId ? 'Update Discount' : 'Save Discount'}
+                </Button>
+                <Button
+                  variant="outlined"
+                  onClick={() => {
+                    router.push('/dashboard/discount');
+                  }}
+                  sx={{
+                    borderColor: '#d0021b',
+                    color: '#d0021b',
+                    transform: 'skewX(-20deg)',
+                    '&:hover': {
+                      borderColor: 'darkred',
+                      backgroundColor: 'rgba(255, 0, 0, 0.1)',
+                    },
+                  }}
+                >
+                  Cancel
+                </Button>
+              </Stack>
+            </Grid>
           </Grid>
-        </Grid>
-      </CardContent>
-      <CardActions>
-        <ToastContainer />
-      </CardActions>
-    </Card>
+        </CardContent>
+        <CardActions>
+          <ToastContainer />
+        </CardActions>
+      </Card>
+    </form>
   );
 }

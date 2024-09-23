@@ -17,7 +17,6 @@ import {
   FormControlLabel,
   FormHelperText,
   Grid,
-  IconButton,
   InputLabel,
   OutlinedInput,
   Radio,
@@ -60,6 +59,7 @@ export default function CustomerEditForm(): React.JSX.Element {
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = React.useState(false);
+  const [changeProfileImage, setChangeProfileImage] = React.useState(false);
   const [showPassword, setShowPassword] = React.useState<boolean>(false);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [imageFile, setImageFile] = React.useState<File | null>(null);
@@ -243,12 +243,14 @@ export default function CustomerEditForm(): React.JSX.Element {
         setImageFile(file);
       };
       reader.readAsDataURL(file);
+      setChangeProfileImage(true);
     }
   };
 
   const handleRemoveImage = (): void => {
     setImagePreview(null);
     setImageFile(null);
+    setChangeProfileImage(true);
   };
 
   const handleTabChange = (_: React.SyntheticEvent, newValue: number) => {
@@ -272,11 +274,13 @@ export default function CustomerEditForm(): React.JSX.Element {
       { key: 'gender', value: data.gender },
       { key: 'password', value: data.password },
       { key: 'profileImage', value: imageFile }, // Ensure imageFile is properly set
-      { key: 'dateOfBirth', value: data.dateOfBirth }, // Convert Date to YYYY-MM-DD
+      { key: 'dateOfBirth', value: data.dateOfBirth },
+      { key: 'changeProfileImage', value: changeProfileImage ? 'true' : 'false' }, // Convert boolean to string
     ];
 
     fields.forEach(({ key, value }): void => {
-      if (value) {
+      // Only append valid values
+      if (value !== undefined && value !== null) {
         formData.append(key, value);
       }
     });
@@ -375,45 +379,38 @@ export default function CustomerEditForm(): React.JSX.Element {
                           marginBottom: '40px',
                         }}
                       >
+                        <CardActions>
+                          <Button component="label" fullWidth variant="text">
+                            Upload picture
+                            <input
+                              type="file"
+                              accept="image/*"
+                              hidden
+                              onChange={handleImageChange}
+                              style={{ display: 'none' }}
+                            />
+                          </Button>
+                        </CardActions>
                         <CardContent>
-                          <Stack spacing={2} sx={{ alignItems: 'center' }}>
-                            <div>
-                              <div
-                                style={{ position: 'relative', width: '100%', maxHeight: '200px', marginTop: '1rem' }}
-                              >
+                          <Stack sx={{ alignItems: 'center' }}>
+                            {imagePreview && (
+                              <Stack spacing={1} mt={2}>
                                 <img
                                   src={imagePreview || '/assets/User@3x-1.png'}
                                   alt="Profile Preview"
                                   style={{ width: '100%', maxHeight: '200px', objectFit: 'cover', marginTop: '1rem' }}
                                 />
-                                {imagePreview && ( // Conditionally render IconButton
-                                  <IconButton
-                                    onClick={handleRemoveImage}
-                                    sx={{
-                                      position: 'absolute',
-                                      top: 0,
-                                      right: 0,
-                                      color: 'white',
-                                      backgroundColor: 'rgba(0, 0, 0, 0.5)',
-                                      '&:hover': {
-                                        backgroundColor: 'rgba(0, 0, 0, 0.7)',
-                                      },
-                                    }}
-                                  >
-                                    {/* Add your icon here, for example: */}
-                                    <Trash />
-                                  </IconButton>
-                                )}
-                              </div>
-                            </div>
+                                <Button color="error" startIcon={<Trash />} onClick={handleRemoveImage}>
+                                  Remove Image
+                                </Button>
+                              </Stack>
+                              // <div
+                              //   style={{ position: 'relative', width: '100%', maxHeight: '200px', marginTop: '1rem' }}
+                              // >
+                              // </div>
+                            )}
                           </Stack>
                         </CardContent>
-                        <CardActions>
-                          <Button component="label" fullWidth variant="text">
-                            Upload picture
-                            <input type="file" accept="image/*" hidden onChange={handleImageChange} />
-                          </Button>
-                        </CardActions>
                       </Card>
                       <Card
                         sx={{

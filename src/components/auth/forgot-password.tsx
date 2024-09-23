@@ -44,7 +44,13 @@ export function ResetPasswordForm(): React.JSX.Element {
       setIsPending(true);
 
       try {
-        const response = await axiosInstance.post('/auth/forgot-password', values);
+        // Add usertype = 1 to the values object
+        const updatedValues = {
+          ...values,
+          userType: 1, // Set usertype to 1
+        };
+
+        const response = await axiosInstance.post('/auth/forgot-password', updatedValues);
 
         if (response.status === 201) {
           toast.success('Mail sent successfully');

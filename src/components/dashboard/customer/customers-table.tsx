@@ -33,6 +33,7 @@ export interface Customer {
   memberId: string;
   status: number; // Ensure this is part of the interface
   qrCodeImageUrl: string;
+  changeProfileImage: boolean;
   membership: {
     startDate: Date;
     expiryDate: Date;
