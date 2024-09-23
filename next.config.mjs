@@ -21,7 +21,7 @@ const config = {
       return [
         {
           source: "/",
-          destination: "/auth/sign-in",
+          destination: "/dashboard",
           permanent: true,
         },
       ];
