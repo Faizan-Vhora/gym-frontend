@@ -28,7 +28,9 @@ export default function Page(): React.JSX.Element {
   const [categories, setCategories] = React.useState<string[]>([]);
   const [mebershipPlanChartSeries, setMebershipPlanChartSeries] = React.useState<number[]>([]);
   const [labels, setLabels] = React.useState<string[]>([]);
-  const [members, setMembers] = React.useState<{ id: number; name: string; image: string; updatedAt: string }[]>([]);
+  const [members, setMembers] = React.useState<
+    { id: number; name: string; image: string; createdAt: string; userType: number }[]
+  >([]);
   const [loading, setLoading] = React.useState(false);
 
   interface Progress {
@@ -124,7 +126,8 @@ export default function Page(): React.JSX.Element {
     fullName: string;
     email: string;
     profileImageUrl: string | '';
-    updatedAt: string;
+    createdAt: string;
+    userType: number;
   }
 
   React.useEffect(() => {
@@ -142,7 +145,8 @@ export default function Page(): React.JSX.Element {
           id: member.id,
           name: member.fullName,
           image: member.profileImageUrl || '/assets/User@3x-1.png', // Provide default image if none exists
-          updatedAt: dayjs(member.updatedAt).format('MMM D, YYYY'), // Convert string to Date object
+          createdAt: dayjs(member.createdAt).format('MMM D, YYYY'), // Convert string to Date object
+          userType: member.userType,
         }));
 
         // Set the mapped data into products state
