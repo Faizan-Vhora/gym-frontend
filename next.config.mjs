@@ -17,15 +17,15 @@ const config = {
         ],
       },
     experimental: {esmExternals: false,},
-    // async redirects() {
-    //   return [
-    //     {
-    //       source: "/",
-    //       destination: "/dashboard",
-    //       permanent: true,
-    //     },
-    //   ];
-    // },
+    async redirects() {
+      return [
+        {
+          source: "/",
+          destination: "/dashboard",
+          permanent: true,
+        },
+      ];
+    },
 };
 
 export default config;
