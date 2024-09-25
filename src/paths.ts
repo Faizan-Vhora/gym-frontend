@@ -30,6 +30,7 @@ export const paths = {
     customers: '/dashboard/customers',
     customersForm: (id?: number) => `/dashboard/customers/form/${id}`,
   },
+  
 
   trainers: {
     trainers: '/dashboard/trainers',
@@ -50,6 +51,7 @@ export const paths = {
   dashboard: {
     dashboard: '/dashboard',
     account: '/dashboard/account',
+    booking: '/dashboard/calendar',
     changePassword: '/dashboard/change-password',
     integrations: '/dashboard/integrations',
     settings: '/dashboard/settings'

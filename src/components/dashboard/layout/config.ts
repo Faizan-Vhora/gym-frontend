@@ -6,6 +6,7 @@ export const navItems = [
   { key: 'members', title: 'Members', href: paths.customers.customers, icon: 'users' },
   { key: 'trainers', title: 'Trainers', href: paths.trainers.trainers, icon: 'users' },
   { key: 'membership-plan', title: 'Membership Plan', href: paths.membershipPlan.membershipPlan, icon: 'users' },
+  { key: 'booking', title: 'Booking', href: paths.dashboard.booking, icon: 'calendar-check' },
   // { key: 'services', title: 'Service Management', href: paths.services.services, icon: 'users' },
   { key: 'cms', title: 'CMS', href: paths.cms.cms, icon: 'user-circle-gear' },
   { key: 'faq', title: 'FAQ', href: paths.faq.faq, icon: 'chat-centered-dots' },
