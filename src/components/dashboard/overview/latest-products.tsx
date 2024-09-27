@@ -68,7 +68,9 @@ export function LatestProducts({ products = [], sx }: LatestProductsProps): Reac
             <ListItem
               divider={index < products.length - 1}
               key={product.id}
-              onClick={() => handleRedirect(product.id, product.userType)}
+              onClick={() => {
+                handleRedirect(product.id, product.userType);
+              }}
               sx={{ cursor: 'pointer' }}
             >
               <ListItemAvatar>

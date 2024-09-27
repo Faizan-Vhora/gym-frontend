@@ -44,7 +44,7 @@ const baseDiscountSchema = z.object({
       'Promo code must be 5-10 characters long, and can only contain letters, numbers, hyphens, and underscores.'
     )
     .transform((val) => val.toUpperCase()),
-  expiryDate: z.string().min(1, 'Expiry Date is required'),
+  expiryDate: z.string(),
   discountType: z.nativeEnum(DiscountType, { errorMap: () => ({ message: 'Discount Type is required' }) }),
   usageLimit: z.nativeEnum(UsageLimit, { errorMap: () => ({ message: 'Usage Limit is required' }) }),
   discountValue: z.number().min(1, 'Discount Value must be at least 1'),
@@ -121,6 +121,15 @@ export default function DiscountFormPage(): React.JSX.Element {
         });
     }
   }, [discountId]);
+
+  const handleDateChange = (newValue: Dayjs | null): void => {
+    if (newValue) {
+      setDiscount((prevDiscount) => ({
+        ...prevDiscount,
+        expiryDate: newValue.format('YYYY-MM-DD'),
+      }));
+    }
+  };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     const { name, value } = e.target;
@@ -298,8 +307,9 @@ export default function DiscountFormPage(): React.JSX.Element {
                               value={discount?.expiryDate ? dayjs(discount.expiryDate) : null}
                               onChange={(newValue: Dayjs | null) => {
                                 if (newValue) {
-                                  field.onChange(newValue.format('YYYY-MM-DD'));
+                                  field.onChange(newValue.format('YYYY-MM-DD')); // Update field.onChange
                                 }
+                                handleDateChange(newValue);
                               }}
                               slotProps={{
                                 textField: {
