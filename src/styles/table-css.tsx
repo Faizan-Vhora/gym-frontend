@@ -11,6 +11,7 @@ const tableCss = {
     textOverflow: 'ellipsis !important', // Show ellipsis for overflowed text
     maxWidth: '55px !important',
   },
+  
   tableHeaderCell: {
     fontWeight: 'bold',
     fontSize: '14px',
