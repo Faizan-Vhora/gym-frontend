@@ -18,7 +18,6 @@ import axiosInstance from '@/lib/axios';
 import { MembershipPlanFilters } from '@/components/dashboard/membership-plan/mebership-plan-filters';
 import { MembershipPlanTable } from '@/components/dashboard/membership-plan/membership-plan-table';
 import type { MembershipPlans } from '@/components/dashboard/membership-plan/membership-plan-table';
-import { padding } from '@mui/system';
 
 export default function MembershipPlanPage(): React.JSX.Element {
   const [membershipPlans, setMembershipPlans] = useState<MembershipPlans[]>([]);
@@ -187,29 +186,27 @@ export default function MembershipPlanPage(): React.JSX.Element {
         </Button>
       </Stack>
       <Card>
-
-      <Stack sx={{padding:'30px'}}>
-
-      <MembershipPlanFilters
-        onSearchChange={handleSearchChange}
-        onStatusChange={handleStatusChange} // Pass status change handler
-      />
-      </Stack>
-      {loading ? (
-        <CustomLoader />
-      ) : (
-        <MembershipPlanTable
-          count={count}
-          page={page}
-          rowsPerPage={rowsPerPage}
-          rows={membershipPlans}
-          onEdit={handleEdit}
-          onDelete={handleDelete}
-          onPageChange={handlePageChange}
-          onRowsPerPageChange={handleRowsPerPageChange}
-          updatePlanStatus={updatePlanStatus}
-        />
-      )}
+        <Stack sx={{ padding: '30px' }}>
+          <MembershipPlanFilters
+            onSearchChange={handleSearchChange}
+            onStatusChange={handleStatusChange} // Pass status change handler
+          />
+        </Stack>
+        {loading ? (
+          <CustomLoader />
+        ) : (
+          <MembershipPlanTable
+            count={count}
+            page={page}
+            rowsPerPage={rowsPerPage}
+            rows={membershipPlans}
+            onEdit={handleEdit}
+            onDelete={handleDelete}
+            onPageChange={handlePageChange}
+            onRowsPerPageChange={handleRowsPerPageChange}
+            updatePlanStatus={updatePlanStatus}
+          />
+        )}
       </Card>
       <ToastContainer /> {/* Add ToastContainer here */}
     </Stack>

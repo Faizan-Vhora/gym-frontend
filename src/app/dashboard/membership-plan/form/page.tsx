@@ -201,7 +201,7 @@ export default function MembershipPlanEditForm(): React.JSX.Element {
                           <Select
                             {...register('paymentFrequency')}
                             label="Payment Frequency"
-                            defaultValue="" // Set default value to be empty or one of the options
+                            defaultValue={membershipPlan?.paymentFrequency} // Set default value to be empty or one of the options
                           >
                             <MenuItem value="monthly">Monthly</MenuItem>
                             <MenuItem value="yearly">Yearly</MenuItem>

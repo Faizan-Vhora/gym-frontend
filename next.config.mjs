@@ -16,7 +16,16 @@ const config = {
             },
         ],
       },
-    experimental: {esmExternals: false,}
+    experimental: {esmExternals: false,},
+    async redirects() {
+      return [
+        {
+          source: "/",
+          destination: "/dashboard",
+          permanent: true,
+        },
+      ];
+    },
 };
 
 export default config;

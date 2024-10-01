@@ -16,12 +16,13 @@ import type { ApexOptions } from 'apexcharts';
 import { Chart } from '@/components/core/chart';
 
 export interface SalesProps {
+  categories: string[];
   chartSeries: { name: string; data: number[] }[];
   sx?: SxProps;
 }
 
-export function Sales({ chartSeries, sx }: SalesProps): React.JSX.Element {
-  const chartOptions = useChartOptions();
+export function Sales({ categories, chartSeries, sx }: SalesProps): React.JSX.Element {
+  const chartOptions = useChartOptions(categories);
 
   return (
     <Card sx={sx}>
@@ -46,7 +47,7 @@ export function Sales({ chartSeries, sx }: SalesProps): React.JSX.Element {
   );
 }
 
-function useChartOptions(): ApexOptions {
+function useChartOptions(categories: string[]): ApexOptions {
   const theme = useTheme();
 
   return {
@@ -67,7 +68,8 @@ function useChartOptions(): ApexOptions {
     xaxis: {
       axisBorder: { color: theme.palette.divider, show: true },
       axisTicks: { color: theme.palette.divider, show: true },
-      categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+      categories: categories,
+      // categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
       labels: { offsetY: 5, style: { colors: theme.palette.text.secondary } },
     },
     yaxis: {

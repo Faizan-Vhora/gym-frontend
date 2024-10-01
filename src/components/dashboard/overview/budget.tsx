@@ -7,7 +7,6 @@ import type { SxProps } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
 import { ArrowDown as ArrowDownIcon } from '@phosphor-icons/react/dist/ssr/ArrowDown';
 import { ArrowUp as ArrowUpIcon } from '@phosphor-icons/react/dist/ssr/ArrowUp';
-import { CurrencyDollar as CurrencyDollarIcon } from '@phosphor-icons/react/dist/ssr/CurrencyDollar';
 
 export interface BudgetProps {
   diff?: number;
@@ -31,8 +30,15 @@ export function Budget({ diff, trend, sx, value }: BudgetProps): React.JSX.Eleme
               </Typography>
               <Typography variant="h4">{value}</Typography>
             </Stack>
-            <Avatar sx={{ backgroundColor: 'var(--mui-palette-primary-main)', height: '56px', width: '56px' }}>
-              <CurrencyDollarIcon fontSize="var(--icon-fontSize-lg)" />
+            <Avatar
+              src="/assets/salary.png"
+              sx={{
+                backgroundColor: 'var(--mui-palette-primary-main)',
+                height: '50px',
+                width: '50px',
+              }}
+            >
+              {/* <HandCoins fontSize="var(--icon-fontSize-lg)" /> */}
             </Avatar>
           </Stack>
           {diff ? (
