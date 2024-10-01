@@ -22,7 +22,7 @@ import dayjs from 'dayjs';
 import tableCss from '@/styles/table-css';
 
 export interface Customer {
-  id: string;
+  id: string | number;
   fullName: string;
   email: string;
   phoneNumber: string;
@@ -32,6 +32,7 @@ export interface Customer {
   memberId: string;
   status: number; // Ensure this is part of the interface
   qrCodeImageUrl: string;
+  profileImageUrl?: string;
   changeProfileImage: boolean;
   membership: {
     startDate: Date;

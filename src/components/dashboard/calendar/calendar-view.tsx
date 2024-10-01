@@ -118,7 +118,7 @@ export function CalendarView({ view = 'dayGridMonth' }: CalendarViewProps): Reac
   const handleEventResize = React.useCallback(
     (arg: EventResizeDoneArg) => {
       const { event } = arg;
-      updateEvent(event.id, { allDay: event.allDay, start: event.start!, end: event.end! });
+      updateEvent(event.id, { start: event.start!, end: event.end! });
     },
     [updateEvent]
   );
@@ -126,7 +126,7 @@ export function CalendarView({ view = 'dayGridMonth' }: CalendarViewProps): Reac
   const handleEventDrop = React.useCallback(
     (arg: EventDropArg) => {
       const { event } = arg;
-      updateEvent(event.id, { allDay: event.allDay, start: event.start!, end: event.end! });
+      updateEvent(event.id, { start: event.start!, end: event.end! });
     },
     [updateEvent]
   );

@@ -17,6 +17,7 @@ import { House as HouseIcon } from '@phosphor-icons/react/dist/ssr/House';
 import { Kanban as KanbanIcon } from '@phosphor-icons/react/dist/ssr/Kanban';
 import { Link as LinkIcon } from '@phosphor-icons/react/dist/ssr/Link';
 import { Lock as LockIcon } from '@phosphor-icons/react/dist/ssr/Lock';
+import { MoneyWavy as MoneyWavyIcon } from '@phosphor-icons/react/dist/ssr/MoneyWavy';
 import { ReadCvLogo as ReadCvLogoIcon } from '@phosphor-icons/react/dist/ssr/ReadCvLogo';
 import { Receipt as ReceiptIcon } from '@phosphor-icons/react/dist/ssr/Receipt';
 import { ShareNetwork as ShareNetworkIcon } from '@phosphor-icons/react/dist/ssr/ShareNetwork';
@@ -49,6 +50,7 @@ export const navIcons = {
   'sign-out': SignOutIcon,
   'text-align-left': TextAlignLeftIcon,
   'warning-diamond': WarningDiamondIcon,
+  'money-wavy': MoneyWavyIcon,
   cube: CubeIcon,
   file: FileIcon,
   gear: GearIcon,

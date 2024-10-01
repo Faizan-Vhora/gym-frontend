@@ -2,28 +2,28 @@
 
 import * as React from 'react';
 
-import type { Event, EventPriority } from './types';
+import type { BookingType, Event } from './types';
 
 function noop(): void {
   return undefined;
 }
 
 interface EventCreateParams {
-  title: string;
-  description?: string;
+  trainer: string;
+  customer: string;
+  selectDate: Date;
   start: Date;
   end: Date;
-  allDay: boolean;
-  priority?: EventPriority;
+  bookingType: BookingType;
 }
 
 interface EventUpdateParams {
-  title?: string;
-  description?: string;
+  trainer?: string;
+  customer?: string;
+  selectDate?: Date;
   start?: Date;
   end?: Date;
-  allDay?: boolean;
-  priority?: EventPriority;
+  bookingType?: string;
 }
 
 export interface CalendarContextValue {
