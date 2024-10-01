@@ -13,7 +13,7 @@ import CardContent from '@mui/material/CardContent';
 import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
 import OutlinedInput from '@mui/material/OutlinedInput';
-import { Stack } from '@mui/system';
+import { Stack, textAlign } from '@mui/system';
 import { Controller, useForm } from 'react-hook-form';
 import { toast, ToastContainer } from 'react-toastify';
 import { z } from 'zod';
@@ -163,8 +163,8 @@ export function AccountDetailsForm(): React.JSX.Element {
                     <Avatar src={user.profileImageUrl} sx={{ height: '100px', width: '100px' }} />
                   </Stack>
                 </CardContent>
-                <CardActions>
-                  <Button component="label" fullWidth variant="contained">
+                <CardActions sx={{justifyContent:'center',marginBottom:'10px'}} >
+                  <Button component="label" variant="contained">
                     {user.profileImageUrl ? 'Change Profile Image' : 'Upload Profile Image'}
                     <input type="file" accept="image/*" hidden onChange={handleFileChange} />
                   </Button>
@@ -228,7 +228,7 @@ export function AccountDetailsForm(): React.JSX.Element {
         </CardContent>
 
         {/* Save Button */}
-        <CardActions sx={{ justifyContent: 'flex-end' }}>
+        <CardActions sx={{ justifyContent: 'flex-end',margin:'0px 20px 20px 0px' }}>
           <Button className="common-button" variant="contained" type="submit" disabled={isSubmitting}>
             {isSubmitting ? 'Saving...' : 'Save details'}
           </Button>

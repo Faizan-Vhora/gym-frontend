@@ -102,3 +102,24 @@ body {
   background: #fff;
   margin: auto;
 }
+
+.mui-1gjhcy5-MuiInputBase-input-MuiOutlinedInput-input,
+.mui-1idmfta-MuiSelect-select-MuiInputBase-input-MuiOutlinedInput-input.MuiSelect-select {
+  padding: 14px !important;
+}
+
+.mui-1oscdf3-MuiInputBase-root-MuiOutlinedInput-root {
+  background: transparent !important;
+}
+.memberCard { 
+   height:100%;
+   display:flex;
+   flex-direction: column;
+   border:2px solid #f7f5f2;
+   box-shadow: 0px 10px 30px -10px #f7f5f2 !important;
+   padding-bottom: 10px;
+   /* box-shadow: 2px 31px 30px -10px #f7f5f2 !important; */
+}
+.memberCard:hover{
+    border: 1px solid #d0021b;  
+   }

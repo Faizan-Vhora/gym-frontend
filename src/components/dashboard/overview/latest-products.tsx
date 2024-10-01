@@ -29,7 +29,7 @@ export interface LatestProductsProps {
 
 export function LatestProducts({ products = [], sx }: LatestProductsProps): React.JSX.Element {
   return (
-    <Card sx={sx}>
+    <Card sx={{height:'520px',overflowY:'scroll'}}>
       <CardHeader title="Incomplete Profiles" />
       <Divider />
       <List>

@@ -36,7 +36,7 @@ export interface LatestOrdersProps {
 
 export function LatestOrders({ orders = [], sx }: LatestOrdersProps): React.JSX.Element {
   return (
-    <Card sx={sx}>
+    <Card sx={{height:'520px',overflowY:'scroll'}}>
       <CardHeader title="Latest Booking" />
       <Divider />
       <Box sx={{ overflowX: 'auto' }}>

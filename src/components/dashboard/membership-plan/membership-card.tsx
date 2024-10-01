@@ -27,8 +27,9 @@ const MembershipPlanCard: React.FC<MembershipPlanCardProps> = ({
   const formattedExpiryDate = isExpiryDateValid ? dayjs(expiryDate).format('MMM D, YYYY') : '';
 
   return (
-    <Card style={{ height: '100%', display: 'flex', flexDirection: 'column' }} {...cardProps}>
+    <Card className='memberCard' {...cardProps}>
       <CardContent style={{ flexGrow: 1 }}>
+       
         <Typography variant="h5" component="div" gutterBottom>
           {title}
         </Typography>

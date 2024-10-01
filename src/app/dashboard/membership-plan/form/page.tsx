@@ -147,14 +147,14 @@ export default function MembershipPlanEditForm(): React.JSX.Element {
                 <Grid container spacing={10}>
                   <Grid item md={12} xs={12}>
                     <Grid container spacing={4}>
-                      <Grid item md={6} p={2}>
+                      <Grid item xs={12} sm={6} md={3} p={2}>
                         <FormControl fullWidth required error={Boolean(errors.title)}>
                           <InputLabel>Title</InputLabel>
                           <OutlinedInput {...register('title')} label="title" error={Boolean(errors.title)} />
                           {errors.title?.message && <FormHelperText error>{errors.title.message}</FormHelperText>}
                         </FormControl>
                       </Grid>
-                      <Grid item md={6} p={2}>
+                      <Grid item xs={12} sm={6} md={3} p={2}>
                         <FormControl fullWidth required error={Boolean(errors.cost)}>
                           <InputLabel>Cost</InputLabel>
                           <OutlinedInput
@@ -175,7 +175,7 @@ export default function MembershipPlanEditForm(): React.JSX.Element {
                           {errors.cost?.message && <FormHelperText error>{errors.cost.message}</FormHelperText>}
                         </FormControl>
                       </Grid>
-                      <Grid item md={6} p={2}>
+                      <Grid item xs={12} sm={6} md={3} p={2}>
                         <FormControl fullWidth required>
                           <InputLabel>Duration in Months</InputLabel>
                           <OutlinedInput
@@ -195,7 +195,7 @@ export default function MembershipPlanEditForm(): React.JSX.Element {
                           )}
                         </FormControl>
                       </Grid>
-                      <Grid item md={6} p={2}>
+                      <Grid item xs={12} sm={6} md={3} p={2}>
                         <FormControl fullWidth error={Boolean(errors.paymentFrequency)} required>
                           <InputLabel>Payment Frequency</InputLabel>
                           <Select
@@ -211,7 +211,7 @@ export default function MembershipPlanEditForm(): React.JSX.Element {
                           )}
                         </FormControl>
                       </Grid>
-                      <Grid item md={12} p={2}>
+                      <Grid item xs={12} md={12} p={2}>
                         <FormControl fullWidth>
                           <TextField
                             {...register('description')}
