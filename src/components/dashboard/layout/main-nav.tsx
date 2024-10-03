@@ -62,7 +62,7 @@ export function MainNav(): React.JSX.Element {
             <Avatar
               onClick={userPopover.handleOpen}
               ref={userPopover.anchorRef}
-              src={user?.profileImageUrl || '/assets/avatar.png'} // Use user image or fallback
+              src={user?.profileImageUrl || '/assets/user-default.png'} // Use user image or fallback
               sx={{ cursor: 'pointer' }}
             />
           </Stack>
