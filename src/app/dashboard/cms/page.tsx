@@ -19,8 +19,10 @@ interface CmsItem {
 export default function CmsPage(): React.JSX.Element {
   const [aboutUsContent, setAboutUsContent] = React.useState<string>('');
   const [termsContent, setTermsContent] = React.useState<string>('');
+  const [privacyPolicyContent, setPrivacyPolicyContent] = React.useState<string>('');
   const [aboutUsId, setAboutUsId] = React.useState<number | null>(null);
   const [termsId, setTermsId] = React.useState<number | null>(null);
+  const [privacyPolicyId, setPrivacyPolicyId] = React.useState<number | null>(null);
   const [loading, setLoading] = React.useState(true);
 
   React.useEffect(() => {
@@ -31,6 +33,7 @@ export default function CmsPage(): React.JSX.Element {
         const items = response.data.data.items;
         const aboutUsItem = items.find((item) => item.title === 'About Us');
         const termsItem = items.find((item) => item.title === 'Terms and Conditions');
+        const privacyPolicyItem = items.find((item) => item.title === 'Privacy Policy');
 
         if (aboutUsItem) {
           setAboutUsContent(aboutUsItem.text);
@@ -39,6 +42,10 @@ export default function CmsPage(): React.JSX.Element {
         if (termsItem) {
           setTermsContent(termsItem.text);
           setTermsId(termsItem.id);
+        }
+        if (privacyPolicyItem) {
+          setPrivacyPolicyContent(privacyPolicyItem.text);
+          setPrivacyPolicyId(privacyPolicyItem.id);
         }
       } catch (error) {
         if (process.env.NODE_ENV !== 'production') {
@@ -65,6 +72,9 @@ export default function CmsPage(): React.JSX.Element {
         <Box sx={{ padding: 4 }}>
           {aboutUsId !== null && <CmsSection id={aboutUsId} title="About Us" content={aboutUsContent} />}
           {termsId !== null && <CmsSection id={termsId} title="Terms and Conditions" content={termsContent} />}
+          {privacyPolicyId !== null && (
+            <CmsSection id={privacyPolicyId} title="Privacy Policy" content={privacyPolicyContent} />
+          )}
           {/* Add more sections as needed */}
         </Box>
       )}
