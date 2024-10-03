@@ -26,6 +26,7 @@ export interface ExpertiseEntry {
   title: string;
   status: 'active' | 'inactive';
   createdAt: Date | string;
+  updatedAt: Date | string;
 }
 
 interface ExpertiseTableProps {
@@ -79,7 +80,7 @@ export function ExpertiseTable({
           <TableHead>
             <TableRow sx={tableCss.tableRow}>
               <TableCell sx={tableCss.tableHeaderCell}>Title</TableCell>
-              <TableCell sx={tableCss.tableHeaderCell}>Created At</TableCell>
+              <TableCell sx={tableCss.tableHeaderCell}>Updated At</TableCell>
               <TableCell
                 sx={{
                   ...tableCss.tableHeaderCell,
@@ -113,7 +114,7 @@ export function ExpertiseTable({
                   >
                     {entry.title}
                   </TableCell>
-                  <TableCell sx={tableCss.tableCell}>{dayjs(entry.createdAt).format('MMM D, YYYY')}</TableCell>
+                  <TableCell sx={tableCss.tableCell}>{dayjs(entry.updatedAt).format('MMM D, YYYY')}</TableCell>
 
                   <TableCell sx={tableCss.tableCell}>
                     <FormControlLabel
