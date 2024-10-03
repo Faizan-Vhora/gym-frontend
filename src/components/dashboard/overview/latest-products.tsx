@@ -48,7 +48,7 @@ export function LatestProducts({ products = [], sx }: LatestProductsProps): Reac
   };
 
   return (
-    <Card sx={sx}>
+    <Card sx={{height:'520px',overflowY:'scroll'}}>
       <CardHeader title="Incomplete Profiles" />
       <Divider />
       <List>

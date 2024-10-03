@@ -23,6 +23,7 @@ import { PencilSimple, Trash } from '@phosphor-icons/react';
 import dayjs from 'dayjs';
 
 import tableCss from '@/styles/table-css';
+import { width } from '@mui/system';
 
 interface DiscountTableProps {
   discounts: DiscountEntry[];
@@ -137,13 +138,13 @@ export function DiscountTable({
               ) : (
                 discounts.map((discount) => (
                   <TableRow key={discount.id} sx={tableCss.tableRow}>
-                    <TableCell>
+                    <TableCell sx={tableCss.tableCell}>
                       <Image
                         src={discount?.discountImageUrl || ''}
                         alt="Discount Preview"
                         width={50}
                         height={50}
-                        style={{ marginTop: '1rem' }}
+                        style={{  }}
                         onClick={() => {
                           handleAvatarClick(discount.discountImageUrl || '');
                         }}
@@ -158,7 +159,7 @@ export function DiscountTable({
                     >
                       {discount.codeName}
                     </TableCell>
-                    <TableCell sx={tableCss.tableCell}>{dayjs(discount.expiryDate).format('MMM D, YYYY')}</TableCell>
+                    <TableCell sx={[tableCss.tableCell, {whiteSpace:'nowrap'}]}>{dayjs(discount.expiryDate).format('MMM D, YYYY')}</TableCell>
                     <TableCell sx={tableCss.tableCell}>
                       {discount.discountType === DiscountType.Percentage ? 'Percentage' : 'Fixed'}
                     </TableCell>
@@ -169,7 +170,7 @@ export function DiscountTable({
                         : `$${discount.discountValue}`}{' '}
                     </TableCell>
                     <TableCell>
-                      <Select sx={{height:'40px'}}
+                      <Select sx={{height:'40px',width:'120px'}}
                         value={discount.status}
                         onChange={(e) => {
                           onStatusChange(discount.id, e.target.value as DiscountStatus);
@@ -181,7 +182,7 @@ export function DiscountTable({
                         <MenuItem value={DiscountStatus.Expired}>Expired</MenuItem>
                       </Select>
                     </TableCell>
-                    <TableCell>
+                    <TableCell sx={tableCss.tableCell}>
                       <IconButton
                         onClick={() => {
                           onEdit(discount.id);
