@@ -32,7 +32,7 @@ import { ExpertiseEntry } from '@/components/dashboard/expertise/expertise-table
 // Define validation schemas
 const TrainerSchema = z.object({
   experience: z.coerce.number().optional(),
-  aboutMe: z.string().optional(),
+  aboutMe: z.string().nullable(),
   fees: z.coerce.number().optional(),
 });
 
@@ -174,58 +174,56 @@ const TrainerAdditionalForm: React.FC = () => {
               </FormControl>
             </Grid>
             <Grid item md={7} xs={12}>
-            <Grid container spacing={2}>
-            {/* Experience Selector */}
-            <Grid item md={6} xs={12}>
-              <FormControl required fullWidth>
-                <InputLabel htmlFor="experience">Experience (Years)</InputLabel>
-                <OutlinedInput
-                  id="experience"
-                  {...register('experience')}
-                  label="Experience (Years)"
-                  error={Boolean(errors.experience)}
-                />
-                {errors.experience?.message && <FormHelperText error>{errors.experience.message}</FormHelperText>}
-              </FormControl>
-            </Grid>
+              <Grid container spacing={2}>
+                {/* Experience Selector */}
+                <Grid item md={6} xs={12}>
+                  <FormControl required fullWidth>
+                    <InputLabel htmlFor="experience">Experience (Years)</InputLabel>
+                    <OutlinedInput
+                      id="experience"
+                      {...register('experience')}
+                      label="Experience (Years)"
+                      error={Boolean(errors.experience)}
+                    />
+                    {errors.experience?.message && <FormHelperText error>{errors.experience.message}</FormHelperText>}
+                  </FormControl>
+                </Grid>
 
-            {/* Fees Field */}
-            <Grid item md={6} xs={12}>
-              <FormControl required fullWidth>
-                <InputLabel htmlFor="fees">Fees</InputLabel>
-                <OutlinedInput
-                  id="fees"
-                  type="number"
-                  {...register('fees')}
-                  label="Fees"
-                  error={Boolean(errors.fees)}
-                  startAdornment={<InputAdornment position="start">$</InputAdornment>}
-                />
-                {errors.fees?.message && <FormHelperText error>{errors.fees.message}</FormHelperText>}
-              </FormControl>
-            </Grid>
+                {/* Fees Field */}
+                <Grid item md={6} xs={12}>
+                  <FormControl required fullWidth>
+                    <InputLabel htmlFor="fees">Fees</InputLabel>
+                    <OutlinedInput
+                      id="fees"
+                      type="number"
+                      {...register('fees')}
+                      label="Fees"
+                      error={Boolean(errors.fees)}
+                      startAdornment={<InputAdornment position="start">$</InputAdornment>}
+                    />
+                    {errors.fees?.message && <FormHelperText error>{errors.fees.message}</FormHelperText>}
+                  </FormControl>
+                </Grid>
 
-            {/* About Me Field */}
-            <Grid item md={12} xs={12}>
-              <TextField
-                {...register('aboutMe')}
-                label="About Me"
-                error={Boolean(errors.aboutMe)}
-                helperText={errors.aboutMe?.message}
-                multiline
-                rows={4}
-                fullWidth
-                variant="outlined"
-              />
+                {/* About Me Field */}
+                <Grid item md={12} xs={12}>
+                  <TextField
+                    {...register('aboutMe')}
+                    label="About Me"
+                    error={Boolean(errors.aboutMe)}
+                    helperText={errors.aboutMe?.message}
+                    multiline
+                    rows={4}
+                    fullWidth
+                    variant="outlined"
+                  />
+                </Grid>
+              </Grid>
             </Grid>
-            </Grid>
-            </Grid>
-
-
           </Grid>
         </CardContent>
         <Divider />
-        <CardActions sx={{ justifyContent: 'flex-end',padding:"15px 30px" }}>
+        <CardActions sx={{ justifyContent: 'flex-end', padding: '15px 30px' }}>
           <Button className="common-button" variant="contained" type="submit" disabled={isSubmitting}>
             Save
           </Button>
