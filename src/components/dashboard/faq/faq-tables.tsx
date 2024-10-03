@@ -151,7 +151,7 @@ export default function FaqTable({
                   <TableCell sx={tableCss.tableCell}>{faq.question}</TableCell>
                   <TableCell sx={tableCss.tableCell}>{faq.answer}</TableCell>
                   <TableCell sx={tableCss.tableCell}>
-                    <Select sx={{height:'40px'}}
+                    <Select sx={{height:'40px',width:'120px'}}
                       value={faq.status}
                       onChange={(e) => {
                         onStatusChange(faq.id, e.target.value as FaqStatus);

@@ -143,7 +143,7 @@ export function CustomersTable({
                       sx={{
                         ...tableCss.tableCell,
                         width: '50px !important',
-                        whiteSpace: 'nowrap',
+                        whiteSpace: 'wrap',
                         overflow: 'hidden',
                         textOverflow: 'ellipsis !important',
                       }}

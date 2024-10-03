@@ -1,14 +1,15 @@
 const tableCss = {
   tableCell: {
-    padding: '12px 30px',
+    padding: '8px 30px',
     fontSize: '14px',
     color: '#555',
     borderBottom: '1px solid #eaeaea',
-    whiteSpace: 'nowrap !important', // Prevent wrapping
-    overflow: 'hidden !important', // Hide overflowed text
-    textOverflow: 'ellipsis !important', // Show ellipsis for overflowed text
-    maxWidth: '55px !important',
+    // whiteSpace: 'nowrap !important', // Prevent wrapping
+    // overflow: 'hidden !important', // Hide overflowed text
+    // textOverflow: 'ellipsis !important', // Show ellipsis for overflowed text
+    // maxWidth: '55px !important',
   },
+  
   tableHeaderCell: {
     fontWeight: 'bold',
     fontSize: '14px',
