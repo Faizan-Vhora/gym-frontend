@@ -739,7 +739,7 @@ export function EventDialog({
               {tab === 'one_time' && (
                 <>
                   <Grid item md={8}>
-                    <Controller 
+                    <Controller
                       control={control}
                       name="selectDate"
                       render={({ field }) => (
@@ -958,7 +958,7 @@ export function EventDialog({
           <Divider />
 
 
-          
+
           <Stack direction="row" spacing={1} sx={{ alignItems: 'center', justifyContent: 'space-between', p: 2 }}>
             <PaymentToggle bookingAmount={bookingAmount} setPaymentType={setPaymentType} />
             {action === 'update' ? (
@@ -974,7 +974,7 @@ export function EventDialog({
               <div />
             )}
            </Stack>
-           
+
            <Stack direction="row" spacing={1} sx={{ alignItems: 'center', justifyContent: 'space-between', p: 2 }}>
 
             <Stack>
@@ -983,7 +983,7 @@ export function EventDialog({
                 Cancel
               </Button>
               <div>
-                
+
 
                 {/* Render the dialog */}
                 <BookingPreviewDialog

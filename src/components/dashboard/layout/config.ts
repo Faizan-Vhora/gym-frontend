@@ -12,7 +12,9 @@ export const navItems = [
   { key: 'faq', title: 'FAQ', href: paths.faq.faq, icon: 'chat-centered-dots' },
   { key: 'experties', title: 'Experties', href: paths.experties.experties, icon: 'user-check' },
   { key: 'discount', title: 'Discount', href: paths.discount.discount, icon: 'tag' },
-  { key: 'contact-us', title: 'Contact Us', href: paths.contactus.contact_us, icon: 'headset' },
+  // { key: 'contact-us', title: 'Contact Us', href: paths.contactus.contact_us, icon: 'headset' },
+  { key: 'support', title: 'Support', href: paths.support.supportList, icon: 'headset' },
+
 
   // {
   //   key: 'settings',

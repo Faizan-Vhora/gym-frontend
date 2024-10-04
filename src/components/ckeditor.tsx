@@ -1,4 +1,3 @@
-// components/custom-editor.js
 'use client';
 
 import * as React from 'react';
@@ -13,6 +12,7 @@ interface CustomEditorProps {
 const ckEditorConfig = {
   shouldNotGroupWhenFull: true,
   toolbar: ['undo', 'redo', '|', 'bold', 'italic', 'link', 'bulletedList', 'numberedList', 'blockQuote'],
+  placeholder: 'Type your content here...',  // Add the placeholder text here
 };
 
 function CustomEditor({ data, onChange }: CustomEditorProps) {
