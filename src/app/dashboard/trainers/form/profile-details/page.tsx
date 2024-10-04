@@ -1,3 +1,5 @@
+'use client';
+
 import * as React from 'react';
 import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -48,6 +50,7 @@ const TrainerAdditionalForm: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [selectedExpertise, setSelectedExpertise] = useState<number[]>([]);
   const [expertiseList, setExpertiseList] = useState<ExpertiseEntry[]>([]);
+  const [redirectTo, setRedirectTo] = useState<'trainers' | 'banner-images'>('trainers');
 
   const {
     register,
@@ -112,7 +115,7 @@ const TrainerAdditionalForm: React.FC = () => {
     );
   };
 
-  const onSubmit = async (data: TrainerFormInputs): Promise<void> => {
+  const onSubmit = async (data: TrainerFormInputs, destination: string): Promise<void> => {
     setIsSubmitting(true);
     setError(null);
     setLoading(true);
@@ -123,7 +126,12 @@ const TrainerAdditionalForm: React.FC = () => {
         ...data,
       });
       toast.success('Profile updated successfully!');
-      router.push('/dashboard/trainers');
+
+      if (destination === 'trainers') {
+        router.push('/dashboard/trainers');
+      } else if (destination === 'banner-images') {
+        router.push(`/dashboard/trainers/form/banner-images?id=${id}`);
+      }
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'An unexpected error occurred';
       toast.error(errorMessage);
@@ -139,7 +147,7 @@ const TrainerAdditionalForm: React.FC = () => {
   }
 
   return (
-    <Box component="form" onSubmit={handleSubmit(onSubmit)}>
+    <Box component="form" onSubmit={handleSubmit((data) => onSubmit(data, redirectTo))}>
       <Card>
         <CardContent>
           <Grid container spacing={8}>
@@ -224,8 +232,27 @@ const TrainerAdditionalForm: React.FC = () => {
         </CardContent>
         <Divider />
         <CardActions sx={{ justifyContent: 'flex-end', padding: '15px 30px' }}>
-          <Button className="common-button" variant="contained" type="submit" disabled={isSubmitting}>
+          <Button
+            className="common-button"
+            variant="contained"
+            onClick={() => {
+              setRedirectTo('trainers');
+            }}
+            type="submit"
+            disabled={isSubmitting}
+          >
             Save
+          </Button>
+          <Button
+            className="common-button"
+            variant="contained"
+            type="submit"
+            onClick={() => {
+              setRedirectTo('banner-images');
+            }}
+            disabled={isSubmitting}
+          >
+            Save and next
           </Button>
           <Button
             className="common-button"

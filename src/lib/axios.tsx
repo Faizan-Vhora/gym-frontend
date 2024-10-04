@@ -1,3 +1,4 @@
+import { APP_BASE_URL } from '@/app-config';
 import axios from 'axios';
 import type { AxiosError } from 'axios';
 import { toast } from 'react-toastify';
@@ -17,8 +18,8 @@ const createError = (message: string): Error => {
 };
 
 const axiosInstance = axios.create({
-  baseURL: 'http://18.188.170.111:3001/',
-  // baseURL: 'http://localhost:3001/',
+  // baseURL: 'http://18.188.170.111:3001/',
+  baseURL: APP_BASE_URL
 });
 
 // Adding an Authorization header if a token exists

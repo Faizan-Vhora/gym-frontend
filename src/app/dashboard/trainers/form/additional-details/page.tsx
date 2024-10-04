@@ -37,6 +37,8 @@ import { CustomLoader } from '@/utils/loader';
 import { Trash } from '@phosphor-icons/react';
 import dayjs from 'dayjs';
 
+import { Trainer } from '@/components/dashboard/trainer/trainer-table';
+
 export default function TrainerEditForm(): React.JSX.Element {
   const searchParams = useSearchParams();
   const id = searchParams.get('id');
@@ -47,6 +49,7 @@ export default function TrainerEditForm(): React.JSX.Element {
   const [loading, setLoading] = React.useState(false);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [imageFile, setImageFile] = React.useState<File | null>(null);
+  const [redirectTo, setRedirectTo] = useState<'trainers' | 'profile-detail'>('trainers');
 
   const trainerSchema = z.object({
     fullName: z.string().min(1, 'Full Name is required'),
@@ -79,6 +82,10 @@ export default function TrainerEditForm(): React.JSX.Element {
     resolver: zodResolver(trainerSchema),
     mode: 'onBlur',
   });
+
+  interface TrainerData {
+    data: Trainer;
+  }
 
   useEffect(() => {
     if (id) {
@@ -133,7 +140,7 @@ export default function TrainerEditForm(): React.JSX.Element {
     setImageFile(null);
   };
 
-  const onSubmit = async (data: TrainerFormInputs): Promise<void> => {
+  const onSubmit = async (data: TrainerFormInputs, destination: string): Promise<void> => {
     setIsSubmitting(true);
     setError(null);
     setLoading(true);
@@ -163,7 +170,7 @@ export default function TrainerEditForm(): React.JSX.Element {
       const method = id ? 'put' : 'post';
       const url = id ? `/users/${id}` : '/users';
 
-      await axiosInstance({
+      const response: { data: TrainerData } = await axiosInstance({
         method,
         url,
         data: formData,
@@ -171,7 +178,11 @@ export default function TrainerEditForm(): React.JSX.Element {
       });
       toast.success('Trainer saved successfully');
 
-      router.push('/dashboard/trainers'); // Redirect to the listing page after successful save
+      if (destination === 'trainers') {
+        router.push('/dashboard/trainers');
+      } else if (destination === 'profile-detail') {
+        router.push(`/dashboard/trainers/form/profile-details?id=${response?.data?.data?.id}`);
+      }
     } catch (err: unknown) {
       let errorMessage: string;
       if (err instanceof Error) {
@@ -191,7 +202,7 @@ export default function TrainerEditForm(): React.JSX.Element {
   }
 
   return (
-    <Box component="form" onSubmit={handleSubmit(onSubmit)}>
+    <Box component="form" onSubmit={handleSubmit((data) => onSubmit(data, redirectTo))}>
       <Card>
         <CardHeader title="Additional Details" />
         <Divider />
@@ -341,8 +352,27 @@ export default function TrainerEditForm(): React.JSX.Element {
         </CardContent>
         <Divider />
         <Stack direction="row" spacing={2} justifyContent="flex-end" p={3}>
-          <Button className="common-button" type="submit" variant="contained" disabled={isSubmitting}>
+          <Button
+            className="common-button"
+            type="submit"
+            variant="contained"
+            onClick={() => {
+              setRedirectTo('trainers');
+            }}
+            disabled={isSubmitting}
+          >
             Update
+          </Button>
+          <Button
+            className="common-button"
+            type="submit"
+            variant="contained"
+            onClick={() => {
+              setRedirectTo('profile-detail');
+            }}
+            disabled={isSubmitting}
+          >
+            Update and next
           </Button>
           <Button
             variant="outlined"

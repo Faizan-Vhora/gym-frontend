@@ -22,6 +22,20 @@ import dayjs from 'dayjs';
 
 import tableCss from '@/styles/table-css';
 
+interface TrainerExpertise {
+  id: number;
+  createdAt: string;
+  updatedAt: string;
+  expertise: {
+    id: number;
+    title: string;
+    description: string;
+    status: string;
+    createdAt: string;
+    updatedAt: string;
+  };
+}
+
 export interface Trainer {
   id: string | number;
   fullName: string;
@@ -32,7 +46,7 @@ export interface Trainer {
   updatedAt: string;
   status: number;
   memberId: string;
-  expertise: string;
+  trainerExpertise: TrainerExpertise[];
   aboutMe: string;
   experience: number;
   fees: number;
@@ -113,7 +127,10 @@ export function TrainersTable({
                       }}
                       style={{ cursor: 'pointer' }}
                     >
-                      {row.email}
+                      {row.trainerExpertise
+                        ?.map((expertiseItem: any) => expertiseItem.expertise.title) // Extract the title
+                        .join(', ')}{' '}
+                      {/* Join titles with a comma */}
                     </Typography>
                   </TableCell>
                   <TableCell sx={tableCss.tableCell}>{row.address || '-'}</TableCell>

@@ -16,6 +16,7 @@ import {
   Grid,
   InputLabel,
   OutlinedInput,
+  TextField,
 } from '@mui/material';
 import { Controller, useForm } from 'react-hook-form';
 import { toast, ToastContainer } from 'react-toastify';
@@ -28,6 +29,7 @@ const expertiseSchema = z.object({
     .string()
     .min(1, 'Title is required')
     .regex(REGEX_VALIDATION.FULL_NAME, 'Title should not contain numbers or special characters'),
+  description: z.string().nullable(),
   status: z.enum(['active', 'inactive']).default('active'),
 });
 
@@ -49,6 +51,7 @@ export default function ExpertiseForm(): React.JSX.Element {
     handleSubmit,
     formState: { errors },
     reset,
+    register, // Add register function from useForm
   } = useForm<ExpertiseFormData>({
     resolver: zodResolver(expertiseSchema),
     defaultValues: {
@@ -66,10 +69,8 @@ export default function ExpertiseForm(): React.JSX.Element {
           reset(response.data.data);
         })
         .catch((error: unknown) => {
-          // Rename the error variable to avoid unused variable error
-          const _error = error instanceof Error ? error.message : 'An unexpected error occurred';
-          // Optionally, display a toast error message
-          // toast.error(_error);
+          const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred';
+          toast.error(errorMessage); // Display toast error message
         })
         .finally(() => {
           setLoading(false);
@@ -92,8 +93,8 @@ export default function ExpertiseForm(): React.JSX.Element {
       toast.success(`Expertise ${expertiseId ? 'updated' : 'created'} successfully`);
       router.push('/dashboard/expertise');
     } catch (error: unknown) {
-      // toast.error('An unexpected error occurred');
-      // toast.error(error instanceof Error ? error.message : 'An unexpected error occurred');
+      const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred';
+      toast.error(errorMessage); // Display toast error message
     } finally {
       setLoading(false);
     }
@@ -107,7 +108,7 @@ export default function ExpertiseForm(): React.JSX.Element {
         <form onSubmit={handleSubmit(onSubmit)}>
           <Grid container spacing={3}>
             {/* Title Field */}
-            <Grid item xs={6}>
+            <Grid item xs={4}>
               <FormControl fullWidth required error={Boolean(errors.title)}>
                 <InputLabel htmlFor="title">Title</InputLabel>
                 <Controller
@@ -118,7 +119,22 @@ export default function ExpertiseForm(): React.JSX.Element {
                 {errors.title && <FormHelperText>{errors.title.message}</FormHelperText>}
               </FormControl>
             </Grid>
-
+            {/* Description Field */}
+            <Grid item xs={9}>
+              <FormControl fullWidth>
+                <TextField
+                  {...register('description')} // Register the description field
+                  label="Description"
+                  error={Boolean(errors.description)}
+                  helperText={errors.description?.message}
+                  multiline
+                  rows={4} // Increase the number of rows here
+                  variant="outlined"
+                  fullWidth
+                />
+                {errors.description && <FormHelperText error>{errors.description.message}</FormHelperText>}
+              </FormControl>
+            </Grid>
             {/* Action Buttons */}
             <Grid item xs={12} container spacing={2} justifyContent="flex-end">
               <Grid item>
@@ -129,9 +145,7 @@ export default function ExpertiseForm(): React.JSX.Element {
               <Grid item>
                 <Button
                   variant="outlined"
-                  onClick={() => {
-                    router.push('/dashboard/expertise');
-                  }}
+                  onClick={() => router.push('/dashboard/expertise')}
                   disabled={loading}
                   sx={{
                     borderColor: '#d0021b',

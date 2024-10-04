@@ -46,7 +46,8 @@ import dayjs, { Dayjs } from 'dayjs';
 
 import type { Trainer } from '@/components/dashboard/trainer/trainer-table';
 
-import TrainerAdditionalForm from './trainer-additional-form';
+import ImageUploadCards from './banner-images/page';
+import TrainerAdditionalForm from './profile-details/page';
 
 export default function TrainerEditForm(): React.JSX.Element {
   const searchParams = useSearchParams();
@@ -263,7 +264,8 @@ export default function TrainerEditForm(): React.JSX.Element {
             <Divider />
             <Tabs value={tab} onChange={handleTabChange} aria-label="Addiitional datials form tabs">
               <Tab label="Basic Info" />
-              <Tab label="Additional Details" />
+              <Tab label="Profile Details" />
+              <Tab label="Banner Images" />
             </Tabs>
           </Stack>
         )}
@@ -546,6 +548,7 @@ export default function TrainerEditForm(): React.JSX.Element {
           </Box>
         )}
         {tab === 1 && <TrainerAdditionalForm />}
+        {tab === 2 && <ImageUploadCards />}
         {loading && <CustomLoader />}
         {error ? <Alert color="error">{error}</Alert> : null}
       </Card>
