@@ -91,7 +91,7 @@ export default function TrainersPage(): React.JSX.Element {
       } catch (err: unknown) {
         let errorMessage = 'Failed to load data.';
         if (err instanceof Error) {
-          errorMessage = `Error fetching FAQs: ${err.message}`;
+          errorMessage = `Error fetching Trainers: ${err.message}`;
         }
         toast.error(errorMessage);
       }
@@ -101,7 +101,7 @@ export default function TrainersPage(): React.JSX.Element {
     loadTrainers().catch((err: unknown) => {
       let errorMessage = 'Failed to load data.';
       if (err instanceof Error) {
-        errorMessage = `Error fetching FAQs: ${err.message}`;
+        errorMessage = `Error fetching Trainers: ${err.message}`;
       }
       toast.error(errorMessage);
     });

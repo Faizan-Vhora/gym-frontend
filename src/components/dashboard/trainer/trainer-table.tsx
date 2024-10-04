@@ -37,7 +37,7 @@ interface TrainerExpertise {
 }
 
 export interface Trainer {
-  id: string;
+  id: string | number;
   fullName: string;
   email: string;
   phoneNumber: string;
@@ -50,6 +50,7 @@ export interface Trainer {
   aboutMe: string;
   experience: number;
   fees: number;
+  profileImageUrl?: string;
 }
 
 interface TrainerTableProps {
@@ -112,7 +113,7 @@ export function TrainersTable({
                     <Typography
                       variant="subtitle2"
                       onClick={() => {
-                        handleRowClick(row.id);
+                        handleRowClick(String(row.id));
                       }}
                       style={{ cursor: 'pointer' }}
                     >
@@ -122,7 +123,7 @@ export function TrainersTable({
                       color="textSecondary"
                       variant="body2"
                       onClick={() => {
-                        handleRowClick(row.id);
+                        handleRowClick(String(row.id));
                       }}
                       style={{ cursor: 'pointer' }}
                     >
@@ -142,7 +143,7 @@ export function TrainersTable({
                           checked={row.status === 1}
                           onChange={(event) => {
                             event.stopPropagation();
-                            updateTrainerStatus(row.id, row.status);
+                            updateTrainerStatus(String(row.id), row.status);
                           }}
                           color={row.status === 1 ? 'success' : 'error'}
                         />
@@ -154,7 +155,7 @@ export function TrainersTable({
                     <Stack direction="row" spacing={1} alignItems="center">
                       <IconButton
                         onClick={() => {
-                          handleEdit(row.id);
+                          handleEdit(String(row.id));
                         }}
                       >
                         <PencilSimple />

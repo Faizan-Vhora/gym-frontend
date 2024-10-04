@@ -3,6 +3,8 @@ import axios from 'axios';
 import type { AxiosError } from 'axios';
 import { toast } from 'react-toastify';
 
+import 'react-toastify/dist/ReactToastify.css';
+
 // Define the expected error response structure
 interface ErrorResponse {
   message: string;
@@ -10,7 +12,9 @@ interface ErrorResponse {
 
 // Create a helper function to ensure proper error typing
 const createError = (message: string): Error => {
-  return new Error(message);
+  console.log('message', message);
+  // return new Error(message);
+  return new Error('Server Error');
 };
 
 const axiosInstance = axios.create({
@@ -39,8 +43,11 @@ axiosInstance.interceptors.response.use(
   (error: AxiosError<ErrorResponse>) => {
     // Display the error message using react-toastify
     const errorMessage = error.response?.data?.message || 'An error occurred, please try again.';
-    toast.error(errorMessage);
 
+    errorMessage.split(',').forEach((message: string) => {
+      console.log('E message::', message);
+      toast.error(message);
+    });
     // Create a standardized Error object for rejection
     return Promise.reject(createError(errorMessage));
   }
