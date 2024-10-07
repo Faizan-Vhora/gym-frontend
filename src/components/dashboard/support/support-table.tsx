@@ -45,7 +45,7 @@ interface SupportTableProps {
   totalEntries: number;
   onUpdateStatus: (id: number, newStatus: SupportEntry['status']) => void;
   onPageChange: (newPage: number) => void;
-  onRowsPerPageChange: (newRowsPerPage: number) => void;
+  onRowsPerPageChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 export function SupportTable({
@@ -62,14 +62,14 @@ export function SupportTable({
   const router = useRouter();
 
   const handleEdit = React.useCallback(
-    (id: string) => {
+    (id: number) => {
       router.push(`/dashboard/support/form?id=${id}`);
     },
     [router]
   );
 
   const handleCheckMessages = React.useCallback(
-    (id: string) => {
+    (id: number) => {
       router.push(`/dashboard/support/messages?id=${id}`);
     },
     [router]
@@ -109,9 +109,9 @@ export function SupportTable({
                     <TableCell sx={tableCss.tableCell}>
                       <Stack direction="row" spacing={2}>
                         <Box>
-                          <Typography variant="subtitle2">{entry.user.fullName}</Typography>
+                          <Typography variant="subtitle2">{entry?.user?.fullName}</Typography>
                           <Typography color="textSecondary" variant="body2">
-                            {entry.user.email}
+                            {entry?.user?.email}
                           </Typography>
                         </Box>
                       </Stack>
@@ -181,9 +181,11 @@ export function SupportTable({
               onPageChange={(e, newPage) => {
                 onPageChange(newPage);
               }}
-              onRowsPerPageChange={(e) => {
-                onRowsPerPageChange(parseInt(e.target.value, 10));
+              onRowsPerPageChange={(event) => {
+                const inputEvent = event as React.ChangeEvent<HTMLInputElement>;
+                onRowsPerPageChange(inputEvent);
               }}
+
               rowsPerPageOptions={[5, 10, 25]}
             />
           </>
