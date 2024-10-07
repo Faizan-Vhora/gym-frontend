@@ -4,6 +4,7 @@ import { FormControl, Grid, IconButton, InputAdornment, InputLabel, MenuItem, Se
 import type { SelectChangeEvent } from '@mui/material';
 import { X as XIcon } from '@phosphor-icons/react'; // Import XIcon from phosphor-react
 import debounce from 'lodash/debounce';
+import { SUPPORT_TICKET_STATUS_OPTIONS, SUPPORT_TICKET_USER_TYPE_OPTIONS } from '@/utils/constant';
 
 interface SupportFiltersProps {
   onSearchChange: (searchTerm: string) => void;
@@ -11,28 +12,14 @@ interface SupportFiltersProps {
   onFromChange: (from: string) => void;
 }
 
-const statusOptions = [
-  { value: 'ALL', label: 'All' },
-  { value: 'Pending', label: 'Pending' },
-  { value: 'Resolved', label: 'Resolved' },
-  { value: 'UnResolved', label: 'UnResolved' },
-];
-
-const fromOptions = [
-  { value: 'ALL', label: 'All' },
-  { value: 'User', label: 'User' },
-  { value: 'Trainer', label: 'Trainer' },
-  { value: 'Web', label: 'Web' },
-];
-
 export function SupportFilters({
   onSearchChange,
   onStatusChange,
   onFromChange,
 }: SupportFiltersProps): React.JSX.Element {
   const [searchTerm, setSearchTerm] = useState('');
-  const [status, setStatus] = useState('ALL');
-  const [from, setFrom] = useState('ALL');
+  const [status, setStatus] = useState('All');
+  const [from, setFrom] = useState('All');
 
   // Create a debounced version of the search handler
   const debouncedSearch = React.useCallback(
@@ -77,7 +64,7 @@ export function SupportFilters({
       <Grid item md={4} xs={12}>
         <TextField
           fullWidth
-          label="Search by Name or Email"
+          label="Search by Subject, Name or Email"
           variant="outlined"
           value={searchTerm}
           onChange={handleSearchChange}
@@ -96,7 +83,8 @@ export function SupportFilters({
         <FormControl fullWidth variant="outlined">
           <InputLabel>Status</InputLabel>
           <Select value={status} onChange={handleStatusChange} label="Status">
-            {statusOptions.map((option) => (
+          <MenuItem value="All">All</MenuItem>
+            {SUPPORT_TICKET_STATUS_OPTIONS.map((option) => (
               <MenuItem key={option.value} value={option.value}>
                 {option.label}
               </MenuItem>
@@ -108,7 +96,8 @@ export function SupportFilters({
         <FormControl fullWidth variant="outlined">
           <InputLabel>From</InputLabel>
           <Select value={from} onChange={handleFromChange} label="From">
-            {fromOptions.map((option) => (
+          <MenuItem value="All">All</MenuItem>
+            {SUPPORT_TICKET_USER_TYPE_OPTIONS.map((option) => (
               <MenuItem key={option.value} value={option.value}>
                 {option.label}
               </MenuItem>

@@ -6,6 +6,7 @@ import dynamic from 'next/dynamic';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
+  Alert,
   Box,
   Button,
   Card,
@@ -28,6 +29,8 @@ import axiosInstance from '@/lib/axios';
 import { Trainer } from '@/components/dashboard/trainer/trainer-table';
 import { Customer } from '@/components/dashboard/customer/customers-table';
 import { SupportEntry } from '@/components/dashboard/support/support-table';
+import { CustomLoader } from '@/utils/loader';
+import { SUPPORT_TICKET_STATUS_OPTIONS, SUPPORT_TICKET_USER_TYPE_OPTIONS, USER_TYPE } from '@/utils/constant';
 
 // Dynamically import the CKEditor
 const CustomEditor = dynamic(() => import('@/components/ckeditor'), { ssr: false });
@@ -40,17 +43,6 @@ export interface supportTicketPayloadDataI {
   status: string;
   description: string;
 }
-
-const userTypeOptions = [
-  { value: '3', label: 'Member' },
-  { value: '2', label: 'Trainer' },
-];
-
-const ticketStatusOptions = [
-  { value: 'pending', label: 'Pending' },
-  { value: 'resolved', label: 'Resolved' },
-  { value: 'unresolved', label: 'Unresolved' },
-];
 
 // Define validation schemas
 const supportSchema = z.object({
@@ -142,7 +134,8 @@ export default function SupportForm(): React.JSX.Element {
 
   useEffect(() => {
     // Reset user options based on userType
-    const updatedUserOptions = userType === 'member'
+    console.log("userType: ", userType)
+    const updatedUserOptions = userType ==  String(USER_TYPE.MEMBER)
       ? customers.map(customer => ({ value: customer.id.toString(), label: customer.fullName }))
       : trainers.map(trainer => ({ value: trainer.id.toString(), label: trainer.fullName }));
 
@@ -213,7 +206,7 @@ export default function SupportForm(): React.JSX.Element {
       setError('Failed to save support ticket details.');
     } finally {
       setIsSubmitting(false);
-      setLoading(true);
+      setLoading(false);
     }
 
 
@@ -224,6 +217,11 @@ export default function SupportForm(): React.JSX.Element {
     fetchTrainers();
     fetchCustomers();
   }, []);
+
+
+  if (!supportTicket && id) {
+    return <div>{loading && <CustomLoader />}</div>;
+  }
 
   return (
     <Box component="form" onSubmit={handleSubmit(onSubmit)} sx={{ p: 3 }}>
@@ -246,7 +244,7 @@ export default function SupportForm(): React.JSX.Element {
                   onChange={(e) => setValue('userType', e.target.value)}
                   label="User Type"
                 >
-                  {userTypeOptions.map((option) => (
+                  {SUPPORT_TICKET_USER_TYPE_OPTIONS.map((option) => (
                     <MenuItem key={option.value} value={option.value}>
                       {option.label}
                     </MenuItem>
@@ -294,7 +292,7 @@ export default function SupportForm(): React.JSX.Element {
                   onChange={(e) => setValue('status', e.target.value)}
                   label="Status"
                 >
-                  {ticketStatusOptions.map((option) => (
+                  {SUPPORT_TICKET_STATUS_OPTIONS.map((option) => (
                     <MenuItem key={option.value} value={option.value}>
                       {option.label}
                     </MenuItem>
@@ -337,7 +335,7 @@ export default function SupportForm(): React.JSX.Element {
         <Divider />
 
         <CardActions sx={{ justifyContent: 'flex-end', p: 2 }}>
-          <Button className="common-button" variant="contained" type="submit" sx={{ mr: 2 }}>
+          <Button className="common-button" variant="contained" type="submit" sx={{ mr: 2 }} disabled={isSubmitting}>
             Save
           </Button>
           <Button
@@ -359,6 +357,9 @@ export default function SupportForm(): React.JSX.Element {
         </CardActions>
       </Card>
 
+
+      {loading && <CustomLoader />}
+      {error ? <Alert color="error">{error}</Alert> : null}
       <ToastContainer />
     </Box>
   );

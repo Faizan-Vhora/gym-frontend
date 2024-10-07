@@ -23,17 +23,18 @@ import 'react-toastify/dist/ReactToastify.css'; // Import toast styles
 import tableCss from '@/styles/table-css';
 import { Chat, PencilSimple } from '@phosphor-icons/react';
 import { useRouter } from 'next/navigation';
+import { SUPPORT_TICKET_STATUS_OPTIONS, USER_TYPE_OPTIONS } from '@/utils/constant';
 
 export interface SupportEntry {
   id: number;
   user: {  id:number, fullName: string; email: string } | null;
   type: 'user' | 'trainer' | 'web';
-  status: 'pending' | 'resolved' | 'unresolved';
+  status: 'pending' | 'resolved' | 'reviewed';
   userType : '2' | '3';
   subject : string;
   message: string;
   description: string,
-  createdAt: Date;
+  createdAt: Date | string |null;
   createdBy: { fullName: string; email: string };
 }
 
@@ -46,12 +47,6 @@ interface SupportTableProps {
   onPageChange: (newPage: number) => void;
   onRowsPerPageChange: (newRowsPerPage: number) => void;
 }
-
-const typeDictionary = {
-  user: 'User',
-  trainer: 'Trainer',
-  web: 'Web',
-};
 
 export function SupportTable({
   entries,
@@ -121,7 +116,9 @@ export function SupportTable({
                         </Box>
                       </Stack>
                     </TableCell>
-                    <TableCell sx={tableCss.tableCell}>{typeDictionary[entry.type]}</TableCell>
+                    <TableCell sx={tableCss.tableCell}>{
+                    USER_TYPE_OPTIONS.find((ele:any)=> ele.value==entry.userType)?.label || '-'
+                    }</TableCell>
                     <TableCell sx={tableCss.tableCell}>{ entry.subject}</TableCell>
                     <TableCell sx={tableCss.tableCell}>
                       <Select
@@ -133,9 +130,12 @@ export function SupportTable({
                         displayEmpty
                         fullWidth
                       >
-                        <MenuItem value="pending">Pending</MenuItem>
-                        <MenuItem value="resolved">Resolved</MenuItem>
-                        <MenuItem value="reviewed">Reviewed</MenuItem>
+                        {SUPPORT_TICKET_STATUS_OPTIONS.map((option) => (
+                          <MenuItem key={option.value} value={option.value}>
+                            {option.label}
+                          </MenuItem>
+                        ))}
+
                       </Select>
                     </TableCell>
 

@@ -28,9 +28,9 @@ export default function Page(): React.JSX.Element {
   const [pageTitle, setPageTitle] = React.useState('Support');
   const [entries, setEntries] = React.useState<SupportEntry[]>([]);
   const [searchTerm, setSearchTerm] = React.useState('');
-  const [statusFilter, setStatusFilter] = React.useState('ALL');
-  const [fromFilter, setFromFilter] = React.useState('ALL');
-  const [page, setPage] = React.useState(1);
+  const [statusFilter, setStatusFilter] = React.useState('All');
+  const [fromFilter, setFromFilter] = React.useState('All');
+  const [page, setPage] = React.useState<number>(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [count, setCount] = React.useState<number>(0);
   const [loading, setLoading] = React.useState(true);
@@ -46,11 +46,11 @@ export default function Page(): React.JSX.Element {
     try {
 
       const qParams = {
-        page: page, // Page number (API might expect 1-indexed pages)
+        page: page + 1,
         limit: rowsPerPage, // Number of rows per page
         search: searchTerm, // Search term
-        type: fromFilter !== 'ALL' ? fromFilter : undefined, // From filter
-        status: statusFilter !== 'ALL' ? statusFilter : undefined, // Status filter
+        userType: fromFilter !== 'All' ? fromFilter : null, // From filter
+        status: statusFilter !== 'All' ? statusFilter : null, // Status filter
       }
 
       const response = await axiosInstance.get<{ data: { items: SupportEntry[]; meta: { totalItems: number } } }>(
@@ -73,17 +73,6 @@ export default function Page(): React.JSX.Element {
     }
   }, [page, rowsPerPage, searchTerm, statusFilter, fromFilter]);
 
-  const handleSearchChange = (search: string): void => {
-    setSearchTerm(search);
-  };
-
-  const handleStatusChange = (status: string): void => {
-    setStatusFilter(status);
-  };
-
-  const handleFromChange = (type: string): void => {
-    setFromFilter(type);
-  };
 
   const handleAddClick = (): void => {
     router.push('/dashboard/support/form');
@@ -119,11 +108,28 @@ export default function Page(): React.JSX.Element {
     setPage(newPage);
   };
 
-  const handleRowsPerPageChange = (newRowsPerPage: number): void => {
-    setRowsPerPage(newRowsPerPage);
-    setPage(0); // Reset page to 0 when changing rows per page
+  const handleRowsPerPageChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
   };
 
+  const handleSearchChange = (search: string): void => {
+    setSearchTerm(search);
+    setPage(0);
+
+  };
+
+  const handleStatusChange = (status: string): void => {
+    setStatusFilter(status);
+    setPage(0);
+
+  };
+
+  const handleFromChange = (type: string): void => {
+    setFromFilter(type);
+    setPage(0);
+
+  };
   // <methods hooks> (end)
 
 
@@ -157,11 +163,11 @@ export default function Page(): React.JSX.Element {
     <Card>
 
       <Stack sx={{ padding: '30px' }}>
-         {/* <SupportFilters
+         <SupportFilters
          onSearchChange={handleSearchChange}
          onStatusChange={handleStatusChange}
          onFromChange={handleFromChange}
-       /> */}
+       />
       </Stack>
 
       {loading ? (
