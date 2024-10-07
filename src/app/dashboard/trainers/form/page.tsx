@@ -47,7 +47,9 @@ import dayjs, { Dayjs } from 'dayjs';
 import type { Trainer } from '@/components/dashboard/trainer/trainer-table';
 
 import ImageUploadCards from './banner-images/page';
+import { CheckInTableView, type CheckInEntry } from './check-in-view';
 import TrainerAdditionalForm from './profile-details/page';
+import WeekdayTimeSlots from './trainer-availability/page';
 
 export default function TrainerEditForm(): React.JSX.Element {
   const searchParams = useSearchParams();
@@ -63,6 +65,10 @@ export default function TrainerEditForm(): React.JSX.Element {
   const [redirectTo, setRedirectTo] = useState<'trainers' | 'additional-details'>('trainers');
   const [tab, setTab] = useState(0); // State to control the active tab
   const [changeProfileImage, setChangeProfileImage] = React.useState(false);
+  const [checkInPage, setPage] = useState(0);
+  const [checkInRowsPerPage, setRowsPerPage] = useState(5);
+  const [checkInEntries, setCheckInEntries] = useState<CheckInEntry[]>([]);
+  const [totalCheckInEntries, setTotalCheckInEntries] = useState<number>(0);
 
   const trainerSchema = z.object({
     fullName: z
@@ -147,6 +153,75 @@ export default function TrainerEditForm(): React.JSX.Element {
         });
     }
   }, [id]);
+
+  interface ErrorDetail {
+    code?: string;
+    message?: string;
+  }
+
+  interface CheckinResponse {
+    data: {
+      items: CheckInEntry[];
+      meta: {
+        totalItems: number;
+      };
+    };
+    errors?: ErrorDetail;
+  }
+
+  const handlePageChange = (event: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => {
+    setPage(newPage);
+  };
+
+  const handleRowsPerPageChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+
+  useEffect(() => {
+    const fetchEntries: () => Promise<void> = async () => {
+      setLoading(true);
+      try {
+        const params = {
+          page: checkInPage + 1,
+          limit: checkInRowsPerPage,
+          userId: id,
+          userType: 2,
+        };
+        const response = await axiosInstance.get<CheckinResponse>('/entry-logs', { params });
+
+        const { items, meta } = response.data.data;
+        if (Array.isArray(items)) {
+          setCheckInEntries(items);
+          setTotalCheckInEntries(meta.totalItems);
+        } else {
+          toast.error(
+            `Unexpected response data format: ${response.data.errors ? JSON.stringify(response.data.errors) : 'No errors available'}`
+          );
+          setError('Unexpected data format.');
+        }
+      } catch (err) {
+        let errorMessage = 'Failed to load data.';
+        if (err instanceof Error) {
+          errorMessage = `Error fetching check-ins: ${err.message}`;
+        }
+        toast.error(errorMessage);
+        setError(errorMessage);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchEntries().catch((err: unknown) => {
+      let errorMessage: string;
+      if (err instanceof Error) {
+        errorMessage = err.message;
+      } else {
+        errorMessage = 'An unexpected error occurred';
+      }
+      toast.error(errorMessage);
+    });
+  }, [checkInPage, checkInRowsPerPage]);
 
   interface TrainerData {
     data: Trainer;
@@ -266,6 +341,8 @@ export default function TrainerEditForm(): React.JSX.Element {
               <Tab label="Basic Info" />
               <Tab label="Profile Details" />
               <Tab label="Banner Images" />
+              <Tab label="Check In History" />
+              <Tab label="Trainer Availability" />
             </Tabs>
           </Stack>
         )}
@@ -549,6 +626,17 @@ export default function TrainerEditForm(): React.JSX.Element {
         )}
         {tab === 1 && <TrainerAdditionalForm />}
         {tab === 2 && <ImageUploadCards />}
+        {tab === 3 && (
+          <CheckInTableView
+            entries={checkInEntries}
+            count={totalCheckInEntries}
+            page={checkInPage}
+            rowsPerPage={checkInRowsPerPage}
+            onPageChange={handlePageChange}
+            onRowsPerPageChange={handleRowsPerPageChange}
+          />
+        )}
+        {tab === 4 && <WeekdayTimeSlots />}
         {loading && <CustomLoader />}
         {error ? <Alert color="error">{error}</Alert> : null}
       </Card>

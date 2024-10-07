@@ -18,3 +18,19 @@ export const formatUtcToLocalDatetime = (utcDatetimeString:Date | string|null|un
   return null;
 
 }
+
+
+export const formatTime = (date: Date) => {
+  if (!date) return null; // Handle null case
+  const hours = String(date.getHours()).padStart(2, '0'); // Get hours and pad with zeros
+  const minutes = String(date.getMinutes()).padStart(2, '0'); // Get minutes
+  const seconds = String(date.getSeconds()).padStart(2, '0'); // Get seconds
+  return `${hours}:${minutes}:${seconds}`; // Return formatted time
+};
+
+export function convertTo12HourFormat(time:string) {
+  const [hours, minutes, seconds] = time.split(':').map(Number);
+  const ampm = hours >= 12 ? 'PM' : 'AM';
+  const hours12 = hours % 12 || 12; // Convert hour 0 to 12
+  return `${hours12}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')} ${ampm}`;
+}

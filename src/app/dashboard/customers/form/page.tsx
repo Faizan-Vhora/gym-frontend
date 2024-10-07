@@ -50,6 +50,8 @@ import type { Customer } from '@/components/dashboard/customer/customers-table';
 import MembershipPlanCard from '@/components/dashboard/membership-plan/membership-card';
 import { MembershipPlans } from '@/components/dashboard/membership-plan/membership-plan-table';
 
+import { CheckInTableView, type CheckInEntry } from './check-in-view';
+
 export default function CustomerEditForm(): React.JSX.Element {
   const searchParams = useSearchParams();
   const id = searchParams.get('id');
@@ -66,6 +68,10 @@ export default function CustomerEditForm(): React.JSX.Element {
   const [redirectTo, setRedirectTo] = useState<'customers' | 'additional-details'>('customers');
   const [plans, setPlans] = useState<PlanI[]>([]);
   const [tab, setTab] = useState(0); // State to control the active tab
+  const [checkInPage, setPage] = useState(0);
+  const [checkInRowsPerPage, setRowsPerPage] = useState(5);
+  const [checkInEntries, setCheckInEntries] = useState<CheckInEntry[]>([]);
+  const [totalCheckInEntries, setTotalCheckInEntries] = useState<number>(0);
 
   interface CustomerS {
     id: string;
@@ -234,6 +240,75 @@ export default function CustomerEditForm(): React.JSX.Element {
     void fetchPlans();
   }, []);
 
+  interface ErrorDetail {
+    code?: string;
+    message?: string;
+  }
+
+  interface CheckinResponse {
+    data: {
+      items: CheckInEntry[];
+      meta: {
+        totalItems: number;
+      };
+    };
+    errors?: ErrorDetail;
+  }
+
+  const handlePageChange = (event: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => {
+    setPage(newPage);
+  };
+
+  const handleRowsPerPageChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+
+  useEffect(() => {
+    const fetchEntries: () => Promise<void> = async () => {
+      setLoading(true);
+      try {
+        const params = {
+          page: checkInPage + 1,
+          limit: checkInRowsPerPage,
+          userId: id,
+          userType: 3,
+        };
+        const response = await axiosInstance.get<CheckinResponse>('/entry-logs', { params });
+
+        const { items, meta } = response.data.data;
+        if (Array.isArray(items)) {
+          setCheckInEntries(items);
+          setTotalCheckInEntries(meta.totalItems);
+        } else {
+          toast.error(
+            `Unexpected response data format: ${response.data.errors ? JSON.stringify(response.data.errors) : 'No errors available'}`
+          );
+          setError('Unexpected data format.');
+        }
+      } catch (err) {
+        let errorMessage = 'Failed to load data.';
+        if (err instanceof Error) {
+          errorMessage = `Error fetching check-ins: ${err.message}`;
+        }
+        toast.error(errorMessage);
+        setError(errorMessage);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchEntries().catch((err: unknown) => {
+      let errorMessage: string;
+      if (err instanceof Error) {
+        errorMessage = err.message;
+      } else {
+        errorMessage = 'An unexpected error occurred';
+      }
+      toast.error(errorMessage);
+    });
+  }, [checkInPage, checkInRowsPerPage]);
+
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
     const file = event.target.files?.[0];
     if (file) {
@@ -363,6 +438,7 @@ export default function CustomerEditForm(): React.JSX.Element {
             <Tabs value={tab} onChange={handleTabChange} aria-label="member form tabs">
               <Tab label="Basic Info" />
               <Tab label="Membership" />
+              <Tab label="Check In History" />
             </Tabs>
           </Stack>
         )}
@@ -704,7 +780,16 @@ export default function CustomerEditForm(): React.JSX.Element {
             <Divider />
           </>
         )}
-
+        {tab === 2 && (
+          <CheckInTableView
+            entries={checkInEntries}
+            count={totalCheckInEntries}
+            page={checkInPage}
+            rowsPerPage={checkInRowsPerPage}
+            onPageChange={handlePageChange}
+            onRowsPerPageChange={handleRowsPerPageChange}
+          />
+        )}
         {loading && <CustomLoader />}
         {error ? <Alert color="error">{error}</Alert> : null}
       </Card>
