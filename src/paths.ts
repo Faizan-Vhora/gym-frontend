@@ -30,7 +30,7 @@ export const paths = {
     customers: '/dashboard/customers',
     customersForm: (id?: number) => `/dashboard/customers/form/${id}`,
   },
-  
+
 
   trainers: {
     trainers: '/dashboard/trainers',
@@ -42,6 +42,10 @@ export const paths = {
     PlanForm: (id?: number) => `/dashboard/membership-plan/form/${id}`
   },
 
+
+  support: {
+    supportList: '/dashboard/support',
+  },
 
   // services: {
   //   services: '/dashboard/services',
