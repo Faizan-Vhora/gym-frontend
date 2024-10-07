@@ -4,6 +4,7 @@ import { AlignLeft as AlignLeftIcon } from '@phosphor-icons/react/dist/ssr/Align
 import { CalendarCheck as CalendarCheckIcon } from '@phosphor-icons/react/dist/ssr/CalendarCheck';
 import { ChartPie as ChartPieIcon } from '@phosphor-icons/react/dist/ssr/ChartPie';
 import { ChatsCircle as ChatsCircleIcon } from '@phosphor-icons/react/dist/ssr/ChatsCircle';
+import { ClockUser as ClockUserIcon } from '@phosphor-icons/react/dist/ssr/ClockUser';
 import { CreditCard as CreditCardIcon } from '@phosphor-icons/react/dist/ssr/CreditCard';
 import { Cube as CubeIcon } from '@phosphor-icons/react/dist/ssr/Cube';
 import { CurrencyEth as CurrencyEthIcon } from '@phosphor-icons/react/dist/ssr/CurrencyEth';
@@ -13,6 +14,7 @@ import { FileDashed as FileDashedIcon } from '@phosphor-icons/react/dist/ssr/Fil
 import { FileX as FileXIcon } from '@phosphor-icons/react/dist/ssr/FileX';
 import { Gear as GearIcon } from '@phosphor-icons/react/dist/ssr/Gear';
 import { GraduationCap as GraduationCapIcon } from '@phosphor-icons/react/dist/ssr/GraduationCap';
+import { Headset as HeadsetIcon } from '@phosphor-icons/react/dist/ssr/Headset';
 import { House as HouseIcon } from '@phosphor-icons/react/dist/ssr/House';
 import { Kanban as KanbanIcon } from '@phosphor-icons/react/dist/ssr/Kanban';
 import { Link as LinkIcon } from '@phosphor-icons/react/dist/ssr/Link';
@@ -30,7 +32,6 @@ import { Truck as TruckIcon } from '@phosphor-icons/react/dist/ssr/Truck';
 import { Upload as UploadIcon } from '@phosphor-icons/react/dist/ssr/Upload';
 import { Users as UsersIcon } from '@phosphor-icons/react/dist/ssr/Users';
 import { WarningDiamond as WarningDiamondIcon } from '@phosphor-icons/react/dist/ssr/WarningDiamond';
-import { Headset as HeadsetIcon } from '@phosphor-icons/react/dist/ssr/Headset';
 
 export const navIcons = {
   'address-book': AddressBookIcon,
@@ -52,6 +53,7 @@ export const navIcons = {
   'text-align-left': TextAlignLeftIcon,
   'warning-diamond': WarningDiamondIcon,
   'money-wavy': MoneyWavyIcon,
+  'clock-user': ClockUserIcon,
   headset: HeadsetIcon,
   cube: CubeIcon,
   file: FileIcon,

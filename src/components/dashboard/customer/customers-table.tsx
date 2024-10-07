@@ -122,7 +122,7 @@ export function CustomersTable({
                       <Typography
                         variant="subtitle2"
                         onClick={() => {
-                          handleRowClick(row.id);
+                          handleRowClick(String(row.id));
                         }}
                         style={{ cursor: 'pointer' }}
                       >
@@ -132,7 +132,7 @@ export function CustomersTable({
                         color="textSecondary"
                         variant="body2"
                         onClick={() => {
-                          handleRowClick(row.id);
+                          handleRowClick(String(row.id));
                         }}
                         style={{ cursor: 'pointer' }}
                       >
@@ -174,7 +174,7 @@ export function CustomersTable({
                             checked={row.status === 1}
                             onChange={(event) => {
                               event.stopPropagation();
-                              updateCustomerStatus(row.id, row.status);
+                              updateCustomerStatus(String(row.id), row.status);
                             }}
                             color={row.status === 1 ? 'success' : 'error'}
                           />
@@ -186,7 +186,7 @@ export function CustomersTable({
                       <Stack direction="row" spacing={1} alignItems="center">
                         <IconButton
                           onClick={() => {
-                            handleEdit(row.id);
+                            handleEdit(String(row.id));
                           }}
                         >
                           <PencilSimple />

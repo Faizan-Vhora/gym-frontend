@@ -47,3 +47,9 @@ export  const ExperienceOptions = [
     { value: 8, label: "8-9 Years" },
     { value: 10, label: "10+ Years" },
   ];
+
+
+export const DateFormat = {
+  dateFormat: 'YYYY-MM-DD'
+}
+
