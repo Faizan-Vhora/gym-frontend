@@ -1,5 +1,7 @@
+'use client';
+
 import React, { useEffect, useState } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import { Button, Card, CardActions, CardContent, Grid, Stack } from '@mui/material';
 import { Minus, Plus, Trash, Upload } from '@phosphor-icons/react';
 import { toast } from 'react-toastify';

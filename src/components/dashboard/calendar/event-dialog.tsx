@@ -38,7 +38,6 @@ import BookingPreviewDialog from './booking-preview';
 import calculateTotalHours from './calculate-hours';
 import PaymentToggle from './payment-toggle';
 import { AvailableSlots, BookingType, DateSlot, Sessions, Slot, WeekSlot, type Event } from './types';
-import { width } from '@mui/system';
 
 export interface BookingCreate {
   trainer: number;
@@ -602,13 +601,13 @@ export function EventDialog({
                 {selectedCustomer && (
                   <Card
                     sx={{
-                      height:'140px',
+                      height: '140px',
                       boxShadow: 5, // Normal box shadow
                       '&:hover': {
                         boxShadow: 15, // Increased box shadow on hover
                       },
                       transition: 'box-shadow 0.3s ease-in-out', // Smooth transition effect
-                      marginTop:'10px',
+                      marginTop: '10px',
                     }}
                   >
                     <CardContent>
@@ -616,14 +615,14 @@ export function EventDialog({
                         <Grid item md={4} alignContent={'center'}>
                           <Avatar
                             src={selectedCustomer.profileImageUrl}
-                            sx={{ height: '56px', width: '56px'}}
+                            sx={{ height: '56px', width: '56px' }}
                           ></Avatar>
                         </Grid>
                         <Grid item md={8} alignContent={'center'}>
                           <Typography variant="subtitle1">{selectedCustomer.fullName}</Typography>
                           <Typography variant="caption" sx={{ display: 'flex', alignItems: 'center' }}>
                             {selectedCustomer.email ? (
-                              <IconButton sx={{padding:'0px',marginRight:'5px'}}>
+                              <IconButton sx={{ padding: '0px', marginRight: '5px' }}>
                                 <Envelope width={18} height={18} />
                               </IconButton>
                             ) : (
@@ -633,8 +632,8 @@ export function EventDialog({
                           </Typography>
                           <Typography variant="caption" sx={{ display: 'flex', alignItems: 'center' }}>
                             {selectedCustomer.phoneNumber ? (
-                              <IconButton sx={{padding:'0px',marginRight:'5px'}}>
-                                <Phone width={18} height={18}/>
+                              <IconButton sx={{ padding: '0px', marginRight: '5px' }}>
+                                <Phone width={18} height={18} />
                               </IconButton>
                             ) : (
                               ''
@@ -682,13 +681,13 @@ export function EventDialog({
                 {selectedTrainer && (
                   <Card
                     sx={{
-                      height:'140px',
+                      height: '140px',
                       boxShadow: 5, // Normal box shadow
                       '&:hover': {
                         boxShadow: 15, // Increased box shadow on hover
                       },
                       transition: 'box-shadow 0.3s ease-in-out', // Smooth transition effect
-                      marginTop:'10px',
+                      marginTop: '10px',
                     }}
                   >
                     <CardContent>
@@ -700,7 +699,7 @@ export function EventDialog({
                           <Typography variant="subtitle1">{selectedTrainer.fullName}</Typography>
                           <Typography variant="caption" sx={{ display: 'flex', alignItems: 'center' }}>
                             {selectedTrainer.fees ? (
-                              <IconButton sx={{padding:'0px',marginRight:'5px'}}>
+                              <IconButton sx={{ padding: '0px', marginRight: '5px' }}>
                                 <CurrencyCircleDollar width={18} height={18} />
                               </IconButton>
                             ) : (
@@ -710,8 +709,8 @@ export function EventDialog({
                           </Typography>
                           <Typography variant="caption" sx={{ display: 'flex', alignItems: 'center' }}>
                             {selectedTrainer.experience ? (
-                              <IconButton sx={{padding:'0px',marginRight:'5px'}}>
-                                <Barbell width={18} height={18}/>
+                              <IconButton sx={{ padding: '0px', marginRight: '5px' }}>
+                                <Barbell width={18} height={18} />
                               </IconButton>
                             ) : (
                               ''
@@ -744,7 +743,7 @@ export function EventDialog({
                       name="selectDate"
                       render={({ field }) => (
                         <DatePicker
-                         sx={{width:'100%'}}
+                          sx={{ width: '100%' }}
                           disablePast
                           disabled={!selectedTrainer}
                           format="MM-DD-YYYY"
@@ -781,7 +780,10 @@ export function EventDialog({
                         <div key={dateIndex}>
                           {dateSlot.weekSlots.map((weekSlot: WeekSlot, weekIndex: number) => (
                             <div key={weekIndex}>
-                              <Typography variant="subtitle1" sx={{ margin: '10px',marginLeft:'0px', textAlign: 'start' }}>
+                              <Typography
+                                variant="subtitle1"
+                                sx={{ margin: '10px', marginLeft: '0px', textAlign: 'start' }}
+                              >
                                 {weekSlot.date}
                               </Typography>
                               <Autocomplete
@@ -885,7 +887,7 @@ export function EventDialog({
                     />
                   </Grid>
                   <Grid item md={8}>
-                    <Typography variant="h6" sx={{ textAlign: 'start',marginBottom:'10px' }}>
+                    <Typography variant="h6" sx={{ textAlign: 'start', marginBottom: '10px' }}>
                       Available Time Slots for{' '}
                       {selectedDays.length > 0
                         ? selectedDays.map((day) => daysOfWeek[day].label).join(', ')
@@ -907,8 +909,8 @@ export function EventDialog({
                         )}
                       />
                     </FormControl>
-                    </Grid>
-                    <Grid item md={8} sx={{paddingTop:'0px'}}>
+                  </Grid>
+                  <Grid item md={8} sx={{ paddingTop: '0px' }}>
                     <Typography variant="h6" sx={{ textAlign: 'start' }}>
                       Available Time Slots
                     </Typography>
@@ -917,7 +919,7 @@ export function EventDialog({
                         <div key={dateIndex}>
                           {dateSlot.weekSlots.map((weekSlot: WeekSlot, weekIndex: number) => (
                             <div key={weekIndex}>
-                              <Typography variant="subtitle1" sx={{ margin:'5px 0px', textAlign: 'start' }}>
+                              <Typography variant="subtitle1" sx={{ margin: '5px 0px', textAlign: 'start' }}>
                                 {weekSlot.date}
                               </Typography>
                               <Autocomplete
@@ -957,8 +959,6 @@ export function EventDialog({
           </Stack>
           <Divider />
 
-
-
           <Stack direction="row" spacing={1} sx={{ alignItems: 'center', justifyContent: 'space-between', p: 2 }}>
             <PaymentToggle bookingAmount={bookingAmount} setPaymentType={setPaymentType} />
             {action === 'update' ? (
@@ -973,37 +973,34 @@ export function EventDialog({
             ) : (
               <div />
             )}
-           </Stack>
+          </Stack>
 
-           <Stack direction="row" spacing={1} sx={{ alignItems: 'center', justifyContent: 'space-between', p: 2 }}>
-
+          <Stack direction="row" spacing={1} sx={{ alignItems: 'center', justifyContent: 'space-between', p: 2 }}>
             <Stack>
-            <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
-              <Button color="secondary" onClick={onClose}>
-                Cancel
-              </Button>
-              <div>
-
-
-                {/* Render the dialog */}
-                <BookingPreviewDialog
-                  isOpen={isPreviewOpen}
-                  handleClose={handlePreviewClose}
-                  selectedCustomer={selectedCustomer}
-                  selectedTrainer={selectedTrainer}
-                  selectedSlots={selectedSlots}
-                  formatDate={formatDate}
-                  getTotalHours={totalHours}
-                  bookingAmount={bookingAmount}
-                />
-              </div>
-              <Button type="submit" variant="contained">
-                Confirm
-              </Button>
-            </Stack>
+              <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
+                <Button color="secondary" onClick={onClose}>
+                  Cancel
+                </Button>
+                <div>
+                  {/* Render the dialog */}
+                  <BookingPreviewDialog
+                    isOpen={isPreviewOpen}
+                    handleClose={handlePreviewClose}
+                    selectedCustomer={selectedCustomer}
+                    selectedTrainer={selectedTrainer}
+                    selectedSlots={selectedSlots}
+                    formatDate={formatDate}
+                    getTotalHours={totalHours}
+                    bookingAmount={bookingAmount}
+                  />
+                </div>
+                <Button type="submit" variant="contained">
+                  Confirm
+                </Button>
+              </Stack>
             </Stack>
             <Button onClick={handlePreview}>Open Booking Preview</Button>
-            </Stack>
+          </Stack>
         </form>
         {loading && <CustomLoader />}
         <ToastContainer />

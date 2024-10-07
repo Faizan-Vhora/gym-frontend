@@ -47,6 +47,10 @@ export const paths = {
     supportList: '/dashboard/support',
   },
 
+  checkIn: {
+    checkIn: '/dashboard/check-in',
+    CheckInForm: (id?: number) => `/dashboard/check-in/form/${id}`
+  },
   // services: {
   //   services: '/dashboard/services',
   //   ServicesForm: (id?: number) => `/dashboard/services/form/${id}`
