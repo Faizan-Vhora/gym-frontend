@@ -32,6 +32,10 @@ import { Truck as TruckIcon } from '@phosphor-icons/react/dist/ssr/Truck';
 import { Upload as UploadIcon } from '@phosphor-icons/react/dist/ssr/Upload';
 import { Users as UsersIcon } from '@phosphor-icons/react/dist/ssr/Users';
 import { WarningDiamond as WarningDiamondIcon } from '@phosphor-icons/react/dist/ssr/WarningDiamond';
+import { ChatCenteredDots as  ChatCenteredDotsIcon} from '@phosphor-icons/react/dist/ssr/ChatCenteredDots';
+import { Tag as TagIcon} from '@phosphor-icons/react/dist/ssr/Tag';
+import { UserCheck  as UserCheckIcon} from '@phosphor-icons/react/dist/ssr/UserCheck';
+import { UserCircleGear as UserCircleGearIcon } from '@phosphor-icons/react/dist/ssr/UserCircleGear';
 
 export const navIcons = {
   'address-book': AddressBookIcon,
@@ -54,6 +58,10 @@ export const navIcons = {
   'warning-diamond': WarningDiamondIcon,
   'money-wavy': MoneyWavyIcon,
   'clock-user': ClockUserIcon,
+  'chat-centered-dots': ChatCenteredDotsIcon,
+  'tag': TagIcon,
+  'user-check': UserCheckIcon,
+  'user-circle-gear': UserCircleGearIcon,
   headset: HeadsetIcon,
   cube: CubeIcon,
   file: FileIcon,
