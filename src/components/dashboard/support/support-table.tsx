@@ -120,9 +120,9 @@ export function SupportTable({
                     USER_TYPE_OPTIONS.find((ele:any)=> ele.value==entry.userType)?.label || '-'
                     }</TableCell>
                     <TableCell sx={tableCss.tableCell}>{ entry.subject}</TableCell>
-                    <TableCell sx={tableCss.tableCell}>
+                    <TableCell>
                       <Select
-                        sx={{ height: '40px' }}
+                        sx={{height:'40px',width:'120px'}}
                         value={entry.status}
                         onChange={(e) => {
                           handleStatusChange(entry.id, e.target.value as SupportEntry['status']);
