@@ -16,6 +16,9 @@ import { Logo } from '@/components/core/logo';
 import { navItems } from './config';
 import { navIcons } from './nav-icons';
 
+import { CaretDown as CaretDownIcon } from '@phosphor-icons/react/dist/ssr/CaretDown';
+import { CaretRight as CaretRightIcon } from '@phosphor-icons/react/dist/ssr/CaretRight';
+
 export function SideNav(): React.JSX.Element {
   const pathname = usePathname();
 
@@ -65,69 +68,121 @@ export function SideNav(): React.JSX.Element {
       </Stack>
       <Divider sx={{ borderColor: 'var(--mui-palette-neutral-700)' }} />
       <Box component="nav" sx={{ flex: '1 1 auto', p: '12px' }}>
-        {renderNavItems({ pathname, items: navItems })}
+        {/* {renderNavItems({ pathname, items: navItems })} */}
+        {renderNavItems({ depth: 0, items: navItems || [], pathname })}
       </Box>
       <Divider sx={{ borderColor: 'var(--mui-palette-neutral-700)' }} />
     </Box>
   );
 }
 
-function renderNavItems({ items = [], pathname }: { items?: NavItemConfig[]; pathname: string }): React.JSX.Element {
-  const children = items.reduce((acc: React.ReactNode[], curr: NavItemConfig): React.ReactNode[] => {
-    const { key, ...item } = curr;
+function renderNavItems({
+  depth = 0,
+  items = [],
+  pathname,
+}: {
+  depth: number;
+  items?: NavItemConfig[];
+  pathname: string;
+}): React.JSX.Element {
 
-    acc.push(<NavItem key={key} pathname={pathname} {...item} />);
+  const children = items.reduce((acc: React.ReactNode[], curr: NavItemConfig): React.ReactNode[] => {
+    const { items: childItems, key, ...item } = curr;
+
+    const forceOpen = childItems
+      ? Boolean(childItems.find((childItem) => childItem.href && pathname.startsWith(childItem.href)))
+      : false;
+
+    acc.push(
+      <NavItem depth={depth} forceOpen={forceOpen} key={key} pathname={pathname} {...item}>
+        {childItems ? renderNavItems({ depth: depth + 1, items: childItems || [], pathname }) : null}
+      </NavItem>
+    );
 
     return acc;
   }, []);
 
   return (
-    <Stack component="ul" spacing={1} sx={{ listStyle: 'none', m: 0, p: 0 }}>
+    <Stack component="ul" data-depth={depth} spacing={1} sx={{ listStyle: 'none', m: 0, p: 0 }}>
       {children}
     </Stack>
   );
 }
-
 interface NavItemProps extends Omit<NavItemConfig, 'items'> {
+  children?: React.ReactNode;
+  depth: number;
+  forceOpen?: boolean;
   pathname: string;
 }
 
-function NavItem({ disabled, external, href, icon, matcher, pathname, title }: NavItemProps): React.JSX.Element {
+function NavItem({
+  children,
+  depth,
+  disabled,
+  external,
+  forceOpen = false,
+  href,
+  matcher,
+  pathname,
+  title,
+  icon,
+
+}: NavItemProps): React.JSX.Element {
   const active = isNavItemActive({ disabled, external, href, matcher, pathname });
   const Icon = icon ? navIcons[icon] : null;
+  const [open, setOpen] = React.useState<boolean>(forceOpen);
+  const ExpandIcon = open ? CaretDownIcon : CaretRightIcon;
+  const isBranch = children && !href;
+  const showChildren = Boolean(children && open);
 
   return (
-    <li>
+    <Box component="li" data-depth={depth} sx={{ userSelect: 'none' }}>
       <Box
-        {...(href
+        {...(isBranch
           ? {
-              component: external ? 'a' : RouterLink,
-              href,
-              target: external ? '_blank' : undefined,
-              rel: external ? 'noreferrer' : undefined,
+              onClick: (): void => {
+                setOpen(!open);
+              },
+              onKeyUp: (event: React.KeyboardEvent<HTMLElement>): void => {
+                if (event.key === 'Enter' || event.key === ' ') {
+                  setOpen(!open);
+                }
+              },
+              role: 'button',
             }
-          : { role: 'button' })}
-        sx={{
-          alignItems: 'center',
-          borderRadius: 1,
-          color: 'var(--NavItem-color)',
-          cursor: 'pointer',
-          display: 'flex',
-          flex: '0 0 auto',
-          gap: 1,
-          p: '6px 16px',
-          position: 'relative',
-          textDecoration: 'none',
-          whiteSpace: 'nowrap',
-          ...(disabled && {
-            bgcolor: 'var(--NavItem-disabled-background)',
-            color: 'var(--NavItem-disabled-color)',
-            cursor: 'not-allowed',
-          }),
-          ...(active && { bgcolor: 'var(--NavItem-active-background)', color: 'var(--NavItem-active-color)' }),
-        }}
+          : {
+              ...(href
+                ? {
+                    component: external ? 'a' : RouterLink,
+                    href,
+                    target: external ? '_blank' : undefined,
+                    rel: external ? 'noreferrer' : undefined,
+                  }
+                : { role: 'button' }),
+            })}
+            sx={{
+              alignItems: 'center',
+              borderRadius: 1,
+              color: 'var(--NavItem-color)',
+              cursor: 'pointer',
+              display: 'flex',
+              flex: '0 0 auto',
+              gap: 1,
+              p: '6px 16px',
+              position: 'relative',
+              textDecoration: 'none',
+              whiteSpace: 'nowrap',
+              ...(disabled && {
+                bgcolor: 'var(--NavItem-disabled-background)',
+                color: 'var(--NavItem-disabled-color)',
+                cursor: 'not-allowed',
+              }),
+              ...(active && { bgcolor: 'var(--NavItem-active-background)', color: 'var(--NavItem-active-color)' }),
+            }}
+        tabIndex={0}
       >
-        <Box sx={{ alignItems: 'center', display: 'flex', justifyContent: 'center', flex: '0 0 auto' }}>
+
+      <Box sx={{ alignItems: 'center', display: 'flex', justifyContent: 'center', flex: '0 0 auto' }}>
           {Icon ? (
             <Icon
               fill={active ? 'var(--NavItem-icon-active-color)' : 'var(--NavItem-icon-color)'}
@@ -144,7 +199,9 @@ function NavItem({ disabled, external, href, icon, matcher, pathname, title }: N
             {title}
           </Typography>
         </Box>
+        {isBranch ? <ExpandIcon fontSize="var(--icon-fontSize-sm)" /> : null}
       </Box>
-    </li>
+      {showChildren ? <Box sx={{ pl: '20px' }}>{children}</Box> : null}
+    </Box>
   );
 }
