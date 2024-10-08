@@ -6,7 +6,8 @@ export const navItems = [
   //   key : 'group-0',
   //   items : [
       { key: 'dashboard', title: 'Dashboard', href: paths.dashboard.dashboard, icon: 'chart-pie', items:[] },
-      { key: 'booking', title: 'Booking', href: paths.dashboard.booking, icon: 'money-wavy', items:[] },
+      { key: 'calendar', title: 'Calendar', href: paths.dashboard.calendar, icon: 'money-wavy', items:[] },
+      { key: 'bookings', title: 'Bookings', href: paths.bookings.bookingsList, icon: 'notepad', items:[] },
       { key: 'members', title: 'Members', href: paths.customers.customers, icon: 'users', items:[] },
       { key: 'trainers', title: 'Trainers', href: paths.trainers.trainers, icon: 'users', items:[] },
       // { key: 'services', title: 'Service Management', href: paths.services.services, icon: 'users', items:[] },

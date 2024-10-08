@@ -36,6 +36,7 @@ import { ChatCenteredDots as  ChatCenteredDotsIcon} from '@phosphor-icons/react/
 import { Tag as TagIcon} from '@phosphor-icons/react/dist/ssr/Tag';
 import { UserCheck  as UserCheckIcon} from '@phosphor-icons/react/dist/ssr/UserCheck';
 import { UserCircleGear as UserCircleGearIcon } from '@phosphor-icons/react/dist/ssr/UserCircleGear';
+import { Notepad as NotepadIcon} from '@phosphor-icons/react/dist/ssr/Notepad';
 
 export const navIcons = {
   'address-book': AddressBookIcon,
@@ -62,6 +63,7 @@ export const navIcons = {
   'tag': TagIcon,
   'user-check': UserCheckIcon,
   'user-circle-gear': UserCircleGearIcon,
+  'notepad': NotepadIcon,
   headset: HeadsetIcon,
   cube: CubeIcon,
   file: FileIcon,
