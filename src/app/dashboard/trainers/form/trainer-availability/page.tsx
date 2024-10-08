@@ -14,6 +14,7 @@ import Swal from 'sweetalert2';
 import { z } from 'zod';
 
 import axiosInstance from '@/lib/axios';
+import { padding } from '@mui/system';
 
 const timeSlotSchema = z
   .object({
@@ -262,7 +263,7 @@ export default function WeekdayTimeSlots() {
 
     return (
       <Box key={day.id} sx={{ marginBottom: 2 }}>
-        <Grid container sx={{ padding: '5px', margin: '25px' }} alignItems="center">
+        <Grid container sx={{ padding: '5px' }} alignItems="center">
           <Grid item md={2}>
             <FormControlLabel
               control={
@@ -304,18 +305,22 @@ export default function WeekdayTimeSlots() {
                 >
                   <Plus />
                 </IconButton>
+                
               </Grid>
-              <Grid item md={9}>
+              
+              <Grid item md={9} >
                 <Controller
+                
                   name={`days.${dayIndex}.timeSlots`}
                   control={control}
                   render={({ field }) => (
                     <>
                       {field.value.map((slot, slotIndex) => (
-                        <Grid container spacing={2} key={slotIndex} alignItems="center">
-                          <Grid item xs={4}>
+                        <Grid container  key={slotIndex} alignItems="center" >
+
+                          <Grid item xs={12} sm={6} md={4} sx={{padding:'10px 10px'}}>
                             <LocalizationProvider dateAdapter={AdapterDayjs}>
-                              <FormControl fullWidth>
+                              <FormControl fullWidth >
                                 <TimePicker
                                   label="Start Time"
                                   value={slot.startTime ? dayjs(slot.startTime) : null}
@@ -333,7 +338,7 @@ export default function WeekdayTimeSlots() {
                             </LocalizationProvider>
                           </Grid>
 
-                          <Grid item xs={4}>
+                          <Grid item xs={12} sm={6} md={4} sx={{padding:'10px 10px'}}>
                             <LocalizationProvider dateAdapter={AdapterDayjs}>
                               <FormControl fullWidth>
                                 <TimePicker
@@ -353,7 +358,7 @@ export default function WeekdayTimeSlots() {
                             </LocalizationProvider>
                           </Grid>
 
-                          <Grid item xs={1}>
+                          <Grid item xs={12} sm={6} md={1}>
                             <IconButton
                               onClick={() => {
                                 if (setSameTimeForAll && dayIndex !== 0) return;
@@ -369,6 +374,7 @@ export default function WeekdayTimeSlots() {
                               <Minus />
                             </IconButton>
                           </Grid>
+
                         </Grid>
                       ))}
                     </>
