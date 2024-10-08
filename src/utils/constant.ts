@@ -36,7 +36,51 @@ export const SUPPORT_TICKET_STATUS_OPTIONS = [
   { value: String(SUPPORT_TICKET_STATUS.RESOLVED), label: "Resolved" },
 ]
 
+
+// Booking
+
+export const BOOKING_STATUS = {
+  PENDING : 'pending',
+  CANCELED  : 'cancelled',
+  COMPLETED  : 'completed',
+}
+
+export const BOOKING_STATUS_OPTIONS = [
+  { value: BOOKING_STATUS.PENDING, label: "Pending" },
+  { value: BOOKING_STATUS.CANCELED, label: "Cancelled" },
+  { value: BOOKING_STATUS.COMPLETED, label: "Completed" },
+]
+
+export const BOOKING_STATUS_DETAILS: Record<string, { value: string; label: string; color: 'warning' | 'error' | 'success' }>  = {
+  [BOOKING_STATUS.PENDING] : { value: BOOKING_STATUS.PENDING, label: "Pending" , color: 'warning'},
+  [BOOKING_STATUS.CANCELED] : { value: BOOKING_STATUS.CANCELED, label: "Cancelled" , color: 'error'},
+  [BOOKING_STATUS.COMPLETED] : { value: BOOKING_STATUS.COMPLETED, label: "Completed" , color: 'success'},
+
+}
+
+
+export const BOOKING_TYPE = {
+  ONE_TIME : 'one_time',
+  WEEKLY  : 'weekly',
+}
+
+export const BOOKING_TYPE_OPTIONS = [
+  { value: BOOKING_TYPE.ONE_TIME, label: "One Time" },
+  { value: BOOKING_TYPE.WEEKLY, label: "Weekly" },
+]
+
+export const BOOKING_TYPE_DETAILS: Record<string, { value: string; label: string; color: 'warning' | 'success' }> = {
+  [BOOKING_TYPE.ONE_TIME] : { value: BOOKING_TYPE.ONE_TIME, label: "One Time" , color: 'warning'},
+  [BOOKING_TYPE.WEEKLY] : { value: BOOKING_TYPE.WEEKLY, label: "Weekly" , color: 'success'},
+}
+
+
 // Other
+
+
+// Other
+
+
 
 export  const ExperienceOptions = [
     { value: 0, label: "None" }, // Option for no selection

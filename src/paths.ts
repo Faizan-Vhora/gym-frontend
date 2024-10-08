@@ -56,10 +56,15 @@ export const paths = {
   //   ServicesForm: (id?: number) => `/dashboard/services/form/${id}`
   // },
 
+  bookings: {
+    bookingsList: '/dashboard/bookings',
+  },
+
+
   dashboard: {
     dashboard: '/dashboard',
     account: '/dashboard/account',
-    booking: '/dashboard/calendar',
+    calendar: '/dashboard/calendar',
     changePassword: '/dashboard/change-password',
     integrations: '/dashboard/integrations',
     settings: '/dashboard/settings'

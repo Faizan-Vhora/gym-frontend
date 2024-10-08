@@ -19,6 +19,11 @@ export const formatUtcToLocalDatetime = (utcDatetimeString:Date | string|null|un
 
 }
 
+export const formatDate = (dateString: string)=>{
+  const [year, month, day] = dateString.split('-');
+  return `${day}/${month}/${year}`;
+}
+
 
 export const formatTime = (date: Date) => {
   if (!date) return null; // Handle null case
