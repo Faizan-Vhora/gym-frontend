@@ -177,7 +177,16 @@ const UnavailableDateRanges = () => {
             </Grid>
           ))}
           <Stack className='trainerbtn' alignItems={'end'} flexDirection={'row'} justifyContent={'end'} padding={5}>
-            <Button variant="outlined" onClick={addDateRange} style={{ marginTop: '16px' }}>
+            <Button variant="outlined" onClick={addDateRange} style={{ marginTop: '16px' }}             sx={{
+              borderColor: '#d0021b',
+              color: '#d0021b',
+              marginLeft: '15px',
+              transform: 'skewX(-20deg)',
+              '&:hover': {
+                borderColor: 'darkred',
+                backgroundColor: 'rgba(255, 0, 0, 0.1)',
+              },
+            }}>
               + Add Another Date Range
             </Button>
 
