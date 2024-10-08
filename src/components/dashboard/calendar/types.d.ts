@@ -44,3 +44,18 @@ interface DateSlot {
   weekday: number;
   weekSlots: WeekSlot[];
 }
+
+
+
+
+interface DaySchedule {
+  weekday: number;     // Weekday number (0-6, where 0 = Sunday, 6 = Saturday)
+  weekSlots: WeekSlot[]; // List of week slots for that day
+}
+
+interface ScheduleResponse {
+  success: boolean;    // Indicates if the operation was successful
+  message: string;     // Response message
+  data: DaySchedule[]; // List of schedules by weekday
+  errors: object;      // Errors if any (can be further typed if needed)
+}

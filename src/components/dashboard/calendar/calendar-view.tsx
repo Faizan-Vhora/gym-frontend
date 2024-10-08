@@ -2,6 +2,7 @@
 
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
+import { DateFormat } from '@/utils/constant';
 import type { DateSelectArg, EventClickArg, EventDropArg } from '@fullcalendar/core';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import type { EventResizeDoneArg } from '@fullcalendar/interaction';
@@ -17,15 +18,21 @@ import IconButton from '@mui/material/IconButton';
 import Stack from '@mui/material/Stack';
 import { CaretLeft as CaretLeftIcon } from '@phosphor-icons/react/dist/ssr/CaretLeft';
 import { CaretRight as CaretRightIcon } from '@phosphor-icons/react/dist/ssr/CaretRight';
+import dayjs from 'dayjs';
+import { toast, ToastContainer } from 'react-toastify';
+
+import 'react-toastify/dist/ReactToastify.css';
 
 import { paths } from '@/paths';
+import axiosInstance from '@/lib/axios';
 import { useDialog } from '@/hooks/use-dialog';
 
 import { CalendarContext } from './calendar-context';
 import { EventContent } from './event-content';
 import { EventDialog } from './event-dialog';
+import SlotRescheduleForm from './reschedule-session-dialog';
 import { Toolbar } from './toolbar';
-import type { ViewMode } from './types';
+import type { ViewMode, WeekSlot } from './types';
 
 interface CreateDialogData {
   range?: { start: Date; end: Date };
@@ -37,19 +44,64 @@ export interface CalendarViewProps {
   view?: ViewMode;
 }
 
+interface DaySchedule {
+  weekday: number; // Weekday number (0-6, where 0 = Sunday, 6 = Saturday)
+  weekSlots: WeekSlot[]; // List of week slots for that day
+}
+
+interface ScheduleResponse {
+  success: boolean; // Indicates if the operation was successful
+  message: string; // Response message
+  data: DaySchedule[]; // List of schedules by weekday
+  errors: object; // Errors if any (can be further typed if needed)
+}
+
 export function CalendarView({ view = 'dayGridMonth' }: CalendarViewProps): React.JSX.Element {
-  const { events, currentEventId, setCurrentEventId, createEvent, deleteEvent, updateEvent } =
+  const { currentEventId, setCurrentEventId, createEvent, deleteEvent, updateEvent } =
     React.useContext(CalendarContext);
 
   const router = useRouter();
 
   const calendarRef = React.useRef<Calendar | null>(null);
 
+  const [events, setEvents] = React.useState([]);
   const [date, setDate] = React.useState<Date>(new Date());
+
+  const [trainerId, setTrainerId] = React.useState(null);
+
+  const [loading, setLoading] = React.useState(true);
+  const [selectedEvent, setSelectedEvent] = React.useState<any | null>(null);
+  const [isDialogOpen, setIsDialogOpen] = React.useState(false);
 
   const createDialog = useDialog<CreateDialogData>();
 
-  const currentEvent = currentEventId ? events.get(currentEventId) : undefined;
+  const fetchEvents = async () => {
+    try {
+      const response = await axiosInstance.get('/session-booking/session/list');
+      const { data } = response.data;
+
+      // Map the API response to FullCalendar format
+      const formattedEvents = data.items.map((item: any) => ({
+        id: item.id,
+        title: `Trainer: ${item.trainer.fullName} | Member: ${item.customer.fullName}`,
+        start: `${item.sessionDate}T${item.sessionStartTime}`, // Combine date and time
+        end: `${item.sessionDate}T${item.sessionEndTime}`,
+        extendedProps: {
+          trainerId: item.trainer.id,
+          start: item.sessionDate,
+          end: item.sessionDate, // Include the entire trainer object
+        },
+      }));
+      console.log('fetched events ', formattedEvents);
+      setEvents(formattedEvents);
+    } catch (error) {
+      console.error('Error fetching events', error);
+    }
+  };
+
+  React.useEffect(() => {
+    void fetchEvents();
+  }, []);
 
   const handleViewChange = React.useCallback(
     (value: ViewMode) => {
@@ -59,7 +111,7 @@ export function CalendarView({ view = 'dayGridMonth' }: CalendarViewProps): Reac
         calendarApi.changeView(value);
       }
 
-      router.push(`${paths.dashboard.booking}?view=${value}`);
+      router.push(`${paths.dashboard.calendar}?view=${value}`);
     },
     [router]
   );
@@ -108,12 +160,17 @@ export function CalendarView({ view = 'dayGridMonth' }: CalendarViewProps): Reac
     [createDialog]
   );
 
-  const handleEventSelect = React.useCallback(
-    (arg: EventClickArg) => {
-      setCurrentEventId(arg.event.id);
-    },
-    [setCurrentEventId]
-  );
+  const handleEventSelect = React.useCallback((arg: EventClickArg) => {
+    console.log('Event selected:', arg.event);
+    setSelectedEvent(arg.event);
+    setTrainerId(arg.event._def.extendedProps.trainerId);
+    setIsDialogOpen(true);
+  }, []);
+
+  const handleDialogClose = () => {
+    setIsDialogOpen(false);
+    setSelectedEvent(null);
+  };
 
   const handleEventResize = React.useCallback(
     (arg: EventResizeDoneArg) => {
@@ -130,6 +187,51 @@ export function CalendarView({ view = 'dayGridMonth' }: CalendarViewProps): Reac
     },
     [updateEvent]
   );
+
+  interface Slot {
+    date: string; // Format: 'YYYY-MM-DD'
+    weekday: number; // Weekday index
+    startTime: string; // Ensure consistent formatting
+    endTime: string;
+    isAvailable: boolean;
+  }
+
+  interface WeekSlot {
+    date: string; // e.g., '2024-10-08'
+    slots: Slot[];
+  }
+
+  interface DaySchedule {
+    weekday: number; // or whatever type this represents
+    weekSlots: WeekSlot[];
+  }
+
+  interface ScheduleResponse {
+    success: boolean;
+    message: string;
+    data: DaySchedule[]; // Now correctly represents the API response
+    errors: Record<string, unknown>; // Adjust as needed for error handling
+  }
+
+  const handleReschedule = async (payload: {
+    sessionDate: string;
+    sessionStartTime: string;
+    sessionEndTime: string;
+  }) => {
+    try {
+      // Call the API to reschedule the event
+      const response = await axiosInstance.put(`/session-booking/session/update-detail/${selectedEvent.id}`, {
+        sessionDate: payload.sessionDate,
+        sessionStartTime: payload.sessionStartTime,
+        sessionEndTime: payload.sessionEndTime,
+      });
+      toast.success('Slot rescheduled successfully!');
+      setIsDialogOpen(false); // Close the dialog
+      fetchEvents(); // Refresh events
+    } catch (error) {
+      toast.error('Failed to reschedule slot');
+    }
+  };
 
   return (
     <React.Fragment>
@@ -175,7 +277,19 @@ export function CalendarView({ view = 'dayGridMonth' }: CalendarViewProps): Reac
           </IconButton>
         </Stack>
       </Stack>
-      {createDialog.open ? (
+
+      {/* Slot Reschedule Dialog */}
+      {selectedEvent && (
+        <SlotRescheduleForm
+          event={selectedEvent}
+          open={isDialogOpen}
+          onClose={handleDialogClose}
+          onSubmit={handleReschedule}
+          trainerId={trainerId}
+        />
+      )}
+      <ToastContainer />
+      {/* {createDialog.open ? (
         <EventDialog
           action="create"
           onClose={createDialog.handleClose}
@@ -205,7 +319,7 @@ export function CalendarView({ view = 'dayGridMonth' }: CalendarViewProps): Reac
           }}
           open
         />
-      ) : null}
+      ) : null} */}
     </React.Fragment>
   );
 }
