@@ -75,6 +75,91 @@ export const BOOKING_TYPE_DETAILS: Record<string, { value: string; label: string
 }
 
 
+
+
+export const BOOKING_PAYMENT_TYPE = {
+  FULL : 'full',
+  PER_SESSION  : 'per_session',
+}
+
+export const BOOKING_PAYMENT_TYPE_OPTIONS = [
+  { value: BOOKING_PAYMENT_TYPE.FULL, label: "Full" },
+  { value: BOOKING_PAYMENT_TYPE.PER_SESSION, label: "Per Sesion" },
+]
+
+export const BOOKING_PAYMENT_TYPE_DETAILS: Record<string, { value: string; label: string; color: 'warning' | 'success' }> = {
+  [BOOKING_PAYMENT_TYPE.FULL] : { value: BOOKING_PAYMENT_TYPE.FULL, label: "Full" , color: 'warning'},
+  [BOOKING_PAYMENT_TYPE.PER_SESSION] : { value: BOOKING_PAYMENT_TYPE.PER_SESSION, label: "Per Sesion" , color: 'success'},
+}
+
+
+
+
+
+export const BOOKING_PAYMENT_STATUS = {
+  PENDING : 'pending',
+  CANCELED  : 'cancelled',
+  COMPLETED  : 'completed',
+}
+
+export const BOOKING_PAYMENT_STATUS_OPTIONS = [
+  { value: BOOKING_PAYMENT_STATUS.PENDING, label: "Pending" },
+  { value: BOOKING_PAYMENT_STATUS.CANCELED, label: "Cancelled" },
+  { value: BOOKING_PAYMENT_STATUS.COMPLETED, label: "Completed" },
+]
+
+export const BOOKING_PAYMENT_STATUS_DETAILS: Record<string, { value: string; label: string; color: 'warning' | 'error' | 'success' }>  = {
+  [BOOKING_PAYMENT_STATUS.PENDING] : { value: BOOKING_PAYMENT_STATUS.PENDING, label: "Pending" , color: 'warning'},
+  [BOOKING_PAYMENT_STATUS.CANCELED] : { value: BOOKING_PAYMENT_STATUS.CANCELED, label: "Cancelled" , color: 'error'},
+  [BOOKING_PAYMENT_STATUS.COMPLETED] : { value: BOOKING_PAYMENT_STATUS.COMPLETED, label: "Completed" , color: 'success'},
+
+}
+
+
+
+export const BOOKING_SESSION_STATUS = {
+  IN_COMING : 'incoming',
+  STARTED : 'started',
+  COMPLETED : 'completed',
+  CANCELLED : 'cancelled',
+
+}
+
+export const BOOKING_SESSION_STATUS_OPTIONS = [
+  { value: BOOKING_SESSION_STATUS.IN_COMING, label: "In Coming" },
+  { value: BOOKING_SESSION_STATUS.STARTED, label: "Started" },
+  { value: BOOKING_SESSION_STATUS.CANCELLED, label: "Cancelled" },
+  { value: BOOKING_SESSION_STATUS.COMPLETED, label: "Completed" },
+]
+
+export const BOOKING_SESSION_STATUS_DETAILS: Record<string, { value: string; label: string; color: 'warning' | 'error' | 'success' }>  = {
+  [BOOKING_SESSION_STATUS.IN_COMING] : { value: BOOKING_SESSION_STATUS.IN_COMING, label: "Pending" , color: 'warning'},
+  [BOOKING_SESSION_STATUS.STARTED] : { value: BOOKING_SESSION_STATUS.STARTED, label: "Started" , color: 'warning'},
+  [BOOKING_SESSION_STATUS.COMPLETED] : { value: BOOKING_SESSION_STATUS.COMPLETED, label: "Completed" , color: 'success'},
+  [BOOKING_SESSION_STATUS.CANCELLED] : { value: BOOKING_SESSION_STATUS.CANCELLED, label: "Cancelled" , color: 'error'},
+}
+
+
+
+export const BOOKING_SESSION_PAYMENT_STATUS = {
+  PENDING : 'pending',
+  CANCELED  : 'cancelled',
+  COMPLETED  : 'completed',
+}
+
+export const BOOKING_SESSION_PAYMENT_STATUS_OPTIONS = [
+  { value: BOOKING_SESSION_PAYMENT_STATUS.PENDING, label: "Pending" },
+  { value: BOOKING_SESSION_PAYMENT_STATUS.CANCELED, label: "Cancelled" },
+  { value: BOOKING_SESSION_PAYMENT_STATUS.COMPLETED, label: "Completed" },
+]
+
+export const BOOKING_SESSION_PAYMENT_STATUS_DETAILS: Record<string, { value: string; label: string; color: 'warning' | 'error' | 'success' }>  = {
+  [BOOKING_SESSION_PAYMENT_STATUS.PENDING] : { value: BOOKING_SESSION_PAYMENT_STATUS.PENDING, label: "Pending" , color: 'warning'},
+  [BOOKING_SESSION_PAYMENT_STATUS.CANCELED] : { value: BOOKING_SESSION_PAYMENT_STATUS.CANCELED, label: "Cancelled" , color: 'error'},
+  [BOOKING_SESSION_PAYMENT_STATUS.COMPLETED] : { value: BOOKING_SESSION_PAYMENT_STATUS.COMPLETED, label: "Completed" , color: 'success'},
+
+}
+
 // Other
 
 

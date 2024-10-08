@@ -29,8 +29,36 @@ import { formatDate } from '@/utils/dateUtils';
 
 export interface BookingEntry {
   id: number;
-  customer: {  id:number, fullName: string; email: string } | null;
-  trainer: {  id:number, fullName: string; email: string } | null;
+  customer: {
+    id:number,
+    memberId: string;
+    fullName: string;
+    email: string;
+    aboutMe: string;
+    address: string;
+    zipCode: string;
+    dialCode: string;
+    phoneNumber: string;
+    gender: string;
+    profileImageUrl: string;
+    status: number;
+  } | null;
+  trainer: {
+    id:number,
+    memberId: string;
+    fullName: string;
+    email: string;
+    aboutMe: string;
+    address: string;
+    zipCode: string;
+    dialCode: string;
+    phoneNumber: string;
+    gender: string;
+    profileImageUrl: string;
+    status: number;
+    experience: number;
+    fees: number;
+  } | null;
   bookingType: 'one_time' | 'weekly';
   status: string;
   startDate: string;
@@ -38,8 +66,12 @@ export interface BookingEntry {
   bookingHours: number;
   bookingAmount: number;
   netTotalAmount:number;
-  paymentType: 'per_session',
-  paymentStatus: 'pending',
+  paymentType: 'per_session';
+  paymentStatus: 'pending';
+  weekdays: string;
+  recurrenceWeeks: number;
+  discount: number;
+  trainerRatePerHour:number;
   createdAt: Date | string |null;
   createdBy: { fullName: string; email: string };
 }
@@ -87,6 +119,13 @@ export function BookingTable({
     // toast.success('Status updated successfully!'); // Show success toast
   };
 
+
+
+  const handleRowClick = (id: number): void => {
+    router.push(`/dashboard/bookings/view?id=${id}`); // Replace with the actual path to your form page
+  };
+
+
   return (
     <>
       <Card>
@@ -115,7 +154,11 @@ export function BookingTable({
                 entries.map((entry) => (
                   <TableRow hover key={entry.id} sx={tableCss.tableRow}>
 
-                  <TableCell sx={tableCss.tableCell}>{ `#${entry.id}`}</TableCell>
+                  <TableCell sx={tableCss.tableCell }
+                  onClick={() => {
+                          handleRowClick(entry.id);
+                        }}
+                        style={{ cursor: 'pointer' }}>{ `#${entry.id}`}</TableCell>
 
                     <TableCell sx={tableCss.tableCell}>
                       <Stack direction="row" spacing={2}>

@@ -25,7 +25,10 @@ export const formatDate = (dateString: string)=>{
 }
 
 
-export const formatTime = (date: Date) => {
+export const formatTime = (date: Date | string) => {
+  if(typeof(date) == 'string'){
+    date = new Date(date)
+  }
   if (!date) return null; // Handle null case
   const hours = String(date.getHours()).padStart(2, '0'); // Get hours and pad with zeros
   const minutes = String(date.getMinutes()).padStart(2, '0'); // Get minutes

@@ -29,7 +29,7 @@ const MembershipPlanCard: React.FC<MembershipPlanCardProps> = ({
   return (
     <Card className='memberCard' {...cardProps}>
       <CardContent style={{ flexGrow: 1 }}>
-       
+
         <Typography variant="h5" component="div" gutterBottom>
           {title}
         </Typography>
