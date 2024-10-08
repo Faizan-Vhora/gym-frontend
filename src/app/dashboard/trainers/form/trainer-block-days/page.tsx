@@ -104,10 +104,10 @@ const UnavailableDateRanges = () => {
       {isLoading ? (
         <p>Loading...</p> // Show loading state
       ) : (
-        <form onSubmit={handleSubmit(onSubmit)}>
+        <form style={{marginTop:'40px'}} onSubmit={handleSubmit(onSubmit)}>
           {unavailableDates.map((dateRange, index) => (
-            <Grid container spacing={2} key={index}>
-              <Grid item xs={5}>
+            <Grid container alignItems={'center'} key={index} sx={{marginLeft:'5px'}}>
+              <Grid item xs={12} sm={6} md={4} sx={{padding:'15px'}}>
                 <FormControl fullWidth>
                   <Controller
                     name={`unavailableDates.${index}.startDate`} // Correct the name
@@ -138,7 +138,7 @@ const UnavailableDateRanges = () => {
                 </FormControl>
               </Grid>
 
-              <Grid item xs={5}>
+              <Grid item xs={12} sm={6} md={4} sx={{padding:'15px'}}>
                 <FormControl fullWidth>
                   <Controller
                     name={`unavailableDates.${index}.endDate`} // Correct the name
@@ -169,14 +169,14 @@ const UnavailableDateRanges = () => {
                 </FormControl>
               </Grid>
 
-              <Grid item xs={2}>
+              <Grid item xs={12} sm={6} md={1}>
                 <IconButton onClick={() => removeDateRange(index)} color="error">
                   <Trash />
                 </IconButton>
               </Grid>
             </Grid>
           ))}
-          <Stack alignItems={'end'} flexDirection={'row'} justifyContent={'end'} padding={5}>
+          <Stack className='trainerbtn' alignItems={'end'} flexDirection={'row'} justifyContent={'end'} padding={5}>
             <Button variant="outlined" onClick={addDateRange} style={{ marginTop: '16px' }}>
               + Add Another Date Range
             </Button>
