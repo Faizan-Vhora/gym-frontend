@@ -50,6 +50,7 @@ import ImageUploadCards from './banner-images/page';
 import { CheckInTableView, type CheckInEntry } from './check-in-view';
 import TrainerAdditionalForm from './profile-details/page';
 import WeekdayTimeSlots from './trainer-availability/page';
+import UnavailableDateRanges from './trainer-block-days/page';
 
 export default function TrainerEditForm(): React.JSX.Element {
   const searchParams = useSearchParams();
@@ -343,6 +344,7 @@ export default function TrainerEditForm(): React.JSX.Element {
               <Tab label="Banner Images" />
               <Tab label="Check In History" />
               <Tab label="Trainer Availability" />
+              <Tab label="Trainer Block Days" />
             </Tabs>
           </Stack>
         )}
@@ -637,6 +639,7 @@ export default function TrainerEditForm(): React.JSX.Element {
           />
         )}
         {tab === 4 && <WeekdayTimeSlots />}
+        {tab === 5 && <UnavailableDateRanges />}
         {loading && <CustomLoader />}
         {error ? <Alert color="error">{error}</Alert> : null}
       </Card>
