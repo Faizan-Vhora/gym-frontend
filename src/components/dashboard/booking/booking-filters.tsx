@@ -4,22 +4,22 @@ import { FormControl, Grid, IconButton, InputAdornment, InputLabel, MenuItem, Se
 import type { SelectChangeEvent } from '@mui/material';
 import { X as XIcon } from '@phosphor-icons/react'; // Import XIcon from phosphor-react
 import debounce from 'lodash/debounce';
-import { SUPPORT_TICKET_STATUS_OPTIONS, SUPPORT_TICKET_USER_TYPE_OPTIONS } from '@/utils/constant';
+import { BOOKING_STATUS_OPTIONS, BOOKING_TYPE_OPTIONS } from '@/utils/constant';
 
 interface SupportFiltersProps {
   onSearchChange: (searchTerm: string) => void;
   onStatusChange: (status: string) => void;
-  onFromChange: (from: string) => void;
+  onBookingTypeChange: (bookingType: string) => void;
 }
 
 export function BookingFilters({
   onSearchChange,
   onStatusChange,
-  onFromChange,
+  onBookingTypeChange,
 }: SupportFiltersProps): React.JSX.Element {
   const [searchTerm, setSearchTerm] = useState('');
   const [status, setStatus] = useState('All');
-  const [from, setFrom] = useState('All');
+  const [bookingType, setBookingType] = useState('All');
 
   // Create a debounced version of the search handler
   const debouncedSearch = React.useCallback(
@@ -53,10 +53,10 @@ export function BookingFilters({
     onStatusChange(value);
   };
 
-  const handleFromChange = (e: SelectChangeEvent): void => {
+  const handleBookingTypeChange = (e: SelectChangeEvent): void => {
     const value = e.target.value;
-    setFrom(value);
-    onFromChange(value);
+    setBookingType(value);
+    onBookingTypeChange(value);
   };
 
   return (
@@ -64,7 +64,7 @@ export function BookingFilters({
       <Grid item md={4} xs={12}>
         <TextField
           fullWidth
-          label="Search by Subject, Name or Email"
+          label="Search by Name or Email or Phone Number"
           variant="outlined"
           value={searchTerm}
           onChange={handleSearchChange}
@@ -84,7 +84,7 @@ export function BookingFilters({
           <InputLabel>Status</InputLabel>
           <Select value={status} onChange={handleStatusChange} label="Status">
           <MenuItem value="All">All</MenuItem>
-            {SUPPORT_TICKET_STATUS_OPTIONS.map((option) => (
+            {BOOKING_STATUS_OPTIONS.map((option) => (
               <MenuItem key={option.value} value={option.value}>
                 {option.label}
               </MenuItem>
@@ -94,10 +94,10 @@ export function BookingFilters({
       </Grid>
       <Grid item md={4} xs={12}>
         <FormControl fullWidth variant="outlined">
-          <InputLabel>From</InputLabel>
-          <Select value={from} onChange={handleFromChange} label="From">
+          <InputLabel>Booking Type</InputLabel>
+          <Select value={bookingType} onChange={handleBookingTypeChange} label="bookingType">
           <MenuItem value="All">All</MenuItem>
-            {SUPPORT_TICKET_USER_TYPE_OPTIONS.map((option) => (
+            {BOOKING_TYPE_OPTIONS.map((option) => (
               <MenuItem key={option.value} value={option.value}>
                 {option.label}
               </MenuItem>

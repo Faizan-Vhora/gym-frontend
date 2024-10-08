@@ -30,7 +30,7 @@ export default function Page(): React.JSX.Element {
   const [entries, setEntries] = React.useState<BookingEntry[]>([]);
   const [searchTerm, setSearchTerm] = React.useState('');
   const [statusFilter, setStatusFilter] = React.useState('All');
-  const [fromFilter, setFromFilter] = React.useState('All');
+  const [bookingTypeFilter, setBookingTypeFilter] = React.useState('All');
   const [page, setPage] = React.useState<number>(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [count, setCount] = React.useState<number>(0);
@@ -50,8 +50,8 @@ export default function Page(): React.JSX.Element {
         page: page + 1,
         limit: rowsPerPage, // Number of rows per page
         search: searchTerm, // Search term
-        // userType: fromFilter !== 'All' ? fromFilter : null, // From filter
-        // status: statusFilter !== 'All' ? statusFilter : null, // Status filter
+        bookingType: bookingTypeFilter !== 'All' ? bookingTypeFilter : null, // Booking type filter
+        status: statusFilter !== 'All' ? statusFilter : null, // Status filter
       }
 
       const response = await axiosInstance.get<{ data: { items: BookingEntry[]; meta: { totalItems: number } } }>(
@@ -72,7 +72,7 @@ export default function Page(): React.JSX.Element {
     } finally {
       setLoading(false);
     }
-  }, [page, rowsPerPage, searchTerm, statusFilter, fromFilter]);
+  }, [page, rowsPerPage, searchTerm, statusFilter, bookingTypeFilter]);
 
 
   // const handleAddClick = (): void => {
@@ -137,8 +137,8 @@ export default function Page(): React.JSX.Element {
 
   };
 
-  const handleFromChange = (type: string): void => {
-    setFromFilter(type);
+  const handleBookingTypeChange = (type: string): void => {
+    setBookingTypeFilter(type);
     setPage(0);
 
   };
@@ -174,13 +174,13 @@ export default function Page(): React.JSX.Element {
     </Stack>
     <Card>
 
-      {/* <Stack sx={{ padding: '30px' }}>
+      <Stack sx={{ padding: '30px' }}>
          <BookingFilters
          onSearchChange={handleSearchChange}
          onStatusChange={handleStatusChange}
-         onFromChange={handleFromChange}
+         onBookingTypeChange={handleBookingTypeChange}
        />
-      </Stack> */}
+      </Stack>
 
       {loading ? (
         <CustomLoader />
