@@ -123,3 +123,18 @@ body {
 .memberCard:hover{
     border: 1px solid #d0021b;  
    }
+   .banner-image {
+    display: flex;
+    flex-direction: row !important;
+    flex-wrap: wrap;
+    /* column-gap: 20px; */
+   }
+   /* .banner-image .mui-p2z5n0-MuiPaper-root-MuiCard-root{
+    margin: 20px;
+  } */
+   @media only screen and (max-width:768px) {
+    .banner-image .mui-1phv87n-MuiPaper-root-MuiCard-root{
+      width: 100% !important;
+      margin:20px;
+    }
+   }

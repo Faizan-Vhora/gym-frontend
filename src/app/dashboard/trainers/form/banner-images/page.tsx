@@ -130,26 +130,28 @@ const ImageUploadCards = () => {
 
   return (
     <div>
-      {images.map((imagePreview, index) => (
-        <Grid container spacing={5} key={index}>
-          <Grid item md={6}>
-            <Card sx={{ marginBottom: '40px' }}>
+    <Stack className='banner-image' >
+    {/* <Grid item md={6}> */}
+    {/* <Stack> */}
+        {images.map((imagePreview, index) => (
+
+            <Card sx={{ margin:'30px 20px',width:'45%'}}>
               <CardActions>
                 <Button component="label" fullWidth variant="text">
                   Upload picture
                   <input type="file" accept="image/*" hidden onChange={handleImageChange(index)} />
                 </Button>
               </CardActions>
-              <CardContent>
-                <Stack sx={{ alignItems: 'center' }}>
+              <CardContent >
+                <Stack sx={{alignItems: 'center' }}>
                   {imagePreview.url && (
-                    <Stack spacing={1} mt={2}>
+                    <Stack spacing={1} >
                       <img
                         src={
                           imagePreview.url instanceof File ? URL.createObjectURL(imagePreview.url) : imagePreview.url
                         } // Check if imagePreview is a File object
                         alt={`Profile Preview ${index + 1}`}
-                        style={{ width: '100%', maxHeight: '200px', objectFit: 'cover', marginTop: '1rem' }}
+                        style={{ width: '100%', height: '200px', objectFit: 'cover' }}
                       />
                       <Button color="error" startIcon={<Trash />} onClick={handleRemoveImage(index)}>
                         Remove Image
@@ -159,18 +161,19 @@ const ImageUploadCards = () => {
                 </Stack>
               </CardContent>
             </Card>
-          </Grid>
-        </Grid>
       ))}
+          {/* </Grid> */}
+        {/* </Stack> */}
+        </Stack>
 
       {images.length < 5 && (
-        <Button variant="contained" color="primary" startIcon={<Plus />} onClick={handleAddCard}>
+        <Button sx={{margin:'20px 20px'}} variant="contained" color="primary" startIcon={<Plus />} onClick={handleAddCard}>
           Add Another Image
         </Button>
       )}
 
       {images.length > 1 && (
-        <Button variant="contained" color="secondary" startIcon={<Minus />} onClick={handleRemoveLastCard}>
+        <Button sx={{margin:'20px 20px'}} variant="contained" color="secondary" startIcon={<Minus />} onClick={handleRemoveLastCard}>
           Remove Last Image
         </Button>
       )}
@@ -181,6 +184,7 @@ const ImageUploadCards = () => {
         startIcon={<Upload />}
         onClick={handleUploadImages}
         disabled={images.every((image) => image.url === null)}
+        sx={{margin:'20px 20px'}}
       >
         Upload Images
       </Button>
