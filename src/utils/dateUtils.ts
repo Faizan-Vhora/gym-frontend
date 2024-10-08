@@ -25,7 +25,7 @@ export const formatDate = (dateString: string)=>{
 }
 
 
-export const formatTime = (date: Date | string) => {
+export const formatTime = (date: Date) => {
   if(typeof(date) == 'string'){
     date = new Date(date)
   }

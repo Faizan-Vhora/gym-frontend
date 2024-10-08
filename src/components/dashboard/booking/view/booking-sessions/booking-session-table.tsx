@@ -29,8 +29,11 @@ import {
   BOOKING_STATUS_DETAILS,
   BOOKING_TYPE_DETAILS,
 } from '@/utils/constant';
-import { formatDate, formatTime } from '@/utils/dateUtils';
-import { Chat, PencilSimple, XCircle } from '@phosphor-icons/react';
+import { convertTo12HourFormat, formatDate, formatTime } from '@/utils/dateUtils';
+import { formatAmount } from '@/utils/converter';
+
+
+import { Chat, PencilSimple, XCircle, Note, ArrowsClockwise } from '@phosphor-icons/react';
 
 import tableCss from '@/styles/table-css';
 
@@ -91,6 +94,8 @@ interface BookingTableProps {
   rowsPerPage: number;
   totalEntries: number;
   onUpdateStatus: (id: number, newStatus: BookingSessionEntry['status']) => void;
+  onUpdateNotes: (session: BookingSessionEntry) => void;
+  onRescheduleSession: (session: BookingSessionEntry) => void;
   onPageChange: (newPage: number) => void;
   onRowsPerPageChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
@@ -101,6 +106,8 @@ export function BookingSessionTable({
   rowsPerPage,
   totalEntries,
   onUpdateStatus,
+  onUpdateNotes,
+  onRescheduleSession,
   onPageChange,
   onRowsPerPageChange,
 }: BookingTableProps): React.JSX.Element {
@@ -115,8 +122,22 @@ export function BookingSessionTable({
 
   const handleStatusChange = (id: number, newStatus: BookingSessionEntry['status']): void => {
     onUpdateStatus(id, newStatus);
-    // toast.success('Status updated successfully!'); // Show success toast
   };
+
+
+
+
+  const handleNotesChange = (session: BookingSessionEntry): void => {
+    onUpdateNotes(session);
+  };
+
+
+
+  const handleRescheduleSession = (session: BookingSessionEntry): void => {
+    onRescheduleSession(session);
+  };
+
+
 
   const handleRowClick = (id: number): void => {
     router.push(`/dashboard/bookings/view?id=${id}`); // Replace with the actual path to your form page
@@ -134,8 +155,9 @@ export function BookingSessionTable({
                 <TableCell sx={tableCss.tableHeaderCell}>End Time</TableCell>
                 {/* <TableCell sx={tableCss.tableHeaderCell}>Member</TableCell> */}
                 {/* <TableCell sx={tableCss.tableHeaderCell}>Trainer</TableCell> */}
+                <TableCell sx={tableCss.tableHeaderCell}>Session Amount</TableCell>
+                <TableCell sx={tableCss.tableHeaderCell}>Notes</TableCell>
                 <TableCell sx={tableCss.tableHeaderCell}>Status</TableCell>
-                <TableCell sx={tableCss.tableHeaderCell}>Payment</TableCell>
                 <TableCell sx={tableCss.tableHeaderCell}>Actions</TableCell>
               </TableRow>
             </TableHead>
@@ -161,7 +183,7 @@ export function BookingSessionTable({
                     <TableCell sx={tableCss.tableCell}>
                       <Stack direction="row" spacing={2}>
                         <Box>
-                          <Typography variant="subtitle2">{entry?.sessionStartTime}</Typography>
+                          <Typography variant="subtitle2">{convertTo12HourFormat(entry?.sessionStartTime) }</Typography>
                         </Box>
                       </Stack>
                     </TableCell>
@@ -169,7 +191,7 @@ export function BookingSessionTable({
                     <TableCell sx={tableCss.tableCell}>
                       <Stack direction="row" spacing={2}>
                         <Box>
-                          <Typography variant="subtitle2">{entry?.sessionEndTime}</Typography>
+                          <Typography variant="subtitle2">{convertTo12HourFormat(entry?.sessionEndTime)}</Typography>
                         </Box>
                       </Stack>
                     </TableCell>
@@ -197,6 +219,23 @@ export function BookingSessionTable({
                     </TableCell> */}
 
                     <TableCell sx={tableCss.tableCell}>
+                      <Stack direction="row" spacing={2}>
+                        <Box>
+                          <Typography variant="subtitle2"> { formatAmount(entry?.netTotalAmount)}</Typography>
+                        </Box>
+                      </Stack>
+                    </TableCell>
+
+
+                    <TableCell sx={tableCss.tableCell}>
+                      <Stack direction="row" spacing={2}>
+                        <Box>
+                          <Typography variant="subtitle2">{entry?.notes || '-'}</Typography>
+                        </Box>
+                      </Stack>
+                    </TableCell>
+
+                    <TableCell sx={tableCss.tableCell}>
                       <Chip
                         label={BOOKING_SESSION_STATUS_DETAILS[entry.status]?.label}
                         color={BOOKING_SESSION_STATUS_DETAILS[entry.status]?.color}
@@ -205,22 +244,7 @@ export function BookingSessionTable({
                     </TableCell>
 
                     <TableCell sx={tableCss.tableCell}>
-                      <Stack direction="row" spacing={2}>
-                        <Box>
-                          <Typography variant="subtitle2">${parseFloat(String(entry?.netTotalAmount))}</Typography>
-
-                          <Chip
-                            label={BOOKING_SESSION_PAYMENT_STATUS_DETAILS[entry.paymentStatus]?.label}
-                            color={BOOKING_SESSION_PAYMENT_STATUS_DETAILS[entry.paymentStatus]?.color}
-                            sx={{ ml: 2 }}
-                          />
-                        </Box>
-                      </Stack>
-                    </TableCell>
-
-                    <TableCell sx={tableCss.tableCell}>
                       <Stack direction="row" spacing={1} alignItems="center">
-
                         <IconButton
                           onClick={() => {
                             handleStatusChange(entry.id, BOOKING_SESSION_STATUS.CANCELLED);
@@ -228,6 +252,26 @@ export function BookingSessionTable({
                         >
                           <XCircle />
                         </IconButton>
+
+
+                        <IconButton
+                          onClick={() => {
+                            handleNotesChange(entry);
+                          }}
+                        >
+                          <Note />
+                        </IconButton>
+
+
+                        <IconButton
+                          onClick={() => {
+                            handleRescheduleSession(entry);
+                          }}
+                        >
+                          <ArrowsClockwise />
+                        </IconButton>
+
+
                       </Stack>
                     </TableCell>
                   </TableRow>

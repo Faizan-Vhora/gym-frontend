@@ -13,17 +13,19 @@ import { Plus as PlusIcon } from '@phosphor-icons/react';
 import Swal from 'sweetalert2';
 
 import axiosInstance from '@/lib/axios';
-import { ToastContainer } from 'react-toastify';
+import { toast, ToastContainer } from 'react-toastify';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { BookingFilters } from '@/components/dashboard/booking/booking-filters';
 import { BOOKING_STATUS } from '@/utils/constant';
 import { BookingSessionEntry, BookingSessionTable } from '@/components/dashboard/booking/view/booking-sessions/booking-session-table';
+import SlotRescheduleForm from '@/components/dashboard/calendar/reschedule-session-dialog';
+import SessionNotesForm from '@/components/dashboard/calendar/session-notes';
 
 
 export default function BookingSessionsPage(): React.JSX.Element {
 
   const searchParams = useSearchParams();
-  const booingId = searchParams.get('id');
+  const bookingId = searchParams.get('id');
 
   const router = useRouter();
 
@@ -38,6 +40,9 @@ export default function BookingSessionsPage(): React.JSX.Element {
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [count, setCount] = React.useState<number>(0);
   const [loading, setLoading] = React.useState(true);
+  const [selectedSession, setSelectedSession] = React.useState<any | null>(null);
+  const [isDialogOpen, setIsDialogOpen] = React.useState(false);
+  const [isDialogOpenForNotes, setIsDialogOpenForNotes] = React.useState(false);
 
   // <variables> (end)
 
@@ -53,7 +58,7 @@ export default function BookingSessionsPage(): React.JSX.Element {
         page: page + 1,
         limit: rowsPerPage, // Number of rows per page
         search: searchTerm, // Search term
-        booingId: booingId,
+        bookingId: bookingId,
         bookingType: bookingTypeFilter !== 'All' ? bookingTypeFilter : null, // Booking type filter
         status: statusFilter !== 'All' ? statusFilter : null, // Status filter
       }
@@ -123,6 +128,19 @@ export default function BookingSessionsPage(): React.JSX.Element {
     }
   };
 
+
+  const handleUpdateNotes = async(session: BookingSessionEntry)=>{
+    setSelectedSession(session);
+    setIsDialogOpenForNotes(true);
+  }
+
+
+  const handleRescheduleSession = async(session: BookingSessionEntry)=>{
+    setSelectedSession(session);
+    setIsDialogOpen(true);
+  }
+
+
   const handlePageChange = (newPage: number): void => {
     setPage(newPage);
   };
@@ -151,6 +169,56 @@ export default function BookingSessionsPage(): React.JSX.Element {
   };
   // <methods hooks> (end)
 
+  const handleReschedule = async (payload: {
+    sessionDate: string;
+    sessionStartTime: string;
+    sessionEndTime: string;
+  }) => {
+    try {
+      // Call the API to reschedule the event
+      const response = await axiosInstance.put(`/session-booking/session/update-detail/${selectedSession.id}`, {
+        sessionDate: payload.sessionDate,
+        sessionStartTime: payload.sessionStartTime,
+        sessionEndTime: payload.sessionEndTime,
+      });
+      toast.success('Slot rescheduled successfully!');
+      setIsDialogOpen(false); // Close the dialog
+      setSelectedSession(null);
+      getSessionBookingSessionListData(); // Refresh events
+    } catch (error) {
+      toast.error('Failed to reschedule slot');
+    }
+  };
+
+
+
+  const handleNotesChange = async (payload: {
+    notes: string;
+  }) => {
+    try {
+      // Call the API to reschedule the event
+      const response = await axiosInstance.put(`/session-booking/session/notes/${selectedSession.id}`, {
+        notes: payload.notes,
+      });
+      toast.success('Slot rescheduled successfully!');
+      setIsDialogOpenForNotes(false); // Close the dialog
+      setSelectedSession(null);
+      getSessionBookingSessionListData(); // Refresh events
+    } catch (error) {
+      toast.error('Failed to reschedule slot');
+    }
+  };
+
+
+  const handleDialogClose = () => {
+    setIsDialogOpen(false);
+    setSelectedSession(null);
+  };
+
+  const handleDialogCloseForNotes = () => {
+    setIsDialogOpenForNotes(false);
+    setSelectedSession(null);
+  };
 
   // <lifecycle hooks> (start)
   useEffect(() => {
@@ -194,11 +262,34 @@ export default function BookingSessionsPage(): React.JSX.Element {
           rowsPerPage={rowsPerPage}
           totalEntries={count}
           onUpdateStatus={handleUpdateStatus}
+          onUpdateNotes={handleUpdateNotes}
+          onRescheduleSession={handleRescheduleSession}
           onPageChange={handlePageChange}
           onRowsPerPageChange={handleRowsPerPageChange}
         />
       )}
     </Card>
+
+    {selectedSession && (
+        <SlotRescheduleForm
+          open={isDialogOpen}
+          onClose={handleDialogClose}
+          onSubmit={handleReschedule}
+          sessionObj={selectedSession}
+        />
+      )}
+
+    {/* change notes Dialog */}
+        {selectedSession && (
+        <SessionNotesForm
+          open={isDialogOpenForNotes}
+          onClose={handleDialogCloseForNotes}
+          onSubmit={handleNotesChange}
+          sessionObj={selectedSession}
+        />
+      )}
+
+
     <ToastContainer />
   </Stack>
   );

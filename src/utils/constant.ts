@@ -140,7 +140,6 @@ export const BOOKING_SESSION_STATUS_DETAILS: Record<string, { value: string; lab
 }
 
 
-
 export const BOOKING_SESSION_PAYMENT_STATUS = {
   PENDING : 'pending',
   CANCELED  : 'cancelled',

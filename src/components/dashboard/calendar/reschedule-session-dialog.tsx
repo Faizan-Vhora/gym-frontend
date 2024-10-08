@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { DateFormat } from '@/utils/constant';
-import { convertTo12HourFormat } from '@/utils/dateUtils';
+import { convertTo12HourFormat, formatDate } from '@/utils/dateUtils';
 import {
   Autocomplete,
   Button,
@@ -23,23 +23,17 @@ import { toast } from 'react-toastify';
 import axiosInstance from '@/lib/axios';
 
 import { DateSlot, ScheduleResponse, Slot, WeekSlot } from './types';
+import { BookingSessionEntry } from '../booking/view/booking-sessions/booking-session-table';
 
-interface Event {
-  id: string;
-  start: string;
-  end: string;
-  title: string;
-}
 
 interface SlotRescheduleFormProps {
-  event: Event;
+  sessionObj: BookingSessionEntry;
   open: boolean;
   onClose: () => void;
   onSubmit: (payload: { sessionStartTime: string; sessionEndTime: string; sessionDate: string }) => void;
-  trainerId: number | null;
 }
 
-const SlotRescheduleForm: React.FC<SlotRescheduleFormProps> = ({ event, open, onClose, onSubmit, trainerId }) => {
+const SlotRescheduleForm: React.FC<SlotRescheduleFormProps> = ({ sessionObj, open, onClose, onSubmit }) => {
   const {
     control,
     handleSubmit,
@@ -58,17 +52,26 @@ const SlotRescheduleForm: React.FC<SlotRescheduleFormProps> = ({ event, open, on
   const selectedDate = watch('selectedDate');
 
   useEffect(() => {
-    if (event) {
-      setValue('selectedDate', dayjs(event.start));
+    if (sessionObj) {
+      console.log("sessionObj.", sessionObj)
+
+
+      const slotSartTime =  new Date(`${sessionObj.sessionDate} ${sessionObj.sessionStartTime}`) ;
+      const slotEndTime = new Date(`${sessionObj.sessionDate} ${sessionObj.sessionEndTime}`) ;
+
+      console.log("slotSartTime. ", slotSartTime)
+      console.log("slotEndTime. ", slotEndTime)
+
+      setValue('selectedDate', dayjs(sessionObj.sessionDate));
       setValue('selectedSlot', {
-        startTime: dayjs(event.start).format('HH:mm'),
-        endTime: dayjs(event.end).format('HH:mm'),
+        startTime: dayjs(slotSartTime).format('HH:mm:ss'),
+        endTime: dayjs(slotEndTime).format('HH:mm:ss'),
         isAvailable: true,
       });
     }
-  }, [event, setValue]);
+  }, [sessionObj, setValue]);
 
-  const fetchSlotsData = async (trainerId: number, date: Dayjs) => {
+  const fetchSlotsData = async (trainerId: number|null|undefined, date: Dayjs) => {
     setLoading(true);
     const start = date.startOf('day').format(DateFormat.dateFormat);
     const end = date.endOf('day').format(DateFormat.dateFormat);
@@ -88,10 +91,10 @@ const SlotRescheduleForm: React.FC<SlotRescheduleFormProps> = ({ event, open, on
   };
 
   useEffect(() => {
-    if (trainerId && selectedDate) {
-      fetchSlotsData(trainerId, selectedDate);
+    if (sessionObj && selectedDate) {
+      fetchSlotsData(sessionObj?.trainer?.id, selectedDate);
     }
-  }, [trainerId, selectedDate]);
+  }, [sessionObj, selectedDate]);
 
   const onSubmitForm = (data: { selectedDate: Dayjs | null; selectedSlot: Slot | null }) => {
     if (data.selectedSlot && data.selectedDate) {
@@ -107,7 +110,7 @@ const SlotRescheduleForm: React.FC<SlotRescheduleFormProps> = ({ event, open, on
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
-      <DialogTitle>Reschedule Session: {event.title}</DialogTitle>
+      <DialogTitle>Reschedule Session</DialogTitle>
       <DialogContent>
         <form onSubmit={handleSubmit(onSubmitForm)}>
           <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -148,7 +151,7 @@ const SlotRescheduleForm: React.FC<SlotRescheduleFormProps> = ({ event, open, on
                   {dateSlot.weekSlots.map((weekSlot: WeekSlot, weekIndex: number) => (
                     <div key={weekIndex}>
                       <Typography variant="subtitle1" sx={{ mt: 2, mb: 1, textAlign: 'start' }}>
-                        {weekSlot.date}
+                        { formatDate(weekSlot.date) }
                       </Typography>
                       <Controller
                         name="selectedSlot"
@@ -168,7 +171,7 @@ const SlotRescheduleForm: React.FC<SlotRescheduleFormProps> = ({ event, open, on
                               <li {...props} style={{ opacity: option.isAvailable ? 1 : 0.5 }}>
                                 <Checkbox checked={selected} disabled={!option.isAvailable} />
                                 {`${convertTo12HourFormat(option.startTime)} - ${convertTo12HourFormat(option.endTime)}`}
-                                {!option.isAvailable && ' (Unavailable)'}
+                                {!option.isAvailable}
                               </li>
                             )}
                             renderInput={(params) => (

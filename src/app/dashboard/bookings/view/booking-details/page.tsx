@@ -12,7 +12,7 @@ import { BOOKING_PAYMENT_STATUS_DETAILS, BOOKING_PAYMENT_TYPE_DETAILS, BOOKING_S
 
 export default function BookingDetailsPage(): React.JSX.Element {
   const searchParams = useSearchParams();
-  const booingId = searchParams.get('id');
+  const bookingId = searchParams.get('id');
 
   const [bookingDetail, setBookingDetails] = React.useState<BookingEntry | null>(null);
 
@@ -21,16 +21,16 @@ export default function BookingDetailsPage(): React.JSX.Element {
 
 
   React.useEffect(() => {
-    if (booingId) {
+    if (bookingId) {
       getBookingDetails();
     }
-  }, [booingId]);
+  }, [bookingId]);
 
 
   const getBookingDetails = () => {
     setLoading(true);
     axiosInstance
-      .get<{ data: BookingEntry }>(`/session-booking/${booingId}`)
+      .get<{ data: BookingEntry }>(`/session-booking/${bookingId}`)
       .then((response) => {
         const fetchedData: BookingEntry = response.data.data;
         console.log("fetchedData: ",fetchedData)
@@ -46,7 +46,7 @@ export default function BookingDetailsPage(): React.JSX.Element {
   return (
 
     // <>
-    // Booking Details for ID:  {booingId}
+    // Booking Details for ID:  {bookingId}
     // </>
 
     <Box >
