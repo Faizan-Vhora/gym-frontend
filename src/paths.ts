@@ -58,6 +58,7 @@ export const paths = {
 
   bookings: {
     bookingsList: '/dashboard/bookings',
+    bookingsView: (id?: number) => `/dashboard/bookings/view/${id}`
   },
 
 

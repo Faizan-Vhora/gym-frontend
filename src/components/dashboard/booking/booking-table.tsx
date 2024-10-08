@@ -16,31 +16,70 @@ import {
   TableRow,
   Typography,
 } from '@mui/material';
-
 import { toast, ToastContainer } from 'react-toastify'; // Import toast and ToastContainer
 
 import 'react-toastify/dist/ReactToastify.css'; // Import toast styles
 
-import tableCss from '@/styles/table-css';
-import { Chat, PencilSimple, XCircle } from '@phosphor-icons/react';
 import { useRouter } from 'next/navigation';
-import { BOOKING_STATUS, BOOKING_STATUS_DETAILS, BOOKING_TYPE_DETAILS, SUPPORT_TICKET_STATUS_OPTIONS, USER_TYPE_OPTIONS } from '@/utils/constant';
+import {
+  BOOKING_STATUS,
+  BOOKING_STATUS_DETAILS,
+  BOOKING_TYPE_DETAILS,
+  SUPPORT_TICKET_STATUS_OPTIONS,
+  USER_TYPE_OPTIONS,
+} from '@/utils/constant';
 import { formatDate } from '@/utils/dateUtils';
+import { Chat, PencilSimple, XCircle } from '@phosphor-icons/react';
+
+import tableCss from '@/styles/table-css';
+import { formatHours } from '@/utils/converter';
 
 export interface BookingEntry {
   id: number;
-  customer: {  id:number, fullName: string; email: string } | null;
-  trainer: {  id:number, fullName: string; email: string } | null;
+  customer: {
+    id: number;
+    memberId: string;
+    fullName: string;
+    email: string;
+    aboutMe: string;
+    address: string;
+    zipCode: string;
+    dialCode: string;
+    phoneNumber: string;
+    gender: string;
+    profileImageUrl: string;
+    status: number;
+  } | null;
+  trainer: {
+    id: number;
+    memberId: string;
+    fullName: string;
+    email: string;
+    aboutMe: string;
+    address: string;
+    zipCode: string;
+    dialCode: string;
+    phoneNumber: string;
+    gender: string;
+    profileImageUrl: string;
+    status: number;
+    experience: number;
+    fees: number;
+  } | null;
   bookingType: 'one_time' | 'weekly';
   status: string;
   startDate: string;
   endDate: string;
   bookingHours: number;
   bookingAmount: number;
-  netTotalAmount:number;
-  paymentType: 'per_session',
-  paymentStatus: 'pending',
-  createdAt: Date | string |null;
+  netTotalAmount: number;
+  paymentType: 'per_session';
+  paymentStatus: 'pending';
+  weekdays: string;
+  recurrenceWeeks: number;
+  discount: number;
+  trainerRatePerHour: number;
+  createdAt: Date | string | null;
   createdBy: { fullName: string; email: string };
 }
 
@@ -63,8 +102,6 @@ export function BookingTable({
   onPageChange,
   onRowsPerPageChange,
 }: BookingTableProps): React.JSX.Element {
-
-
   const router = useRouter();
 
   const handleEdit = React.useCallback(
@@ -81,10 +118,13 @@ export function BookingTable({
     [router]
   );
 
-
   const handleStatusChange = (id: number, newStatus: BookingEntry['status']): void => {
     onUpdateStatus(id, newStatus);
     // toast.success('Status updated successfully!'); // Show success toast
+  };
+
+  const handleRowClick = (id: number): void => {
+    router.push(`/dashboard/bookings/view?id=${id}`); // Replace with the actual path to your form page
   };
 
   return (
@@ -94,11 +134,11 @@ export function BookingTable({
           <Table sx={{ minWidth: '800px' }}>
             <TableHead>
               <TableRow sx={tableCss.tableRow}>
-              <TableCell sx={tableCss.tableHeaderCell}>Booking ID</TableCell>
+                <TableCell sx={tableCss.tableHeaderCell}>Booking ID</TableCell>
+                <TableCell sx={tableCss.tableHeaderCell}>Booking Date</TableCell>
                 <TableCell sx={tableCss.tableHeaderCell}>Member</TableCell>
                 <TableCell sx={tableCss.tableHeaderCell}>Trainer</TableCell>
-                <TableCell sx={tableCss.tableHeaderCell}>Booking Duration</TableCell>
-                <TableCell sx={tableCss.tableHeaderCell}>Booking Type</TableCell>
+                {/* <TableCell sx={tableCss.tableHeaderCell}>Booking Type</TableCell> */}
                 <TableCell sx={tableCss.tableHeaderCell}>Status</TableCell>
                 <TableCell sx={tableCss.tableHeaderCell}>Actions</TableCell>
               </TableRow>
@@ -114,8 +154,28 @@ export function BookingTable({
               ) : (
                 entries.map((entry) => (
                   <TableRow hover key={entry.id} sx={tableCss.tableRow}>
+                    <TableCell
+                      sx={tableCss.tableCell}
+                      onClick={() => {
+                        handleRowClick(entry.id);
+                      }}
+                      style={{ cursor: 'pointer' }}
+                    >{`#${entry.id}`}</TableCell>
 
-                  <TableCell sx={tableCss.tableCell}>{ `#${entry.id}`}</TableCell>
+                    <TableCell sx={tableCss.tableCell}>
+                      <Stack direction="row" spacing={2} alignItems="center">
+                        <Box>
+                          <Typography variant="subtitle2">
+                            {entry?.startDate == entry?.endDate
+                              ? `${formatDate(entry?.startDate)}`
+                              : `${formatDate(entry?.startDate)} to ${formatDate(entry?.endDate)}`}
+                          </Typography>
+                          <Typography color="textSecondary" variant="body2">
+                            {`${formatHours(entry?.bookingHours)}`}
+                          </Typography>
+                        </Box>
+                      </Stack>
+                    </TableCell>
 
                     <TableCell sx={tableCss.tableCell}>
                       <Stack direction="row" spacing={2}>
@@ -139,20 +199,7 @@ export function BookingTable({
                       </Stack>
                     </TableCell>
 
-                    <TableCell sx={tableCss.tableCell} >
-                      <Stack direction="row" spacing={2} alignItems="center">
-                        <Box>
-                          <Typography variant="subtitle2">
-                            { entry?.startDate == entry?.endDate ? `${formatDate(entry?.startDate)}` :  `${formatDate(entry?.startDate)} to ${formatDate(entry?.endDate)}`}
-                            </Typography>
-                          <Typography color="textSecondary" variant="body2">
-                            {`${entry?.bookingHours} Hrs`}
-                          </Typography>
-                        </Box>
-                      </Stack>
-                    </TableCell>
-
-                    <TableCell sx={tableCss.tableCell}>
+                    {/* <TableCell sx={tableCss.tableCell}>
 
                       <Chip
                         label={BOOKING_TYPE_DETAILS[entry.bookingType]?.label}
@@ -161,19 +208,15 @@ export function BookingTable({
                       />
 
 
-                      </TableCell>
-
+                      </TableCell> */}
 
                     <TableCell sx={tableCss.tableCell}>
-
-                    <Chip
+                      <Chip
                         label={BOOKING_STATUS_DETAILS[entry.status]?.label}
                         color={BOOKING_STATUS_DETAILS[entry.status]?.color}
                         sx={{ ml: 2 }}
                       />
-
                     </TableCell>
-
 
                     <TableCell sx={tableCss.tableCell}>
                       <Stack direction="row" spacing={1} alignItems="center">
@@ -192,11 +235,8 @@ export function BookingTable({
                         >
                           <XCircle />
                         </IconButton>
-
                       </Stack>
                     </TableCell>
-
-
                   </TableRow>
                 ))
               )}
@@ -220,12 +260,10 @@ export function BookingTable({
                 const inputEvent = event as React.ChangeEvent<HTMLInputElement>;
                 onRowsPerPageChange(inputEvent);
               }}
-
               rowsPerPageOptions={[5, 10, 25]}
             />
           </>
         )}
-
       </Card>
       <ToastContainer /> {/* Add ToastContainer to your component tree */}
     </>

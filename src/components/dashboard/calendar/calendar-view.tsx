@@ -67,9 +67,8 @@ export function CalendarView({ view = 'dayGridMonth' }: CalendarViewProps): Reac
   const [events, setEvents] = React.useState([]);
   const [date, setDate] = React.useState<Date>(new Date());
 
-  const [trainerId, setTrainerId] = React.useState(null);
-
   const [loading, setLoading] = React.useState(true);
+  const [selectedSession, setSelectedSession] = React.useState<any | null>(null);
   const [selectedEvent, setSelectedEvent] = React.useState<any | null>(null);
   const [isDialogOpen, setIsDialogOpen] = React.useState(false);
 
@@ -87,9 +86,7 @@ export function CalendarView({ view = 'dayGridMonth' }: CalendarViewProps): Reac
         start: `${item.sessionDate}T${item.sessionStartTime}`, // Combine date and time
         end: `${item.sessionDate}T${item.sessionEndTime}`,
         extendedProps: {
-          trainerId: item.trainer.id,
-          start: item.sessionDate,
-          end: item.sessionDate, // Include the entire trainer object
+          sessionObj: item,
         },
       }));
       console.log('fetched events ', formattedEvents);
@@ -163,7 +160,7 @@ export function CalendarView({ view = 'dayGridMonth' }: CalendarViewProps): Reac
   const handleEventSelect = React.useCallback((arg: EventClickArg) => {
     console.log('Event selected:', arg.event);
     setSelectedEvent(arg.event);
-    setTrainerId(arg.event._def.extendedProps.trainerId);
+    setSelectedSession(arg.event._def.extendedProps.sessionObj);
     setIsDialogOpen(true);
   }, []);
 
@@ -281,11 +278,10 @@ export function CalendarView({ view = 'dayGridMonth' }: CalendarViewProps): Reac
       {/* Slot Reschedule Dialog */}
       {selectedEvent && (
         <SlotRescheduleForm
-          event={selectedEvent}
           open={isDialogOpen}
           onClose={handleDialogClose}
           onSubmit={handleReschedule}
-          trainerId={trainerId}
+          sessionObj={selectedSession}
         />
       )}
       <ToastContainer />

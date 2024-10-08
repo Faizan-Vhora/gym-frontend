@@ -86,6 +86,7 @@ export default function Page(): React.JSX.Element {
     let swalSuccessMessage = `The status has been updated`;
 
     if(newStatus == BOOKING_STATUS.CANCELED){
+
       swalText = `Do you want to cancel the booking?`;
       swalConfirmButtonText = `Yes, cancel it!`;
       swalSuccessMessage = `The booking has been cancelled`;
@@ -102,7 +103,7 @@ export default function Page(): React.JSX.Element {
 
     if (result.isConfirmed) {
       try {
-        await axiosInstance.patch(`/session-booking/update-booking-status/${id}`, { status: newStatus });
+        await axiosInstance.patch(`/session-booking/${id}/update-status/`, { status: newStatus });
         setEntries((prevEntries) =>
           prevEntries.map((entry) => (entry.id === id ? { ...entry, status: newStatus } : entry))
         );
