@@ -32,7 +32,7 @@ import { EventContent } from './event-content';
 import { EventDialog } from './event-dialog';
 import SlotRescheduleForm from './reschedule-session-dialog';
 import { Toolbar } from './toolbar';
-import type { ViewMode, WeekSlot } from './types';
+import type { Event, ViewMode, WeekSlot } from './types';
 
 interface CreateDialogData {
   range?: { start: Date; end: Date };
@@ -64,7 +64,7 @@ export function CalendarView({ view = 'dayGridMonth' }: CalendarViewProps): Reac
 
   const calendarRef = React.useRef<Calendar | null>(null);
 
-  const [events, setEvents] = React.useState([]);
+  const [events, setEvents] = React.useState<Event[]>([]);
   const [date, setDate] = React.useState<Date>(new Date());
 
   const [loading, setLoading] = React.useState(true);
@@ -80,13 +80,15 @@ export function CalendarView({ view = 'dayGridMonth' }: CalendarViewProps): Reac
 
   const createDialog = useDialog<CreateDialogData>();
 
+  const currentEvent = currentEventId ? events.find((event) => event.id === currentEventId) : undefined;
+
   const fetchEvents = async () => {
     try {
       const params = {
         trainerId: trainer,
         customerId: member,
         startDate: startDateFilter,
-        endDate: startDateFilter,
+        endDate: endDateFilter,
         // page: page + 1, // Adjusting for API pagination
         // limit: rowsPerPage,
         sessionStatus: statusFilter !== 'ALL' ? statusFilter : undefined,
@@ -114,7 +116,7 @@ export function CalendarView({ view = 'dayGridMonth' }: CalendarViewProps): Reac
 
   React.useEffect(() => {
     void fetchEvents();
-  }, [searchTerm, trainer, member, statusFilter, startDateFilter, startDateFilter]);
+  }, [searchTerm, trainer, member, statusFilter, startDateFilter, endDateFilter]);
 
   const handleViewChange = React.useCallback(
     (value: ViewMode) => {
