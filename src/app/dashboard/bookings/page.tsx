@@ -33,6 +33,8 @@ export default function Page(): React.JSX.Element {
   const [bookingTypeFilter, setBookingTypeFilter] = React.useState('All');
   const [trainerIdFilter, setTrainerIdFilter] = React.useState('All');
   const [customerIdFilter, setCustomerIdFilter] = React.useState('All');
+  const [startDateFilter, setStarteDateFilter] = React.useState('');
+  const [endDateFilter, setEndDateFilter] = React.useState('');
   const [page, setPage] = React.useState<number>(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [count, setCount] = React.useState<number>(0);
@@ -55,6 +57,8 @@ export default function Page(): React.JSX.Element {
         bookingType: bookingTypeFilter !== 'All' ? bookingTypeFilter : null,
         trainerId: trainerIdFilter !== 'All' ? trainerIdFilter : null,
         customerId: customerIdFilter !== 'All' ? customerIdFilter : null,
+        startDate: startDateFilter !== '' ? startDateFilter : null,
+        endDate: endDateFilter !== '' ? endDateFilter : null,
         status: statusFilter !== 'All' ? statusFilter : null,
       }
 
@@ -76,7 +80,7 @@ export default function Page(): React.JSX.Element {
     } finally {
       setLoading(false);
     }
-  }, [page, rowsPerPage, searchTerm, statusFilter, bookingTypeFilter, trainerIdFilter, customerIdFilter]);
+  }, [page, rowsPerPage, searchTerm, statusFilter, bookingTypeFilter, trainerIdFilter, customerIdFilter, startDateFilter, endDateFilter]);
 
 
   // const handleAddClick = (): void => {
@@ -159,8 +163,20 @@ export default function Page(): React.JSX.Element {
   const handleCustomerIdChange = (customerId: string): void => {
     setCustomerIdFilter(customerId);
     setPage(0);
-
   };
+
+  const handleStartDateChange = (startDate: string): void => {
+    setStarteDateFilter(startDate);
+    setPage(0);
+  };
+
+  const handleEndDateChange = (endDate: string): void => {
+    setEndDateFilter(endDate);
+    setPage(0);
+  };
+
+
+
   // <methods hooks> (end)
 
 
@@ -200,7 +216,8 @@ export default function Page(): React.JSX.Element {
          onBookingTypeChange={handleBookingTypeChange}
          onTrainerIdChange={handleTrainerIdChange}
          onCustomerIdChange={handleCustomerIdChange}
-
+         onStartDateChange={handleStartDateChange}
+         onEndDateChange={handleEndDateChange}
        />
       </Stack>
 
