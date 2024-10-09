@@ -162,7 +162,7 @@ export default function SupportForm(): React.JSX.Element {
   return (
     <Box component="form" onSubmit={handleSubmit(onSubmit)} sx={{ p: 3 }}>
       <Card>
-        <CardHeader
+        <CardHeader sx={{padding:'20px'}}
           title={`Support Ticket #${supportTicket?.id} - ${supportTicket?.user?.fullName}
             ${formatUtcToLocalDatetime(supportTicket?.createdAt || null)}`}
         />
