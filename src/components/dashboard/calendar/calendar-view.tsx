@@ -329,7 +329,7 @@ export function CalendarView({ view = 'dayGridMonth' }: CalendarViewProps): Reac
         />
       )}
       <ToastContainer />
-      {/* {createDialog.open ? (
+      {createDialog.open ? (
         <EventDialog
           action="create"
           onClose={createDialog.handleClose}
@@ -359,7 +359,7 @@ export function CalendarView({ view = 'dayGridMonth' }: CalendarViewProps): Reac
           }}
           open
         />
-      ) : null} */}
+      ) : null}
     </React.Fragment>
   );
 }
