@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { BOOKING_SESSION_STATUS_OPTIONS } from '@/utils/constant';
-import { FormControl, IconButton, InputAdornment, InputLabel, MenuItem, TextField } from '@mui/material';
+import { FormControl, Grid, IconButton, InputAdornment, InputLabel, MenuItem, TextField } from '@mui/material';
 import Button from '@mui/material/Button';
 import type { SelectChangeEvent } from '@mui/material/Select';
 import Select from '@mui/material/Select';
@@ -220,112 +220,132 @@ export function Toolbar({
         justifyContent: 'space-between',
       }}
     >
-      <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
+      <Stack flexDirection={'row'} columnGap={1}>
         <Typography variant="h5">{dayjs(date).format('MMMM')}</Typography>
         <Typography sx={{ fontWeight: 400 }} variant="h5">
           {dayjs(date).format('YYYY')}
         </Typography>
+      </Stack>
 
+      <Grid container columnGap={3} rowGap={2}>
         {/* Search Field */}
-        <TextField
-          label="Search"
-          value={searchTerm}
-          onChange={handleSearchChange}
-          variant="outlined"
-          fullWidth
-          InputProps={{
-            endAdornment: searchTerm && (
-              <InputAdornment position="end">
-                <IconButton onClick={handleSearchClear} edge="end">
-                  <XIcon size={15} />
-                </IconButton>
-              </InputAdornment>
-            ),
-          }}
-        />
-
-        {/* Trainer Selection */}
-        <Select value={selectedTrainer} onChange={handleTrainerSelect} displayEmpty fullWidth label="Trainer">
-          <Option value="">
-            <em>Select a Trainer</em>
-          </Option>
-          {trainers.map((trainer) => (
-            <Option key={trainer.id} value={trainer.id}>
-              {trainer.fullName}
+        <Grid item md={3.5} sm={6} xs={12}>
+          <TextField
+            label="Search"
+            value={searchTerm}
+            onChange={handleSearchChange}
+            variant="outlined"
+            fullWidth
+            InputProps={{
+              endAdornment: searchTerm && (
+                <InputAdornment position="end">
+                  <IconButton onClick={handleSearchClear} edge="end">
+                    <XIcon size={15} />
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
+          />
+        </Grid>
+        <Grid item md={3.5} sm={6} xs={12}>
+          {/* Trainer Selection */}
+          <Select value={selectedTrainer} onChange={handleTrainerSelect} displayEmpty fullWidth label="Trainer">
+            <Option value="">
+              <em>Select a Trainer</em>
             </Option>
-          ))}
-        </Select>
-        {/* Member Selection */}
-        <Select value={selectedMember} onChange={handleMemberSelect} displayEmpty fullWidth label="Trainer">
-          <Option value="">
-            <em>Select a Member</em>
-          </Option>
-          {customers.map((member) => (
-            <Option key={member.id} value={member.id}>
-              {member.fullName}
-            </Option>
-          ))}
-        </Select>
-        <FormControl variant="outlined" fullWidth>
-          <InputLabel>Status</InputLabel>
-          <Select value={selectedStatus} onChange={handleStatusChange} label="Status">
-            {/* Option for 'All' */}
-            <MenuItem value="ALL">All</MenuItem>
-            {BOOKING_SESSION_STATUS_OPTIONS.map((status) => (
-              <MenuItem key={status.value} value={status.value}>
-                {status.label}
-              </MenuItem>
+            {trainers.map((trainer) => (
+              <Option key={trainer.id} value={trainer.id}>
+                {trainer.fullName}
+              </Option>
             ))}
           </Select>
-        </FormControl>
+        </Grid>
+        <Grid item md={3.5} sm={6} xs={12}>
+          {/* Member Selection */}
+          <Select value={selectedMember} onChange={handleMemberSelect} displayEmpty fullWidth label="Trainer">
+            <Option value="">
+              <em>Select a Member</em>
+            </Option>
+            {customers.map((member) => (
+              <Option key={member.id} value={member.id}>
+                {member.fullName}
+              </Option>
+            ))}
+          </Select>
+        </Grid>
+        <Grid item md={2} sm={6} xs={12}>
+          <FormControl variant="outlined" fullWidth>
+            <InputLabel>Status</InputLabel>
+            <Select value={selectedStatus} onChange={handleStatusChange} label="Status">
+              {/* Option for 'All' */}
+              <MenuItem value="ALL">All</MenuItem>
+              {BOOKING_SESSION_STATUS_OPTIONS.map((status) => (
+                <MenuItem key={status.value} value={status.value}>
+                  {status.label}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </Grid>
+
         <LocalizationProvider dateAdapter={AdapterDayjs}>
-          {/* Start Date Picker */}
-          <DatePicker
-            label="Start Date"
-            value={startDate ? dayjs(startDate) : null}
-            onChange={handleStartDateChange}
-            slotProps={{ textField: { fullWidth: true } }}
-          />
-          {startDate && (
-            <IconButton onClick={handleClearStartDate} edge="end">
-              <XIcon size={20} /> {/* Adjust icon size as needed */}
-            </IconButton>
-          )}
-          {/* End Date Picker */}
-          <DatePicker
-            label="End Date"
-            value={endDate ? dayjs(endDate) : null}
-            onChange={handleEndDateChange}
-            minDate={startDate ? startDate : undefined}
-            slotProps={{ textField: { fullWidth: true } }}
-          />
-          {endDate && (
-            <IconButton onClick={handleClearEndDate} edge="end">
-              <XIcon size={20} /> {/* Adjust icon size as needed */}
-            </IconButton>
-          )}
+          <Grid item md={2} sm={6} xs={12}>
+            {/* Start Date Picker */}
+            <DatePicker
+              label="Start Date"
+              value={startDate ? dayjs(startDate) : null}
+              onChange={handleStartDateChange}
+              slotProps={{ textField: { fullWidth: true } }}
+            />
+            {startDate && (
+              <IconButton onClick={handleClearStartDate} edge="end">
+                <XIcon size={20} /> {/* Adjust icon size as needed */}
+              </IconButton>
+            )}
+          </Grid>
+          <Grid item md={2} sm={6} xs={12}>
+            {/* End Date Picker */}
+            <DatePicker
+              label="End Date"
+              value={endDate ? dayjs(endDate) : null}
+              onChange={handleEndDateChange}
+              minDate={startDate ? startDate : undefined}
+              slotProps={{ textField: { fullWidth: true } }}
+            />
+            {endDate && (
+              <IconButton onClick={handleClearEndDate} edge="end">
+                <XIcon size={20} /> {/* Adjust icon size as needed */}
+              </IconButton>
+            )}
+          </Grid>
         </LocalizationProvider>
-      </Stack>
 
-      <Stack direction="row" spacing={3} sx={{ alignItems: 'center' }}>
-        {/* View Selection */}
-        <Select
-          name="view"
-          onChange={handleViewChange}
-          sx={{ minWidth: '120px', order: { xs: -1, md: 0 } }}
-          value={view}
-        >
-          <Option value="dayGridMonth">Month</Option>
-          <Option value="timeGridWeek">Week</Option>
-          <Option value="timeGridDay">Day</Option>
-          <Option value="listWeek">Agenda</Option>
-        </Select>
-
-        {/* Add Booking Button */}
-        <Button onClick={onAdd} startIcon={<PlusIcon />} sx={{ width: { xs: '100%', md: 'auto' } }} variant="contained">
-          New Booking
-        </Button>
-      </Stack>
+        <Grid item md={2} sm={6} xs={12}>
+          {/* View Selection */}
+          <Select
+            name="view"
+            onChange={handleViewChange}
+            sx={{ minWidth: '120px', order: { xs: -1, md: 0 } }}
+            value={view}
+          >
+            <Option value="dayGridMonth">Month</Option>
+            <Option value="timeGridWeek">Week</Option>
+            <Option value="timeGridDay">Day</Option>
+            <Option value="listWeek">Agenda</Option>
+          </Select>
+        </Grid>
+        <Grid item md={2} sm={6} xs={12}>
+          {/* Add Booking Button */}
+          <Button
+            onClick={onAdd}
+            startIcon={<PlusIcon />}
+            sx={{ width: { xs: '100%', md: 'auto' } }}
+            variant="contained"
+          >
+            New Booking
+          </Button>
+        </Grid>
+      </Grid>
     </Stack>
   );
 }

@@ -29,11 +29,9 @@ import {
   BOOKING_STATUS_DETAILS,
   BOOKING_TYPE_DETAILS,
 } from '@/utils/constant';
-import { convertTo12HourFormat, formatDate, formatTime } from '@/utils/dateUtils';
 import { formatAmount } from '@/utils/converter';
-
-
-import { Chat, PencilSimple, XCircle, Note, ArrowsClockwise } from '@phosphor-icons/react';
+import { convertTo12HourFormat, formatDate, formatTime } from '@/utils/dateUtils';
+import { ArrowsClockwise, Chat, Note, PencilSimple, XCircle } from '@phosphor-icons/react';
 
 import tableCss from '@/styles/table-css';
 
@@ -124,20 +122,13 @@ export function BookingSessionTable({
     onUpdateStatus(id, newStatus);
   };
 
-
-
-
   const handleNotesChange = (session: BookingSessionEntry): void => {
     onUpdateNotes(session);
   };
 
-
-
   const handleRescheduleSession = (session: BookingSessionEntry): void => {
     onRescheduleSession(session);
   };
-
-
 
   const handleRowClick = (id: number): void => {
     router.push(`/dashboard/bookings/view?id=${id}`); // Replace with the actual path to your form page
@@ -183,7 +174,7 @@ export function BookingSessionTable({
                     <TableCell sx={tableCss.tableCell}>
                       <Stack direction="row" spacing={2}>
                         <Box>
-                          <Typography variant="subtitle2">{convertTo12HourFormat(entry?.sessionStartTime) }</Typography>
+                          <Typography variant="subtitle2">{convertTo12HourFormat(entry?.sessionStartTime)}</Typography>
                         </Box>
                       </Stack>
                     </TableCell>
@@ -221,11 +212,10 @@ export function BookingSessionTable({
                     <TableCell sx={tableCss.tableCell}>
                       <Stack direction="row" spacing={2}>
                         <Box>
-                          <Typography variant="subtitle2"> { formatAmount(entry?.netTotalAmount)}</Typography>
+                          <Typography variant="subtitle2"> {formatAmount(entry?.netTotalAmount)}</Typography>
                         </Box>
                       </Stack>
                     </TableCell>
-
 
                     <TableCell sx={tableCss.tableCell}>
                       <Stack direction="row" spacing={2}>
@@ -253,7 +243,6 @@ export function BookingSessionTable({
                           <XCircle />
                         </IconButton>
 
-
                         <IconButton
                           onClick={() => {
                             handleNotesChange(entry);
@@ -262,7 +251,6 @@ export function BookingSessionTable({
                           <Note />
                         </IconButton>
 
-
                         <IconButton
                           onClick={() => {
                             handleRescheduleSession(entry);
@@ -270,8 +258,6 @@ export function BookingSessionTable({
                         >
                           <ArrowsClockwise />
                         </IconButton>
-
-
                       </Stack>
                     </TableCell>
                   </TableRow>

@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
-import { DateFormat } from '@/utils/constant';
+import { BOOKING_STATUS, DateFormat } from '@/utils/constant';
 import type { DateSelectArg, EventClickArg, EventDropArg } from '@fullcalendar/core';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import type { EventResizeDoneArg } from '@fullcalendar/interaction';
@@ -23,14 +23,20 @@ import { toast, ToastContainer } from 'react-toastify';
 
 import 'react-toastify/dist/ReactToastify.css';
 
+import Swal from 'sweetalert2';
+
 import { paths } from '@/paths';
 import axiosInstance from '@/lib/axios';
 import { useDialog } from '@/hooks/use-dialog';
 
+import { BookingEntry } from '../booking/booking-table';
+import { BookingSessionEntry } from '../booking/view/booking-sessions/booking-session-table';
 import { CalendarContext } from './calendar-context';
 import { EventContent } from './event-content';
 import { EventDialog } from './event-dialog';
 import SlotRescheduleForm from './reschedule-session-dialog';
+import SessionNotesForm from './session-notes';
+import SessionPreview from './session-view';
 import { Toolbar } from './toolbar';
 import type { Event, ViewMode, WeekSlot } from './types';
 
@@ -67,7 +73,6 @@ export function CalendarView({ view = 'dayGridMonth' }: CalendarViewProps): Reac
   const [events, setEvents] = React.useState<Event[]>([]);
   const [date, setDate] = React.useState<Date>(new Date());
 
-  const [loading, setLoading] = React.useState(true);
   const [selectedSession, setSelectedSession] = React.useState<any | null>(null);
   const [selectedEvent, setSelectedEvent] = React.useState<any | null>(null);
   const [isDialogOpen, setIsDialogOpen] = React.useState(false);
@@ -77,6 +82,8 @@ export function CalendarView({ view = 'dayGridMonth' }: CalendarViewProps): Reac
   const [statusFilter, setStatusFilter] = React.useState('ALL');
   const [startDateFilter, setStarteDateFilter] = React.useState('');
   const [endDateFilter, setEndDateFilter] = React.useState('');
+  const [isDialogOpenForNotes, setIsDialogOpenForNotes] = React.useState(false);
+  const [isDialogOpenForRechedule, setIsDialogOpenForRechedule] = React.useState(false);
 
   const createDialog = useDialog<CreateDialogData>();
 
@@ -89,6 +96,7 @@ export function CalendarView({ view = 'dayGridMonth' }: CalendarViewProps): Reac
         customerId: member,
         startDate: startDateFilter,
         endDate: endDateFilter,
+        pagination: false,
         // page: page + 1, // Adjusting for API pagination
         // limit: rowsPerPage,
         sessionStatus: statusFilter !== 'ALL' ? statusFilter : undefined,
@@ -98,7 +106,7 @@ export function CalendarView({ view = 'dayGridMonth' }: CalendarViewProps): Reac
       const { data } = response.data;
 
       // Map the API response to FullCalendar format
-      const formattedEvents = data.items.map((item: any) => ({
+      const formattedEvents = data.map((item: any) => ({
         id: item.id,
         title: `Trainer: ${item.trainer.fullName} | Member: ${item.customer.fullName}`,
         start: `${item.sessionDate}T${item.sessionStartTime}`, // Combine date and time
@@ -211,6 +219,39 @@ export function CalendarView({ view = 'dayGridMonth' }: CalendarViewProps): Reac
     setSelectedEvent(null);
   };
 
+  const handleNotesChange = async (payload: { notes: string }) => {
+    try {
+      // Call the API to reschedule the event
+      const response = await axiosInstance.put(`/session-booking/session/notes/${selectedSession.id}`, {
+        notes: payload.notes,
+      });
+      toast.success('Slot rescheduled successfully!');
+      setIsDialogOpenForNotes(false); // Close the dialog
+      setSelectedSession(null);
+      fetchEvents(); // Refresh events
+    } catch (error) {
+      toast.error('Failed to reschedule slot');
+    }
+  };
+
+  const handleOpenRescheduleDialog = () => {
+    setIsDialogOpenForRechedule(true);
+  };
+
+  const handleOpenNotesDialog = () => {
+    setIsDialogOpenForNotes(true);
+  };
+
+  const handleDialogCloseForNotes = () => {
+    setIsDialogOpenForNotes(false);
+    setSelectedSession(null);
+  };
+
+  const handleDialogCloseForRechedule = () => {
+    setIsDialogOpenForRechedule(false);
+    setSelectedSession(null);
+  };
+
   const handleEventResize = React.useCallback(
     (arg: EventResizeDoneArg) => {
       const { event } = arg;
@@ -226,6 +267,42 @@ export function CalendarView({ view = 'dayGridMonth' }: CalendarViewProps): Reac
     },
     [updateEvent]
   );
+
+  const handleUpdateStatus = async (id: string, newStatus: BookingSessionEntry['status']): Promise<void> => {
+    let swalText = `Do you want to change the status?`;
+    let swalConfirmButtonText = `Yes, update it!`;
+    let swalSuccessMessage = `The status has been updated`;
+
+    if (newStatus == BOOKING_STATUS.CANCELED) {
+      swalText = `Do you want to cancel the booking?`;
+      swalConfirmButtonText = `Yes, cancel it!`;
+      swalSuccessMessage = `The booking has been cancelled`;
+    }
+
+    const result = await Swal.fire({
+      title: 'Are you sure?',
+      text: swalText,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: swalConfirmButtonText,
+      cancelButtonText: 'No, cancel!',
+    });
+
+    if (result.isConfirmed) {
+      try {
+        await axiosInstance.patch(`/session-booking/session/${id}/update-status/`, { status: newStatus });
+        setEvents((prevEntries) =>
+          prevEntries.map((entry) => (entry.id === id ? { ...entry, status: newStatus } : entry))
+        );
+        Swal.fire('Updated!', swalSuccessMessage, 'success');
+      } catch (error) {
+        Swal.fire('Error!', 'Failed to update.', 'error');
+        if (process.env.NODE_ENV !== 'production') {
+          // console.error('Failed to update status:', error);
+        }
+      }
+    }
+  };
 
   interface Slot {
     date: string; // Format: 'YYYY-MM-DD'
@@ -258,7 +335,7 @@ export function CalendarView({ view = 'dayGridMonth' }: CalendarViewProps): Reac
         sessionEndTime: payload.sessionEndTime,
       });
       toast.success('Slot rescheduled successfully!');
-      setIsDialogOpen(false); // Close the dialog
+      setIsDialogOpenForRechedule(false); // Close the dialog
       fetchEvents(); // Refresh events
     } catch (error) {
       toast.error('Failed to reschedule slot');
@@ -322,14 +399,37 @@ export function CalendarView({ view = 'dayGridMonth' }: CalendarViewProps): Reac
       </Stack>
 
       {/* Slot Reschedule Dialog */}
-      {selectedEvent && (
+      {selectedSession && (
         <SlotRescheduleForm
-          open={isDialogOpen}
-          onClose={handleDialogClose}
+          open={isDialogOpenForRechedule}
+          onClose={handleDialogCloseForRechedule}
           onSubmit={handleReschedule}
           sessionObj={selectedSession}
         />
       )}
+
+      {/* change notes Dialog */}
+      {selectedSession && (
+        <SessionNotesForm
+          open={isDialogOpenForNotes}
+          onClose={handleDialogCloseForNotes}
+          onSubmit={handleNotesChange}
+          sessionObj={selectedSession}
+        />
+      )}
+
+      {/* change notes Dialog */}
+      {selectedSession && (
+        <SessionPreview
+          open={isDialogOpen}
+          onClose={handleDialogClose}
+          sessionObj={selectedSession}
+          openRescheduleDialog={handleOpenRescheduleDialog}
+          openNotesDialog={handleOpenNotesDialog}
+          onUpdateStatus={handleUpdateStatus}
+        />
+      )}
+
       <ToastContainer />
       {createDialog.open ? (
         <EventDialog
