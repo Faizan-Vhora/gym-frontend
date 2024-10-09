@@ -123,12 +123,11 @@ body {
 .memberCard:hover,.bookin-card:hover{
     border: 1px solid #d0021b;  
    }
-/* .bookin-card {
-    background: #F7F5F2;
-    border: 1px solid #dcdfe4;
-    height: 320px;
-    width: 460px;
-   } */
+.bookin-card {
+    height: 290px;
+    padding: 20px 10px;
+   
+   }
    /* .bookin-card p , .duration p {
     font-size: 14px ;  
    } */
@@ -146,4 +145,8 @@ body {
       width: 100% !important;
       margin:20px;
     }
+    .bookin-card {
+      height: 400px;
+           
+     }
    }

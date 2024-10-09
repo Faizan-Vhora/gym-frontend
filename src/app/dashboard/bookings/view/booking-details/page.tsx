@@ -12,6 +12,7 @@ import { formatDate, formatUtcToLocalDatetime } from '@/utils/dateUtils';
 import { CustomLoader } from '@/utils/loader';
 import {
   Alert,
+  Avatar,
   Box,
   Card,
   CardContent,
@@ -19,12 +20,14 @@ import {
   Chip,
   Divider,
   Grid,
+  IconButton,
   Stack,
   Tab,
   Tabs,
   Typography,
 } from '@mui/material';
 import { height, padding, width } from '@mui/system';
+import { Barbell, Envelope, GenderIntersex, GenderMale, MapPin, Phone } from '@phosphor-icons/react';
 import { toast, ToastContainer } from 'react-toastify';
 
 import axiosInstance from '@/lib/axios';
@@ -73,97 +76,96 @@ export default function BookingDetailsPage(): React.JSX.Element {
 
           <Grid container rowGap={6} columnGap={6} justifyContent={'center'} sx={{ padding: '20px 10px' }}>
             {/*  Booking Details */}
-            <Grid item xs={12}  sm={6} md={4}>
+            <Grid item xs={12} sm={6} md={4}>
               <Typography variant="h6" component="div" color="black" marginBottom={'10px'}>
                 Booking
               </Typography>
-              <Card sx={{ height: 340, padding: 2 }} className="bookin-card">
-              <Stack sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between',borderBottom:'1px solid',borderColor:'#dcdfe4' }}>
-              <Typography variant="h6" textAlign={'end'} color="text.secondary" gutterBottom>
-                      {/* {BOOKING_TYPE_DETAILS[bookingDetail.bookingType].label} */}
-                      Weekly
-                    </Typography>
-                    <Typography textAlign={'end'} color="text.secondary" gutterBottom>
-                      {BOOKING_STATUS_DETAILS[bookingDetail.status].label}
-                    </Typography>
-              </Stack>
-               <Stack
+              <Card sx={{ height: 280, padding: 2 }} className="bookin-card">
+                <Stack
+                  sx={{
+                    display: 'flex',
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                    borderBottom: '1px solid',
+                    borderColor: '#dcdfe4',
+                  }}
+                >
+                  <Typography variant="h6" textAlign={'end'} color="text.secondary" gutterBottom>
+                    {/* {BOOKING_TYPE_DETAILS[bookingDetail.bookingType].label} */}
+                    Weekly
+                  </Typography>
+                  <Typography textAlign={'end'} color="text.secondary" gutterBottom>
+                    {BOOKING_STATUS_DETAILS[bookingDetail.status].label}
+                  </Typography>
+                </Stack>
+                <Stack
                   sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', marginTop: '30px' }}
                 >
-                  <Typography color="text.secondary"  gutterBottom>
-                    Start <br /> {formatDate(bookingDetail?.startDate)}
+                  <Typography color="text.secondary" gutterBottom>
+                    Start <br /> <Typography fontSize={'12px'}>{formatDate(bookingDetail?.startDate)}</Typography>
                   </Typography>
-                    <Typography color="text.secondary" textAlign={'center'}>
-                      Hours <br /> ({bookingDetail?.bookingHours} Hrs){' '}
-                    </Typography>
+                  <Typography color="text.secondary" textAlign={'center'}>
+                    Hours <br /> <Typography fontSize={'12px'}>({bookingDetail?.bookingHours} Hrs) </Typography>
+                  </Typography>
 
-                    <Typography color="text.secondary" textAlign={'center'}>
-                      End <br /> {formatDate(bookingDetail?.endDate)}
-                    </Typography>
-                  
+                  <Typography color="text.secondary" textAlign={'center'}>
+                    End <br /> <Typography fontSize={'12px'}>{formatDate(bookingDetail?.endDate)}</Typography>
+                  </Typography>
                 </Stack>
-                <Stack >
-                  <Stack rowGap={2} sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', marginTop: '30px' }}>
-                    <Typography color="text.secondary" fontWeight={'600'} >
-                      Booking By <br /> maaz
+                <Stack>
+                  <Stack
+                    rowGap={2}
+                    sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', marginTop: '30px' }}
+                  >
+                    <Typography color="text.secondary">
+                      Booking By <br /> <Typography fontSize={'12px'}>maaz</Typography>
                     </Typography>
 
-                    <Typography color="text.secondary" fontWeight={'600'} >
-                      Booking at: <br /> 10/08/2024
+                    <Typography color="text.secondary">
+                      Booking at: <br /> <Typography fontSize={'12px'}>10/08/2024</Typography>
                     </Typography>
                   </Stack>
-                  {/* <Stack rowGap={2}>
-    
-                    <Typography textAlign={'end'} color="text.secondary" gutterBottom>
-                      {formatUtcToLocalDatetime(bookingDetail?.createdAt)}
-                    </Typography>
-
-      
-                  </Stack> */}
                 </Stack>
-
-
-                {/* <Typography color="text.secondary" gutterBottom>
-            Booking Type: { BOOKING_TYPE_DETAILS[bookingDetail.bookingType].label }
-          </Typography>
-
-          <Typography color="text.secondary" gutterBottom>
-            Booking at: { formatUtcToLocalDatetime(bookingDetail?.createdAt) }
-          </Typography> */}
-
-                {/* <Typography color="text.secondary" gutterBottom>
-            Duration: from { formatDate(bookingDetail?.startDate) } to { formatDate(bookingDetail?.endDate)}
-            ({ bookingDetail?.bookingHours } Hrs)
-          </Typography>
-
-
-          <Typography color="text.secondary" gutterBottom>
-            Week Days : { bookingDetail?.weekdays }
-          </Typography> */}
-
-                {bookingDetail?.recurrenceWeeks ? (
-                  <Typography color="text.secondary" gutterBottom>
-                    Recurrence Weeks: {bookingDetail?.recurrenceWeeks}
-                  </Typography>
-                ) : (
-                  <></>
-                )}
-
-                {/* <Typography color="text.secondary" gutterBottom>
-            Booking Status: { BOOKING_STATUS_DETAILS[bookingDetail.status].label }
-          </Typography> */}
+                <Stack>
+                  {bookingDetail?.recurrenceWeeks ? (
+                    <Typography color="text.secondary" gutterBottom>
+                      Recurrence Weeks: {bookingDetail?.recurrenceWeeks}
+                    </Typography>
+                  ) : (
+                    <></>
+                  )}
+                </Stack>
               </Card>
             </Grid>
-            <Grid item xs={12}  sm={6} md={4}>
+            <Grid item xs={12} sm={6} md={4}>
               {/*  Payment Details */}
 
               <Typography variant="h6" component="div" color="black" marginBottom={'10px'}>
                 Payment Details
               </Typography>
-
-              <Card sx={{ height: 340, padding: 2 }} className="bookin-card">
-                <Stack sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
-                  <Stack rowGap={2}>
+              <Card sx={{ height: 280, padding: 2 }} className="bookin-card">
+                <Stack
+                  sx={{
+                    display: 'flex',
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                    borderBottom: '1px solid',
+                    borderColor: '#dcdfe4',
+                  }}
+                >
+                  <Typography variant="h6" textAlign={'end'} color="text.secondary" gutterBottom>
+                    <Typography textAlign={'end'} fontWeight={'600'} color="text.secondary" gutterBottom>
+                      {BOOKING_PAYMENT_TYPE_DETAILS[bookingDetail.paymentType].label}
+                    </Typography>
+                  </Typography>
+                  <Typography textAlign={'end'} color="text.secondary" gutterBottom>
+                    {BOOKING_PAYMENT_STATUS_DETAILS[bookingDetail.paymentStatus].label}
+                  </Typography>
+                </Stack>
+                <Stack
+                  sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', marginTop: '20px' }}
+                >
+                  <Stack rowGap={1}>
                     <Typography color="text.secondary" fontWeight={'600'} gutterBottom>
                       Booking Hours :
                     </Typography>
@@ -171,9 +173,9 @@ export default function BookingDetailsPage(): React.JSX.Element {
                     <Typography color="text.secondary" fontWeight={'600'} gutterBottom>
                       Trainer Rate Per Hour :
                     </Typography>
-                    <Typography color="text.secondary" fontWeight={'600'} gutterBottom>
+                    {/* <Typography color="text.secondary" fontWeight={'600'} gutterBottom>
                       Payment Type:
-                    </Typography>
+                    </Typography> */}
                     <Typography color="text.secondary" fontWeight={'600'} gutterBottom>
                       Booking Amount :
                     </Typography>
@@ -183,20 +185,20 @@ export default function BookingDetailsPage(): React.JSX.Element {
                     <Typography color="text.secondary" fontWeight={'600'} gutterBottom>
                       Total Amount :
                     </Typography>
-                    <Typography color="text.secondary" fontWeight={'600'} gutterBottom>
+                    {/* <Typography color="text.secondary" fontWeight={'600'} gutterBottom>
                       Payment Status:
-                    </Typography>
+                    </Typography> */}
                   </Stack>
-                  <Stack rowGap={2}>
+                  <Stack rowGap={1}>
                     <Typography textAlign={'end'} color="text.secondary" gutterBottom>
                       {bookingDetail?.bookingHours}
                     </Typography>
                     <Typography textAlign={'end'} color="text.secondary" gutterBottom>
                       ${bookingDetail?.trainerRatePerHour}
                     </Typography>
-                    <Typography textAlign={'end'} color="text.secondary" gutterBottom>
+                    {/* <Typography textAlign={'end'} color="text.secondary" gutterBottom>
                       {BOOKING_PAYMENT_TYPE_DETAILS[bookingDetail.paymentType].label}
-                    </Typography>
+                    </Typography> */}
                     <Typography textAlign={'end'} color="text.secondary" gutterBottom>
                       ${bookingDetail?.bookingAmount}
                     </Typography>
@@ -206,208 +208,189 @@ export default function BookingDetailsPage(): React.JSX.Element {
                     <Typography textAlign={'end'} color="text.secondary" gutterBottom>
                       ${bookingDetail?.netTotalAmount}
                     </Typography>
-                    <Typography textAlign={'end'} color="text.secondary" gutterBottom>
+                    {/* <Typography textAlign={'end'} color="text.secondary" gutterBottom>
                       {BOOKING_PAYMENT_STATUS_DETAILS[bookingDetail.paymentStatus].label}
-                    </Typography>
+                    </Typography> */}
                   </Stack>
                 </Stack>
-
-                {/* <Typography color="text.secondary" gutterBottom>
-                  Booking Hours : {bookingDetail?.bookingHours}
-                </Typography>
-
-                <Typography color="text.secondary" gutterBottom>
-                  Trainer Rate Per Hour : ${bookingDetail?.trainerRatePerHour}
-                </Typography>
-
-                <Typography color="text.secondary" gutterBottom>
-                  Payment Type: {BOOKING_PAYMENT_TYPE_DETAILS[bookingDetail.paymentType].label}
-                </Typography>
-
-                <Typography color="text.secondary" gutterBottom>
-                  Booking Amount : ${bookingDetail?.bookingAmount}
-                </Typography>
-
-                <Typography color="text.secondary" gutterBottom>
-                  Discount : ${bookingDetail?.discount}
-                </Typography>
-
-                <Typography color="text.secondary" gutterBottom>
-                  Total Amount : ${bookingDetail?.netTotalAmount}
-                </Typography>
-
-                <Typography color="text.secondary" gutterBottom>
-                  Payment Status: {BOOKING_PAYMENT_STATUS_DETAILS[bookingDetail.paymentStatus].label}
-                </Typography> */}
               </Card>
             </Grid>
-            
-            <Grid item xs={12}  sm={6} md={4}>
+
+            <Grid item xs={12} sm={6} md={4}>
               {/* Member Details */}
               <Typography variant="h6" component="div" color="black" marginBottom={'10px'}>
                 Member Details
               </Typography>
-              <Card sx={{ height: 340, padding: 2 }} className="bookin-card">
-                <Stack sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
-                  <Stack rowGap={2}>
-                    <Typography color="text.secondary" fontWeight={'600'} gutterBottom>
-                      Member Id :
-                    </Typography>
+              <Card className="bookin-card">
+                <Stack
+                  sx={{
+                    display: 'flex',
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                    borderBottom: '1px solid',
+                    borderColor: '#dcdfe4',
+                    marginBottom: '30px',
+                  }}
+                >
+                  <Typography color="text.secondary" fontWeight={'600'} gutterBottom>
+                    Member Id :
+                  </Typography>
+                  <Typography textAlign={'end'} color="text.secondary" gutterBottom>
+                    {bookingDetail?.customer?.memberId}
+                  </Typography>
+                </Stack>
 
-                    <Typography color="text.secondary" fontWeight={'600'} gutterBottom>
-                      Full Name :
-                    </Typography>
-                    <Typography color="text.secondary" fontWeight={'600'} gutterBottom>
-                      Email :
-                    </Typography>
-                    <Typography color="text.secondary" fontWeight={'600'} gutterBottom>
-                      Phone Number :
-                    </Typography>
-                    <Typography color="text.secondary" fontWeight={'600'} gutterBottom>
-                      Gender :
-                    </Typography>
-                    <Typography color="text.secondary" fontWeight={'600'} gutterBottom>
-                      address :
-                    </Typography>
-                  </Stack>
-                  <Stack rowGap={2}>
-                    <Typography textAlign={'end'} color="text.secondary" gutterBottom>
-                      {bookingDetail?.customer?.memberId}
-                    </Typography>
-                    <Typography textAlign={'end'} color="text.secondary" gutterBottom>
-                      {bookingDetail?.customer?.fullName}
-                    </Typography>
-                    <Typography textAlign={'end'} color="text.secondary" gutterBottom>
-                      {bookingDetail?.customer?.email}
-                    </Typography>
-                    <Typography textAlign={'end'} color="text.secondary" gutterBottom>
-                      {bookingDetail?.customer?.phoneNumber}
-                    </Typography>
-                    <Typography textAlign={'end'} color="text.secondary" gutterBottom>
-                      {bookingDetail?.customer?.gender}
-                    </Typography>
-                    <Typography textAlign={'end'} color="text.secondary" gutterBottom>
-                      {bookingDetail?.customer?.address}
-                    </Typography>
+                <Stack
+                  sx={{
+                    display: 'flex',
+                    flexDirection: {
+                      xs: 'column', // Column direction for mobile screens
+                      md: 'row', // Row direction for larger screens like tablets and above
+                    },
+                    alignItems: 'start',
+                    columnGap: '20px',
+                  }}
+                >
+                  <Avatar sx={{ height: '76px', width: '76px' }}></Avatar>
+
+                  <Stack>
+                      <Typography color="text.secondary" fontWeight={'600'} gutterBottom>
+                        {bookingDetail?.customer?.fullName}
+                      </Typography>
+        
+                  
+                    <Stack flexDirection={'row'} alignItems={'center'}>
+                      <IconButton>
+                        <Envelope size={25} />
+                      </IconButton>
+
+                      <Typography
+                        color="text.secondary"
+                        gutterBottom
+                        sx={{
+                          wordBreak: 'break-word',
+                          overflowWrap: 'break-word',
+                        }}
+                      >
+                        {bookingDetail?.customer?.email}
+                      </Typography>
+                    </Stack>
+                    <Stack flexDirection={'row'} alignItems={'center'}>
+                      <IconButton>
+                        {' '}
+                        <Phone size={25} />
+                      </IconButton>
+                      <Typography color="text.secondary" gutterBottom>
+                        {bookingDetail?.customer?.phoneNumber}
+                      </Typography>
+                    </Stack>
+                    <Stack flexDirection={'row'} alignItems={'center'}>
+                      <IconButton>
+                      <GenderIntersex size={25} />
+                      </IconButton>
+                      <Typography  textAlign={'end'} color="text.secondary" gutterBottom>
+                        {bookingDetail?.customer?.gender}
+                      </Typography>
+                    </Stack>
+                    <Stack flexDirection={'row'} alignItems={'center'}>
+                      <IconButton>
+                        <MapPin size={25} />
+                      </IconButton>
+                      <Typography textAlign={'end'} color="text.secondary" gutterBottom>
+                        {bookingDetail?.customer?.address}
+                      </Typography>
+                    </Stack>
                   </Stack>
                 </Stack>
 
-                {/* <Typography color="text.secondary" gutterBottom>
-           Member Id  : { bookingDetail?.customer?.memberId }
-          </Typography>
-
-          <Typography color="text.secondary" gutterBottom>
-            Full Name  : { bookingDetail?.customer?.fullName }
-          </Typography>
-
-          <Typography color="text.secondary" gutterBottom>
-            Email  : { bookingDetail?.customer?.email }
-          </Typography>
-
-          <Typography color="text.secondary" gutterBottom>
-            Phone Number  : { bookingDetail?.customer?.phoneNumber }
-          </Typography>
-
-          <Typography color="text.secondary" gutterBottom>
-          Gender  : { bookingDetail?.customer?.gender }
-          </Typography>
-
-          <Typography color="text.secondary" gutterBottom>
-           address  : { bookingDetail?.customer?.address }
-          </Typography> */}
+                {/* Add other fields as necessary */}
               </Card>
             </Grid>
-            <Grid item xs={12}  sm={6} md={4}>
+            <Grid item xs={12} sm={6} md={4}>
               {/* Trainer Details */}
               <Typography variant="h6" component="div" color="black" marginBottom={'10px'}>
                 Trainer Details
               </Typography>
-              <Card sx={{ height: 340, padding: 2 }} className="bookin-card">
-                <Stack sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
-                  <Stack rowGap={2}>
-                    <Typography color="text.secondary" fontWeight={'600'} gutterBottom>
-                      Trainer Id :
-                    </Typography>
-
-                    <Typography color="text.secondary" fontWeight={'600'} gutterBottom>
-                      Full Name :
-                    </Typography>
-                    <Typography color="text.secondary" fontWeight={'600'} gutterBottom>
-                      Email :
-                    </Typography>
-                    <Typography color="text.secondary" fontWeight={'600'} gutterBottom>
-                      Phone Number :
-                    </Typography>
-                    <Typography color="text.secondary" fontWeight={'600'} gutterBottom>
-                      Gender :
-                    </Typography>
-                    <Typography color="text.secondary" fontWeight={'600'} gutterBottom>
-                      Experience :
-                    </Typography>
-                    <Typography color="text.secondary" fontWeight={'600'} gutterBottom>
-                      address :
-                    </Typography>
-                  </Stack>
-                  <Stack rowGap={2}>
-                    <Typography textAlign={'end'} color="text.secondary" gutterBottom>
-                      {bookingDetail?.trainer?.memberId}
-                    </Typography>
-                    <Typography textAlign={'end'} color="text.secondary" gutterBottom>
-                      {bookingDetail?.trainer?.fullName}
-                    </Typography>
-                    <Typography textAlign={'end'} color="text.secondary" gutterBottom>
-                      {bookingDetail?.trainer?.email}
-                    </Typography>
-                    <Typography textAlign={'end'} color="text.secondary" gutterBottom>
-                      {bookingDetail?.trainer?.phoneNumber}
-                    </Typography>
-                    <Typography textAlign={'end'} color="text.secondary" gutterBottom>
-                      {bookingDetail?.trainer?.gender}
-                    </Typography>
-                    <Typography textAlign={'end'} color="text.secondary" gutterBottom>
-                      {bookingDetail?.trainer?.experience}
-                    </Typography>
-                    <Typography textAlign={'end'} color="text.secondary" gutterBottom>
-                      {bookingDetail?.trainer?.address}
-                    </Typography>
-                  </Stack>
+              <Card  className="bookin-card">
+                <Stack
+                  sx={{
+                    display: 'flex',
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                    borderBottom: '1px solid',
+                    borderColor: '#dcdfe4',
+                    marginBottom: '30px',
+                  }}
+                >
+                  <Typography color="text.secondary" fontWeight={'600'} gutterBottom>
+                    Trainer Id :
+                  </Typography>
+                  <Typography textAlign={'end'} color="text.secondary" gutterBottom>
+                    {bookingDetail?.trainer?.memberId}
+                  </Typography>
                 </Stack>
 
-                {/* <Typography color="text.secondary" gutterBottom>
-                  Trainer Id : {bookingDetail?.trainer?.memberId}
-                </Typography>
+                <Stack sx={{ display: 'flex', flexDirection:{
+                      xs: 'column', // Column direction for mobile screens
+                      md: 'row', // Row direction for larger screens like tablets and above
+                    }, alignItems: 'start', columnGap: '20px' }}>
+                  <Stack>
+                  <Avatar sx={{ height: '76px', width: '76px' }}></Avatar>
+                  <Stack flexDirection={'row'} justifyContent={'center'} alignItems={'center'}>
+                      <IconButton>
+                        <Barbell size={18} />
+                      </IconButton>
+                      <Typography textAlign={'end'} color="text.secondary" gutterBottom>
+                        {bookingDetail?.trainer?.experience}
+                      </Typography>
+                    </Stack>
+                      </Stack>
+                  <Stack>
+                    
+                      <Typography color="text.secondary" fontWeight={'600'} gutterBottom>
+                        {bookingDetail?.trainer?.fullName}
+                      </Typography>
 
-                <Typography color="text.secondary" gutterBottom>
-                  Full Name : {bookingDetail?.trainer?.fullName}
-                </Typography>
-
-                <Typography color="text.secondary" gutterBottom>
-                  Email : {bookingDetail?.trainer?.email}
-                </Typography>
-
-                <Typography color="text.secondary" gutterBottom>
-                  Phone Number : {bookingDetail?.trainer?.phoneNumber}
-                </Typography>
-
-                <Typography color="text.secondary" gutterBottom>
-                  Gender : {bookingDetail?.trainer?.gender}
-                </Typography>
-
-                <Typography color="text.secondary" gutterBottom>
-                  Experience : {bookingDetail?.trainer?.experience} Years
-                </Typography>
-
-                <Typography color="text.secondary" gutterBottom>
-                  address : {bookingDetail?.trainer?.address}
-                </Typography> */}
+                    
+                    <Stack flexDirection={'row'} alignItems={'center'}>
+                      <IconButton>
+                        <Envelope size={25} />
+                      </IconButton>
+                      <Typography color="text.secondary" gutterBottom>
+                        {bookingDetail?.trainer?.email}
+                      </Typography>
+                    </Stack>
+                    <Stack flexDirection={'row'} alignItems={'center'}>
+                      <IconButton>
+                        {' '}
+                        <Phone size={25} />
+                      </IconButton>
+                      <Typography color="text.secondary" gutterBottom>
+                        {bookingDetail?.trainer?.phoneNumber}
+                      </Typography>
+                    </Stack>
+                    <Stack flexDirection={'row'} alignItems={'center'}>
+                      <IconButton>
+                      <GenderIntersex size={25} />
+                      </IconButton>
+                      <Typography  textAlign={'end'} color="text.secondary" gutterBottom>
+                        {bookingDetail?.trainer?.gender}
+                      </Typography>
+                    </Stack>
+                    <Stack flexDirection={'row'} alignItems={'center'}>
+                      <IconButton>
+                        <MapPin size={25} />
+                      </IconButton>
+                      <Typography textAlign={'end'} color="text.secondary" gutterBottom>
+                        {bookingDetail?.trainer?.address}
+                      </Typography>
+                    </Stack>
+ 
+                  </Stack>
+                </Stack>
               </Card>
-              
             </Grid>
-
-
           </Grid>
-
-          {/* </CardContent> */}
         </Card>
       )}
 
