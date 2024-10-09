@@ -2,7 +2,17 @@ import * as React from 'react';
 import { useState } from 'react';
 import { BOOKING_STATUS_OPTIONS, BOOKING_TYPE_OPTIONS } from '@/utils/constant';
 import { DATE_FORMAT } from '@/utils/dateUtils';
-import { FormControl, Grid, IconButton, InputAdornment, InputLabel, MenuItem, Select, TextField } from '@mui/material';
+import {
+  Box,
+  FormControl,
+  Grid,
+  IconButton,
+  InputAdornment,
+  InputLabel,
+  MenuItem,
+  Select,
+  TextField,
+} from '@mui/material';
 import type { SelectChangeEvent } from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker'; // Import DatePicker
 import { X as XIcon } from '@phosphor-icons/react'; // Import XIcon from phosphor-react
@@ -130,12 +140,21 @@ export function BookingFilters({
     if (date && endDate && endDate.isBefore(date)) {
       setEndDate(null);
     }
-
   };
 
   const handleEndDateChange = (date: Dayjs | null): void => {
     setEndDate(date);
     onEndDateChange(date ? dayjs(date).format('YYYY-MM-DD') : '');
+  };
+
+  const handleClearStartDate = (): void => {
+    setStartDate(null);
+    onStartDateChange('');
+  };
+
+  const handleClearEndDate = (): void => {
+    setEndDate(null);
+    onEndDateChange('');
   };
 
   return (
@@ -160,34 +179,49 @@ export function BookingFilters({
       </Grid>
 
       <Grid item md={3} xs={12}>
-        <DatePicker
-          format={`${DATE_FORMAT}`}
-          views={['year', 'month', 'day']}
-          label="Start Date"
-          value={startDate}
-          onChange={handleStartDateChange}
-          slotProps={{
-            textField: {
-              fullWidth: true,
-            },
-          }}
-        />
+        <Box display="flex" alignItems="center">
+          <DatePicker
+            format={`${DATE_FORMAT}`}
+            views={['year', 'month', 'day']}
+            label="Start Date"
+            value={startDate}
+            onChange={handleStartDateChange}
+            slotProps={{
+              textField: {
+                fullWidth: true,
+              },
+            }}
+          />
+          {startDate && (
+            <IconButton onClick={handleClearStartDate} edge="end">
+              <XIcon size={20} /> {/* Adjust icon size as needed */}
+            </IconButton>
+          )}
+        </Box>
       </Grid>
 
       <Grid item md={3} xs={12}>
-        <DatePicker
-          format={`${DATE_FORMAT}`}
-          views={['year', 'month', 'day']}
-          label="End Date"
-          value={endDate}
-          onChange={handleEndDateChange}
-          minDate={startDate ? startDate : undefined} // Pass undefined if startDate is null
-          slotProps={{
-            textField: {
-              fullWidth: true,
-            },
-          }}
-        />
+        <Box display="flex" alignItems="center">
+          <DatePicker
+            format={`${DATE_FORMAT}`}
+            views={['year', 'month', 'day']}
+            label="End Date"
+            value={endDate}
+            onChange={handleEndDateChange}
+            minDate={startDate ? startDate : undefined} // Pass undefined if startDate is null
+            slotProps={{
+              textField: {
+                fullWidth: true,
+              },
+            }}
+          />
+
+          {endDate && (
+            <IconButton onClick={handleClearEndDate} edge="end">
+              <XIcon size={20} /> {/* Adjust icon size as needed */}
+            </IconButton>
+          )}
+        </Box>
       </Grid>
 
       <Grid item md={3} xs={12}>
