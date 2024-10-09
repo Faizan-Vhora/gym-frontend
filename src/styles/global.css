@@ -137,6 +137,12 @@ body {
     flex-wrap: wrap;
     /* column-gap: 20px; */
    }
+   .massge p {
+    margin: 0px;
+   }
+   .massge-input > .ck-rounded-corners .ck.ck-editor__main>.ck-editor__editable, .ck.ck-editor__main>.ck-editor__editable.ck-rounded-corners {
+    min-height: 90px;
+   }
    /* .banner-image .mui-p2z5n0-MuiPaper-root-MuiCard-root{
     margin: 20px;
   } */

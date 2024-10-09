@@ -288,7 +288,7 @@ export default function BookingDetailsPage(): React.JSX.Element {
                       <IconButton>
                       <GenderIntersex size={25} />
                       </IconButton>
-                      <Typography  textAlign={'end'} color="text.secondary" gutterBottom>
+                      <Typography  color="text.secondary" gutterBottom>
                         {bookingDetail?.customer?.gender}
                       </Typography>
                     </Stack>
@@ -296,7 +296,7 @@ export default function BookingDetailsPage(): React.JSX.Element {
                       <IconButton>
                         <MapPin size={25} />
                       </IconButton>
-                      <Typography textAlign={'end'} color="text.secondary" gutterBottom>
+                      <Typography  color="text.secondary" gutterBottom>
                         {bookingDetail?.customer?.address}
                       </Typography>
                     </Stack>
@@ -340,7 +340,7 @@ export default function BookingDetailsPage(): React.JSX.Element {
                       <IconButton>
                         <Barbell size={18} />
                       </IconButton>
-                      <Typography textAlign={'end'} color="text.secondary" gutterBottom>
+                      <Typography  color="text.secondary" gutterBottom>
                         {bookingDetail?.trainer?.experience}
                       </Typography>
                     </Stack>
@@ -373,7 +373,7 @@ export default function BookingDetailsPage(): React.JSX.Element {
                       <IconButton>
                       <GenderIntersex size={25} />
                       </IconButton>
-                      <Typography  textAlign={'end'} color="text.secondary" gutterBottom>
+                      <Typography   color="text.secondary" gutterBottom>
                         {bookingDetail?.trainer?.gender}
                       </Typography>
                     </Stack>
@@ -381,7 +381,7 @@ export default function BookingDetailsPage(): React.JSX.Element {
                       <IconButton>
                         <MapPin size={25} />
                       </IconButton>
-                      <Typography textAlign={'end'} color="text.secondary" gutterBottom>
+                      <Typography  color="text.secondary" gutterBottom>
                         {bookingDetail?.trainer?.address}
                       </Typography>
                     </Stack>

@@ -177,18 +177,18 @@ export default function SupportForm(): React.JSX.Element {
 
           {/* Old Messages in Card */}
           {supportTicketMessages.length ? (
-            <Card sx={{ mb: 1, height: '300px', overflowY: 'auto' }}>
+            <Card sx={{ mb: 5, height: '450px', overflowY: 'auto' }}>
               <CardHeader title="Messages" />
               <CardContent>
                 <Grid container direction="column">
                   {supportTicketMessages.map((tMessage, index) => (
                     <Grid item key={index} xs={12}>
-                      <Card sx={{ mb: 1 }}>
-                        <CardContent>
+                      <Card sx={{ mb: 2, width:'fit-content'}}>
+                        <CardContent sx={{padding:'10px 20px'}}>
                           <Typography variant="body2" color="textSecondary">
                             {tMessage.createdBy.fullName} - {formatUtcToLocalDatetime(tMessage.createdAt)}
                           </Typography>
-                          <Typography dangerouslySetInnerHTML={{ __html: tMessage.message }} />
+                          <Typography sx={{overflowWrap:'anywhere'}} className='massge' dangerouslySetInnerHTML={{ __html: tMessage.message }} />
                         </CardContent>
                       </Card>
                     </Grid>
@@ -205,17 +205,17 @@ export default function SupportForm(): React.JSX.Element {
 
           {/* New Message Input */}
           <Card>
-            <CardHeader title="Reply" />
+            <CardHeader sx={{padding:'20px 20px 0px 26px'}} title="Reply" />
             <CardContent>
               <Grid container spacing={2}>
-                <Grid item xs={12}>
+                <Grid item xs={12} sx={{paddingTop:'0px'}}>
                   <FormControl fullWidth required error={!!errors.ticketMessage}>
                     <CustomEditor
                       customePlaceholder="Type your message here..."
                       data={ticketMessage}
                       onChange={handleEditorChange} // Use the handler to manage CKEditor change
                     />
-                    {errors.ticketMessage && <FormHelperText>{errors.ticketMessage.message}</FormHelperText>}
+                    {errors.ticketMessage && <FormHelperText className='massge-input'>{errors.ticketMessage.message}</FormHelperText>}
                   </FormControl>
                 </Grid>
               </Grid>
