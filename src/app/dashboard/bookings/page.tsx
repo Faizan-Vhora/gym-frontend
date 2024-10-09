@@ -31,6 +31,10 @@ export default function Page(): React.JSX.Element {
   const [searchTerm, setSearchTerm] = React.useState('');
   const [statusFilter, setStatusFilter] = React.useState('All');
   const [bookingTypeFilter, setBookingTypeFilter] = React.useState('All');
+  const [trainerIdFilter, setTrainerIdFilter] = React.useState('All');
+  const [customerIdFilter, setCustomerIdFilter] = React.useState('All');
+  const [startDateFilter, setStarteDateFilter] = React.useState('');
+  const [endDateFilter, setEndDateFilter] = React.useState('');
   const [page, setPage] = React.useState<number>(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [count, setCount] = React.useState<number>(0);
@@ -50,8 +54,12 @@ export default function Page(): React.JSX.Element {
         page: page + 1,
         limit: rowsPerPage, // Number of rows per page
         search: searchTerm, // Search term
-        bookingType: bookingTypeFilter !== 'All' ? bookingTypeFilter : null, // Booking type filter
-        status: statusFilter !== 'All' ? statusFilter : null, // Status filter
+        bookingType: bookingTypeFilter !== 'All' ? bookingTypeFilter : null,
+        trainerId: trainerIdFilter !== 'All' ? trainerIdFilter : null,
+        customerId: customerIdFilter !== 'All' ? customerIdFilter : null,
+        startDate: startDateFilter !== '' ? startDateFilter : null,
+        endDate: endDateFilter !== '' ? endDateFilter : null,
+        status: statusFilter !== 'All' ? statusFilter : null,
       }
 
       const response = await axiosInstance.get<{ data: { items: BookingEntry[]; meta: { totalItems: number } } }>(
@@ -72,7 +80,7 @@ export default function Page(): React.JSX.Element {
     } finally {
       setLoading(false);
     }
-  }, [page, rowsPerPage, searchTerm, statusFilter, bookingTypeFilter]);
+  }, [page, rowsPerPage, searchTerm, statusFilter, bookingTypeFilter, trainerIdFilter, customerIdFilter, startDateFilter, endDateFilter]);
 
 
   // const handleAddClick = (): void => {
@@ -143,6 +151,32 @@ export default function Page(): React.JSX.Element {
     setPage(0);
 
   };
+
+
+  const handleTrainerIdChange = (trainerId: string): void => {
+    setTrainerIdFilter(trainerId);
+    setPage(0);
+
+  };
+
+
+  const handleCustomerIdChange = (customerId: string): void => {
+    setCustomerIdFilter(customerId);
+    setPage(0);
+  };
+
+  const handleStartDateChange = (startDate: string): void => {
+    setStarteDateFilter(startDate);
+    setPage(0);
+  };
+
+  const handleEndDateChange = (endDate: string): void => {
+    setEndDateFilter(endDate);
+    setPage(0);
+  };
+
+
+
   // <methods hooks> (end)
 
 
@@ -180,6 +214,10 @@ export default function Page(): React.JSX.Element {
          onSearchChange={handleSearchChange}
          onStatusChange={handleStatusChange}
          onBookingTypeChange={handleBookingTypeChange}
+         onTrainerIdChange={handleTrainerIdChange}
+         onCustomerIdChange={handleCustomerIdChange}
+         onStartDateChange={handleStartDateChange}
+         onEndDateChange={handleEndDateChange}
        />
       </Stack>
 
