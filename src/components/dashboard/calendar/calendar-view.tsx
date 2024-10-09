@@ -71,12 +71,28 @@ export function CalendarView({ view = 'dayGridMonth' }: CalendarViewProps): Reac
   const [selectedSession, setSelectedSession] = React.useState<any | null>(null);
   const [selectedEvent, setSelectedEvent] = React.useState<any | null>(null);
   const [isDialogOpen, setIsDialogOpen] = React.useState(false);
+  const [searchTerm, setSearchTerm] = React.useState('');
+  const [trainer, selectedTrainer] = React.useState<number | null>(null);
+  const [member, selectedMember] = React.useState<number | null>(null);
+  const [statusFilter, setStatusFilter] = React.useState('ALL');
+  const [startDateFilter, setStarteDateFilter] = React.useState('');
+  const [endDateFilter, setEndDateFilter] = React.useState('');
 
   const createDialog = useDialog<CreateDialogData>();
 
   const fetchEvents = async () => {
     try {
-      const response = await axiosInstance.get('/session-booking/session/list');
+      const params = {
+        trainerId: trainer,
+        customerId: member,
+        startDate: startDateFilter,
+        endDate: startDateFilter,
+        // page: page + 1, // Adjusting for API pagination
+        // limit: rowsPerPage,
+        sessionStatus: statusFilter !== 'ALL' ? statusFilter : undefined,
+        search: searchTerm,
+      };
+      const response = await axiosInstance.get('/session-booking/session/list', { params });
       const { data } = response.data;
 
       // Map the API response to FullCalendar format
@@ -98,7 +114,7 @@ export function CalendarView({ view = 'dayGridMonth' }: CalendarViewProps): Reac
 
   React.useEffect(() => {
     void fetchEvents();
-  }, []);
+  }, [searchTerm, trainer, member, statusFilter, startDateFilter, startDateFilter]);
 
   const handleViewChange = React.useCallback(
     (value: ViewMode) => {
@@ -112,6 +128,30 @@ export function CalendarView({ view = 'dayGridMonth' }: CalendarViewProps): Reac
     },
     [router]
   );
+
+  const handleSearchChange: (newSearchTerm: string) => void = (newSearchTerm) => {
+    setSearchTerm(newSearchTerm);
+  };
+
+  const handleTrainerSelect: (trainer: number) => void = (trainer) => {
+    selectedTrainer(trainer);
+  };
+
+  const handleMemberSelect: (trainer: number) => void = (trainer) => {
+    selectedMember(trainer);
+  };
+
+  const handleStatusChange: (status: string) => void = (status) => {
+    setStatusFilter(status);
+  };
+
+  const handleStartDateChange = (startDate: string): void => {
+    setStarteDateFilter(startDate);
+  };
+
+  const handleEndDateChange = (endDate: string): void => {
+    setEndDateFilter(endDate);
+  };
 
   const handleDateToday = React.useCallback(() => {
     const calendarApi = calendarRef.current?.getApi();
@@ -203,13 +243,6 @@ export function CalendarView({ view = 'dayGridMonth' }: CalendarViewProps): Reac
     weekSlots: WeekSlot[];
   }
 
-  interface ScheduleResponse {
-    success: boolean;
-    message: string;
-    data: DaySchedule[]; // Now correctly represents the API response
-    errors: Record<string, unknown>; // Adjust as needed for error handling
-  }
-
   const handleReschedule = async (payload: {
     sessionDate: string;
     sessionStartTime: string;
@@ -233,7 +266,18 @@ export function CalendarView({ view = 'dayGridMonth' }: CalendarViewProps): Reac
   return (
     <React.Fragment>
       <Stack spacing={4}>
-        <Toolbar date={date} onAdd={handleAdd} onViewChange={handleViewChange} view={view} />
+        <Toolbar
+          date={date}
+          onAdd={handleAdd}
+          onViewChange={handleViewChange}
+          view={view}
+          onSearchChange={handleSearchChange}
+          handleTrainerChange={handleTrainerSelect}
+          handleMemberChange={handleMemberSelect}
+          onStatusChange={handleStatusChange}
+          onStartDateChange={handleStartDateChange}
+          onEndDateChange={handleEndDateChange}
+        />
         <Card sx={{ overflowX: 'auto' }}>
           <Box sx={{ minWidth: '800px' }}>
             <Calendar
