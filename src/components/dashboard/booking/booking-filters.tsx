@@ -125,6 +125,12 @@ export function BookingFilters({
   const handleStartDateChange = (date: Dayjs | null): void => {
     setStartDate(date);
     onStartDateChange(date ? dayjs(date).format('YYYY-MM-DD') : '');
+
+    // If endDate is not null and is before the new startDate, reset it
+    if (date && endDate && endDate.isBefore(date)) {
+      setEndDate(null);
+    }
+
   };
 
   const handleEndDateChange = (date: Dayjs | null): void => {
@@ -175,6 +181,7 @@ export function BookingFilters({
           label="End Date"
           value={endDate}
           onChange={handleEndDateChange}
+          minDate={startDate ? startDate : undefined} // Pass undefined if startDate is null
           slotProps={{
             textField: {
               fullWidth: true,
