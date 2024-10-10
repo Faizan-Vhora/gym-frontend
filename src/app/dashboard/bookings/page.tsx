@@ -17,7 +17,7 @@ export default function Page(): React.JSX.Element {
 
   const [entries, setEntries] = React.useState<BookingEntry[]>([]);
   const [searchTerm, setSearchTerm] = React.useState('');
-  const [statusFilter, setStatusFilter] = React.useState('All');
+  // const [statusFilter, setStatusFilter] = React.useState('All');
   const [bookingTypeFilter, setBookingTypeFilter] = React.useState('All');
   const [trainerIdFilter, setTrainerIdFilter] = React.useState('All');
   const [customerIdFilter, setCustomerIdFilter] = React.useState('All');
@@ -44,7 +44,7 @@ export default function Page(): React.JSX.Element {
         customerId: customerIdFilter !== 'All' ? customerIdFilter : null,
         startDate: startDateFilter !== '' ? startDateFilter : null,
         endDate: endDateFilter !== '' ? endDateFilter : null,
-        status: statusFilter !== 'All' ? statusFilter : null,
+        // status: statusFilter !== 'All' ? statusFilter : null,
       };
 
       const response = await axiosInstance.get<{ data: { items: BookingEntry[]; meta: { totalItems: number } } }>(
@@ -68,7 +68,7 @@ export default function Page(): React.JSX.Element {
     page,
     rowsPerPage,
     searchTerm,
-    statusFilter,
+    // statusFilter,
     bookingTypeFilter,
     trainerIdFilter,
     customerIdFilter,
@@ -129,10 +129,10 @@ export default function Page(): React.JSX.Element {
     setPage(0);
   };
 
-  const handleStatusChange = (status: string): void => {
-    setStatusFilter(status);
-    setPage(0);
-  };
+  // const handleStatusChange = (status: string): void => {
+  //   setStatusFilter(status);
+  //   setPage(0);
+  // };
 
   const handleBookingTypeChange = (type: string): void => {
     setBookingTypeFilter(type);
@@ -190,7 +190,7 @@ export default function Page(): React.JSX.Element {
         <Stack sx={{ padding: '30px' }}>
           <BookingFilters
             onSearchChange={handleSearchChange}
-            onStatusChange={handleStatusChange}
+            // onStatusChange={handleStatusChange}
             onBookingTypeChange={handleBookingTypeChange}
             onTrainerIdChange={handleTrainerIdChange}
             onCustomerIdChange={handleCustomerIdChange}

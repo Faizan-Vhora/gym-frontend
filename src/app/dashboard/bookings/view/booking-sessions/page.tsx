@@ -31,7 +31,7 @@ export default function BookingSessionsPage(): React.JSX.Element {
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [count, setCount] = React.useState<number>(0);
   const [loading, setLoading] = React.useState(true);
-  const [selectedSession, setSelectedSession] = React.useState<any | null>(null);
+  const [selectedSession, setSelectedSession] = React.useState<BookingSessionEntry | null>(null);
   const [isDialogOpen, setIsDialogOpen] = React.useState(false);
   const [isDialogOpenForNotes, setIsDialogOpenForNotes] = React.useState(false);
 
@@ -59,14 +59,14 @@ export default function BookingSessionsPage(): React.JSX.Element {
         },
       });
 
-      console.log('sessions: response: ', response);
+      // console.log('sessions: response: ', response);
 
       setEntries(response.data.data.items);
       setCount(response.data.data.meta.totalItems); // Total number of items for pagination controls
-    } catch (error) {
-      if (process.env.NODE_ENV !== 'production') {
+    } catch (error : unknown) {
+      // if (process.env.NODE_ENV !== 'production') {
         console.error('Failed to fetch data:', error);
-      }
+      // }
     } finally {
       setLoading(false);
     }
@@ -154,7 +154,7 @@ export default function BookingSessionsPage(): React.JSX.Element {
   }) => {
     try {
       // Call the API to reschedule the event
-      const response = await axiosInstance.put(`/session-booking/session/update-detail/${selectedSession.id}`, {
+      const response = await axiosInstance.put(`/session-booking/session/update-detail/${selectedSession?.id}`, {
         sessionDate: payload.sessionDate,
         sessionStartTime: payload.sessionStartTime,
         sessionEndTime: payload.sessionEndTime,
@@ -171,7 +171,7 @@ export default function BookingSessionsPage(): React.JSX.Element {
   const handleNotesChange = async (payload: { notes: string }) => {
     try {
       // Call the API to reschedule the event
-      const response = await axiosInstance.put(`/session-booking/session/notes/${selectedSession.id}`, {
+      const response = await axiosInstance.put(`/session-booking/session/notes/${selectedSession?.id}`, {
         notes: payload.notes,
       });
       toast.success('Slot rescheduled successfully!');

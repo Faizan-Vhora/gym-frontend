@@ -1,9 +1,9 @@
 'use client';
 
 import * as React from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import { CustomLoader } from '@/utils/loader';
-import { Alert, Box, Card, CardHeader, Divider, Stack, Tab, Tabs } from '@mui/material';
+import { Box, Card, CardHeader, Divider, Stack, Tab, Tabs } from '@mui/material';
 import { ToastContainer } from 'react-toastify';
 import BookingSessionsPage from './booking-sessions/page';
 import BookingDetailsPage from './booking-details/page';
@@ -11,9 +11,6 @@ import BookingDetailsPage from './booking-details/page';
 export default function Page(): React.JSX.Element {
   const searchParams = useSearchParams();
   const id = searchParams.get('id');
-
-  const [error, setError] = React.useState<string | null>(null);
-  const [loading, setLoading] = React.useState(false);
 
   const [tab, setTab] = React.useState(0); // State to control the active tab
 
@@ -44,8 +41,6 @@ export default function Page(): React.JSX.Element {
          <BookingSessionsPage/>
         )}
 
-        {loading && <CustomLoader />}
-        {error ? <Alert color="error">{error}</Alert> : null}
       </Card>
       <ToastContainer />
     </Box>

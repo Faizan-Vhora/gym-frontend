@@ -25,7 +25,7 @@ export default function Page(): React.JSX.Element {
 
   // <variables> (start)
 
-  const [pageTitle, setPageTitle] = React.useState('Support');
+  // const [pageTitle, setPageTitle] = React.useState('Support');
   const [entries, setEntries] = React.useState<SupportEntry[]>([]);
   const [searchTerm, setSearchTerm] = React.useState('');
   const [statusFilter, setStatusFilter] = React.useState('All');
@@ -65,9 +65,10 @@ export default function Page(): React.JSX.Element {
       setEntries(response.data.data.items);
       setCount(response.data.data.meta.totalItems); // Total number of items for pagination controls
     } catch (error) {
-      if (process.env.NODE_ENV !== 'production') {
-        console.error('Failed to fetch data:', error);
-      }
+      Swal.fire('Error!', 'something went wrong.', 'error');
+      // if (process.env.NODE_ENV !== 'production') {
+      //   console.log('Failed to fetch data:', error);
+      // }
     } finally {
       setLoading(false);
     }
@@ -97,9 +98,9 @@ export default function Page(): React.JSX.Element {
         Swal.fire('Updated!', 'The status has been updated.', 'success');
       } catch (error) {
         Swal.fire('Error!', 'Failed to update status.', 'error');
-        if (process.env.NODE_ENV !== 'production') {
-          // console.error('Failed to update status:', error);
-        }
+        // if (process.env.NODE_ENV !== 'production') {
+        //   console.error('Failed to update status:', error);
+        // }
       }
     }
   };
@@ -148,7 +149,7 @@ export default function Page(): React.JSX.Element {
     <Stack direction="row" spacing={3}>
       <Stack spacing={1} sx={{ flex: '1 1 auto' }}>
         <Typography variant="h4" style={{ fontFamily: '"Audiowide", sans-serif' }}>
-          {pageTitle}
+          Support
         </Typography>
       </Stack>
       <Button

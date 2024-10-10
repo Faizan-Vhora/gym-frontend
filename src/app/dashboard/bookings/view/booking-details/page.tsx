@@ -5,7 +5,7 @@ import { useSearchParams } from 'next/navigation';
 import { BOOKING_PAYMENT_STATUS_DETAILS, BOOKING_PAYMENT_TYPE_DETAILS, BOOKING_STATUS_DETAILS } from '@/utils/constant';
 import { formatDate } from '@/utils/date-utils';
 import { CustomLoader } from '@/utils/loader';
-import { Alert, Avatar, Box, Card, Grid, IconButton, Stack, Typography } from '@mui/material';
+import { Avatar, Box, Card, Grid, IconButton, Stack, Typography } from '@mui/material';
 import { Barbell, Envelope, GenderIntersex, MapPin, Phone } from '@phosphor-icons/react';
 import { toast, ToastContainer } from 'react-toastify';
 
@@ -32,14 +32,16 @@ export default function BookingDetailsPage(): React.JSX.Element {
       .get<{ data: BookingEntry }>(`/session-booking/${bookingId}`)
       .then((response) => {
         const fetchedData: BookingEntry = response.data.data;
-        console.log('fetchedData: ', fetchedData);
+        // console.log('fetchedData: ', fetchedData);
         setBookingDetails(fetchedData);
       })
-      .catch((err) => {
+      .catch((err:unknown) => {
         const errorMessage = err instanceof Error ? err.message : 'An unexpected error occurred';
         toast.error(errorMessage);
       })
-      .finally(() => setLoading(false));
+      .finally(() => {
+        setLoading(false);
+      });
   };
 
   return (

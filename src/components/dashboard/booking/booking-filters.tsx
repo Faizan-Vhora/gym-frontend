@@ -28,7 +28,7 @@ import { Trainer } from '../trainer/trainer-table';
 
 interface SupportFiltersProps {
   onSearchChange: (searchTerm: string) => void;
-  onStatusChange: (status: string) => void;
+  // onStatusChange: (status: string) => void;
   onBookingTypeChange: (bookingType: string) => void;
   onTrainerIdChange: (trainerId: string) => void;
   onCustomerIdChange: (customerId: string) => void;
@@ -38,7 +38,7 @@ interface SupportFiltersProps {
 
 export function BookingFilters({
   onSearchChange,
-  onStatusChange,
+  // onStatusChange,
   onBookingTypeChange,
   onTrainerIdChange,
   onCustomerIdChange,

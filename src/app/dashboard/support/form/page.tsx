@@ -24,7 +24,7 @@ import {
 } from '@mui/material';
 import { useForm } from 'react-hook-form';
 import { toast, ToastContainer } from 'react-toastify';
-import { string, z } from 'zod';
+import { z } from 'zod';
 import axiosInstance from '@/lib/axios';
 import { Trainer } from '@/components/dashboard/trainer/trainer-table';
 import { Customer } from '@/components/dashboard/customer/customers-table';
@@ -36,7 +36,7 @@ import { SUPPORT_TICKET_STATUS_OPTIONS, SUPPORT_TICKET_USER_TYPE_OPTIONS, USER_T
 const CustomEditor = dynamic(() => import('@/components/ckeditor'), { ssr: false });
 
 
-export interface supportTicketPayloadDataI {
+export interface SupportTicketPayloadDataI {
   subject: string;
   userType: number;
   user: number;
@@ -180,7 +180,7 @@ export default function SupportForm(): React.JSX.Element {
       const method = id ? 'put' : 'post';
       const url = id ? `/support-ticket/${id}` : '/support-ticket';
 
-      const data : supportTicketPayloadDataI = {
+      const data : SupportTicketPayloadDataI = {
         subject: formData.subject,
         userType: parseInt(formData.userType),
         user: parseInt(formData.user),

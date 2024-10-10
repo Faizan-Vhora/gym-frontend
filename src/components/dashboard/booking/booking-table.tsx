@@ -5,8 +5,6 @@ import {
   Chip,
   Divider,
   IconButton,
-  MenuItem,
-  Select,
   Stack,
   Table,
   TableBody,
@@ -16,21 +14,18 @@ import {
   TableRow,
   Typography,
 } from '@mui/material';
-import { toast, ToastContainer } from 'react-toastify'; // Import toast and ToastContainer
+import { ToastContainer } from 'react-toastify'; // Import toast and ToastContainer
 
 import 'react-toastify/dist/ReactToastify.css'; // Import toast styles
 
 import { useRouter } from 'next/navigation';
 import {
   BOOKING_STATUS,
-  BOOKING_STATUS_DETAILS,
-  BOOKING_TYPE_DETAILS,
-  SUPPORT_TICKET_STATUS_OPTIONS,
-  USER_TYPE_OPTIONS,
+  BOOKING_STATUS_DETAILS
 } from '@/utils/constant';
 import { formatHours } from '@/utils/converter';
 import { formatDate } from '@/utils/date-utils';
-import { Chat, PencilSimple, XCircle } from '@phosphor-icons/react';
+import { XCircle } from '@phosphor-icons/react';
 
 import tableCss from '@/styles/table-css';
 
@@ -104,20 +99,6 @@ export function BookingTable({
 }: BookingTableProps): React.JSX.Element {
   const router = useRouter();
 
-  const handleEdit = React.useCallback(
-    (id: number) => {
-      router.push(`/dashboard/support/form?id=${id}`);
-    },
-    [router]
-  );
-
-  const handleCheckMessages = React.useCallback(
-    (id: number) => {
-      router.push(`/dashboard/support/messages?id=${id}`);
-    },
-    [router]
-  );
-
   const handleStatusChange = (id: number, newStatus: BookingEntry['status']): void => {
     onUpdateStatus(id, newStatus);
     // toast.success('Status updated successfully!'); // Show success toast
@@ -166,7 +147,7 @@ export function BookingTable({
                       <Stack direction="row" spacing={2} alignItems="center">
                         <Box>
                           <Typography variant="subtitle2">
-                            {entry?.startDate == entry?.endDate
+                            {entry?.startDate === entry?.endDate
                               ? `${formatDate(entry?.startDate)}`
                               : `${formatDate(entry?.startDate)} to ${formatDate(entry?.endDate)}`}
                           </Typography>
