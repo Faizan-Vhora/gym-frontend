@@ -1,5 +1,6 @@
 import React from 'react';
 import { BOOKING_PAYMENT_TYPE, BOOKING_TYPE, WEEKDAY_NAME, WEEKDAY_OPTIONS } from '@/utils/constant';
+import { formatAmount } from '@/utils/converter';
 import { formatDate } from '@/utils/dateUtils';
 import { CustomLoader } from '@/utils/loader';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -36,6 +37,7 @@ import { dayjs } from '@/lib/dayjs';
 import { Option } from '@/components/core/option';
 
 import { Customer } from '../customer/customers-table';
+import { DiscountEntry, DiscountType } from '../discount/discount-table';
 import { Trainer } from '../trainer/trainer-table';
 import BookingPreviewDialog from './booking-preview';
 import PaymentToggle from './payment-toggle';
@@ -56,6 +58,7 @@ export interface SlotI {
   endTime?: string;
   isAvailable?: boolean;
   isDateLabel?: boolean;
+  discount?: boolean;
 }
 
 export interface weekSlotI {
@@ -76,6 +79,24 @@ export interface WeeklyDayOptionI {
 
 export type SelectedSlotsI = Record<string, SlotI[]>;
 
+export interface BookingDetailsI {
+  bookingType?: string;
+  selectedTrainer?: Trainer | null;
+  selectedCustomer?: Customer | null;
+  bookingDate?: string;
+  bookingStartDate?: string;
+  bookingEndDate?: string;
+  selectedDays?: number[];
+  selectedSlots?: SelectedSlotsI;
+  paymentType?: string;
+  bookingAmount?: number;
+  selectedPromocode: DiscountEntry | null;
+  bookingHours?: number;
+  trainerRatePerHour?: number;
+  discountAmount?: number;
+  netTotalAmount?: number;
+}
+
 // Define Booking form validation schemas
 const bookingSchema = zod.object({
   trainerId: zod.number().optional(),
@@ -85,11 +106,17 @@ const bookingSchema = zod.object({
   bookingEndDate: zod.date().optional(),
   bookingType: zod.string().optional(),
   paymentType: zod.string().optional(),
+  promocodeId: zod.number().optional(),
 });
 
 type BookingFormInputs = zod.infer<typeof bookingSchema>;
 
-export function BookingFormDialog({ onClose, onCreate, open = false, range }: BookingFormDialogPropsI): React.JSX.Element {
+export function BookingFormDialog({
+  onClose,
+  onCreate,
+  open = false,
+  range,
+}: BookingFormDialogPropsI): React.JSX.Element {
   const {
     control,
     handleSubmit,
@@ -107,9 +134,15 @@ export function BookingFormDialog({ onClose, onCreate, open = false, range }: Bo
   const [trainerOptions, setTrainerOptions] = React.useState<Trainer[]>([]);
   const [bookingType, setBookingType] = React.useState(BOOKING_TYPE.ONE_TIME);
 
-  const [bookingDate, setBookingDate] = React.useState( range?.start ?  dayjs(range?.start).format('YYYY-MM-DD') : dayjs().format('YYYY-MM-DD') );
-  const [bookingStartDate, setBookingStartDate] = React.useState( range?.start ? dayjs(range?.start).format('YYYY-MM-DD') : dayjs().format('YYYY-MM-DD'));
-  const [bookingEndDate, setBookingEndDate] = React.useState(range?.end ? dayjs(range?.end).format('YYYY-MM-DD')  :dayjs().format('YYYY-MM-DD'));
+  const [bookingDate, setBookingDate] = React.useState(
+    range?.start ? dayjs(range?.start).format('YYYY-MM-DD') : dayjs().format('YYYY-MM-DD')
+  );
+  const [bookingStartDate, setBookingStartDate] = React.useState(
+    range?.start ? dayjs(range?.start).format('YYYY-MM-DD') : dayjs().format('YYYY-MM-DD')
+  );
+  const [bookingEndDate, setBookingEndDate] = React.useState(
+    range?.end ? dayjs(range?.end).format('YYYY-MM-DD') : dayjs().format('YYYY-MM-DD')
+  );
   const [slotsWeekly, setSlotWeeklyData] = React.useState<WeeklySlotI[]>([]);
   const [availableWeekDayOptions, setAvailableWeekDayOptions] = React.useState<WeeklyDayOptionI[]>([]);
   const [selectedDays, setSelectedDays] = React.useState<number[]>([dayjs().day()]); // Default to today's weekday
@@ -117,8 +150,12 @@ export function BookingFormDialog({ onClose, onCreate, open = false, range }: Bo
   const [paymentType, setPaymentType] = React.useState<string>(BOOKING_PAYMENT_TYPE.FULL); // Initialize with an empty string
   const [bookingAmount, setBookingAmount] = React.useState<number>(0);
   const [bookingHours, setBookingHours] = React.useState<number>(0);
+  const [discountAmount, setDiscountAmount] = React.useState<number>(0);
   const [netTotalAmount, setNetTotalAmount] = React.useState<number>(0);
+  const [bookingDetails, setBookingDetails] = React.useState<BookingDetailsI | null>(null);
   const [isPreviewOpen, setPreviewOpen] = React.useState(false);
+  const [promocodeOptions, setPromocodeOptions] = React.useState<DiscountEntry[]>([]);
+  const [selectedPromocode, setSelectedPromocode] = React.useState<DiscountEntry | null>(null);
 
   // Fetch data
   const fetchCustomers = async (): Promise<void> => {
@@ -155,6 +192,8 @@ export function BookingFormDialog({ onClose, onCreate, open = false, range }: Bo
 
       const availableTrainerSlots = data.data;
 
+      // console.log("availableTrainerSlots:", availableTrainerSlots)
+
       if (bookingType === BOOKING_TYPE.ONE_TIME && availableTrainerSlots[0]?.weekday) {
         setSelectedDays([availableTrainerSlots[0].weekday]);
       } else {
@@ -177,6 +216,17 @@ export function BookingFormDialog({ onClose, onCreate, open = false, range }: Bo
     }
   };
 
+  const fetchPromocode = async (): Promise<void> => {
+    try {
+      const { data } = await axiosInstance.get<{ data: DiscountEntry[] }>('/discount/dropdown');
+      setPromocodeOptions(data.data);
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to load customers.';
+      toast.error(`Error fetching customers: ${errorMessage}`);
+      console.error(errorMessage);
+    }
+  };
+
   // Event handlers
   const handleCustomerChange = (customerId: number) => {
     const selected = customerOptions.find((customer) => customer.id === customerId);
@@ -190,6 +240,11 @@ export function BookingFormDialog({ onClose, onCreate, open = false, range }: Bo
 
   const handleTabChange = (newValue: string) => {
     setBookingType(newValue);
+  };
+
+  const handlePromocodeChange = (promocodeId: number | null) => {
+    const selected = promocodeOptions.find((promocode) => promocode.id === promocodeId);
+    setSelectedPromocode(selected || null);
   };
 
   const handleSessionSlotChange = (weekday: string | number, selectedSlotsForSession: SlotI[]) => {
@@ -213,8 +268,7 @@ export function BookingFormDialog({ onClose, onCreate, open = false, range }: Bo
   };
 
   const convertSelectedSlotsToSessions = (selectedSlots: SelectedSlotsI, trainerRatePerHour: number): Sessions[] => {
-    const sessions: Sessions[] = [];
-
+    let sessions: Sessions[] = [];
     Object.keys(selectedSlots).forEach((weekday) => {
       const slots = selectedSlots[weekday];
 
@@ -242,26 +296,56 @@ export function BookingFormDialog({ onClose, onCreate, open = false, range }: Bo
         sessions.push(session);
       });
     });
-
+    sessions = calculateTotalBookingNetAmountAndUpdateSessions(sessions);
     return sessions;
   };
 
-  const calculateTotalBookingHours = (sessionsList: Sessions[]): number => {
-    return sessionsList.reduce((totalHours, session) => {
+  const calculateTotalBookingNetAmountAndUpdateSessions = (sessionsList: Sessions[]): Sessions[] => {
+    //
+    const totalHours = sessionsList.reduce((totalHours, session) => {
       return totalHours + (session.sessionDurationInHours || 0);
     }, 0);
-  };
+    setBookingHours(totalHours);
 
-  const calculateTotalSessionAmount = (sessionsList: Sessions[]): number => {
-    return sessionsList.reduce((sessionCharge, session) => {
+    //
+    const calculatedbookingAmount = sessionsList.reduce((sessionCharge, session) => {
       return sessionCharge + (session.sessionCharge || 0);
     }, 0);
-  };
+    setBookingAmount(calculatedbookingAmount);
 
-  const calculateTotalBookingNetAmount = (sessionsList: Sessions[]): number => {
-    return sessionsList.reduce((netTotal, session) => {
+    //
+
+    let totalDiscount: number = 0;
+
+    let perHourDiscount: number = 0;
+
+    if (selectedPromocode) {
+      if (selectedPromocode.discountType == DiscountType.Fix) {
+        totalDiscount =  Number(selectedPromocode.discountValue || 0) ;
+      } else if (selectedPromocode.discountType == DiscountType.Percentage) {
+        totalDiscount = calculatedbookingAmount * ( Number(selectedPromocode.discountValue || 0) / 100);
+      }
+    }
+
+    perHourDiscount = totalHours ? totalDiscount / totalHours : 0;
+
+    sessionsList.forEach((ele) => {
+      ele.discount = (ele?.sessionDurationInHours || 0) * perHourDiscount;
+      ele.netTotalAmount = ele.sessionCharge - ele.discount;
+    });
+    //
+
+    setDiscountAmount(totalDiscount);
+
+    //
+    const totalNetAmount = sessionsList.reduce((netTotal, session) => {
       return netTotal + (session.netTotalAmount || 0);
     }, 0);
+
+    setNetTotalAmount(totalNetAmount);
+    return sessionsList;
+
+    //
   };
 
   const handlePreview = () => {
@@ -273,7 +357,7 @@ export function BookingFormDialog({ onClose, onCreate, open = false, range }: Bo
   };
 
   const verifyBookingForm = (formValues: BookingFormInputs) => {
-    console.log('formValues: ', formValues);
+    // console.log('formValues: ', formValues);
 
     if (!formValues.customerId) {
       toast.error('Please select a member.');
@@ -287,11 +371,11 @@ export function BookingFormDialog({ onClose, onCreate, open = false, range }: Bo
     } else if (!bookingStartDate || !bookingEndDate) {
       toast.error('Please select booking dates');
       return false;
-    } else if (!selectedDays.length) {
-      toast.error('Please select a weekday.');
-      return false;
     } else if (Object.keys(selectedSlots).length === 0) {
       toast.error('Please select at least one slot.');
+      return false;
+    } else if (!selectedDays.length) {
+      toast.error('Please select a weekday.');
       return false;
     } else if (!paymentType) {
       toast.error('Please select a Payment Type.');
@@ -307,7 +391,6 @@ export function BookingFormDialog({ onClose, onCreate, open = false, range }: Bo
       const isValid = verifyBookingForm(formValues);
 
       if (isValid) {
-        console.log('Form submitted successfully:', formValues);
 
         // Check if selectedTrainer is defined
         if (!selectedTrainer) {
@@ -326,12 +409,6 @@ export function BookingFormDialog({ onClose, onCreate, open = false, range }: Bo
 
         const sessionsList = convertSelectedSlotsToSessions(selectedSlots, trainerRatePerHour);
 
-        const bookingHours = calculateTotalBookingHours(sessionsList);
-
-        const sessionsAmount = calculateTotalSessionAmount(sessionsList);
-
-        const bookingNetAmount = calculateTotalBookingNetAmount(sessionsList);
-
         const payload = {
           booking: {
             trainer: formValues.trainerId,
@@ -341,18 +418,19 @@ export function BookingFormDialog({ onClose, onCreate, open = false, range }: Bo
             endDate: bookingEndDate,
             trainerRatePerHour: trainerRatePerHour,
             bookingHours: bookingHours,
-            bookingAmount: sessionsAmount,
+            bookingAmount: bookingAmount,
             weekdays: weekdaysList,
             recurrenceWeeks: 0,
-            totalAmount: sessionsAmount,
-            discount: 0,
-            netTotalAmount: bookingNetAmount,
+            totalAmount: bookingAmount,
+            discount: discountAmount,
+            netTotalAmount: netTotalAmount,
             paymentType: paymentType,
+            promocode : selectedPromocode?.id || null,
           },
           sessions: sessionsList,
         };
 
-        console.log('Payload: ', payload);
+        // console.log('Payload: ', payload);
 
         await axiosInstance.post('/session-booking', payload);
         toast.success('Booking added successfully');
@@ -364,7 +442,7 @@ export function BookingFormDialog({ onClose, onCreate, open = false, range }: Bo
           console.error('onCreate is not a function');
         }
       } else {
-        console.log('Form not valid.');
+        console.error('Form not valid.');
       }
     },
     [bookingType, selectedSlots, selectedTrainer, onCreate]
@@ -375,24 +453,25 @@ export function BookingFormDialog({ onClose, onCreate, open = false, range }: Bo
   React.useEffect(() => {
     fetchTrainers();
     fetchCustomers();
+    fetchPromocode();
   }, []);
 
-  React.useEffect(() => {
-    console.log('Update : selectedDays:: ', selectedDays);
-  }, [selectedDays]);
+  // React.useEffect(() => {
+  //   console.log('Update : selectedDays:: ', selectedDays);
+  // }, [selectedDays]);
+
+  // React.useEffect(() => {
+  //   console.log('Update : paymentType:: ', paymentType);
+  // }, [paymentType]);
+
+  // React.useEffect(() => {
+  //   console.log('Update : selectedPromocode:: ', selectedPromocode);
+  // }, [selectedPromocode]);
 
   React.useEffect(() => {
-    console.log('Update : paymentType:: ', paymentType);
-  }, [paymentType]);
-
-  React.useEffect(() => {
-    console.log('Update : paymentType:: ', paymentType);
     const trainerRatePerHour: number = Number(selectedTrainer?.fees || 0);
-    const sessionsList = convertSelectedSlotsToSessions(selectedSlots, trainerRatePerHour);
-    setBookingAmount(calculateTotalSessionAmount(sessionsList));
-    setBookingHours(calculateTotalBookingHours(sessionsList));
-    setNetTotalAmount(calculateTotalBookingNetAmount(sessionsList));
-  }, [selectedSlots, selectedTrainer]);
+    convertSelectedSlotsToSessions(selectedSlots, trainerRatePerHour);
+  }, [selectedSlots, selectedTrainer, selectedPromocode]);
 
   React.useEffect(() => {
     if (bookingType == BOOKING_TYPE.ONE_TIME && selectedTrainer && bookingDate) {
@@ -404,13 +483,33 @@ export function BookingFormDialog({ onClose, onCreate, open = false, range }: Bo
     }
   }, [selectedTrainer, bookingType, bookingDate, bookingStartDate, bookingEndDate]);
 
+  React.useEffect(() => {
+    setBookingDetails({
+      bookingType: bookingType,
+      selectedTrainer: selectedTrainer,
+      selectedCustomer: selectedCustomer,
+      bookingDate: bookingDate,
+      bookingStartDate: bookingStartDate,
+      bookingEndDate: bookingEndDate,
+      selectedDays: selectedDays,
+      selectedSlots: selectedSlots,
+      paymentType: paymentType,
+      bookingHours: bookingHours || 0,
+      trainerRatePerHour: Number(selectedTrainer?.fees || 0),
+      bookingAmount: bookingAmount || 0,
+      selectedPromocode: selectedPromocode,
+      discountAmount: discountAmount,
+      netTotalAmount: netTotalAmount || 0,
+    });
+  }, [selectedSlots, selectedTrainer, selectedCustomer, netTotalAmount, discountAmount]);
+
   // Render the dialog
   return (
     <Dialog fullWidth maxWidth="sm" onClose={onClose} open={open}>
       <form onSubmit={handleSubmit(onSubmit)}>
         <Box sx={{ p: 3 }}>
           <Typography sx={{ textAlign: 'center' }} variant="h5">
-            { `${'Add Booking'}`}
+            {`${'Add Booking'}`}
           </Typography>
         </Box>
 
@@ -758,13 +857,92 @@ export function BookingFormDialog({ onClose, onCreate, open = false, range }: Bo
                 <Typography>No available slots</Typography>
               )}
             </Grid>
+
+            {promocodeOptions.length && (
+              <Grid item xs={12} md={5.8}>
+                <Controller
+                  control={control}
+                  name="promocodeId"
+                  render={({ field }) => (
+                    <FormControl fullWidth error={Boolean(errors.promocodeId)}>
+                      <InputLabel>Promocode</InputLabel>
+                      <Select
+                        {...field}
+                        value={field.value || ''}
+                        onChange={(e) => {
+                          const promocodeId = Number(e.target.value);
+                          field.onChange(promocodeId);
+                          handlePromocodeChange(promocodeId);
+                        }}
+                        label="Apply Promocode"
+                      >
+                        <Option value="" disabled>
+                          <em>Select Promocode</em>
+                        </Option>
+                        {promocodeOptions.map((promocode) => (
+                          <Option key={promocode.id} value={promocode.id}>
+                            {promocode.codeName}
+                          </Option>
+                        ))}
+                      </Select>
+                      {errors.promocodeId && <FormHelperText>{errors.promocodeId.message}</FormHelperText>}
+
+                      {/* Cancel Button */}
+                      {field.value && (
+                        <Button
+                          variant="outlined"
+                          color="secondary"
+                          onClick={() => {
+                            field.onChange(null);
+                            handlePromocodeChange(null); // or any other logic you need
+                          }}
+                          sx={{ marginTop: 2 }} // Add some spacing
+                        >
+                          Remove
+                        </Button>
+                      )}
+                    </FormControl>
+                  )}
+                />
+
+                {selectedPromocode && (
+                  <Card
+                    sx={{
+                      height: '140px',
+                      boxShadow: 5, // Normal box shadow
+                      '&:hover': {
+                        boxShadow: 15, // Increased box shadow on hover
+                      },
+                      transition: 'box-shadow 0.3s ease-in-out', // Smooth transition effect
+                      marginTop: '10px',
+                    }}
+                  >
+                    <CardContent>
+                      <Grid container>
+                        <Grid item md={8} alignContent={'center'}>
+                          <Typography variant="subtitle1">{selectedPromocode.codeName}</Typography>
+
+                          {/* <Typography variant="caption" sx={{ display: 'flex', alignItems: 'center' }}>
+                            {selectedPromocode.description ? selectedPromocode.description : ''}
+                          </Typography> */}
+
+                          <Typography variant="body2"> Total Discount : {formatAmount(discountAmount)}</Typography>
+                        </Grid>
+                      </Grid>
+
+                      {/* Add other fields as necessary */}
+                    </CardContent>
+                  </Card>
+                )}
+              </Grid>
+            )}
           </Grid>
         </Stack>
 
         <Divider />
 
         <Stack direction="row" spacing={1} sx={{ alignItems: 'center', justifyContent: 'space-between', p: 2 }}>
-          <PaymentToggle bookingAmount={bookingAmount} setPaymentType={setPaymentType} />
+          <PaymentToggle netTotalAmount={netTotalAmount} setPaymentType={setPaymentType} />
         </Stack>
 
         <Stack direction="row" spacing={1} sx={{ alignItems: 'center', justifyContent: 'flex-end', p: 2 }}>
@@ -783,18 +961,7 @@ export function BookingFormDialog({ onClose, onCreate, open = false, range }: Bo
       {loading && <CustomLoader />}
 
       <ToastContainer />
-
-      <BookingPreviewDialog
-        isOpen={isPreviewOpen}
-        handleClose={handlePreviewClose}
-        selectedCustomer={selectedCustomer}
-        selectedTrainer={selectedTrainer}
-        selectedSlots={selectedSlots}
-        bookingAmount={bookingAmount}
-        bookingHours={bookingHours}
-        netTotalAmount={netTotalAmount}
-        bookingType={bookingType}
-      />
+      <BookingPreviewDialog isOpen={isPreviewOpen} handleClose={handlePreviewClose} bookingDetails={bookingDetails} />
     </Dialog>
   );
 }

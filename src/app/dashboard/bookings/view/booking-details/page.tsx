@@ -257,8 +257,8 @@ export default function BookingDetailsPage(): React.JSX.Element {
                       <Typography color="text.secondary" fontWeight={'600'} gutterBottom>
                         {bookingDetail?.customer?.fullName}
                       </Typography>
-        
-                  
+
+
                     <Stack flexDirection={'row'} alignItems={'center'}>
                       <IconButton>
                         <Envelope size={25} />
@@ -346,12 +346,12 @@ export default function BookingDetailsPage(): React.JSX.Element {
                     </Stack>
                       </Stack>
                   <Stack>
-                    
+
                       <Typography color="text.secondary" fontWeight={'600'} gutterBottom>
                         {bookingDetail?.trainer?.fullName}
                       </Typography>
 
-                    
+
                     <Stack flexDirection={'row'} alignItems={'center'}>
                       <IconButton>
                         <Envelope size={25} />
@@ -385,7 +385,7 @@ export default function BookingDetailsPage(): React.JSX.Element {
                         {bookingDetail?.trainer?.address}
                       </Typography>
                     </Stack>
- 
+
                   </Stack>
                 </Stack>
               </Card>
