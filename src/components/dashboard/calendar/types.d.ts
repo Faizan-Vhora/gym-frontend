@@ -15,6 +15,7 @@ export interface Sessions {
   sessionDate: string
   sessionStartTime: string | any
   sessionEndTime: string | any
+  sessionDurationInHours?: number,
   trainerRatePerHour: number
   sessionCharge:number
   discount: number

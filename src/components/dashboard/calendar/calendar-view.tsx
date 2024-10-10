@@ -207,6 +207,19 @@ export function CalendarView({ view = 'dayGridMonth' }: CalendarViewProps): Reac
     bookingFormDialog.handleOpen();
   }, [bookingFormDialog]);
 
+  // const handleRangeSelect = React.useCallback(
+  //   (arg: DateSelectArg) => {
+  //     const calendarApi = calendarRef.current?.getApi();
+
+  //     if (calendarApi) {
+  //       calendarApi.unselect();
+  //     }
+
+  //     createDialog.handleOpen({ range: { start: arg.start, end: arg.end } });
+  //   },
+  //   [createDialog]
+  // );
+
   const handleRangeSelect = React.useCallback(
     (arg: DateSelectArg) => {
       const calendarApi = calendarRef.current?.getApi();
@@ -215,10 +228,12 @@ export function CalendarView({ view = 'dayGridMonth' }: CalendarViewProps): Reac
         calendarApi.unselect();
       }
 
-      createDialog.handleOpen({ range: { start: arg.start, end: arg.end } });
+      bookingFormDialog.handleOpen({ range: { start: arg.start, end: arg.end } });
+
     },
-    [createDialog]
+    [bookingFormDialog]
   );
+
 
   const handleEventSelect = React.useCallback((arg: EventClickArg) => {
     console.log('Event selected:', arg.event);
