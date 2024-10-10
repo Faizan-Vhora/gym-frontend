@@ -1,4 +1,6 @@
 import * as React from 'react';
+import { useRouter } from 'next/navigation';
+import { BOOKING_STATUS_DETAILS } from '@/utils/constant';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
@@ -15,18 +17,11 @@ import TableRow from '@mui/material/TableRow';
 import { ArrowRight as ArrowRightIcon } from '@phosphor-icons/react/dist/ssr/ArrowRight';
 import dayjs from 'dayjs';
 
-const statusMap = {
-  pending: { label: 'Not Started', color: 'warning' },
-  delivered: { label: 'Completed', color: 'success' },
-  refunded: { label: 'Reschedule', color: 'error' },
-} as const;
-
 export interface Order {
-  id: string;
-  customer: { name: string };
-  amount: number;
-  status: 'pending' | 'delivered' | 'refunded';
-  createdAt: Date;
+  id: number;
+  name: string;
+  status: string;
+  createdAt: string;
 }
 
 export interface LatestOrdersProps {
@@ -35,8 +30,15 @@ export interface LatestOrdersProps {
 }
 
 export function LatestOrders({ orders = [], sx }: LatestOrdersProps): React.JSX.Element {
+  const router = useRouter();
+  const handleRedirect = (id: number) => {
+    // Redirect to the member detail page with the specific member's id
+
+    router.push(`dashboard/bookings/view?id=${id}`);
+  };
+
   return (
-    <Card sx={{height:'520px',overflowY:'scroll'}}>
+    <Card sx={{ height: '520px', overflowY: 'scroll' }}>
       <CardHeader title="Latest Booking" />
       <Divider />
       <Box sx={{ overflowX: 'auto' }}>
@@ -51,12 +53,19 @@ export function LatestOrders({ orders = [], sx }: LatestOrdersProps): React.JSX.
           </TableHead>
           <TableBody>
             {orders.map((order) => {
-              const { label, color } = statusMap[order.status] ?? { label: 'Unknown', color: 'default' };
+              const { label, color } = BOOKING_STATUS_DETAILS[order.status] ?? { label: 'Unknown', color: 'default' };
 
               return (
-                <TableRow hover key={order.id}>
+                <TableRow
+                  hover
+                  key={order.id}
+                  onClick={() => {
+                    handleRedirect(order.id);
+                  }}
+                  sx={{ cursor: 'pointer' }}
+                >
                   <TableCell>{order.id}</TableCell>
-                  <TableCell>{order.customer.name}</TableCell>
+                  <TableCell>{order.name}</TableCell>
                   <TableCell>{dayjs(order.createdAt).format('MMM D, YYYY')}</TableCell>
                   <TableCell>
                     <Chip color={color} label={label} size="small" />

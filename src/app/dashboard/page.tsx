@@ -31,6 +31,10 @@ export default function Page(): React.JSX.Element {
   const [members, setMembers] = React.useState<
     { id: number; name: string; image: string; createdAt: string; userType: number }[]
   >([]);
+  const [latestBookings, setLatestBookings] = React.useState<
+    { id: number; name: string; createdAt: string; status: string }[]
+  >([]);
+  const [sessionAttendedPercentage, setSessionAttendedPercentage] = React.useState([]);
   const [loading, setLoading] = React.useState(false);
 
   interface Progress {
@@ -161,6 +165,54 @@ export default function Page(): React.JSX.Element {
     void fetchIncompleteProfiles();
   }, []);
 
+  React.useEffect(() => {
+    const fetchLatestBooking = async (): Promise<void> => {
+      setLoading(true);
+      try {
+        const response = await axiosInstance.get('/deshboard/latest-booking');
+
+        const LatestBooking = response.data.data;
+
+        // Map the response to match the structure required by LatestProducts
+        const mappedBookings = LatestBooking.items.map((booking: any) => ({
+          id: booking.id, // Assuming the booking has an 'id' property
+          name: booking.customer.fullName, // Accessing the nested structure
+          createdAt: booking.createdAt, // Assuming this is the correct path
+          status: booking.status, // Assuming this is the correct path
+        }));
+        console.log('mapped Booking', mappedBookings);
+        // Set the mapped data into products state
+        setLatestBookings(mappedBookings);
+      } catch (error) {
+        toast.error('Failed to load incomplete profiles');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    void fetchLatestBooking();
+  }, []);
+
+  React.useEffect(() => {
+    const fetchSessionAttended = async (): Promise<void> => {
+      setLoading(true);
+      try {
+        const response = await axiosInstance.get('/deshboard/current-month-session-attendance');
+
+        const sessionAttended = response.data.data;
+
+        // Set the mapped data into products state
+        setSessionAttendedPercentage(sessionAttended.attendancePercentage);
+      } catch (error) {
+        toast.error('Failed to load incomplete profiles');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    void fetchSessionAttended();
+  }, []);
+
   return (
     <Grid container spacing={3}>
       <Grid lg={3} sm={6} xs={12}>
@@ -173,7 +225,7 @@ export default function Page(): React.JSX.Element {
         <TotalCustomers diff={diff} trend={trend} sx={{ height: '100%' }} value={totalCustomers} />
       </Grid>
       <Grid lg={3} sm={6} xs={12}>
-        <TasksProgress sx={{ height: '100%' }} value={75.5} />
+        <TasksProgress sx={{ height: '100%' }} value={Number(sessionAttendedPercentage)} />
       </Grid>
 
       <Grid lg={8} xs={12}>
@@ -183,89 +235,55 @@ export default function Page(): React.JSX.Element {
         <Traffic chartSeries={mebershipPlanChartSeries} labels={labels} sx={{ height: '100%' }} />
       </Grid>
       <Grid lg={4} md={6} xs={12}>
-        <LatestProducts
-          products={members}
-          // products={[
-          //   {
-          //     id: 'PRD-005',
-          //     name: 'Soja & Co. Eucalyptus',
-          //     image: '/assets/product-5.png',
-          //     updatedAt: dayjs().subtract(18, 'minutes').subtract(5, 'hour').toDate(),
-          //   },
-          //   {
-          //     id: 'PRD-004',
-          //     name: 'Necessaire Body Lotion',
-          //     image: '/assets/product-4.png',
-          //     updatedAt: dayjs().subtract(41, 'minutes').subtract(3, 'hour').toDate(),
-          //   },
-          //   {
-          //     id: 'PRD-003',
-          //     name: 'Ritual of Sakura',
-          //     image: '/assets/product-3.png',
-          //     updatedAt: dayjs().subtract(5, 'minutes').subtract(3, 'hour').toDate(),
-          //   },
-          //   {
-          //     id: 'PRD-002',
-          //     name: 'Lancome Rouge',
-          //     image: '/assets/product-2.png',
-          //     updatedAt: dayjs().subtract(23, 'minutes').subtract(2, 'hour').toDate(),
-          //   },
-          //   {
-          //     id: 'PRD-001',
-          //     name: 'Erbology Aloe Vera',
-          //     image: '/assets/product-1.png',
-          //     updatedAt: dayjs().subtract(10, 'minutes').toDate(),
-          //   },
-          // ]}
-          sx={{ height: '100%' }}
-        />
+        <LatestProducts products={members} sx={{ height: '100%' }} />
       </Grid>
       <Grid lg={8} md={12} xs={12}>
         <LatestOrders
-          orders={[
-            {
-              id: 'ORD-007',
-              customer: { name: 'Ekaterina Tankova' },
-              amount: 30.5,
-              status: 'pending',
-              createdAt: dayjs().subtract(10, 'minutes').toDate(),
-            },
-            {
-              id: 'ORD-006',
-              customer: { name: 'Cao Yu' },
-              amount: 25.1,
-              status: 'delivered',
-              createdAt: dayjs().subtract(10, 'minutes').toDate(),
-            },
-            {
-              id: 'ORD-004',
-              customer: { name: 'Alexa Richardson' },
-              amount: 10.99,
-              status: 'refunded',
-              createdAt: dayjs().subtract(10, 'minutes').toDate(),
-            },
-            {
-              id: 'ORD-003',
-              customer: { name: 'Anje Keizer' },
-              amount: 96.43,
-              status: 'pending',
-              createdAt: dayjs().subtract(10, 'minutes').toDate(),
-            },
-            {
-              id: 'ORD-002',
-              customer: { name: 'Clarke Gillebert' },
-              amount: 32.54,
-              status: 'delivered',
-              createdAt: dayjs().subtract(10, 'minutes').toDate(),
-            },
-            {
-              id: 'ORD-001',
-              customer: { name: 'Adam Denisov' },
-              amount: 16.76,
-              status: 'delivered',
-              createdAt: dayjs().subtract(10, 'minutes').toDate(),
-            },
-          ]}
+          orders={latestBookings}
+          // orders={[
+          //   {
+          //     id: 'ORD-007',
+          //     customer: { name: 'Ekaterina Tankova' },
+          //     amount: 30.5,
+          //     status: 'pending',
+          //     createdAt: dayjs().subtract(10, 'minutes').toDate(),
+          //   },
+          //   {
+          //     id: 'ORD-006',
+          //     customer: { name: 'Cao Yu' },
+          //     amount: 25.1,
+          //     status: 'delivered',
+          //     createdAt: dayjs().subtract(10, 'minutes').toDate(),
+          //   },
+          //   {
+          //     id: 'ORD-004',
+          //     customer: { name: 'Alexa Richardson' },
+          //     amount: 10.99,
+          //     status: 'refunded',
+          //     createdAt: dayjs().subtract(10, 'minutes').toDate(),
+          //   },
+          //   {
+          //     id: 'ORD-003',
+          //     customer: { name: 'Anje Keizer' },
+          //     amount: 96.43,
+          //     status: 'pending',
+          //     createdAt: dayjs().subtract(10, 'minutes').toDate(),
+          //   },
+          //   {
+          //     id: 'ORD-002',
+          //     customer: { name: 'Clarke Gillebert' },
+          //     amount: 32.54,
+          //     status: 'delivered',
+          //     createdAt: dayjs().subtract(10, 'minutes').toDate(),
+          //   },
+          //   {
+          //     id: 'ORD-001',
+          //     customer: { name: 'Adam Denisov' },
+          //     amount: 16.76,
+          //     status: 'delivered',
+          //     createdAt: dayjs().subtract(10, 'minutes').toDate(),
+          //   },
+          // ]}
           sx={{ height: '100%' }}
         />
       </Grid>
