@@ -18,7 +18,6 @@ import IconButton from '@mui/material/IconButton';
 import Stack from '@mui/material/Stack';
 import { CaretLeft as CaretLeftIcon } from '@phosphor-icons/react/dist/ssr/CaretLeft';
 import { CaretRight as CaretRightIcon } from '@phosphor-icons/react/dist/ssr/CaretRight';
-import dayjs from 'dayjs';
 import { toast, ToastContainer } from 'react-toastify';
 
 import 'react-toastify/dist/ReactToastify.css';
@@ -29,21 +28,15 @@ import { paths } from '@/paths';
 import axiosInstance from '@/lib/axios';
 import { useDialog } from '@/hooks/use-dialog';
 
-import { BookingEntry } from '../booking/booking-table';
 import { BookingSessionEntry } from '../booking/view/booking-sessions/booking-session-table';
 import { CalendarContext } from './calendar-context';
 import { EventContent } from './event-content';
-import { EventDialog } from './event-dialog';
 import SlotRescheduleForm from './reschedule-session-dialog';
 import SessionNotesForm from './session-notes';
 import SessionPreview from './session-view';
 import { Toolbar } from './toolbar';
 import type { Event, ViewMode, WeekSlot } from './types';
 import { BookingFormDialog } from './booking-form-dialog';
-
-interface CreateDialogData {
-  range?: { start: Date; end: Date };
-}
 
 interface BookingFormDialogData {
   range?: { start: Date; end: Date };
@@ -60,15 +53,12 @@ interface DaySchedule {
   weekSlots: WeekSlot[]; // List of week slots for that day
 }
 
-interface ScheduleResponse {
-  success: boolean; // Indicates if the operation was successful
-  message: string; // Response message
-  data: DaySchedule[]; // List of schedules by weekday
-  errors: object; // Errors if any (can be further typed if needed)
-}
 
 export function CalendarView({ view = 'dayGridMonth' }: CalendarViewProps): React.JSX.Element {
-  const { currentEventId, setCurrentEventId, createEvent, deleteEvent, updateEvent } =
+  const {
+    // currentEventId, setCurrentEventId, createEvent, deleteEvent,
+    updateEvent
+  } =
     React.useContext(CalendarContext);
 
   const router = useRouter();
@@ -90,12 +80,10 @@ export function CalendarView({ view = 'dayGridMonth' }: CalendarViewProps): Reac
   const [isDialogOpenForNotes, setIsDialogOpenForNotes] = React.useState(false);
   const [isDialogOpenForRechedule, setIsDialogOpenForRechedule] = React.useState(false);
 
-  const createDialog = useDialog<CreateDialogData>();
-
   const bookingFormDialog = useDialog<BookingFormDialogData>();
 
 
-  const currentEvent = currentEventId ? events.find((event) => event.id === currentEventId) : undefined;
+  // const currentEvent = currentEventId ? events.find((event) => event.id === currentEventId) : undefined;
 
   const fetchEvents = async () => {
     try {
@@ -471,39 +459,6 @@ export function CalendarView({ view = 'dayGridMonth' }: CalendarViewProps): Reac
         />
       ) : null}
 
-      {createDialog.open ? (
-        <EventDialog
-          action="create"
-          onClose={createDialog.handleClose}
-          onCreate={(params) => {
-            createEvent(params);
-            createDialog.handleClose();
-          }}
-          open
-          range={createDialog.data?.range}
-        />
-      ) : null}
-
-
-      {currentEvent ? (
-        <EventDialog
-          action="update"
-          event={currentEvent}
-          onClose={() => {
-            setCurrentEventId(undefined);
-          }}
-          onCreate={createEvent}
-          onDelete={(eventId) => {
-            setCurrentEventId(undefined);
-            deleteEvent(eventId);
-          }}
-          onUpdate={(eventId, params) => {
-            updateEvent(eventId, params);
-            setCurrentEventId(undefined);
-          }}
-          open
-        />
-      ) : null}
     </React.Fragment>
   );
 }

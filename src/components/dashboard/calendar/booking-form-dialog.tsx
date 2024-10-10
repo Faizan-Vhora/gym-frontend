@@ -410,7 +410,7 @@ export function BookingFormDialog({ onClose, onCreate, open = false, range }: Bo
       <form onSubmit={handleSubmit(onSubmit)}>
         <Box sx={{ p: 3 }}>
           <Typography sx={{ textAlign: 'center' }} variant="h5">
-            {'Add Booking - V2'}
+            { `${'Add Booking'}`}
           </Typography>
         </Box>
 
