@@ -70,7 +70,7 @@ export interface SessionItem {
   sessionEndTime: string;
   trainerRatePerHour: number;
   bookingType? : string | undefined;
-  
+
   trainer: {
       id: number;
       fullName: string;
@@ -187,4 +187,74 @@ export interface ApiResponse {
   message: string;
   data: Session[];
   errors: Record<string, unknown>;
+}
+
+
+export interface BookingPreviewDialogProps {
+  isOpen: boolean;
+  handleClose: () => void;
+  bookingDetails: BookingDetailsI | null;
+}
+
+export interface SlotI {
+  date?: string;
+  weekday?: number;
+  startTime?: string;
+  endTime?: string;
+  isAvailable?: boolean;
+  isDateLabel?: boolean;
+  discount?: boolean;
+}
+
+
+export type SelectedSlotsI = Record<string, SlotI[]>;
+
+export enum DiscountType {
+  Percentage = 'percentage',
+  Fix = 'fixed',
+}
+
+export enum UsageLimit {
+  Once = 'once',
+  Twice = 'twice',
+  NoLimit = 'no_limit',
+}
+
+export enum DiscountStatus {
+  Active = 'active',
+  Inactive = 'inactive',
+  Expired = 'expired',
+}
+
+export interface DiscountEntryI {
+  id: number;
+  codeName: string;
+  expiryDate: string; // Updated from Date to string for API data handling
+  discountType: DiscountType;
+  usageLimit: UsageLimit;
+  discountValue: number;
+  description: string;
+  status: DiscountStatus;
+  isNewUser: boolean;
+  discountImageUrl?: string;
+  discountImage?: string;
+}
+
+
+export interface BookingDetailsI {
+  bookingType?: string;
+  selectedTrainer?: Trainer | null;
+  selectedCustomer?: Customer | null;
+  bookingDate?: string;
+  bookingStartDate?: string;
+  bookingEndDate?: string;
+  selectedDays?: number[];
+  selectedSlots?: SelectedSlotsI;
+  paymentType?: string;
+  bookingAmount?: number;
+  selectedPromocode: DiscountEntryI | null;
+  bookingHours?: number;
+  trainerRatePerHour?: number;
+  discountAmount?: number;
+  netTotalAmount?: number;
 }

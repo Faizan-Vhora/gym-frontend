@@ -2,7 +2,6 @@
 
 import * as React from 'react';
 import { useSearchParams } from 'next/navigation';
-import { CustomLoader } from '@/utils/loader';
 import { Box, Card, CardHeader, Divider, Stack, Tab, Tabs } from '@mui/material';
 import { ToastContainer } from 'react-toastify';
 import BookingSessionsPage from './booking-sessions/page';

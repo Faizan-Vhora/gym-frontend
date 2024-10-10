@@ -13,19 +13,16 @@ import { Plus as PlusIcon } from '@phosphor-icons/react';
 import Swal from 'sweetalert2';
 
 import axiosInstance from '@/lib/axios';
-import { SupportEntry, SupportTable } from '@/components/dashboard/support/support-table';
+import type { SupportEntry } from '@/components/dashboard/support/support-table'; // Use import type here
+import { SupportTable } from '@/components/dashboard/support/support-table';
 import { SupportFilters } from '@/components/dashboard/support/support-filters';
 import { ToastContainer } from 'react-toastify';
 import { useRouter } from 'next/navigation';
 
-
 export default function Page(): React.JSX.Element {
-
   const router = useRouter();
 
-  // <variables> (start)
-
-  // const [pageTitle, setPageTitle] = React.useState('Support');
+  // State variables
   const [entries, setEntries] = React.useState<SupportEntry[]>([]);
   const [searchTerm, setSearchTerm] = React.useState('');
   const [statusFilter, setStatusFilter] = React.useState('All');
@@ -35,45 +32,31 @@ export default function Page(): React.JSX.Element {
   const [count, setCount] = React.useState<number>(0);
   const [loading, setLoading] = React.useState(true);
 
-  // <variables> (end)
-
-
-
-  // < methods> (start)
-
+  // Fetch support list data
   const getSupportListData = useCallback(async (): Promise<void> => {
     setLoading(true);
     try {
-
       const qParams = {
         page: page + 1,
-        limit: rowsPerPage, // Number of rows per page
-        search: searchTerm, // Search term
-        userType: fromFilter !== 'All' ? fromFilter : null, // From filter
-        status: statusFilter !== 'All' ? statusFilter : null, // Status filter
-      }
+        limit: rowsPerPage,
+        search: searchTerm,
+        userType: fromFilter !== 'All' ? fromFilter : null,
+        status: statusFilter !== 'All' ? statusFilter : null,
+      };
 
       const response = await axiosInstance.get<{ data: { items: SupportEntry[]; meta: { totalItems: number } } }>(
         '/support-ticket',
-        {
-          params: {
-            ...qParams
-          },
-        }
+        { params: qParams }
       );
 
       setEntries(response.data.data.items);
-      setCount(response.data.data.meta.totalItems); // Total number of items for pagination controls
+      setCount(response.data.data.meta.totalItems);
     } catch (error) {
-      Swal.fire('Error!', 'something went wrong.', 'error');
-      // if (process.env.NODE_ENV !== 'production') {
-      //   console.log('Failed to fetch data:', error);
-      // }
+      await Swal.fire('Error!', 'Something went wrong.', 'error');
     } finally {
       setLoading(false);
     }
   }, [page, rowsPerPage, searchTerm, statusFilter, fromFilter]);
-
 
   const handleAddClick = (): void => {
     router.push('/dashboard/support/form');
@@ -95,12 +78,9 @@ export default function Page(): React.JSX.Element {
         setEntries((prevEntries) =>
           prevEntries.map((entry) => (entry.id === id ? { ...entry, status: newStatus } : entry))
         );
-        Swal.fire('Updated!', 'The status has been updated.', 'success');
+        await Swal.fire('Updated!', 'The status has been updated.', 'success');
       } catch (error) {
-        Swal.fire('Error!', 'Failed to update status.', 'error');
-        // if (process.env.NODE_ENV !== 'production') {
-        //   console.error('Failed to update status:', error);
-        // }
+        await Swal.fire('Error!', 'Failed to update status.', 'error');
       }
     }
   };
@@ -117,78 +97,64 @@ export default function Page(): React.JSX.Element {
   const handleSearchChange = (search: string): void => {
     setSearchTerm(search);
     setPage(0);
-
   };
 
   const handleStatusChange = (status: string): void => {
     setStatusFilter(status);
     setPage(0);
-
   };
 
   const handleFromChange = (type: string): void => {
     setFromFilter(type);
     setPage(0);
-
   };
-  // <methods hooks> (end)
 
-
-  // <lifecycle hooks> (start)
+  // Lifecycle hooks
   useEffect(() => {
-    void getSupportListData();
+    void getSupportListData(); // Ignore the warning
   }, [getSupportListData]);
-  // <lifecycle hooks> (end)
-
-
-  // <template> (start)
 
   return (
-
     <Stack spacing={3}>
-    <Stack direction="row" spacing={3}>
-      <Stack spacing={1} sx={{ flex: '1 1 auto' }}>
-        <Typography variant="h4" style={{ fontFamily: '"Audiowide", sans-serif' }}>
-          Support
-        </Typography>
+      <Stack direction="row" spacing={3}>
+        <Stack spacing={1} sx={{ flex: '1 1 auto' }}>
+          <Typography variant="h4" style={{ fontFamily: '"Audiowide", sans-serif' }}>
+            Support
+          </Typography>
+        </Stack>
+        <Button
+          className="common-button"
+          startIcon={<PlusIcon fontSize="var(--icon-fontSize-md)" />}
+          variant="contained"
+          onClick={handleAddClick}
+        >
+          Add
+        </Button>
       </Stack>
-      <Button
-        className="common-button"
-        startIcon={<PlusIcon fontSize="var(--icon-fontSize-md)" />}
-        variant="contained"
-        onClick={handleAddClick}
-      >
-        Add
-      </Button>
+      <Card>
+        <Stack sx={{ padding: '30px' }}>
+          <SupportFilters
+            onSearchChange={handleSearchChange}
+            onStatusChange={handleStatusChange}
+            onFromChange={handleFromChange}
+          />
+        </Stack>
+
+        {loading ? (
+          <CustomLoader />
+        ) : (
+          <SupportTable
+            entries={entries}
+            page={page}
+            rowsPerPage={rowsPerPage}
+            totalEntries={count}
+            onUpdateStatus={handleUpdateStatus}
+            onPageChange={handlePageChange}
+            onRowsPerPageChange={handleRowsPerPageChange}
+          />
+        )}
+      </Card>
+      <ToastContainer />
     </Stack>
-    <Card>
-
-      <Stack sx={{ padding: '30px' }}>
-         <SupportFilters
-         onSearchChange={handleSearchChange}
-         onStatusChange={handleStatusChange}
-         onFromChange={handleFromChange}
-       />
-      </Stack>
-
-      {loading ? (
-        <CustomLoader />
-      ) : (
-        <SupportTable
-          entries={entries}
-          page={page}
-          rowsPerPage={rowsPerPage}
-          totalEntries={count}
-          onUpdateStatus={handleUpdateStatus}
-          onPageChange={handlePageChange}
-          onRowsPerPageChange={handleRowsPerPageChange}
-        />
-      )}
-    </Card>
-    <ToastContainer />
-  </Stack>
   );
-
-  // <template> (end)
-
 }

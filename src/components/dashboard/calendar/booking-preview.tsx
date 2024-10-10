@@ -1,15 +1,13 @@
-// BookingPreviewDialog.js
 import React from 'react';
 import { BOOKING_TYPE_DETAILS, WEEKDAY_NAME } from '@/utils/constant';
 import { formatAmount, formatHours } from '@/utils/converter';
-import { convertTo12HourFormat, formatDate } from '@/utils/dateUtils';
+import { convertTo12HourFormat, formatDate } from '@/utils/date-utils';
 import {
   Avatar,
   Box,
   Button,
   Card,
   CardContent,
-  // CardHeader,
   Dialog,
   Divider,
   Grid,
@@ -25,35 +23,27 @@ import {
   Typography,
 } from '@mui/material';
 import { Barbell, CurrencyCircleDollar, Envelope, Phone } from '@phosphor-icons/react';
-
-// import { DiscountType } from '../discount/discount-table';
-import { BookingDetailsI, SelectedSlotsI, SlotI } from './booking-form-dialog';
+import { SlotI, SelectedSlotsI, BookingPreviewDialogProps } from './types';
 
 // Define the props interface
-interface BookingPreviewDialogProps {
-  isOpen: boolean;
-  handleClose: () => void;
-  bookingDetails: BookingDetailsI | null;
+
+interface WeekdaySlot {
+  date: string;
+  slots: SlotI[];
 }
 
+interface WeeklySlotsPreviewData extends Record<string, WeekdaySlot[]> {}
+
+
 const BookingPreviewDialog: React.FC<BookingPreviewDialogProps> = ({ isOpen, handleClose, bookingDetails }) => {
-  type weekdaySlotI = {
-    date: string;
-    slots: SlotI[];
-  };
+  const [weeklySlotsPreviewData, setWeeklySlotsPreviewData] = React.useState<WeeklySlotsPreviewData>({});
 
-  type weeklySlotsPriviewDataI = {
-    [key: string]: weekdaySlotI[];
-  };
-
-  const [weeklySlotsPriviewData, setWeeklySlotsPriviewData] = React.useState<weeklySlotsPriviewDataI>({});
-
-  const transformSessionsForPriview = (input: SelectedSlotsI): weeklySlotsPriviewDataI => {
-    const output: weeklySlotsPriviewDataI = {};
+  const transformSessionsForPreview = (input: SelectedSlotsI): WeeklySlotsPreviewData => {
+    const output: WeeklySlotsPreviewData = {};
 
     for (const key in input) {
       const sessions = input[key];
-      const groupedByDate: { [date: string]: SlotI[] } = {};
+      const groupedByDate: Record<string, SlotI[]> = {};
 
       sessions.forEach((session) => {
         if (session) {
@@ -78,9 +68,8 @@ const BookingPreviewDialog: React.FC<BookingPreviewDialogProps> = ({ isOpen, han
   };
 
   React.useEffect(() => {
-    // console.log('()bookingDetails: ', bookingDetails);
-    setWeeklySlotsPriviewData(
-      bookingDetails?.selectedSlots ? transformSessionsForPriview(bookingDetails.selectedSlots) : {}
+    setWeeklySlotsPreviewData(
+      bookingDetails?.selectedSlots ? transformSessionsForPreview(bookingDetails.selectedSlots) : {}
     );
   }, [bookingDetails]);
 
@@ -95,7 +84,7 @@ const BookingPreviewDialog: React.FC<BookingPreviewDialogProps> = ({ isOpen, han
       <Stack spacing={2} sx={{ p: 3 }}>
         <Stack sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', marginTop: '30px' }}>
           <Typography variant="body2" gutterBottom>
-            {`${bookingDetails?.bookingType && BOOKING_TYPE_DETAILS[bookingDetails.bookingType]?.label}`}
+            {bookingDetails?.bookingType && BOOKING_TYPE_DETAILS[bookingDetails.bookingType]?.label}
             <br />
             <Typography fontSize={'12px'} component="span">
               Booking Type
@@ -134,50 +123,42 @@ const BookingPreviewDialog: React.FC<BookingPreviewDialogProps> = ({ isOpen, han
                 <Card
                   sx={{
                     height: '140px',
-                    boxShadow: 5, // Normal box shadow
+                    boxShadow: 5,
                     '&:hover': {
-                      boxShadow: 15, // Increased box shadow on hover
+                      boxShadow: 15,
                     },
-                    transition: 'box-shadow 0.3s ease-in-out', // Smooth transition effect
+                    transition: 'box-shadow 0.3s ease-in-out',
                     marginTop: '10px',
                   }}
                 >
-                  {/* <CardHeader title={`Member`}></CardHeader> */}
-
                   <CardContent>
                     <Grid container>
                       <Grid item md={4} alignContent={'center'}>
                         <Avatar
-                          src={bookingDetails.selectedCustomer.profileImageUrl}
+                          src={bookingDetails.selectedCustomer.profileImageUrl || ""}
                           sx={{ height: '56px', width: '56px' }}
-                        ></Avatar>
+                        />
                       </Grid>
                       <Grid item md={8} alignContent={'center'}>
                         <Typography variant="subtitle1">{bookingDetails.selectedCustomer.fullName}</Typography>
                         <Typography variant="caption" sx={{ display: 'flex', alignItems: 'center' }}>
-                          {bookingDetails.selectedCustomer.email ? (
+                          {bookingDetails.selectedCustomer.email && (
                             <IconButton sx={{ padding: '0px', marginRight: '5px' }}>
                               <Envelope width={18} height={18} />
                             </IconButton>
-                          ) : (
-                            ''
                           )}
                           {bookingDetails.selectedCustomer.email}
                         </Typography>
                         <Typography variant="caption" sx={{ display: 'flex', alignItems: 'center' }}>
-                          {bookingDetails.selectedCustomer.phoneNumber ? (
+                          {bookingDetails.selectedCustomer.phoneNumber && (
                             <IconButton sx={{ padding: '0px', marginRight: '5px' }}>
                               <Phone width={18} height={18} />
                             </IconButton>
-                          ) : (
-                            ''
                           )}
                           {bookingDetails.selectedCustomer.phoneNumber}
                         </Typography>
                       </Grid>
                     </Grid>
-
-                    {/* Add other fields as necessary */}
                   </CardContent>
                 </Card>
               )}
@@ -188,50 +169,42 @@ const BookingPreviewDialog: React.FC<BookingPreviewDialogProps> = ({ isOpen, han
                 <Card
                   sx={{
                     height: '140px',
-                    boxShadow: 5, // Normal box shadow
+                    boxShadow: 5,
                     '&:hover': {
-                      boxShadow: 15, // Increased box shadow on hover
+                      boxShadow: 15,
                     },
-                    transition: 'box-shadow 0.3s ease-in-out', // Smooth transition effect
+                    transition: 'box-shadow 0.3s ease-in-out',
                     marginTop: '10px',
                   }}
                 >
-                  {/* <CardHeader title={`Trainer`}></CardHeader> */}
-
                   <CardContent>
                     <Grid container>
                       <Grid item md={4} alignContent={'center'}>
                         <Avatar
-                          src={bookingDetails.selectedTrainer.profileImageUrl}
+                          src={bookingDetails?.selectedTrainer?.profileImageUrl || '' }
                           sx={{ height: '56px', width: '56px' }}
-                        ></Avatar>
+                        />
                       </Grid>
                       <Grid item md={8} alignContent={'center'}>
                         <Typography variant="subtitle1">{bookingDetails.selectedTrainer.fullName}</Typography>
                         <Typography variant="caption" sx={{ display: 'flex', alignItems: 'center' }}>
-                          {bookingDetails.selectedTrainer.fees ? (
+                          {bookingDetails.selectedTrainer.fees && (
                             <IconButton sx={{ padding: '0px', marginRight: '5px' }}>
                               <CurrencyCircleDollar width={18} height={18} />
                             </IconButton>
-                          ) : (
-                            ''
                           )}
                           {bookingDetails.selectedTrainer.fees} per Hour
                         </Typography>
                         <Typography variant="caption" sx={{ display: 'flex', alignItems: 'center' }}>
-                          {bookingDetails.selectedTrainer.experience ? (
+                          {bookingDetails.selectedTrainer.experience && (
                             <IconButton sx={{ padding: '0px', marginRight: '5px' }}>
                               <Barbell width={18} height={18} />
                             </IconButton>
-                          ) : (
-                            ''
                           )}
                           {bookingDetails.selectedTrainer.experience} years
                         </Typography>
                       </Grid>
                     </Grid>
-
-                    {/* Add other fields as necessary */}
                   </CardContent>
                 </Card>
               )}
@@ -240,7 +213,7 @@ const BookingPreviewDialog: React.FC<BookingPreviewDialogProps> = ({ isOpen, han
         </Stack>
 
         {/* Booking Type Section */}
-        {weeklySlotsPriviewData && (
+        {weeklySlotsPreviewData && (
           <Box>
             <Stack spacing={1}>
               <TableContainer component={Paper}>
@@ -252,19 +225,18 @@ const BookingPreviewDialog: React.FC<BookingPreviewDialogProps> = ({ isOpen, han
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {Object.keys(weeklySlotsPriviewData).map((weekday) => (
+                    {Object.keys(weeklySlotsPreviewData).map((weekday) => (
                       <TableRow key={weekday}>
-                        <TableCell>{`${WEEKDAY_NAME[Number(weekday)]}`}</TableCell>
+                        <TableCell>{WEEKDAY_NAME[Number(weekday)]}</TableCell>
                         <TableCell>
-                          {weeklySlotsPriviewData[weekday].map((weekSlot) => (
+                          {weeklySlotsPreviewData[weekday].map((weekSlot) => (
                             <div key={weekSlot.date}>
                               <Typography color="text.secondary" variant="body2" sx={{ fontStyle: 'italic' }}>
-                                {`${formatDate(weekSlot.date)}`}
+                                {formatDate(weekSlot.date)}
                               </Typography>
                               {weekSlot.slots.map((slot) => (
                                 <Typography key={`${weekSlot.date}-${slot.startTime}`} variant="body2">
-                                  {`${slot.startTime && convertTo12HourFormat(slot.startTime)}`} -{' '}
-                                  {`${slot.endTime && convertTo12HourFormat(slot.endTime)}`}
+                                  {slot.startTime && convertTo12HourFormat(slot.startTime)} - {slot.endTime && convertTo12HourFormat(slot.endTime)}
                                 </Typography>
                               ))}
                             </div>
@@ -310,27 +282,19 @@ const BookingPreviewDialog: React.FC<BookingPreviewDialogProps> = ({ isOpen, han
                 {formatHours(bookingDetails?.bookingHours)}
               </Typography>
               <Typography textAlign={'end'} color="text.secondary" gutterBottom>
-                {`${bookingDetails?.trainerRatePerHour && formatAmount(bookingDetails.trainerRatePerHour)}`}
+                {bookingDetails?.trainerRatePerHour && formatAmount(bookingDetails.trainerRatePerHour)}
               </Typography>
               <Typography textAlign={'end'} color="text.secondary" gutterBottom>
-                {`${bookingDetails?.bookingAmount && formatAmount(bookingDetails.bookingAmount)}`}
+                {bookingDetails?.bookingAmount && formatAmount(bookingDetails.bookingAmount)}
               </Typography>
               <Typography textAlign={'end'} color="text.secondary" gutterBottom>
-                {`${bookingDetails?.selectedPromocode?.codeName || '-'}`}
+                {bookingDetails?.selectedPromocode?.codeName || '-'}
               </Typography>
               <Typography textAlign={'end'} color="text.secondary" gutterBottom>
-                {`${bookingDetails?.discountAmount && formatAmount(bookingDetails.discountAmount)}`}
-
-                {/* {bookingDetails?.selectedPromocode &&
-                  bookingDetails?.selectedPromocode.discountType == DiscountType.Fix &&
-                  `(${formatAmount(bookingDetails?.selectedPromocode?.discountValue)})`}
-
-                {bookingDetails?.selectedPromocode &&
-                  bookingDetails?.selectedPromocode.discountType == DiscountType.Percentage &&
-                  `(${bookingDetails?.selectedPromocode?.discountValue}%)`} */}
+                {bookingDetails?.discountAmount && formatAmount(bookingDetails.discountAmount)}
               </Typography>
               <Typography textAlign={'end'} color="text.secondary" gutterBottom>
-                {`${bookingDetails?.netTotalAmount && formatAmount(bookingDetails.netTotalAmount)}`}
+                {bookingDetails?.netTotalAmount && formatAmount(bookingDetails.netTotalAmount)}
               </Typography>
             </Stack>
           </Stack>

@@ -1,7 +1,7 @@
 import React from 'react';
 import { BOOKING_PAYMENT_TYPE, BOOKING_TYPE, WEEKDAY_NAME, WEEKDAY_OPTIONS } from '@/utils/constant';
 import { formatAmount } from '@/utils/converter';
-import { formatDate } from '@/utils/dateUtils';
+import { formatDate } from '@/utils/date-utils';
 import { CustomLoader } from '@/utils/loader';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
@@ -36,12 +36,10 @@ import axiosInstance from '@/lib/axios';
 import { dayjs } from '@/lib/dayjs';
 import { Option } from '@/components/core/option';
 
-import { Customer } from '../customer/customers-table';
 import { DiscountEntry, DiscountType } from '../discount/discount-table';
-import { Trainer } from '../trainer/trainer-table';
 import BookingPreviewDialog from './booking-preview';
 import PaymentToggle from './payment-toggle';
-import { Sessions } from './types';
+import { Customer, Sessions, Trainer } from './types';
 
 // Interfaces
 export interface BookingFormDialogPropsI {
@@ -61,14 +59,14 @@ export interface SlotI {
   discount?: boolean;
 }
 
-export interface weekSlotI {
+export interface WeekSlotI {
   date: string;
-  slots: Array<SlotI>;
+  slots: SlotI[];
 }
 
 export interface WeeklySlotI {
   weekday: number;
-  weekSlots: Array<weekSlotI>;
+  weekSlots: WeekSlotI[];
 }
 
 export interface WeeklyDayOptionI {
@@ -251,7 +249,7 @@ export function BookingFormDialog({
     }));
   };
 
-  const transformSlots = (input: weekSlotI[]): SlotI[] => {
+  const transformSlots = (input: WeekSlotI[]): SlotI[] => {
     return input.flatMap((item) => [
       { date: formatDate(item.date), isDateLabel: true },
       ...item.slots.map((slot) => ({
@@ -555,7 +553,7 @@ export function BookingFormDialog({
                   <CardContent>
                     <Grid container>
                       <Grid item md={4} alignContent={'center'}>
-                        <Avatar src={selectedCustomer.profileImageUrl} sx={{ height: '56px', width: '56px' }}></Avatar>
+                        <Avatar src={selectedCustomer.profileImageUrl  ||""} sx={{ height: '56px', width: '56px' }}></Avatar>
                       </Grid>
                       <Grid item md={8} alignContent={'center'}>
                         <Typography variant="subtitle1">{selectedCustomer.fullName}</Typography>
@@ -634,7 +632,7 @@ export function BookingFormDialog({
                   <CardContent>
                     <Grid container>
                       <Grid item md={4} alignContent={'center'}>
-                        <Avatar src={selectedTrainer.profileImageUrl} sx={{ height: '56px', width: '56px' }}></Avatar>
+                        <Avatar src={selectedTrainer.profileImageUrl || ""} sx={{ height: '56px', width: '56px' }}></Avatar>
                       </Grid>
                       <Grid item md={8} alignContent={'center'}>
                         <Typography variant="subtitle1">{selectedTrainer.fullName}</Typography>

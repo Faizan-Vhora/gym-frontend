@@ -25,7 +25,7 @@ import { toast, ToastContainer } from 'react-toastify';
 import { z } from 'zod';
 
 import axiosInstance from '@/lib/axios';
-import { SupportEntry } from '@/components/dashboard/support/support-table';
+import type { SupportEntry } from '@/components/dashboard/support/support-table';
 
 // Dynamically import the CKEditor
 const CustomEditor = dynamic(() => import('@/components/ckeditor'), { ssr: false });
@@ -36,7 +36,7 @@ export interface SupportTicketMessagePayloadDataI {
 
 // Define validation schemas
 const supportSchema = z.object({
-  ticketMessage: z.string().optional(), // Required message validation
+  ticketMessage: z.string().optional(), // Message validation
 });
 
 type SupportTicketMessageInputs = z.infer<typeof supportSchema>;
@@ -47,25 +47,22 @@ export default function SupportForm(): React.JSX.Element {
   const router = useRouter();
 
   const [supportTicket, setSupportTicket] = useState<SupportEntry | null>(null);
-  const [supportTicketMessages, setTicketMessages] = useState<any[]>([]);
+  const [supportTicketMessages, setTicketMessages] = useState<SupportEntry[]>([]);
 
   const {
-    register,
     handleSubmit,
     setValue,
     formState: { errors },
-    trigger, // <-- Add trigger to manually trigger validation
+    trigger,
   } = useForm<SupportTicketMessageInputs>({
     resolver: zodResolver(supportSchema),
     mode: 'onBlur',
   });
 
   const [ticketMessage, setTicketMessage] = useState<string>(''); // Form fields
-
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = React.useState(false);
-
+  const [loading, setLoading] = useState<boolean>(false);
   const messagesEndRef = React.useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -76,64 +73,51 @@ export default function SupportForm(): React.JSX.Element {
 
   useEffect(() => {
     if (id) {
-      getTicketDetails();
-      getTicketMessages();
+      void getTicketDetails();
+      void getTicketMessages();
     }
   }, [id]);
 
-  const getTicketDetails = () => {
+  const getTicketDetails = async () => {
     setLoading(true);
-    axiosInstance
-      .get<{ data: SupportEntry }>(`/support-ticket/${id}`)
-      .then((response) => {
-        const fetchedData: SupportEntry = response.data.data;
-        setSupportTicket(fetchedData);
-      })
-      .catch((err) => {
-        const errorMessage = err instanceof Error ? err.message : 'An unexpected error occurred';
-        toast.error(errorMessage);
-      })
-      .finally(() => setLoading(false));
+    try {
+      const response = await axiosInstance.get<{ data: SupportEntry }>(`/support-ticket/${id}`);
+      setSupportTicket(response.data.data);
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'An unexpected error occurred';
+      toast.error(errorMessage);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const getTicketMessages = () => {
+  const getTicketMessages = async () => {
     setLoading(true);
-
-    const qParams = {
-      pagination: false,
-    };
-
-    axiosInstance
-      .get<{ data: { items: SupportEntry[]; meta: { totalItems: number } } }>(`/support-ticket/${id}/message`, {
-        params: {
-          ...qParams,
-        },
-      })
-      .then((response) => {
-        console.log('response: ', response);
-        const fetchedData: any = response.data.data;
-        setTicketMessages(fetchedData);
-      })
-      .catch((err) => {
-        const errorMessage = err instanceof Error ? err.message : 'An unexpected error occurred';
-        toast.error(errorMessage);
-      })
-      .finally(() => setLoading(false));
+    const qParams = { pagination: false };
+    try {
+      const response = await axiosInstance.get<{ data: { items: SupportEntry[]; meta: { totalItems: number } } }>(`/support-ticket/${id}/message`, {
+        params: qParams,
+      });
+      setTicketMessages(response.data.data.items);
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'An unexpected error occurred';
+      toast.error(errorMessage);
+    } finally {
+      setLoading(false);
+    }
   };
 
   // Manually handle CKEditor input change and trigger validation
-  const handleEditorChange = (data: string) => {
+  const handleEditorChange = async (data: string) => {
     setTicketMessage(data);
-    setValue('ticketMessage', data, { shouldValidate: true }); // Set the value in the form
-    trigger('ticketMessage'); // Manually trigger validation for this field
+    setValue('ticketMessage', data, { shouldValidate: true });
+    await trigger('ticketMessage');
   };
 
   const onSubmit = async (formData: SupportTicketMessageInputs): Promise<void> => {
     setIsSubmitting(true);
     setLoading(true);
     setError(null);
-
-    console.log('formData::: ', formData);
 
     try {
       const url = `/support-ticket/${id}/message`;
@@ -142,8 +126,8 @@ export default function SupportForm(): React.JSX.Element {
       await axiosInstance.post(url, data);
       toast.success('Support ticket message saved successfully');
       setTicketMessage('');
-      getTicketMessages();
-    } catch (err) {
+      await getTicketMessages();
+    } catch (err: unknown) {
       const errorMessage = err instanceof Error ? err.message : 'An unexpected error occurred';
       toast.error(errorMessage);
       setError('Failed to save support ticket details.');
@@ -185,26 +169,21 @@ export default function SupportForm(): React.JSX.Element {
                       <Card sx={{ mb: 2, width: 'fit-content' }}>
                         <CardContent sx={{ padding: '10px 20px' }}>
                           <Typography variant="body2" color="textSecondary">
-                            {tMessage.createdBy.fullName} - {formatUtcToLocalDatetime(tMessage.createdAt)}
+                            {tMessage.createdBy?.fullName} - {formatUtcToLocalDatetime(tMessage.createdAt)}
                           </Typography>
                           <Typography
                             sx={{ overflowWrap: 'anywhere' }}
-                            className="massge"
                             dangerouslySetInnerHTML={{ __html: tMessage.message }}
                           />
                         </CardContent>
                       </Card>
                     </Grid>
                   ))}
-
-                  {/* Div to scroll to */}
                   <div ref={messagesEndRef} />
                 </Grid>
               </CardContent>
             </Card>
-          ) : (
-            <></>
-          )}
+          ) : null}
 
           {/* New Message Input */}
           <Card>
@@ -212,11 +191,11 @@ export default function SupportForm(): React.JSX.Element {
             <CardContent>
               <Grid container spacing={2}>
                 <Grid item xs={12} sx={{ paddingTop: '0px' }}>
-                  <FormControl fullWidth required error={!!errors.ticketMessage}>
+                  <FormControl fullWidth required error={Boolean(errors.ticketMessage)}>
                     <CustomEditor
                       customePlaceholder="Type your message here..."
                       data={ticketMessage}
-                      onChange={handleEditorChange} // Use the handler to manage CKEditor change
+                      onChange={handleEditorChange}
                     />
                     {errors.ticketMessage && (
                       <FormHelperText className="massge-input">{errors.ticketMessage.message}</FormHelperText>
@@ -231,7 +210,7 @@ export default function SupportForm(): React.JSX.Element {
                 variant="contained"
                 type="submit"
                 sx={{ mr: 2 }}
-                disabled={isSubmitting || !ticketMessage.length}
+                disabled={isSubmitting || ticketMessage.length === 0}
               >
                 Submit
               </Button>
@@ -257,7 +236,7 @@ export default function SupportForm(): React.JSX.Element {
       </Card>
 
       {loading && <CustomLoader />}
-      {error ? <Alert color="error">{error}</Alert> : null}
+      {error && <Alert severity="error">{error}</Alert>}
 
       <ToastContainer />
     </Box>

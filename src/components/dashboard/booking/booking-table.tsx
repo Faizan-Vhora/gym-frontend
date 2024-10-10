@@ -141,18 +141,20 @@ export function BookingTable({
                         handleRowClick(entry.id);
                       }}
                       style={{ cursor: 'pointer' }}
-                    >{`#${entry.id}`}</TableCell>
+                    >
+                      #{entry.id}
+                    </TableCell>
 
                     <TableCell sx={tableCss.tableCell}>
                       <Stack direction="row" spacing={2} alignItems="center">
                         <Box>
                           <Typography variant="subtitle2">
                             {entry?.startDate === entry?.endDate
-                              ? `${formatDate(entry?.startDate)}`
-                              : `${formatDate(entry?.startDate)} to ${formatDate(entry?.endDate)}`}
+                              ? formatDate(entry?.startDate) // No need for template literals
+                              : formatDate(entry?.startDate) + ' to ' + formatDate(entry?.endDate)}
                           </Typography>
                           <Typography color="textSecondary" variant="body2">
-                            {`${formatHours(entry?.bookingHours)}`}
+                            {formatHours(entry?.bookingHours)} {/* No change needed here */}
                           </Typography>
                         </Box>
                       </Stack>
