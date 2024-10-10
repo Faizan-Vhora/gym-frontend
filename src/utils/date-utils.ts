@@ -30,14 +30,16 @@ export const formatDate = (dateString: string)=>{
 }
 
 
-export const formatTime = (date: Date) => {
-  if(typeof(date) == 'string'){
-    date = new Date(date)
-  }
-  if (!date) return null; // Handle null case
+export const formatTime = (inputDate: Date | string | null) => {
+  if (!inputDate) return null; // Handle null case
+
+  // Create a new date object if the input is a string
+  const date = typeof inputDate === 'string' ? new Date(inputDate) : inputDate;
+
   const hours = String(date.getHours()).padStart(2, '0'); // Get hours and pad with zeros
   const minutes = String(date.getMinutes()).padStart(2, '0'); // Get minutes
   const seconds = String(date.getSeconds()).padStart(2, '0'); // Get seconds
+
   return `${hours}:${minutes}:${seconds}`; // Return formatted time
 };
 

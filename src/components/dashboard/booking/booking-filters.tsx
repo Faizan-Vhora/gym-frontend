@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useState } from 'react';
 import { BOOKING_STATUS_OPTIONS, BOOKING_TYPE_OPTIONS } from '@/utils/constant';
-import { DATE_FORMAT } from '@/utils/dateUtils';
+import { DATE_FORMAT } from '@/utils/date-utils';
 import {
   Box,
   FormControl,

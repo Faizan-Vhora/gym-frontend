@@ -1,33 +1,12 @@
 'use client';
 
 import * as React from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
-import {
-  BOOKING_PAYMENT_STATUS_DETAILS,
-  BOOKING_PAYMENT_TYPE_DETAILS,
-  BOOKING_STATUS_DETAILS,
-  BOOKING_TYPE_DETAILS,
-} from '@/utils/constant';
-import { formatDate, formatUtcToLocalDatetime } from '@/utils/dateUtils';
+import { useSearchParams } from 'next/navigation';
+import { BOOKING_PAYMENT_STATUS_DETAILS, BOOKING_PAYMENT_TYPE_DETAILS, BOOKING_STATUS_DETAILS } from '@/utils/constant';
+import { formatDate } from '@/utils/date-utils';
 import { CustomLoader } from '@/utils/loader';
-import {
-  Alert,
-  Avatar,
-  Box,
-  Card,
-  CardContent,
-  CardHeader,
-  Chip,
-  Divider,
-  Grid,
-  IconButton,
-  Stack,
-  Tab,
-  Tabs,
-  Typography,
-} from '@mui/material';
-import { height, padding, width } from '@mui/system';
-import { Barbell, Envelope, GenderIntersex, GenderMale, MapPin, Phone } from '@phosphor-icons/react';
+import { Alert, Avatar, Box, Card, Grid, IconButton, Stack, Typography } from '@mui/material';
+import { Barbell, Envelope, GenderIntersex, MapPin, Phone } from '@phosphor-icons/react';
 import { toast, ToastContainer } from 'react-toastify';
 
 import axiosInstance from '@/lib/axios';
@@ -39,7 +18,6 @@ export default function BookingDetailsPage(): React.JSX.Element {
 
   const [bookingDetail, setBookingDetails] = React.useState<BookingEntry | null>(null);
 
-  const [error, setError] = React.useState<string | null>(null);
   const [loading, setLoading] = React.useState(false);
 
   React.useEffect(() => {
@@ -254,11 +232,10 @@ export default function BookingDetailsPage(): React.JSX.Element {
                   <Avatar sx={{ height: '76px', width: '76px' }}></Avatar>
 
                   <Stack>
-                      <Typography color="text.secondary" fontWeight={'600'} gutterBottom>
-                        {bookingDetail?.customer?.fullName}
-                      </Typography>
-        
-                  
+                    <Typography color="text.secondary" fontWeight={'600'} gutterBottom>
+                      {bookingDetail?.customer?.fullName}
+                    </Typography>
+
                     <Stack flexDirection={'row'} alignItems={'center'}>
                       <IconButton>
                         <Envelope size={25} />
@@ -286,9 +263,9 @@ export default function BookingDetailsPage(): React.JSX.Element {
                     </Stack>
                     <Stack flexDirection={'row'} alignItems={'center'}>
                       <IconButton>
-                      <GenderIntersex size={25} />
+                        <GenderIntersex size={25} />
                       </IconButton>
-                      <Typography  color="text.secondary" gutterBottom>
+                      <Typography color="text.secondary" gutterBottom>
                         {bookingDetail?.customer?.gender}
                       </Typography>
                     </Stack>
@@ -296,7 +273,7 @@ export default function BookingDetailsPage(): React.JSX.Element {
                       <IconButton>
                         <MapPin size={25} />
                       </IconButton>
-                      <Typography  color="text.secondary" gutterBottom>
+                      <Typography color="text.secondary" gutterBottom>
                         {bookingDetail?.customer?.address}
                       </Typography>
                     </Stack>
@@ -311,7 +288,7 @@ export default function BookingDetailsPage(): React.JSX.Element {
               <Typography variant="h6" component="div" color="black" marginBottom={'10px'}>
                 Trainer Details
               </Typography>
-              <Card  className="bookin-card">
+              <Card className="bookin-card">
                 <Stack
                   sx={{
                     display: 'flex',
@@ -330,28 +307,33 @@ export default function BookingDetailsPage(): React.JSX.Element {
                   </Typography>
                 </Stack>
 
-                <Stack sx={{ display: 'flex', flexDirection:{
+                <Stack
+                  sx={{
+                    display: 'flex',
+                    flexDirection: {
                       xs: 'column', // Column direction for mobile screens
                       md: 'row', // Row direction for larger screens like tablets and above
-                    }, alignItems: 'start', columnGap: '20px' }}>
+                    },
+                    alignItems: 'start',
+                    columnGap: '20px',
+                  }}
+                >
                   <Stack>
-                  <Avatar sx={{ height: '76px', width: '76px' }}></Avatar>
-                  <Stack flexDirection={'row'} justifyContent={'center'} alignItems={'center'}>
+                    <Avatar sx={{ height: '76px', width: '76px' }}></Avatar>
+                    <Stack flexDirection={'row'} justifyContent={'center'} alignItems={'center'}>
                       <IconButton>
                         <Barbell size={18} />
                       </IconButton>
-                      <Typography  color="text.secondary" gutterBottom>
+                      <Typography color="text.secondary" gutterBottom>
                         {bookingDetail?.trainer?.experience}
                       </Typography>
                     </Stack>
-                      </Stack>
+                  </Stack>
                   <Stack>
-                    
-                      <Typography color="text.secondary" fontWeight={'600'} gutterBottom>
-                        {bookingDetail?.trainer?.fullName}
-                      </Typography>
+                    <Typography color="text.secondary" fontWeight={'600'} gutterBottom>
+                      {bookingDetail?.trainer?.fullName}
+                    </Typography>
 
-                    
                     <Stack flexDirection={'row'} alignItems={'center'}>
                       <IconButton>
                         <Envelope size={25} />
@@ -371,9 +353,9 @@ export default function BookingDetailsPage(): React.JSX.Element {
                     </Stack>
                     <Stack flexDirection={'row'} alignItems={'center'}>
                       <IconButton>
-                      <GenderIntersex size={25} />
+                        <GenderIntersex size={25} />
                       </IconButton>
-                      <Typography   color="text.secondary" gutterBottom>
+                      <Typography color="text.secondary" gutterBottom>
                         {bookingDetail?.trainer?.gender}
                       </Typography>
                     </Stack>
@@ -381,11 +363,10 @@ export default function BookingDetailsPage(): React.JSX.Element {
                       <IconButton>
                         <MapPin size={25} />
                       </IconButton>
-                      <Typography  color="text.secondary" gutterBottom>
+                      <Typography color="text.secondary" gutterBottom>
                         {bookingDetail?.trainer?.address}
                       </Typography>
                     </Stack>
- 
                   </Stack>
                 </Stack>
               </Card>
@@ -395,7 +376,6 @@ export default function BookingDetailsPage(): React.JSX.Element {
       )}
 
       {loading && <CustomLoader />}
-      {error ? <Alert color="error">{error}</Alert> : null}
 
       <ToastContainer />
     </Box>

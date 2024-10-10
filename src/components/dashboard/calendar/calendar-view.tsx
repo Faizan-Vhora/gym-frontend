@@ -2,10 +2,9 @@
 
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
-import { BOOKING_STATUS, DateFormat } from '@/utils/constant';
-import type { DateSelectArg, EventClickArg, EventDropArg } from '@fullcalendar/core';
+import { BOOKING_STATUS } from '@/utils/constant';
+import type { DateSelectArg, EventClickArg } from '@fullcalendar/core';
 import dayGridPlugin from '@fullcalendar/daygrid';
-import type { EventResizeDoneArg } from '@fullcalendar/interaction';
 import interactionPlugin from '@fullcalendar/interaction';
 import listPlugin from '@fullcalendar/list';
 import Calendar from '@fullcalendar/react';
@@ -29,14 +28,14 @@ import axiosInstance from '@/lib/axios';
 import { useDialog } from '@/hooks/use-dialog';
 
 import { BookingSessionEntry } from '../booking/view/booking-sessions/booking-session-table';
+import { BookingFormDialog } from './booking-form-dialog';
 import { CalendarContext } from './calendar-context';
 import { EventContent } from './event-content';
 import SlotRescheduleForm from './reschedule-session-dialog';
 import SessionNotesForm from './session-notes';
 import SessionPreview from './session-view';
 import { Toolbar } from './toolbar';
-import type { Event, ViewMode, WeekSlot } from './types';
-import { BookingFormDialog } from './booking-form-dialog';
+import type { ApiResponse, Event, SessionItem, ViewMode } from './types';
 
 interface BookingFormDialogData {
   range?: { start: Date; end: Date };
@@ -48,18 +47,8 @@ export interface CalendarViewProps {
   view?: ViewMode;
 }
 
-interface DaySchedule {
-  weekday: number; // Weekday number (0-6, where 0 = Sunday, 6 = Saturday)
-  weekSlots: WeekSlot[]; // List of week slots for that day
-}
-
-
 export function CalendarView({ view = 'dayGridMonth' }: CalendarViewProps): React.JSX.Element {
-  const {
-    // currentEventId, setCurrentEventId, createEvent, deleteEvent,
-    updateEvent
-  } =
-    React.useContext(CalendarContext);
+  React.useContext(CalendarContext);
 
   const router = useRouter();
 
@@ -68,8 +57,8 @@ export function CalendarView({ view = 'dayGridMonth' }: CalendarViewProps): Reac
   const [events, setEvents] = React.useState<Event[]>([]);
   const [date, setDate] = React.useState<Date>(new Date());
 
-  const [selectedSession, setSelectedSession] = React.useState<any | null>(null);
-  const [selectedEvent, setSelectedEvent] = React.useState<any | null>(null);
+  const [selectedSession, setSelectedSession] = React.useState<BookingSessionEntry | null>(null);
+
   const [isDialogOpen, setIsDialogOpen] = React.useState(false);
   const [searchTerm, setSearchTerm] = React.useState('');
   const [trainer, selectedTrainer] = React.useState<number | null>(null);
@@ -82,7 +71,6 @@ export function CalendarView({ view = 'dayGridMonth' }: CalendarViewProps): Reac
 
   const bookingFormDialog = useDialog<BookingFormDialogData>();
 
-
   // const currentEvent = currentEventId ? events.find((event) => event.id === currentEventId) : undefined;
 
   const fetchEvents = async () => {
@@ -93,28 +81,39 @@ export function CalendarView({ view = 'dayGridMonth' }: CalendarViewProps): Reac
         startDate: startDateFilter,
         endDate: endDateFilter,
         pagination: false,
-        // page: page + 1, // Adjusting for API pagination
-        // limit: rowsPerPage,
         sessionStatus: statusFilter !== 'ALL' ? statusFilter : undefined,
         search: searchTerm,
       };
-      const response = await axiosInstance.get('/session-booking/session/list', { params });
+      const response = await axiosInstance.get<ApiResponse>('/session-booking/session/list', { params });
       const { data } = response.data;
 
       // Map the API response to FullCalendar format
-      const formattedEvents = data.map((item: any) => ({
-        id: item.id,
+
+      const formattedEvents: Event[] = data.map((item: SessionItem) => ({
+        id: item.id.toString(), // Ensure id is a string if your Event type requires it
         title: `Trainer: ${item.trainer.fullName} | Member: ${item.customer.fullName}`,
         start: `${item.sessionDate}T${item.sessionStartTime}`, // Combine date and time
         end: `${item.sessionDate}T${item.sessionEndTime}`,
-        extendedProps: {
-          sessionObj: item,
-        },
+        trainer: item.trainer?.id, // Assuming item.trainer has an id property
+        customer: item.customer.id, // Assuming item.customer has an id property
+        selectDate: new Date(item.sessionDate), // Set to the session date
+        startDate: new Date(`${item.sessionDate}T${item.sessionStartTime}`), // Convert to Date object
+        endDate: new Date(`${item.sessionDate}T${item.sessionEndTime}`), // Convert to Date object
+        bookingType: item.bookingType,
+        trainerRatePerHour: item.trainerRatePerHour, // Assuming item has this property
       }));
-      console.log('fetched events ', formattedEvents);
+
       setEvents(formattedEvents);
-    } catch (error) {
-      console.error('Error fetching events', error);
+    } catch (error: unknown) {
+      let errorMessage: string;
+      if (typeof error === 'string') {
+        errorMessage = error;
+      } else {
+        // Handle other types of errors, or set a generic message
+        errorMessage = 'An unexpected error occurred';
+      }
+      // Convert the Error object to a string
+      toast.error(errorMessage);
     }
   };
 
@@ -139,12 +138,12 @@ export function CalendarView({ view = 'dayGridMonth' }: CalendarViewProps): Reac
     setSearchTerm(newSearchTerm);
   };
 
-  const handleTrainerSelect: (trainer: number) => void = (trainer) => {
-    selectedTrainer(trainer);
+  const handleTrainerSelect: (newTrainer: number) => void = (newTrainer) => {
+    selectedTrainer(newTrainer);
   };
 
-  const handleMemberSelect: (trainer: number) => void = (trainer) => {
-    selectedMember(trainer);
+  const handleMemberSelect: (newTrainer: number) => void = (newTrainer) => {
+    selectedMember(newTrainer);
   };
 
   const handleStatusChange: (status: string) => void = (status) => {
@@ -190,7 +189,6 @@ export function CalendarView({ view = 'dayGridMonth' }: CalendarViewProps): Reac
   //   createDialog.handleOpen();
   // }, [createDialog]);
 
-
   const handleAdd = React.useCallback(() => {
     bookingFormDialog.handleOpen();
   }, [bookingFormDialog]);
@@ -217,34 +215,35 @@ export function CalendarView({ view = 'dayGridMonth' }: CalendarViewProps): Reac
       }
 
       bookingFormDialog.handleOpen({ range: { start: arg.start, end: arg.end } });
-
     },
     [bookingFormDialog]
   );
 
-
   const handleEventSelect = React.useCallback((arg: EventClickArg) => {
-    console.log('Event selected:', arg.event);
-    setSelectedEvent(arg.event);
-    setSelectedSession(arg.event._def.extendedProps.sessionObj);
-    setIsDialogOpen(true);
+    // Type assertion to specify that sessionObj is of type BookingSessionEntry
+    const sessionObj = arg.event._def.extendedProps.sessionObj as BookingSessionEntry;
+
+    // Ensure sessionObj is not undefined or null before setting it
+    if (sessionObj) {
+      setSelectedSession(sessionObj);
+      setIsDialogOpen(true);
+    }
   }, []);
 
   const handleDialogClose = () => {
     setIsDialogOpen(false);
-    setSelectedEvent(null);
   };
 
   const handleNotesChange = async (payload: { notes: string }) => {
     try {
-      // Call the API to reschedule the event
-      const response = await axiosInstance.put(`/session-booking/session/notes/${selectedSession.id}`, {
+      // Call the API to update the notes
+      await axiosInstance.put(`/session-booking/session/notes/${selectedSession?.id}`, {
         notes: payload.notes,
       });
       toast.success('Slot rescheduled successfully!');
       setIsDialogOpenForNotes(false); // Close the dialog
       setSelectedSession(null);
-      fetchEvents(); // Refresh events
+      await fetchEvents(); // Refresh events
     } catch (error) {
       toast.error('Failed to reschedule slot');
     }
@@ -268,28 +267,28 @@ export function CalendarView({ view = 'dayGridMonth' }: CalendarViewProps): Reac
     setSelectedSession(null);
   };
 
-  const handleEventResize = React.useCallback(
-    (arg: EventResizeDoneArg) => {
-      const { event } = arg;
-      updateEvent(event.id, { start: event.start!, end: event.end! });
-    },
-    [updateEvent]
-  );
+  // const handleEventResize = React.useCallback(
+  //   (arg: EventResizeDoneArg) => {
+  //     const { event } = arg;
+  //     updateEvent(event.id, { start: event.start!, end: event.end! });
+  //   },
+  //   [updateEvent]
+  // );
 
-  const handleEventDrop = React.useCallback(
-    (arg: EventDropArg) => {
-      const { event } = arg;
-      updateEvent(event.id, { start: event.start!, end: event.end! });
-    },
-    [updateEvent]
-  );
+  // const handleEventDrop = React.useCallback(
+  //   (arg: EventDropArg) => {
+  //     const { event } = arg;
+  //     updateEvent(event.id, { start: event.start!, end: event.end! });
+  //   },
+  //   [updateEvent]
+  // );
 
   const handleUpdateStatus = async (id: string, newStatus: BookingSessionEntry['status']): Promise<void> => {
     let swalText = `Do you want to change the status?`;
     let swalConfirmButtonText = `Yes, update it!`;
     let swalSuccessMessage = `The status has been updated`;
 
-    if (newStatus == BOOKING_STATUS.CANCELED) {
+    if (newStatus === BOOKING_STATUS.CANCELED) {
       swalText = `Do you want to cancel the booking?`;
       swalConfirmButtonText = `Yes, cancel it!`;
       swalSuccessMessage = `The booking has been cancelled`;
@@ -310,33 +309,15 @@ export function CalendarView({ view = 'dayGridMonth' }: CalendarViewProps): Reac
         setEvents((prevEntries) =>
           prevEntries.map((entry) => (entry.id === id ? { ...entry, status: newStatus } : entry))
         );
-        Swal.fire('Updated!', swalSuccessMessage, 'success');
+        await Swal.fire('Updated!', swalSuccessMessage, 'success');
       } catch (error) {
-        Swal.fire('Error!', 'Failed to update.', 'error');
+        await Swal.fire('Error!', 'Failed to update.', 'error');
         if (process.env.NODE_ENV !== 'production') {
-          // console.error('Failed to update status:', error);
+          // Log the error in non-production
         }
       }
     }
   };
-
-  interface Slot {
-    date: string; // Format: 'YYYY-MM-DD'
-    weekday: number; // Weekday index
-    startTime: string; // Ensure consistent formatting
-    endTime: string;
-    isAvailable: boolean;
-  }
-
-  interface WeekSlot {
-    date: string; // e.g., '2024-10-08'
-    slots: Slot[];
-  }
-
-  interface DaySchedule {
-    weekday: number; // or whatever type this represents
-    weekSlots: WeekSlot[];
-  }
 
   const handleReschedule = async (payload: {
     sessionDate: string;
@@ -345,14 +326,14 @@ export function CalendarView({ view = 'dayGridMonth' }: CalendarViewProps): Reac
   }) => {
     try {
       // Call the API to reschedule the event
-      const response = await axiosInstance.put(`/session-booking/session/update-detail/${selectedEvent.id}`, {
+      await axiosInstance.put(`/session-booking/session/update-detail/${selectedSession?.id}`, {
         sessionDate: payload.sessionDate,
         sessionStartTime: payload.sessionStartTime,
         sessionEndTime: payload.sessionEndTime,
       });
       toast.success('Slot rescheduled successfully!');
       setIsDialogOpenForRechedule(false); // Close the dialog
-      fetchEvents(); // Refresh events
+      await fetchEvents(); // Refresh events
     } catch (error) {
       toast.error('Failed to reschedule slot');
     }
@@ -383,10 +364,10 @@ export function CalendarView({ view = 'dayGridMonth' }: CalendarViewProps): Reac
               eventClick={handleEventSelect}
               eventContent={EventContent}
               eventDisplay="block"
-              eventDrop={handleEventDrop}
+              // eventDrop={handleEventDrop}
               eventMinHeight={25}
               eventResizableFromStart
-              eventResize={handleEventResize}
+              // eventResize={handleEventResize}
               events={Array.from(events.values())}
               headerToolbar={false}
               height={800}
@@ -453,12 +434,11 @@ export function CalendarView({ view = 'dayGridMonth' }: CalendarViewProps): Reac
           onClose={bookingFormDialog.handleClose}
           onCreate={() => {
             bookingFormDialog.handleClose();
-            fetchEvents();
+            void fetchEvents();
           }}
           open
         />
       ) : null}
-
     </React.Fragment>
   );
 }

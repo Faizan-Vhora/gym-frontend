@@ -8,7 +8,6 @@ import CardActions from '@mui/material/CardActions';
 import CardHeader from '@mui/material/CardHeader';
 import Chip from '@mui/material/Chip';
 import Divider from '@mui/material/Divider';
-import type { SxProps } from '@mui/material/styles';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -26,10 +25,9 @@ export interface Order {
 
 export interface LatestOrdersProps {
   orders?: Order[];
-  sx?: SxProps;
 }
 
-export function LatestOrders({ orders = [], sx }: LatestOrdersProps): React.JSX.Element {
+export function LatestOrders({ orders = [] }: LatestOrdersProps): React.JSX.Element {
   const router = useRouter();
   const handleRedirect = (id: number) => {
     // Redirect to the member detail page with the specific member's id

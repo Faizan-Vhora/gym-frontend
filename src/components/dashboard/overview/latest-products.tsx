@@ -12,7 +12,6 @@ import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
 import ListItemText from '@mui/material/ListItemText';
-import type { SxProps } from '@mui/material/styles';
 // import { ArrowRight as ArrowRightIcon } from '@phosphor-icons/react/dist/ssr/ArrowRight';
 // import { DotsThreeVertical as DotsThreeVerticalIcon } from '@phosphor-icons/react/dist/ssr/DotsThreeVertical';
 import dayjs from 'dayjs';
@@ -32,10 +31,9 @@ const userTypeStatus: Record<number, { label: string; color: 'warning' | 'succes
 
 export interface LatestProductsProps {
   products?: Product[];
-  sx?: SxProps;
 }
 
-export function LatestProducts({ products = [], sx }: LatestProductsProps): React.JSX.Element {
+export function LatestProducts({ products = [] }: LatestProductsProps): React.JSX.Element {
   const router = useRouter();
 
   const handleRedirect = (id: number, userType: number) => {
@@ -48,7 +46,7 @@ export function LatestProducts({ products = [], sx }: LatestProductsProps): Reac
   };
 
   return (
-    <Card sx={{height:'520px',overflowY:'scroll'}}>
+    <Card sx={{ height: '520px', overflowY: 'scroll' }}>
       <CardHeader title="Incomplete Profiles" />
       <Divider />
       <List>

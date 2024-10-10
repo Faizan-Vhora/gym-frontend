@@ -1,6 +1,6 @@
 import React from 'react';
 import { useRouter } from 'next/navigation';
-import { convertTo12HourFormat } from '@/utils/dateUtils';
+import { convertTo12HourFormat } from '@/utils/date-utils';
 import {
   Box,
   Card,
@@ -154,10 +154,18 @@ export function CheckInTable({
                   </TableCell>
                   <TableCell>
                     <Stack direction="row" spacing={1} alignItems="center">
-                      <IconButton onClick={() => onEdit(entry.id)}>
+                      <IconButton
+                        onClick={() => {
+                          onEdit(entry.id);
+                        }}
+                      >
                         <PencilSimple />
                       </IconButton>
-                      <IconButton onClick={() => onDelete(entry.id)}>
+                      <IconButton
+                        onClick={() => {
+                          onDelete(entry.id);
+                        }}
+                      >
                         <Trash />
                       </IconButton>
                     </Stack>

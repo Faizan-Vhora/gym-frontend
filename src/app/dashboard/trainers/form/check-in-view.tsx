@@ -1,5 +1,5 @@
 import React from 'react';
-import { convertTo12HourFormat } from '@/utils/dateUtils';
+import { convertTo12HourFormat } from '@/utils/date-utils';
 import {
   Box,
   Card,

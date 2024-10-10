@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { DateFormat } from '@/utils/constant';
-import { convertTo12HourFormat, formatDate } from '@/utils/dateUtils';
+import { convertTo12HourFormat, formatDate } from '@/utils/date-utils';
 import {
   Autocomplete,
   Button,
@@ -22,9 +22,8 @@ import { toast } from 'react-toastify';
 
 import axiosInstance from '@/lib/axios';
 
-import { DateSlot, ScheduleResponse, Slot, WeekSlot } from './types';
 import { BookingSessionEntry } from '../booking/view/booking-sessions/booking-session-table';
-
+import { DateSlot, ScheduleResponse, Slot, WeekSlot } from './types';
 
 interface SlotRescheduleFormProps {
   sessionObj: BookingSessionEntry;
@@ -53,14 +52,8 @@ const SlotRescheduleForm: React.FC<SlotRescheduleFormProps> = ({ sessionObj, ope
 
   useEffect(() => {
     if (sessionObj) {
-      console.log("sessionObj.", sessionObj)
-
-
-      const slotSartTime =  new Date(`${sessionObj.sessionDate} ${sessionObj.sessionStartTime}`) ;
-      const slotEndTime = new Date(`${sessionObj.sessionDate} ${sessionObj.sessionEndTime}`) ;
-
-      console.log("slotSartTime. ", slotSartTime)
-      console.log("slotEndTime. ", slotEndTime)
+      const slotSartTime = new Date(`${sessionObj.sessionDate} ${sessionObj.sessionStartTime}`);
+      const slotEndTime = new Date(`${sessionObj.sessionDate} ${sessionObj.sessionEndTime}`);
 
       setValue('selectedDate', dayjs(sessionObj.sessionDate));
       setValue('selectedSlot', {
@@ -71,7 +64,7 @@ const SlotRescheduleForm: React.FC<SlotRescheduleFormProps> = ({ sessionObj, ope
     }
   }, [sessionObj, setValue]);
 
-  const fetchSlotsData = async (trainerId: number|null|undefined, date: Dayjs) => {
+  const fetchSlotsData = async (trainerId: number | null | undefined, date: Dayjs) => {
     setLoading(true);
     const start = date.startOf('day').format(DateFormat.dateFormat);
     const end = date.endOf('day').format(DateFormat.dateFormat);
@@ -81,7 +74,6 @@ const SlotRescheduleForm: React.FC<SlotRescheduleFormProps> = ({ sessionObj, ope
       });
       setScheduleResponse(response.data);
     } catch (error) {
-      console.error('Error fetching slots:', error);
       toast.error(
         `Failed to fetch slot data: ${error instanceof Error ? error.message : 'An unexpected error occurred'}`
       );
@@ -91,9 +83,20 @@ const SlotRescheduleForm: React.FC<SlotRescheduleFormProps> = ({ sessionObj, ope
   };
 
   useEffect(() => {
-    if (sessionObj && selectedDate) {
-      fetchSlotsData(sessionObj?.trainer?.id, selectedDate);
-    }
+    const fetchData = async () => {
+      if (sessionObj && selectedDate) {
+        return fetchSlotsData(sessionObj.trainer?.id, selectedDate);
+      }
+    };
+
+    fetchData()
+      .then(() => {
+        // Process successful fetch if needed
+      })
+      .catch((error: unknown) => {
+        const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred';
+        toast.error(errorMessage); // Display toast error message
+      });
   }, [sessionObj, selectedDate]);
 
   const onSubmitForm = (data: { selectedDate: Dayjs | null; selectedSlot: Slot | null }) => {
@@ -102,7 +105,7 @@ const SlotRescheduleForm: React.FC<SlotRescheduleFormProps> = ({ sessionObj, ope
         sessionStartTime: data.selectedSlot.startTime,
         sessionEndTime: data.selectedSlot.endTime,
         sessionDate: data.selectedDate.format('YYYY-MM-DD'),
-      });
+      }); // No await here if onSubmit is synchronous
       onClose();
       reset();
     }
@@ -125,11 +128,13 @@ const SlotRescheduleForm: React.FC<SlotRescheduleFormProps> = ({ sessionObj, ope
                     disablePast
                     label="Select New Date"
                     value={field.value}
-                    onChange={(newValue: Dayjs | null) => field.onChange(newValue)}
+                    onChange={(newValue: Dayjs | null) => {
+                      field.onChange(newValue);
+                    }}
                     slotProps={{
                       textField: {
                         fullWidth: true,
-                        error: !!fieldState.error,
+                        error: Boolean(fieldState.error),
                         helperText: fieldState.error?.message,
                       },
                     }}
@@ -151,7 +156,7 @@ const SlotRescheduleForm: React.FC<SlotRescheduleFormProps> = ({ sessionObj, ope
                   {dateSlot.weekSlots.map((weekSlot: WeekSlot, weekIndex: number) => (
                     <div key={weekIndex}>
                       <Typography variant="subtitle1" sx={{ mt: 2, mb: 1, textAlign: 'start' }}>
-                        { formatDate(weekSlot.date) }
+                        {formatDate(weekSlot.date)}
                       </Typography>
                       <Controller
                         name="selectedSlot"
@@ -166,7 +171,9 @@ const SlotRescheduleForm: React.FC<SlotRescheduleFormProps> = ({ sessionObj, ope
                             isOptionEqualToValue={(option, value) =>
                               option.startTime === value.startTime && option.endTime === value.endTime
                             }
-                            onChange={(_, newValue) => field.onChange(newValue)}
+                            onChange={(_, newValue) => {
+                              field.onChange(newValue);
+                            }}
                             renderOption={(props, option, { selected }) => (
                               <li {...props} style={{ opacity: option.isAvailable ? 1 : 0.5 }}>
                                 <Checkbox checked={selected} disabled={!option.isAvailable} />
@@ -180,7 +187,7 @@ const SlotRescheduleForm: React.FC<SlotRescheduleFormProps> = ({ sessionObj, ope
                                 label="Select Time Slot"
                                 variant="outlined"
                                 placeholder="Choose a slot"
-                                error={!!fieldState.error}
+                                error={Boolean(fieldState.error)}
                                 helperText={fieldState.error?.message}
                               />
                             )}
@@ -205,7 +212,7 @@ const SlotRescheduleForm: React.FC<SlotRescheduleFormProps> = ({ sessionObj, ope
         <Button
           onClick={handleSubmit(onSubmitForm)}
           color="primary"
-          disabled={!!errors.selectedDate || !!errors.selectedSlot || loading}
+          disabled={Boolean(errors.selectedDate) || Boolean(errors.selectedDate) || loading}
         >
           Reschedule
         </Button>

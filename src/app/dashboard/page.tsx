@@ -235,7 +235,7 @@ export default function Page(): React.JSX.Element {
         <Traffic chartSeries={mebershipPlanChartSeries} labels={labels} sx={{ height: '100%' }} />
       </Grid>
       <Grid lg={4} md={6} xs={12}>
-        <LatestProducts products={members} sx={{ height: '100%' }} />
+        <LatestProducts products={members} />
       </Grid>
       <Grid lg={8} md={12} xs={12}>
         <LatestOrders
@@ -284,7 +284,6 @@ export default function Page(): React.JSX.Element {
           //     createdAt: dayjs().subtract(10, 'minutes').toDate(),
           //   },
           // ]}
-          sx={{ height: '100%' }}
         />
       </Grid>
 

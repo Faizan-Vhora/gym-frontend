@@ -1,5 +1,6 @@
 // BookingPreviewDialog.js
 import React from 'react';
+import { BOOKING_TYPE_DETAILS, WEEKDAY_NAME } from '@/utils/constant';
 import { formatAmount, formatHours } from '@/utils/converter';
 import {
   Box,
@@ -17,9 +18,7 @@ import {
   Typography,
 } from '@mui/material';
 
-import { SelectedSlotsI } from './booking-form-dialog';
-import { BOOKING_TYPE_DETAILS, WEEKDAY_NAME } from '@/utils/constant';
-
+import { SelectedSlotsI } from './booking-form-dialog'; // Static import
 
 // Define the props interface
 interface BookingPreviewDialogProps {
@@ -60,7 +59,7 @@ const BookingPreviewDialog: React.FC<BookingPreviewDialogProps> = ({
         {/* Booking Type Section */}
         <Box>
           <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
-            Booking Type : { `${BOOKING_TYPE_DETAILS[bookingType]?.label}`}
+            Booking Type : {BOOKING_TYPE_DETAILS[bookingType]?.label}
           </Typography>
 
           <Stack spacing={1}>
@@ -77,7 +76,7 @@ const BookingPreviewDialog: React.FC<BookingPreviewDialogProps> = ({
                     <TableBody>
                       {Object.keys(selectedSlots).map((weekday: string) => (
                         <TableRow key={weekday}>
-                          <TableCell>{`${WEEKDAY_NAME[Number(weekday)]}`}</TableCell>
+                          <TableCell>{WEEKDAY_NAME[Number(weekday)]}</TableCell>
                           <TableCell>
                             {selectedSlots[weekday].map((slot, index) => (
                               <Typography key={index} variant="body2">
@@ -97,7 +96,7 @@ const BookingPreviewDialog: React.FC<BookingPreviewDialogProps> = ({
 
         {/* Date Section */}
         <Box>
-          <Typography variant="body2">Total Hours: { `${formatHours(bookingHours)}` }</Typography>
+          <Typography variant="body2">Total Hours: {formatHours(bookingHours)}</Typography>
         </Box>
 
         {/* Billing Section */}
@@ -106,14 +105,12 @@ const BookingPreviewDialog: React.FC<BookingPreviewDialogProps> = ({
             Billing
           </Typography>
           <Stack spacing={1}>
-            <Typography variant="body2">Amount: {`${formatAmount(bookingAmount)}`} </Typography>
+            <Typography variant="body2">Amount: {formatAmount(bookingAmount)} </Typography>
             {/* <Typography variant="body2">Promo Code: </Typography> */}
-            <Typography variant="body2"> Discount:  - {`${formatAmount(0)}`} </Typography>
-            <Typography variant="subtitle1">G.Total: {`${formatAmount(netTotalAmount)}`} </Typography>
+            <Typography variant="body2"> Discount: - {formatAmount(0)} </Typography>
+            <Typography variant="subtitle1">G.Total: {formatAmount(netTotalAmount)} </Typography>
           </Stack>
         </Box>
-
-
       </Stack>
       <Divider />
       <Stack direction="row" spacing={2} sx={{ justifyContent: 'center', p: 2 }}></Stack>

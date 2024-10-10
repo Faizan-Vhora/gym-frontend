@@ -28,7 +28,7 @@ import 'react-toastify/dist/ReactToastify.css';
 
 import { useRouter, useSearchParams } from 'next/navigation';
 import { DateFormat } from '@/utils/constant';
-import { formatTime } from '@/utils/dateUtils';
+import { formatTime } from '@/utils/date-utils';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import dayjs, { Dayjs } from 'dayjs';
 

@@ -22,7 +22,7 @@ import dayjs from 'dayjs';
 import tableCss from '@/styles/table-css';
 
 export interface Customer {
-  id: string | number;
+  id: number;
   fullName: string;
   email: string;
   phoneNumber: string;

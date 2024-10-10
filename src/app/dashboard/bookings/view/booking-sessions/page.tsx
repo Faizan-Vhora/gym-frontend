@@ -2,40 +2,31 @@
 
 import * as React from 'react';
 import { useCallback, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
+import { BOOKING_STATUS } from '@/utils/constant';
 import { CustomLoader } from '@/utils/loader';
-import {
-  Button,
-  Card,
-  Stack,
-  Typography,
-} from '@mui/material';
-import { Plus as PlusIcon } from '@phosphor-icons/react';
+import { Card, Stack } from '@mui/material';
+import { toast, ToastContainer } from 'react-toastify';
 import Swal from 'sweetalert2';
 
 import axiosInstance from '@/lib/axios';
-import { toast, ToastContainer } from 'react-toastify';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { BookingFilters } from '@/components/dashboard/booking/booking-filters';
-import { BOOKING_STATUS } from '@/utils/constant';
-import { BookingSessionEntry, BookingSessionTable } from '@/components/dashboard/booking/view/booking-sessions/booking-session-table';
+import {
+  BookingSessionEntry,
+  BookingSessionTable,
+} from '@/components/dashboard/booking/view/booking-sessions/booking-session-table';
 import SlotRescheduleForm from '@/components/dashboard/calendar/reschedule-session-dialog';
 import SessionNotesForm from '@/components/dashboard/calendar/session-notes';
 
-
 export default function BookingSessionsPage(): React.JSX.Element {
-
   const searchParams = useSearchParams();
   const bookingId = searchParams.get('id');
 
-  const router = useRouter();
-
   // <variables> (start)
 
-  const [pageTitle, setPageTitle] = React.useState('Sessions');
   const [entries, setEntries] = React.useState<BookingSessionEntry[]>([]);
-  const [searchTerm, setSearchTerm] = React.useState('');
-  const [statusFilter, setStatusFilter] = React.useState('All');
-  const [bookingTypeFilter, setBookingTypeFilter] = React.useState('All');
+  // const [searchTerm, setSearchTerm] = React.useState('');
+  // const [statusFilter, setStatusFilter] = React.useState('All');
+  // const [bookingTypeFilter, setBookingTypeFilter] = React.useState('All');
   const [page, setPage] = React.useState<number>(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [count, setCount] = React.useState<number>(0);
@@ -46,33 +37,29 @@ export default function BookingSessionsPage(): React.JSX.Element {
 
   // <variables> (end)
 
-
-
   // < methods> (start)
 
   const getSessionBookingSessionListData = useCallback(async (): Promise<void> => {
     setLoading(true);
     try {
-
       const qParams = {
         page: page + 1,
         limit: rowsPerPage, // Number of rows per page
-        search: searchTerm, // Search term
+        // search: searchTerm, // Search term
         bookingId: bookingId,
-        bookingType: bookingTypeFilter !== 'All' ? bookingTypeFilter : null, // Booking type filter
-        status: statusFilter !== 'All' ? statusFilter : null, // Status filter
-      }
+        // bookingType: bookingTypeFilter !== 'All' ? bookingTypeFilter : null,
+        // status: statusFilter !== 'All' ? statusFilter : null,
+      };
 
-      const response = await axiosInstance.get<{ data: { items: BookingSessionEntry[]; meta: { totalItems: number } } }>(
-        '/session-booking/session/list',
-        {
-          params: {
-            ...qParams
-          },
-        }
-      );
+      const response = await axiosInstance.get<{
+        data: { items: BookingSessionEntry[]; meta: { totalItems: number } };
+      }>('/session-booking/session/list', {
+        params: {
+          ...qParams,
+        },
+      });
 
-      console.log("sessions: response: ",response)
+      console.log('sessions: response: ', response);
 
       setEntries(response.data.data.items);
       setCount(response.data.data.meta.totalItems); // Total number of items for pagination controls
@@ -83,21 +70,18 @@ export default function BookingSessionsPage(): React.JSX.Element {
     } finally {
       setLoading(false);
     }
-  }, [page, rowsPerPage, searchTerm, statusFilter, bookingTypeFilter]);
-
+  }, [page, rowsPerPage]);
 
   // const handleAddClick = (): void => {
   //   router.push('/dashboard/support/form');
   // };
 
   const handleUpdateStatus = async (id: number, newStatus: BookingSessionEntry['status']): Promise<void> => {
-
     let swalText = `Do you want to change the status?`;
     let swalConfirmButtonText = `Yes, update it!`;
     let swalSuccessMessage = `The status has been updated`;
 
-    if(newStatus == BOOKING_STATUS.CANCELED){
-
+    if (newStatus === BOOKING_STATUS.CANCELED) {
       swalText = `Do you want to cancel the booking?`;
       swalConfirmButtonText = `Yes, cancel it!`;
       swalSuccessMessage = `The booking has been cancelled`;
@@ -128,18 +112,15 @@ export default function BookingSessionsPage(): React.JSX.Element {
     }
   };
 
-
-  const handleUpdateNotes = async(session: BookingSessionEntry)=>{
+  const handleUpdateNotes = async (session: BookingSessionEntry) => {
     setSelectedSession(session);
     setIsDialogOpenForNotes(true);
-  }
+  };
 
-
-  const handleRescheduleSession = async(session: BookingSessionEntry)=>{
+  const handleRescheduleSession = async (session: BookingSessionEntry) => {
     setSelectedSession(session);
     setIsDialogOpen(true);
-  }
-
+  };
 
   const handlePageChange = (newPage: number): void => {
     setPage(newPage);
@@ -150,23 +131,20 @@ export default function BookingSessionsPage(): React.JSX.Element {
     setPage(0);
   };
 
-  const handleSearchChange = (search: string): void => {
-    setSearchTerm(search);
-    setPage(0);
+  // const handleSearchChange = (search: string): void => {
+  //   setSearchTerm(search);
+  //   setPage(0);
+  // };
 
-  };
+  // const handleStatusChange = (status: string): void => {
+  //   setStatusFilter(status);
+  //   setPage(0);
+  // };
 
-  const handleStatusChange = (status: string): void => {
-    setStatusFilter(status);
-    setPage(0);
-
-  };
-
-  const handleBookingTypeChange = (type: string): void => {
-    setBookingTypeFilter(type);
-    setPage(0);
-
-  };
+  // const handleBookingTypeChange = (type: string): void => {
+  //   setBookingTypeFilter(type);
+  //   setPage(0);
+  // };
   // <methods hooks> (end)
 
   const handleReschedule = async (payload: {
@@ -190,11 +168,7 @@ export default function BookingSessionsPage(): React.JSX.Element {
     }
   };
 
-
-
-  const handleNotesChange = async (payload: {
-    notes: string;
-  }) => {
+  const handleNotesChange = async (payload: { notes: string }) => {
     try {
       // Call the API to reschedule the event
       const response = await axiosInstance.put(`/session-booking/session/notes/${selectedSession.id}`, {
@@ -208,7 +182,6 @@ export default function BookingSessionsPage(): React.JSX.Element {
       toast.error('Failed to reschedule slot');
     }
   };
-
 
   const handleDialogClose = () => {
     setIsDialogOpen(false);
@@ -226,15 +199,12 @@ export default function BookingSessionsPage(): React.JSX.Element {
   }, [getSessionBookingSessionListData]);
   // <lifecycle hooks> (end)
 
-
   // <template> (start)
 
   return (
-
     <Stack spacing={3}>
-    <Stack direction="row" spacing={3}>
-
-      {/* <Button
+      <Stack direction="row" spacing={3}>
+        {/* <Button
         className="common-button"
         startIcon={<PlusIcon fontSize="var(--icon-fontSize-md)" />}
         variant="contained"
@@ -242,10 +212,9 @@ export default function BookingSessionsPage(): React.JSX.Element {
       >
         Add
       </Button> */}
-    </Stack>
-    <Card>
-
-      {/* <Stack sx={{ padding: '30px' }}>
+      </Stack>
+      <Card>
+        {/* <Stack sx={{ padding: '30px' }}>
          <BookingFilters
          onSearchChange={handleSearchChange}
          onStatusChange={handleStatusChange}
@@ -253,24 +222,24 @@ export default function BookingSessionsPage(): React.JSX.Element {
        />
       </Stack> */}
 
-      {loading ? (
-        <CustomLoader />
-      ) : (
-        <BookingSessionTable
-          entries={entries}
-          page={page}
-          rowsPerPage={rowsPerPage}
-          totalEntries={count}
-          onUpdateStatus={handleUpdateStatus}
-          onUpdateNotes={handleUpdateNotes}
-          onRescheduleSession={handleRescheduleSession}
-          onPageChange={handlePageChange}
-          onRowsPerPageChange={handleRowsPerPageChange}
-        />
-      )}
-    </Card>
+        {loading ? (
+          <CustomLoader />
+        ) : (
+          <BookingSessionTable
+            entries={entries}
+            page={page}
+            rowsPerPage={rowsPerPage}
+            totalEntries={count}
+            onUpdateStatus={handleUpdateStatus}
+            onUpdateNotes={handleUpdateNotes}
+            onRescheduleSession={handleRescheduleSession}
+            onPageChange={handlePageChange}
+            onRowsPerPageChange={handleRowsPerPageChange}
+          />
+        )}
+      </Card>
 
-    {selectedSession && (
+      {selectedSession && (
         <SlotRescheduleForm
           open={isDialogOpen}
           onClose={handleDialogClose}
@@ -279,8 +248,8 @@ export default function BookingSessionsPage(): React.JSX.Element {
         />
       )}
 
-    {/* change notes Dialog */}
-        {selectedSession && (
+      {/* change notes Dialog */}
+      {selectedSession && (
         <SessionNotesForm
           open={isDialogOpenForNotes}
           onClose={handleDialogCloseForNotes}
@@ -289,11 +258,9 @@ export default function BookingSessionsPage(): React.JSX.Element {
         />
       )}
 
-
-    <ToastContainer />
-  </Stack>
+      <ToastContainer />
+    </Stack>
   );
 
   // <template> (end)
-
 }

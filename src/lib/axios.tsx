@@ -11,15 +11,13 @@ interface ErrorResponse {
 }
 
 // Create a helper function to ensure proper error typing
-const createError = (message: string): Error => {
-  console.log('message', message);
-  // return new Error(message);
-  return new Error('Server Error');
+const createError = (message = 'Server Error'): Error => {
+  return new Error(message);
 };
 
 const axiosInstance = axios.create({
   // baseURL: 'http://18.188.170.111:3001/',
-  baseURL: APP_BASE_URL
+  baseURL: APP_BASE_URL,
 });
 
 // Adding an Authorization header if a token exists
@@ -45,7 +43,6 @@ axiosInstance.interceptors.response.use(
     const errorMessage = error.response?.data?.message || 'An error occurred, please try again.';
 
     errorMessage.split(',').forEach((message: string) => {
-      console.log('E message::', message);
       toast.error(message);
     });
     // Create a standardized Error object for rejection

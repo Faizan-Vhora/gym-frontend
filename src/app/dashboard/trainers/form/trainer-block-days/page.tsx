@@ -1,3 +1,5 @@
+'use client';
+
 import React from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { DateFormat } from '@/utils/constant';
@@ -74,7 +76,6 @@ const UnavailableDateRanges = () => {
       toast.success('Block Dates saved successfully!');
       router.push('/dashboard/trainers'); // Adjust the redirect as needed
     } catch (error) {
-      console.error('Error saving block dates:', error);
       toast.error('An error occurred while saving the block dates.');
     }
   };
@@ -84,19 +85,18 @@ const UnavailableDateRanges = () => {
     const fetchData = async () => {
       try {
         const response = await axiosInstance.get(`/trainer/${id}/trainer-block-dates`);
-        const existingDates = response.data.data; // Adjust this according to your response structure
+        const existingDates: UnavailableDate[] = response.data.data; // Explicitly define the type
         if (existingDates.length > 0) {
           // Set the form values with the existing dates
           setValue('unavailableDates', existingDates);
         }
       } catch (error) {
-        console.error('Error fetching unavailable dates:', error);
         toast.error('Failed to load unavailable dates.');
       } finally {
         setIsLoading(false);
       }
     };
-    fetchData();
+    void fetchData();
   }, [id, setValue]);
 
   return (
@@ -104,10 +104,10 @@ const UnavailableDateRanges = () => {
       {isLoading ? (
         <p>Loading...</p> // Show loading state
       ) : (
-        <form style={{marginTop:'40px'}} onSubmit={handleSubmit(onSubmit)}>
+        <form style={{ marginTop: '40px' }} onSubmit={handleSubmit(onSubmit)}>
           {unavailableDates.map((dateRange, index) => (
-            <Grid container alignItems={'center'} key={index} sx={{marginLeft:'5px'}}>
-              <Grid item xs={12} sm={6} md={4} sx={{padding:'15px'}}>
+            <Grid container alignItems={'center'} key={index} sx={{ marginLeft: '5px' }}>
+              <Grid item xs={12} sm={6} md={4} sx={{ padding: '15px' }}>
                 <FormControl fullWidth>
                   <Controller
                     name={`unavailableDates.${index}.startDate`} // Correct the name
@@ -138,7 +138,7 @@ const UnavailableDateRanges = () => {
                 </FormControl>
               </Grid>
 
-              <Grid item xs={12} sm={6} md={4} sx={{padding:'15px'}}>
+              <Grid item xs={12} sm={6} md={4} sx={{ padding: '15px' }}>
                 <FormControl fullWidth>
                   <Controller
                     name={`unavailableDates.${index}.endDate`} // Correct the name
@@ -170,23 +170,33 @@ const UnavailableDateRanges = () => {
               </Grid>
 
               <Grid item xs={12} sm={6} md={1}>
-                <IconButton onClick={() => removeDateRange(index)} color="error">
+                <IconButton
+                  onClick={() => {
+                    removeDateRange(index);
+                  }}
+                  color="error"
+                >
                   <Trash />
                 </IconButton>
               </Grid>
             </Grid>
           ))}
-          <Stack className='trainerbtn' alignItems={'end'} flexDirection={'row'} justifyContent={'end'} padding={5}>
-            <Button variant="outlined" onClick={addDateRange} style={{ marginTop: '16px' }}             sx={{
-              borderColor: '#d0021b',
-              color: '#d0021b',
-              marginLeft: '15px',
-              transform: 'skewX(-20deg)',
-              '&:hover': {
-                borderColor: 'darkred',
-                backgroundColor: 'rgba(255, 0, 0, 0.1)',
-              },
-            }}>
+          <Stack className="trainerbtn" alignItems={'end'} flexDirection={'row'} justifyContent={'end'} padding={5}>
+            <Button
+              variant="outlined"
+              onClick={addDateRange}
+              style={{ marginTop: '16px' }}
+              sx={{
+                borderColor: '#d0021b',
+                color: '#d0021b',
+                marginLeft: '15px',
+                transform: 'skewX(-20deg)',
+                '&:hover': {
+                  borderColor: 'darkred',
+                  backgroundColor: 'rgba(255, 0, 0, 0.1)',
+                },
+              }}
+            >
               + Add Another Date Range
             </Button>
 

@@ -28,11 +28,11 @@ import {
   SUPPORT_TICKET_STATUS_OPTIONS,
   USER_TYPE_OPTIONS,
 } from '@/utils/constant';
-import { formatDate } from '@/utils/dateUtils';
+import { formatHours } from '@/utils/converter';
+import { formatDate } from '@/utils/date-utils';
 import { Chat, PencilSimple, XCircle } from '@phosphor-icons/react';
 
 import tableCss from '@/styles/table-css';
-import { formatHours } from '@/utils/converter';
 
 export interface BookingEntry {
   id: number;

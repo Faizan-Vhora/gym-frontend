@@ -4,7 +4,7 @@ import * as React from 'react';
 import { useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { formatUtcToLocalDatetime } from '@/utils/dateUtils';
+import { formatUtcToLocalDatetime } from '@/utils/date-utils';
 import { CustomLoader } from '@/utils/loader';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
@@ -15,11 +15,9 @@ import {
   CardActions,
   CardContent,
   CardHeader,
-  Divider,
   FormControl,
   FormHelperText,
   Grid,
-  InputLabel,
   Typography,
 } from '@mui/material';
 import { useForm } from 'react-hook-form';
@@ -32,7 +30,7 @@ import { SupportEntry } from '@/components/dashboard/support/support-table';
 // Dynamically import the CKEditor
 const CustomEditor = dynamic(() => import('@/components/ckeditor'), { ssr: false });
 
-export interface supportTicketMessagePayloadDataI {
+export interface SupportTicketMessagePayloadDataI {
   message: string;
 }
 
@@ -139,7 +137,7 @@ export default function SupportForm(): React.JSX.Element {
 
     try {
       const url = `/support-ticket/${id}/message`;
-      const data: supportTicketMessagePayloadDataI = { message: formData.ticketMessage || '' };
+      const data: SupportTicketMessagePayloadDataI = { message: formData.ticketMessage || '' };
 
       await axiosInstance.post(url, data);
       toast.success('Support ticket message saved successfully');
@@ -162,7 +160,8 @@ export default function SupportForm(): React.JSX.Element {
   return (
     <Box component="form" onSubmit={handleSubmit(onSubmit)} sx={{ p: 3 }}>
       <Card>
-        <CardHeader sx={{padding:'20px'}}
+        <CardHeader
+          sx={{ padding: '20px' }}
           title={`Support Ticket #${supportTicket?.id} - ${supportTicket?.user?.fullName}
             ${formatUtcToLocalDatetime(supportTicket?.createdAt || null)}`}
         />
@@ -172,7 +171,7 @@ export default function SupportForm(): React.JSX.Element {
           <Typography
             variant="body2"
             color="textSecondary"
-            dangerouslySetInnerHTML={{ __html: supportTicket?.description }}
+            dangerouslySetInnerHTML={{ __html: supportTicket?.description || '' }}
           />
 
           {/* Old Messages in Card */}
@@ -183,12 +182,16 @@ export default function SupportForm(): React.JSX.Element {
                 <Grid container direction="column">
                   {supportTicketMessages.map((tMessage, index) => (
                     <Grid item key={index} xs={12}>
-                      <Card sx={{ mb: 2, width:'fit-content'}}>
-                        <CardContent sx={{padding:'10px 20px'}}>
+                      <Card sx={{ mb: 2, width: 'fit-content' }}>
+                        <CardContent sx={{ padding: '10px 20px' }}>
                           <Typography variant="body2" color="textSecondary">
                             {tMessage.createdBy.fullName} - {formatUtcToLocalDatetime(tMessage.createdAt)}
                           </Typography>
-                          <Typography sx={{overflowWrap:'anywhere'}} className='massge' dangerouslySetInnerHTML={{ __html: tMessage.message }} />
+                          <Typography
+                            sx={{ overflowWrap: 'anywhere' }}
+                            className="massge"
+                            dangerouslySetInnerHTML={{ __html: tMessage.message }}
+                          />
                         </CardContent>
                       </Card>
                     </Grid>
@@ -205,17 +208,19 @@ export default function SupportForm(): React.JSX.Element {
 
           {/* New Message Input */}
           <Card>
-            <CardHeader sx={{padding:'20px 20px 0px 26px'}} title="Reply" />
+            <CardHeader sx={{ padding: '20px 20px 0px 26px' }} title="Reply" />
             <CardContent>
               <Grid container spacing={2}>
-                <Grid item xs={12} sx={{paddingTop:'0px'}}>
+                <Grid item xs={12} sx={{ paddingTop: '0px' }}>
                   <FormControl fullWidth required error={!!errors.ticketMessage}>
                     <CustomEditor
                       customePlaceholder="Type your message here..."
                       data={ticketMessage}
                       onChange={handleEditorChange} // Use the handler to manage CKEditor change
                     />
-                    {errors.ticketMessage && <FormHelperText className='massge-input'>{errors.ticketMessage.message}</FormHelperText>}
+                    {errors.ticketMessage && (
+                      <FormHelperText className="massge-input">{errors.ticketMessage.message}</FormHelperText>
+                    )}
                   </FormControl>
                 </Grid>
               </Grid>

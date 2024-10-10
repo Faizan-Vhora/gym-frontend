@@ -1,6 +1,6 @@
 import React from 'react';
 import { BOOKING_PAYMENT_TYPE, BOOKING_TYPE, WEEKDAY_NAME, WEEKDAY_OPTIONS } from '@/utils/constant';
-import { formatDate } from '@/utils/dateUtils';
+import { formatDate } from '@/utils/date-utils';
 import { CustomLoader } from '@/utils/loader';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
@@ -89,7 +89,12 @@ const bookingSchema = zod.object({
 
 type BookingFormInputs = zod.infer<typeof bookingSchema>;
 
-export function BookingFormDialog({ onClose, onCreate, open = false, range }: BookingFormDialogPropsI): React.JSX.Element {
+export function BookingFormDialog({
+  onClose,
+  onCreate,
+  open = false,
+  range,
+}: BookingFormDialogPropsI): React.JSX.Element {
   const {
     control,
     handleSubmit,
@@ -107,9 +112,15 @@ export function BookingFormDialog({ onClose, onCreate, open = false, range }: Bo
   const [trainerOptions, setTrainerOptions] = React.useState<Trainer[]>([]);
   const [bookingType, setBookingType] = React.useState(BOOKING_TYPE.ONE_TIME);
 
-  const [bookingDate, setBookingDate] = React.useState( range?.start ?  dayjs(range?.start).format('YYYY-MM-DD') : dayjs().format('YYYY-MM-DD') );
-  const [bookingStartDate, setBookingStartDate] = React.useState( range?.start ? dayjs(range?.start).format('YYYY-MM-DD') : dayjs().format('YYYY-MM-DD'));
-  const [bookingEndDate, setBookingEndDate] = React.useState(range?.end ? dayjs(range?.end).format('YYYY-MM-DD')  :dayjs().format('YYYY-MM-DD'));
+  const [bookingDate, setBookingDate] = React.useState(
+    range?.start ? dayjs(range?.start).format('YYYY-MM-DD') : dayjs().format('YYYY-MM-DD')
+  );
+  const [bookingStartDate, setBookingStartDate] = React.useState(
+    range?.start ? dayjs(range?.start).format('YYYY-MM-DD') : dayjs().format('YYYY-MM-DD')
+  );
+  const [bookingEndDate, setBookingEndDate] = React.useState(
+    range?.end ? dayjs(range?.end).format('YYYY-MM-DD') : dayjs().format('YYYY-MM-DD')
+  );
   const [slotsWeekly, setSlotWeeklyData] = React.useState<WeeklySlotI[]>([]);
   const [availableWeekDayOptions, setAvailableWeekDayOptions] = React.useState<WeeklyDayOptionI[]>([]);
   const [selectedDays, setSelectedDays] = React.useState<number[]>([dayjs().day()]); // Default to today's weekday
@@ -128,7 +139,6 @@ export function BookingFormDialog({ onClose, onCreate, open = false, range }: Bo
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to load customers.';
       toast.error(`Error fetching customers: ${errorMessage}`);
-      console.error(errorMessage);
     }
   };
 
@@ -139,7 +149,6 @@ export function BookingFormDialog({ onClose, onCreate, open = false, range }: Bo
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to load trainers.';
       toast.error(`Error fetching trainers: ${errorMessage}`);
-      console.error(errorMessage);
     }
   };
 
@@ -171,7 +180,6 @@ export function BookingFormDialog({ onClose, onCreate, open = false, range }: Bo
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred';
       toast.error(`Failed to fetch slot data: ${errorMessage}`);
-      console.error(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -273,8 +281,6 @@ export function BookingFormDialog({ onClose, onCreate, open = false, range }: Bo
   };
 
   const verifyBookingForm = (formValues: BookingFormInputs) => {
-    console.log('formValues: ', formValues);
-
     if (!formValues.customerId) {
       toast.error('Please select a member.');
       return false;
@@ -307,11 +313,8 @@ export function BookingFormDialog({ onClose, onCreate, open = false, range }: Bo
       const isValid = verifyBookingForm(formValues);
 
       if (isValid) {
-        console.log('Form submitted successfully:', formValues);
-
         // Check if selectedTrainer is defined
         if (!selectedTrainer) {
-          console.error('Selected trainer is undefined');
           return;
         }
 
@@ -320,7 +323,6 @@ export function BookingFormDialog({ onClose, onCreate, open = false, range }: Bo
 
         // Ensure convertSelectedSlotsToSessions is defined
         if (typeof convertSelectedSlotsToSessions !== 'function') {
-          console.error('convertSelectedSlotsToSessions is not a function');
           return;
         }
 
@@ -352,8 +354,6 @@ export function BookingFormDialog({ onClose, onCreate, open = false, range }: Bo
           sessions: sessionsList,
         };
 
-        console.log('Payload: ', payload);
-
         // await axiosInstance.post('/session-booking', payload);
         // toast.success('Booking added successfully');
 
@@ -364,7 +364,6 @@ export function BookingFormDialog({ onClose, onCreate, open = false, range }: Bo
         //   console.error('onCreate is not a function');
         // }
       } else {
-        console.log('Form not valid.');
       }
     },
     [bookingType, selectedSlots, selectedTrainer, onCreate]
@@ -377,16 +376,11 @@ export function BookingFormDialog({ onClose, onCreate, open = false, range }: Bo
     fetchCustomers();
   }, []);
 
-  React.useEffect(() => {
-    console.log('Update : selectedDays:: ', selectedDays);
-  }, [selectedDays]);
+  React.useEffect(() => {}, [selectedDays]);
+
+  React.useEffect(() => {}, [paymentType]);
 
   React.useEffect(() => {
-    console.log('Update : paymentType:: ', paymentType);
-  }, [paymentType]);
-
-  React.useEffect(() => {
-    console.log('Update : paymentType:: ', paymentType);
     const trainerRatePerHour: number = Number(selectedTrainer?.fees || 0);
     const sessionsList = convertSelectedSlotsToSessions(selectedSlots, trainerRatePerHour);
     setBookingAmount(calculateTotalSessionAmount(sessionsList));
@@ -410,7 +404,7 @@ export function BookingFormDialog({ onClose, onCreate, open = false, range }: Bo
       <form onSubmit={handleSubmit(onSubmit)}>
         <Box sx={{ p: 3 }}>
           <Typography sx={{ textAlign: 'center' }} variant="h5">
-            { `${'Add Booking'}`}
+            {`${'Add Booking'}`}
           </Typography>
         </Box>
 
