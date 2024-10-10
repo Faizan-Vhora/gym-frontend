@@ -7,18 +7,19 @@ export interface Event {
   endDate: Date;
   bookingType: BookingType;
   trainerRatePerHour:number;
+  bookingType: string;
 
 }
 
 export interface Sessions {
   sessionDate: string
-  sessionStartTime: string
-  sessionEndTime: string
+  sessionStartTime: string | any
+  sessionEndTime: string | any
   trainerRatePerHour: number
   sessionCharge:number
   discount: number
   netTotalAmount: number
-  notes: string
+  notes?: string
 }
 
 export type EventPriority = 'low' | 'medium' | 'high';
@@ -41,6 +42,7 @@ interface WeekSlot {
 }
 
 interface DateSlot {
+  isOption?:boolean;
   weekday: number;
   weekSlots: WeekSlot[];
 }
