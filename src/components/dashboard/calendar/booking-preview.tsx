@@ -1,5 +1,6 @@
 // BookingPreviewDialog.js
 import React from 'react';
+import { formatAmount, formatHours } from '@/utils/converter';
 import {
   Box,
   Button,
@@ -16,17 +17,9 @@ import {
   Typography,
 } from '@mui/material';
 
-import PaymentToggle from './payment-toggle';
+import { SelectedSlotsI } from './booking-form-dialog';
+import { BOOKING_TYPE_DETAILS, WEEKDAY_NAME } from '@/utils/constant';
 
-interface Slot {
-  startTime: string;
-  endTime: string;
-}
-
-// Define types for selected slots (key-value pair where the key is the date and the value is an array of slots)
-interface SelectedSlots {
-  [weekday: number]: Slot[];
-}
 
 // Define the props interface
 interface BookingPreviewDialogProps {
@@ -34,10 +27,11 @@ interface BookingPreviewDialogProps {
   handleClose: () => void;
   selectedCustomer: { fullName: string } | null;
   selectedTrainer: { fullName: string } | null;
-  selectedSlots: SelectedSlots;
-  formatDate: (date: string) => string;
-  getTotalHours: number;
+  selectedSlots: SelectedSlotsI;
+  bookingType: string;
   bookingAmount: number;
+  bookingHours: number;
+  netTotalAmount: number;
 }
 
 const BookingPreviewDialog: React.FC<BookingPreviewDialogProps> = ({
@@ -46,9 +40,10 @@ const BookingPreviewDialog: React.FC<BookingPreviewDialogProps> = ({
   selectedCustomer,
   selectedTrainer,
   selectedSlots,
-  formatDate,
-  getTotalHours,
+  bookingType,
   bookingAmount,
+  bookingHours,
+  netTotalAmount,
 }) => {
   return (
     <Dialog fullWidth maxWidth="sm" onClose={handleClose} open={isOpen}>
@@ -65,7 +60,7 @@ const BookingPreviewDialog: React.FC<BookingPreviewDialogProps> = ({
         {/* Booking Type Section */}
         <Box>
           <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
-            Booking Type
+            Booking Type : { `${BOOKING_TYPE_DETAILS[bookingType]?.label}`}
           </Typography>
 
           <Stack spacing={1}>
@@ -75,14 +70,14 @@ const BookingPreviewDialog: React.FC<BookingPreviewDialogProps> = ({
                   <Table>
                     <TableHead>
                       <TableRow>
-                        <TableCell>Date</TableCell>
+                        <TableCell>Weekday</TableCell>
                         <TableCell>Slots</TableCell>
                       </TableRow>
                     </TableHead>
                     <TableBody>
-                      {Object.keys(selectedSlots).map((weekday:string) => (
+                      {Object.keys(selectedSlots).map((weekday: string) => (
                         <TableRow key={weekday}>
-                          {/* <TableCell>{formatDate(date)}</TableCell> */}
+                          <TableCell>{`${WEEKDAY_NAME[Number(weekday)]}`}</TableCell>
                           <TableCell>
                             {selectedSlots[weekday].map((slot, index) => (
                               <Typography key={index} variant="body2">
@@ -102,7 +97,7 @@ const BookingPreviewDialog: React.FC<BookingPreviewDialogProps> = ({
 
         {/* Date Section */}
         <Box>
-          <Typography variant="body2">Total Hours: {getTotalHours}</Typography>
+          <Typography variant="body2">Total Hours: { `${formatHours(bookingHours)}` }</Typography>
         </Box>
 
         {/* Billing Section */}
@@ -111,20 +106,14 @@ const BookingPreviewDialog: React.FC<BookingPreviewDialogProps> = ({
             Billing
           </Typography>
           <Stack spacing={1}>
-            <Typography variant="body2">Amount: ${bookingAmount}</Typography>
-            <Typography variant="body2">Promo Code: {/* Add promo code input or display */}</Typography>
-            <Typography variant="body2">- Discount: $0</Typography>
-            <Typography variant="body2">G.Total: ${bookingAmount}</Typography>
+            <Typography variant="body2">Amount: {`${formatAmount(bookingAmount)}`} </Typography>
+            {/* <Typography variant="body2">Promo Code: </Typography> */}
+            <Typography variant="body2"> Discount:  - {`${formatAmount(0)}`} </Typography>
+            <Typography variant="subtitle1">G.Total: {`${formatAmount(netTotalAmount)}`} </Typography>
           </Stack>
         </Box>
 
-        {/* Notes Section */}
-        <Box>
-          <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
-            Notes
-          </Typography>
-          <Typography variant="body2">No refunds for cancellations</Typography>
-        </Box>
+
       </Stack>
       <Divider />
       <Stack direction="row" spacing={2} sx={{ justifyContent: 'center', p: 2 }}></Stack>

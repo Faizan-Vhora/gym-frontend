@@ -1,23 +1,22 @@
 import React from 'react';
-import {
-  BOOKING_PAYMENT_TYPE,
-  BOOKING_TYPE,
-  WEEKDAY_NAME,
-  WEEKDAY_OPTIONS,
-} from '@/utils/constant';
+import { BOOKING_PAYMENT_TYPE, BOOKING_TYPE, WEEKDAY_NAME, WEEKDAY_OPTIONS } from '@/utils/constant';
 import { formatDate } from '@/utils/dateUtils';
 import { CustomLoader } from '@/utils/loader';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Autocomplete,
+  Avatar,
   Box,
   Button,
+  Card,
+  CardContent,
   Checkbox,
   Dialog,
   Divider,
   FormControl,
   FormHelperText,
   Grid,
+  IconButton,
   InputLabel,
   Select,
   Stack,
@@ -27,6 +26,7 @@ import {
   Typography,
 } from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers';
+import { Barbell, CurrencyCircleDollar, Envelope, Phone } from '@phosphor-icons/react';
 import { Controller, useForm } from 'react-hook-form';
 import { toast, ToastContainer } from 'react-toastify';
 import { z as zod } from 'zod';
@@ -37,15 +37,16 @@ import { Option } from '@/components/core/option';
 
 import { Customer } from '../customer/customers-table';
 import { Trainer } from '../trainer/trainer-table';
+import BookingPreviewDialog from './booking-preview';
 import PaymentToggle from './payment-toggle';
 import { Sessions } from './types';
-import BookingPreviewDialog from './booking-preview';
 
 // Interfaces
 export interface BookingFormDialogPropsI {
   onClose?: () => void;
   onCreate?: () => void;
   open?: boolean;
+  range?: { start: Date; end: Date };
 }
 
 export interface SlotI {
@@ -73,7 +74,7 @@ export interface WeeklyDayOptionI {
   isAvailable?: boolean;
 }
 
-type SelectedSlotsI = Record<string, SlotI[]>;
+export type SelectedSlotsI = Record<string, SlotI[]>;
 
 // Define Booking form validation schemas
 const bookingSchema = zod.object({
@@ -88,7 +89,7 @@ const bookingSchema = zod.object({
 
 type BookingFormInputs = zod.infer<typeof bookingSchema>;
 
-export function BookingFormDialog({ onClose, onCreate, open = false }: BookingFormDialogPropsI): React.JSX.Element {
+export function BookingFormDialog({ onClose, onCreate, open = false, range }: BookingFormDialogPropsI): React.JSX.Element {
   const {
     control,
     handleSubmit,
@@ -106,15 +107,18 @@ export function BookingFormDialog({ onClose, onCreate, open = false }: BookingFo
   const [trainerOptions, setTrainerOptions] = React.useState<Trainer[]>([]);
   const [bookingType, setBookingType] = React.useState(BOOKING_TYPE.ONE_TIME);
 
-  const [bookingDate, setBookingDate] = React.useState(dayjs().format('YYYY-MM-DD'));
-  const [bookingStartDate, setBookingStartDate] = React.useState(dayjs().format('YYYY-MM-DD'));
-  const [bookingEndDate, setBookingEndDate] = React.useState(dayjs().format('YYYY-MM-DD'));
+  const [bookingDate, setBookingDate] = React.useState( range?.start ?  dayjs(range?.start).format('YYYY-MM-DD') : dayjs().format('YYYY-MM-DD') );
+  const [bookingStartDate, setBookingStartDate] = React.useState( range?.start ? dayjs(range?.start).format('YYYY-MM-DD') : dayjs().format('YYYY-MM-DD'));
+  const [bookingEndDate, setBookingEndDate] = React.useState(range?.end ? dayjs(range?.end).format('YYYY-MM-DD')  :dayjs().format('YYYY-MM-DD'));
   const [slotsWeekly, setSlotWeeklyData] = React.useState<WeeklySlotI[]>([]);
   const [availableWeekDayOptions, setAvailableWeekDayOptions] = React.useState<WeeklyDayOptionI[]>([]);
   const [selectedDays, setSelectedDays] = React.useState<number[]>([dayjs().day()]); // Default to today's weekday
   const [selectedSlots, setSelectedSlots] = React.useState<SelectedSlotsI>({});
   const [paymentType, setPaymentType] = React.useState<string>(BOOKING_PAYMENT_TYPE.FULL); // Initialize with an empty string
   const [bookingAmount, setBookingAmount] = React.useState<number>(0);
+  const [bookingHours, setBookingHours] = React.useState<number>(0);
+  const [netTotalAmount, setNetTotalAmount] = React.useState<number>(0);
+  const [isPreviewOpen, setPreviewOpen] = React.useState(false);
 
   // Fetch data
   const fetchCustomers = async (): Promise<void> => {
@@ -188,13 +192,12 @@ export function BookingFormDialog({ onClose, onCreate, open = false }: BookingFo
     setBookingType(newValue);
   };
 
-  const handleSessionSlotChange = (date: string | number, selectedSlotsForDate: SlotI[]) => {
+  const handleSessionSlotChange = (weekday: string | number, selectedSlotsForSession: SlotI[]) => {
     setSelectedSlots((prev) => ({
       ...prev,
-      [date]: selectedSlotsForDate,
+      [weekday]: selectedSlotsForSession,
     }));
   };
-
 
   const transformSlots = (input: weekSlotI[]): SlotI[] => {
     return input.flatMap((item) => [
@@ -228,10 +231,11 @@ export function BookingFormDialog({ onClose, onCreate, open = false }: BookingFo
           sessionDate: dayjs(slot.date).format('YYYY-MM-DD'),
           sessionStartTime: slot.startTime,
           sessionEndTime: slot.endTime,
-          trainerRatePerHour,
-          sessionCharge,
+          sessionDurationInHours: sessionDurationInHours,
+          trainerRatePerHour: trainerRatePerHour,
+          sessionCharge: sessionCharge,
           discount: 0, // Assuming no discount
-          netTotalAmount,
+          netTotalAmount: netTotalAmount,
         };
 
         // Add session to the list
@@ -240,6 +244,32 @@ export function BookingFormDialog({ onClose, onCreate, open = false }: BookingFo
     });
 
     return sessions;
+  };
+
+  const calculateTotalBookingHours = (sessionsList: Sessions[]): number => {
+    return sessionsList.reduce((totalHours, session) => {
+      return totalHours + (session.sessionDurationInHours || 0);
+    }, 0);
+  };
+
+  const calculateTotalSessionAmount = (sessionsList: Sessions[]): number => {
+    return sessionsList.reduce((sessionCharge, session) => {
+      return sessionCharge + (session.sessionCharge || 0);
+    }, 0);
+  };
+
+  const calculateTotalBookingNetAmount = (sessionsList: Sessions[]): number => {
+    return sessionsList.reduce((netTotal, session) => {
+      return netTotal + (session.netTotalAmount || 0);
+    }, 0);
+  };
+
+  const handlePreview = () => {
+    setPreviewOpen(true);
+  };
+
+  const handlePreviewClose = () => {
+    setPreviewOpen(false);
   };
 
   const verifyBookingForm = (formValues: BookingFormInputs) => {
@@ -296,6 +326,12 @@ export function BookingFormDialog({ onClose, onCreate, open = false }: BookingFo
 
         const sessionsList = convertSelectedSlotsToSessions(selectedSlots, trainerRatePerHour);
 
+        const bookingHours = calculateTotalBookingHours(sessionsList);
+
+        const sessionsAmount = calculateTotalSessionAmount(sessionsList);
+
+        const bookingNetAmount = calculateTotalBookingNetAmount(sessionsList);
+
         const payload = {
           booking: {
             trainer: formValues.trainerId,
@@ -304,13 +340,13 @@ export function BookingFormDialog({ onClose, onCreate, open = false }: BookingFo
             startDate: bookingStartDate,
             endDate: bookingEndDate,
             trainerRatePerHour: trainerRatePerHour,
-            bookingHours: sessionsList.length,
-            bookingAmount: sessionsList.reduce((total, session) => total + session.sessionCharge, 0),
+            bookingHours: bookingHours,
+            bookingAmount: sessionsAmount,
             weekdays: weekdaysList,
             recurrenceWeeks: 0,
-            totalAmount: sessionsList.reduce((total, session) => total + session.sessionCharge, 0),
+            totalAmount: sessionsAmount,
             discount: 0,
-            netTotalAmount: sessionsList.reduce((total, session) => total + session.sessionCharge, 0),
+            netTotalAmount: bookingNetAmount,
             paymentType: paymentType,
           },
           sessions: sessionsList,
@@ -318,15 +354,15 @@ export function BookingFormDialog({ onClose, onCreate, open = false }: BookingFo
 
         console.log('Payload: ', payload);
 
-        await axiosInstance.post('/session-booking', payload);
-        toast.success('Booking added successfully');
+        // await axiosInstance.post('/session-booking', payload);
+        // toast.success('Booking added successfully');
 
-        // Check if onCreate is defined before calling it
-        if (typeof onCreate === 'function') {
-          onCreate();
-        } else {
-          console.error('onCreate is not a function');
-        }
+        // // Check if onCreate is defined before calling it
+        // if (typeof onCreate === 'function') {
+        //   onCreate();
+        // } else {
+        //   console.error('onCreate is not a function');
+        // }
       } else {
         console.log('Form not valid.');
       }
@@ -353,8 +389,9 @@ export function BookingFormDialog({ onClose, onCreate, open = false }: BookingFo
     console.log('Update : paymentType:: ', paymentType);
     const trainerRatePerHour: number = Number(selectedTrainer?.fees || 0);
     const sessionsList = convertSelectedSlotsToSessions(selectedSlots, trainerRatePerHour);
-    const bookingAmount = sessionsList.reduce((total, session) => total + session.sessionCharge, 0);
-    setBookingAmount(bookingAmount);
+    setBookingAmount(calculateTotalSessionAmount(sessionsList));
+    setBookingHours(calculateTotalBookingHours(sessionsList));
+    setNetTotalAmount(calculateTotalBookingNetAmount(sessionsList));
   }, [selectedSlots, selectedTrainer]);
 
   React.useEffect(() => {
@@ -373,7 +410,7 @@ export function BookingFormDialog({ onClose, onCreate, open = false }: BookingFo
       <form onSubmit={handleSubmit(onSubmit)}>
         <Box sx={{ p: 3 }}>
           <Typography sx={{ textAlign: 'center' }} variant="h5">
-            {'Add Booking - V2'}
+            { `${'Add Booking'}`}
           </Typography>
         </Box>
 
@@ -409,6 +446,53 @@ export function BookingFormDialog({ onClose, onCreate, open = false }: BookingFo
                   </FormControl>
                 )}
               />
+
+              {selectedCustomer && (
+                <Card
+                  sx={{
+                    height: '140px',
+                    boxShadow: 5, // Normal box shadow
+                    '&:hover': {
+                      boxShadow: 15, // Increased box shadow on hover
+                    },
+                    transition: 'box-shadow 0.3s ease-in-out', // Smooth transition effect
+                    marginTop: '10px',
+                  }}
+                >
+                  <CardContent>
+                    <Grid container>
+                      <Grid item md={4} alignContent={'center'}>
+                        <Avatar src={selectedCustomer.profileImageUrl} sx={{ height: '56px', width: '56px' }}></Avatar>
+                      </Grid>
+                      <Grid item md={8} alignContent={'center'}>
+                        <Typography variant="subtitle1">{selectedCustomer.fullName}</Typography>
+                        <Typography variant="caption" sx={{ display: 'flex', alignItems: 'center' }}>
+                          {selectedCustomer.email ? (
+                            <IconButton sx={{ padding: '0px', marginRight: '5px' }}>
+                              <Envelope width={18} height={18} />
+                            </IconButton>
+                          ) : (
+                            ''
+                          )}
+                          {selectedCustomer.email}
+                        </Typography>
+                        <Typography variant="caption" sx={{ display: 'flex', alignItems: 'center' }}>
+                          {selectedCustomer.phoneNumber ? (
+                            <IconButton sx={{ padding: '0px', marginRight: '5px' }}>
+                              <Phone width={18} height={18} />
+                            </IconButton>
+                          ) : (
+                            ''
+                          )}
+                          {selectedCustomer.phoneNumber}
+                        </Typography>
+                      </Grid>
+                    </Grid>
+
+                    {/* Add other fields as necessary */}
+                  </CardContent>
+                </Card>
+              )}
             </Grid>
 
             <Grid item xs={12} md={5.8}>
@@ -441,6 +525,53 @@ export function BookingFormDialog({ onClose, onCreate, open = false }: BookingFo
                   </FormControl>
                 )}
               />
+
+              {selectedTrainer && (
+                <Card
+                  sx={{
+                    height: '140px',
+                    boxShadow: 5, // Normal box shadow
+                    '&:hover': {
+                      boxShadow: 15, // Increased box shadow on hover
+                    },
+                    transition: 'box-shadow 0.3s ease-in-out', // Smooth transition effect
+                    marginTop: '10px',
+                  }}
+                >
+                  <CardContent>
+                    <Grid container>
+                      <Grid item md={4} alignContent={'center'}>
+                        <Avatar src={selectedTrainer.profileImageUrl} sx={{ height: '56px', width: '56px' }}></Avatar>
+                      </Grid>
+                      <Grid item md={8} alignContent={'center'}>
+                        <Typography variant="subtitle1">{selectedTrainer.fullName}</Typography>
+                        <Typography variant="caption" sx={{ display: 'flex', alignItems: 'center' }}>
+                          {selectedTrainer.fees ? (
+                            <IconButton sx={{ padding: '0px', marginRight: '5px' }}>
+                              <CurrencyCircleDollar width={18} height={18} />
+                            </IconButton>
+                          ) : (
+                            ''
+                          )}
+                          {selectedTrainer.fees} per Hour
+                        </Typography>
+                        <Typography variant="caption" sx={{ display: 'flex', alignItems: 'center' }}>
+                          {selectedTrainer.experience ? (
+                            <IconButton sx={{ padding: '0px', marginRight: '5px' }}>
+                              <Barbell width={18} height={18} />
+                            </IconButton>
+                          ) : (
+                            ''
+                          )}
+                          {selectedTrainer.experience} years
+                        </Typography>
+                      </Grid>
+                    </Grid>
+
+                    {/* Add other fields as necessary */}
+                  </CardContent>
+                </Card>
+              )}
             </Grid>
 
             <Grid item xs={12}>
@@ -574,7 +705,6 @@ export function BookingFormDialog({ onClose, onCreate, open = false }: BookingFo
               </>
             )}
 
-
             <Grid item md={8} sx={{ paddingTop: '0px' }}>
               {slotsWeekly.length > 0 ? (
                 slotsWeekly
@@ -628,8 +758,6 @@ export function BookingFormDialog({ onClose, onCreate, open = false }: BookingFo
                 <Typography>No available slots</Typography>
               )}
             </Grid>
-
-
           </Grid>
         </Stack>
 
@@ -640,7 +768,9 @@ export function BookingFormDialog({ onClose, onCreate, open = false }: BookingFo
         </Stack>
 
         <Stack direction="row" spacing={1} sx={{ alignItems: 'center', justifyContent: 'flex-end', p: 2 }}>
-
+          <Button color="secondary" onClick={handlePreview}>
+            Preview
+          </Button>
           <Button color="secondary" onClick={onClose}>
             Cancel
           </Button>
@@ -651,7 +781,20 @@ export function BookingFormDialog({ onClose, onCreate, open = false }: BookingFo
       </form>
 
       {loading && <CustomLoader />}
+
       <ToastContainer />
+
+      <BookingPreviewDialog
+        isOpen={isPreviewOpen}
+        handleClose={handlePreviewClose}
+        selectedCustomer={selectedCustomer}
+        selectedTrainer={selectedTrainer}
+        selectedSlots={selectedSlots}
+        bookingAmount={bookingAmount}
+        bookingHours={bookingHours}
+        netTotalAmount={netTotalAmount}
+        bookingType={bookingType}
+      />
     </Dialog>
   );
 }
