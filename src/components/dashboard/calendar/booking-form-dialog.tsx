@@ -354,15 +354,15 @@ export function BookingFormDialog({ onClose, onCreate, open = false, range }: Bo
 
         console.log('Payload: ', payload);
 
-        // await axiosInstance.post('/session-booking', payload);
-        // toast.success('Booking added successfully');
+        await axiosInstance.post('/session-booking', payload);
+        toast.success('Booking added successfully');
 
-        // // Check if onCreate is defined before calling it
-        // if (typeof onCreate === 'function') {
-        //   onCreate();
-        // } else {
-        //   console.error('onCreate is not a function');
-        // }
+        // Check if onCreate is defined before calling it
+        if (typeof onCreate === 'function') {
+          onCreate();
+        } else {
+          console.error('onCreate is not a function');
+        }
       } else {
         console.log('Form not valid.');
       }
