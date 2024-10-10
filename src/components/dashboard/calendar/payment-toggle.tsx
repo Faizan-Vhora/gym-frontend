@@ -1,37 +1,34 @@
 import { useState } from 'react';
+import { BOOKING_PAYMENT_TYPE } from '@/utils/constant';
+import { formatAmount } from '@/utils/converter';
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
-
-const SESSION_PAYMENT_TYPES = {
-  PER_SESSION: 'per_session',
-  FULL: 'full',
-};
 
 interface PaymentToggleProps {
   bookingAmount: number;
   setPaymentType: (type: string) => void;
 }
 
-function PaymentToggle({ bookingAmount, setPaymentType }: PaymentToggleProps) {
-  const [paymentType, setLocalPaymentType] = useState(SESSION_PAYMENT_TYPES.PER_SESSION);
+const PaymentToggle: React.FC<PaymentToggleProps> = ({ bookingAmount, setPaymentType }) => {
+  const [paymentType, setLocalPaymentType] = useState<string>(BOOKING_PAYMENT_TYPE.PER_SESSION);
 
-  const handlePaymentChange = (event: React.MouseEvent<HTMLElement>, newPaymentType: string | null) => {
+  const handlePaymentChange = (event: React.MouseEvent<HTMLElement>, newPaymentType: string | null): void => {
     if (newPaymentType) {
       setLocalPaymentType(newPaymentType);
-      setPaymentType(newPaymentType); // Notify parent component about the change
+      setPaymentType(newPaymentType);
     }
   };
 
   return (
     <ToggleButtonGroup value={paymentType} exclusive onChange={handlePaymentChange} aria-label="payment type">
-      <ToggleButton value={SESSION_PAYMENT_TYPES.PER_SESSION} aria-label="pay per session">
+      <ToggleButton value={BOOKING_PAYMENT_TYPE.PER_SESSION} aria-label="pay per session">
         Pay per session
       </ToggleButton>
-      <ToggleButton value={SESSION_PAYMENT_TYPES.FULL} aria-label="pay in full">
-        Pay in Full ${bookingAmount}
+      <ToggleButton value={BOOKING_PAYMENT_TYPE.FULL} aria-label="pay in full">
+        Pay in Full {formatAmount(bookingAmount)}
       </ToggleButton>
     </ToggleButtonGroup>
   );
-}
+};
 
 export default PaymentToggle;

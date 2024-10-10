@@ -25,7 +25,7 @@ interface Slot {
 
 // Define types for selected slots (key-value pair where the key is the date and the value is an array of slots)
 interface SelectedSlots {
-  [date: string]: Slot[];
+  [weekday: number]: Slot[];
 }
 
 // Define the props interface
@@ -80,11 +80,11 @@ const BookingPreviewDialog: React.FC<BookingPreviewDialogProps> = ({
                       </TableRow>
                     </TableHead>
                     <TableBody>
-                      {Object.keys(selectedSlots).map((date) => (
-                        <TableRow key={date}>
-                          <TableCell>{formatDate(date)}</TableCell>
+                      {Object.keys(selectedSlots).map((weekday:string) => (
+                        <TableRow key={weekday}>
+                          {/* <TableCell>{formatDate(date)}</TableCell> */}
                           <TableCell>
-                            {selectedSlots[date].map((slot, index) => (
+                            {selectedSlots[weekday].map((slot, index) => (
                               <Typography key={index} variant="body2">
                                 {slot.startTime} - {slot.endTime}
                               </Typography>
