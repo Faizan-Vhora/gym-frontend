@@ -17,6 +17,38 @@ export const USER_TYPE_OPTIONS = [
   { value: USER_TYPE.MEMBER , label: "Member" },
 ]
 
+
+export const WEEKDAY = {
+  SUNDAY: 0,
+  MONDAY: 1,
+  TUESDAY: 2,
+  WEDNESDAY: 3,
+  THURSDAY: 4,
+  FRIDAY: 5,
+  SATURDAY: 6
+};
+
+export const WEEKDAY_NAME = {
+  [WEEKDAY.SUNDAY]: 'Sunday',
+  [WEEKDAY.MONDAY]: 'Monday',
+  [WEEKDAY.TUESDAY]: 'Tuesday',
+  [WEEKDAY.WEDNESDAY]: 'Wednesday',
+  [WEEKDAY.THURSDAY]: 'Thursday',
+  [WEEKDAY.FRIDAY]: 'Friday',
+  [WEEKDAY.SATURDAY]: 'Saturday'
+};
+
+
+export const WEEKDAY_OPTIONS = [
+  { value: WEEKDAY.SUNDAY, label: WEEKDAY_NAME[WEEKDAY.SUNDAY] },
+  { value: WEEKDAY.MONDAY, label: WEEKDAY_NAME[WEEKDAY.MONDAY] },
+  { value: WEEKDAY.TUESDAY, label: WEEKDAY_NAME[WEEKDAY.TUESDAY] },
+  { value: WEEKDAY.WEDNESDAY, label: WEEKDAY_NAME[WEEKDAY.WEDNESDAY] },
+  { value: WEEKDAY.THURSDAY, label: WEEKDAY_NAME[WEEKDAY.THURSDAY] },
+  { value: WEEKDAY.FRIDAY, label: WEEKDAY_NAME[WEEKDAY.FRIDAY] },
+  { value: WEEKDAY.SATURDAY, label: WEEKDAY_NAME[WEEKDAY.SATURDAY] },
+];
+
 //  Support Ticket
 
 export const SUPPORT_TICKET_USER_TYPE_OPTIONS = [
@@ -83,8 +115,8 @@ export const BOOKING_PAYMENT_TYPE = {
 }
 
 export const BOOKING_PAYMENT_TYPE_OPTIONS = [
-  { value: BOOKING_PAYMENT_TYPE.FULL, label: "Full" },
-  { value: BOOKING_PAYMENT_TYPE.PER_SESSION, label: "Per Sesion" },
+  { value: BOOKING_PAYMENT_TYPE.FULL, label: "Full Payment" },
+  { value: BOOKING_PAYMENT_TYPE.PER_SESSION, label: "Per Sesion Payment" },
 ]
 
 export const BOOKING_PAYMENT_TYPE_DETAILS: Record<string, { value: string; label: string; color: 'warning' | 'success' }> = {

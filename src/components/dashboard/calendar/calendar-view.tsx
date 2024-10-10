@@ -39,8 +39,13 @@ import SessionNotesForm from './session-notes';
 import SessionPreview from './session-view';
 import { Toolbar } from './toolbar';
 import type { Event, ViewMode, WeekSlot } from './types';
+import { BookingFormDialog } from './booking-form-dialog';
 
 interface CreateDialogData {
+  range?: { start: Date; end: Date };
+}
+
+interface BookingFormDialogData {
   range?: { start: Date; end: Date };
 }
 
@@ -86,6 +91,9 @@ export function CalendarView({ view = 'dayGridMonth' }: CalendarViewProps): Reac
   const [isDialogOpenForRechedule, setIsDialogOpenForRechedule] = React.useState(false);
 
   const createDialog = useDialog<CreateDialogData>();
+
+  const bookingFormDialog = useDialog<BookingFormDialogData>();
+
 
   const currentEvent = currentEventId ? events.find((event) => event.id === currentEventId) : undefined;
 
@@ -190,9 +198,14 @@ export function CalendarView({ view = 'dayGridMonth' }: CalendarViewProps): Reac
     }
   }, []);
 
+  // const handleAdd = React.useCallback(() => {
+  //   createDialog.handleOpen();
+  // }, [createDialog]);
+
+
   const handleAdd = React.useCallback(() => {
-    createDialog.handleOpen();
-  }, [createDialog]);
+    bookingFormDialog.handleOpen();
+  }, [bookingFormDialog]);
 
   const handleRangeSelect = React.useCallback(
     (arg: DateSelectArg) => {
@@ -431,6 +444,18 @@ export function CalendarView({ view = 'dayGridMonth' }: CalendarViewProps): Reac
       )}
 
       <ToastContainer />
+
+      {bookingFormDialog.open ? (
+        <BookingFormDialog
+          onClose={bookingFormDialog.handleClose}
+          onCreate={() => {
+            bookingFormDialog.handleClose();
+            fetchEvents();
+          }}
+          open
+        />
+      ) : null}
+
       {createDialog.open ? (
         <EventDialog
           action="create"
@@ -443,6 +468,8 @@ export function CalendarView({ view = 'dayGridMonth' }: CalendarViewProps): Reac
           range={createDialog.data?.range}
         />
       ) : null}
+
+
       {currentEvent ? (
         <EventDialog
           action="update"
