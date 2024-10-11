@@ -757,7 +757,7 @@ export function BookingFormDialog({
                         sx={{ width: '100%' }}
                         disablePast
                         disabled={!selectedTrainer}
-                        format="MM-DD-YYYY"
+                        format="DD-MM-YYYY"
                         label="Select date"
                         onChange={(date) => {
                           const bookingSelectedDate = date ? date.toDate() : null;
@@ -792,7 +792,7 @@ export function BookingFormDialog({
                       <DatePicker
                         disablePast
                         disabled={!selectedTrainer}
-                        format="MM-DD-YYYY"
+                        format="DD-MM-YYYY"
                         label="Start date"
                         onChange={(date) => {
                           const startDateWeeklyOne = date ? date.toDate() : null;
@@ -826,7 +826,7 @@ export function BookingFormDialog({
                       <DatePicker
                         disablePast
                         disabled={!selectedTrainer}
-                        format="MM-DD-YYYY"
+                        format="DD-MM-YYYY"
                         label="End date"
                         minDate={dayjs(bookingStartDate).isValid() ? dayjs(bookingStartDate) : undefined} // Ensure minDate is set
                         onChange={(date) => {
