@@ -15,7 +15,6 @@ import {
   Stack,
   Tab,
   Tabs,
-  Typography,
 } from '@mui/material';
 import { DatePicker, LocalizationProvider, TimePicker } from '@mui/x-date-pickers';
 import { Controller, useForm } from 'react-hook-form';
@@ -87,15 +86,19 @@ const CheckinForm = () => {
     },
   });
 
+  interface ApiResponse<T> {
+    data: T;
+  }
+
   // Update fetchUsers with return type
-  const fetchUsers = async (userType: 'trainer' | 'customer'): Promise<Trainer[] | Customer[]> => {
+  const fetchUsers = async <T extends Trainer[] | Customer[]>(userType: 'trainer' | 'customer'): Promise<T> => {
     setLoadingUsers(true);
     try {
-      const response = await axiosInstance.get(`/users/${userType}/dropdown`);
-      return response.data.data; // Assuming this is the correct structure
+      const response = await axiosInstance.get<ApiResponse<T>>(`/users/${userType}/dropdown`);
+      return response.data.data; // Type-safe return
     } catch (error) {
       toast.error(`Failed to load ${userType}s.`);
-      return []; // Return an empty array in case of error
+      return [] as unknown as T; // Return an empty array of the correct type
     } finally {
       setLoadingUsers(false);
     }
@@ -103,21 +106,24 @@ const CheckinForm = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      // Map "member" to "customer" for fetching users
-      const userType = tabValue === 'member' ? 'customer' : 'trainer';
-      const users: Trainer[] | Customer[] = await fetchUsers(userType); // Explicit type annotation
+      const userType: 'trainer' | 'customer' = tabValue === 'member' ? 'customer' : 'trainer';
 
-      // Update the state based on the fetched users
-      userType === 'trainer' ? setTrainers(users as Trainer[]) : setCustomers(users as Customer[]);
+      // Call fetchUsers with appropriate type
+      if (userType === 'trainer') {
+        const users = await fetchUsers<Trainer[]>(userType); // Explicitly pass Trainer[] as the expected type
+        setTrainers(users);
+      } else {
+        const users = await fetchUsers<Customer[]>(userType); // Explicitly pass Customer[] as the expected type
+        setCustomers(users);
+      }
     };
-
-    fetchData();
+    void fetchData();
   }, [tabValue]);
 
   // Fetch existing check-in data if an ID is present
   useEffect(() => {
     if (checkInId) {
-      fetchCheckInById(checkInId);
+      void fetchCheckInById(checkInId);
     }
   }, [checkInId]);
 
@@ -126,15 +132,15 @@ const CheckinForm = () => {
     reset();
   };
 
-  const fetchCheckInById = async (checkInId: string) => {
+  const fetchCheckInById = async (id: string) => {
     try {
-      const response = await axiosInstance.get(`/entry-logs/${checkInId}`);
-      const checkInData = response.data.data;
+      const response = await axiosInstance.get<{ data: CheckInEntry }>(`/entry-logs/${id}`);
+      const checkInData: CheckInEntry = response.data.data;
       setFetchedCheckIn(checkInData);
 
       // Set the tab based on userType
       const userType = checkInData.user.userType;
-      console.log('user Type', userType);
+
       if (userType === 3) {
         setTabValue('member'); // Assuming 1 is for members
       } else if (userType === 2) {
@@ -153,7 +159,15 @@ const CheckinForm = () => {
       toast.error('Failed to fetch check-in details.');
     }
   };
-  const onSubmit = async (data: any) => {
+
+  interface EntryFormData {
+    userId: string; // Assuming userId is a string from the form input
+    entryDate: Date | null; // Assuming entryDate is a string in a recognizable date format
+    entryInTime: Date | null; // Assuming entryInTime is a string (e.g., time in HH:mm format)
+    entryOutTime?: Date | null; // entryOutTime is optional and should be a string if present
+  }
+
+  const onSubmit = async (data: EntryFormData) => {
     const payload = {
       user: parseInt(data.userId),
       entryDate: dayjs(data.entryDate).format(DateFormat.dateFormat),
@@ -182,7 +196,7 @@ const CheckinForm = () => {
     <Box sx={{ width: '100%' }}>
       <Card>
         <Stack margin={5}>
-          {(!fetchedCheckIn || !fetchedCheckIn.user) && (
+          {!fetchedCheckIn?.user && (
             <Tabs value={tabValue} onChange={handleTabChange} centered>
               <Tab label="Member Check-in" value="member" />
               <Tab label="Trainer Check-in" value="trainer" />
@@ -198,7 +212,7 @@ const CheckinForm = () => {
                   render={({ field }) => (
                     <FormControl fullWidth variant="outlined">
                       <InputLabel>User</InputLabel>
-                      <Select {...field} label="User" disabled={!!fetchedCheckIn?.user}>
+                      <Select {...field} label="User" disabled={Boolean(fetchedCheckIn?.user)}>
                         {loadingUsers ? (
                           <MenuItem disabled>Loading users...</MenuItem>
                         ) : (
