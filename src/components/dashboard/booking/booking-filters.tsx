@@ -132,7 +132,7 @@ export function BookingFilters({
     setStartDate(date);
     onStartDateChange(date ? dayjs(date).format('YYYY-MM-DD') : '');
 
-    if (date && endDate && endDate.isBefore(date)) {
+    if (endDate?.isBefore(date)) {
       setEndDate(null);
     }
   };

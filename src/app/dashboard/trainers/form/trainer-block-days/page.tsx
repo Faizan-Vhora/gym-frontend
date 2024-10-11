@@ -84,7 +84,7 @@ const UnavailableDateRanges = () => {
   React.useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axiosInstance.get(`/trainer/${id}/trainer-block-dates`);
+        const response = await axiosInstance.get<{ data: UnavailableDate[] }>(`/trainer/${id}/trainer-block-dates`);
         const existingDates: UnavailableDate[] = response.data.data; // Explicitly define the type
         if (existingDates.length > 0) {
           // Set the form values with the existing dates

@@ -30,6 +30,7 @@ export interface CheckInEntry {
   failedReason: string;
   status: 'success' | 'failed';
   user: {
+    id: string | undefined;
     fullName: string;
     email: string;
     userType: number;

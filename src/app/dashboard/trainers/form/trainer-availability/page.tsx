@@ -88,7 +88,10 @@ export default function WeekdayTimeSlots() {
 
   useEffect(() => {
     const fetchTrainerAvailabilitySlots = async () => {
-      if (!id) return setIsLoading(false);
+      if (!id) {
+        setIsLoading(false);
+        return; // Just use return without a value
+      }
       try {
         // Specify the expected structure of the response using generics
         const response = await axiosInstance.get<{ data: ApiTimeSlot[] }>(`/trainer/${id}/trainer-availability-slots`);
@@ -110,7 +113,16 @@ export default function WeekdayTimeSlots() {
 
         // Set the value for `days` with proper typing
         setValue('days', updatedDays);
-      } catch (error) {
+      } catch (error: unknown) {
+        let errorMessage: string;
+        if (typeof error === 'string') {
+          errorMessage = error;
+        } else {
+          // Handle other types of errors, or set a generic message
+          errorMessage = 'An unexpected error occurred';
+        }
+        // Convert the Error object to a string
+        toast.error(errorMessage);
       } finally {
         setIsLoading(false);
       }
@@ -248,8 +260,6 @@ export default function WeekdayTimeSlots() {
 
     try {
       if (!id) throw new Error('Trainer ID is missing');
-
-      console.log('Payload:', { trainerAvailabilitySlot });
 
       await axiosInstance.put(`/trainer/${id}/trainer-availability-slots`, { trainerAvailabilitySlot });
       toast.success('Time slots saved successfully!');
