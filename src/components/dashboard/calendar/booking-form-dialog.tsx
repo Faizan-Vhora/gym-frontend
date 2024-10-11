@@ -1,7 +1,7 @@
 import React from 'react';
 import { BOOKING_PAYMENT_TYPE, BOOKING_TYPE, WEEKDAY_NAME, WEEKDAY_OPTIONS, WeekDayOptionsI } from '@/utils/constant';
 import { formatAmount } from '@/utils/converter';
-import { formatDate } from '@/utils/date-utils';
+import { calculateWeeksBetweenDates, formatDate } from '@/utils/date-utils';
 import { CustomLoader } from '@/utils/loader';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
@@ -15,12 +15,14 @@ import {
   Dialog,
   Divider,
   FormControl,
+  FormControlLabel,
   FormHelperText,
   Grid,
   IconButton,
   InputLabel,
   Select,
   Stack,
+  Switch,
   Tab,
   Tabs,
   TextField,
@@ -75,7 +77,6 @@ export interface WeeklyDayOptionI {
   isAvailable?: boolean;
 }
 
-
 interface TrainerTimeslotResponse {
   data: WeeklySlotI[];
 }
@@ -114,7 +115,6 @@ const bookingSchema = zod.object({
 
 type BookingFormInputs = zod.infer<typeof bookingSchema>;
 
-
 export function BookingFormDialog({
   onClose,
   onCreate,
@@ -147,7 +147,8 @@ export function BookingFormDialog({
   const [bookingEndDate, setBookingEndDate] = React.useState(
     range?.end ? dayjs(range?.end).format('YYYY-MM-DD') : dayjs().format('YYYY-MM-DD')
   );
-  const [slotsWeekly, setSlotWeeklyData] = React.useState<WeeklySlotI[]>([]);
+  const [availableSlotsWeekly, setAvailableSlotWeeklyData] = React.useState<WeeklySlotI[]>([]);
+  const [availableSlotsWeeklyByFilter, setAvailableSlotWeeklyByFilterData] = React.useState<WeeklySlotI[]>([]);
   const [availableWeekDayOptions, setAvailableWeekDayOptions] = React.useState<WeeklyDayOptionI[]>([]);
   const [selectedDays, setSelectedDays] = React.useState<number[]>([dayjs().day()]); // Default to today's weekday
   const [selectedSlots, setSelectedSlots] = React.useState<SelectedSlotsI>({});
@@ -160,6 +161,11 @@ export function BookingFormDialog({
   const [isPreviewOpen, setPreviewOpen] = React.useState(false);
   const [promocodeOptions, setPromocodeOptions] = React.useState<DiscountEntry[]>([]);
   const [selectedPromocode, setSelectedPromocode] = React.useState<DiscountEntry | null>(null);
+
+  const [reOccuranceEnabled, setReOccuranceEnabled] = React.useState<boolean>(false);
+  const [reOccuranceWeeks, setReOccuranceWeeks] = React.useState<number>(1);
+  const [maxReOccuranceWeeks, setMaxReOccuranceWeeks] = React.useState<number>(1);
+
 
   // Fetch data
   const fetchCustomers = async (): Promise<void> => {
@@ -186,21 +192,30 @@ export function BookingFormDialog({
     setSelectedSlots({});
     setSelectedDays([]);
 
+    setMaxReOccuranceWeeks(1);
+    setReOccuranceWeeks(1);
+
     setLoading(true); // Set loading true when fetching data
     try {
-      const response = await axiosInstance.get<TrainerTimeslotResponse>('/session-booking/trainer/available-session-slots', {
-        params: { trainerId, startDate: startDate, endDate: endDate },
-      });
+      const response = await axiosInstance.get<TrainerTimeslotResponse>(
+        '/session-booking/trainer/available-session-slots',
+        {
+          params: { trainerId, startDate: startDate, endDate: endDate },
+        }
+      );
 
       const availableTrainerSlots = response.data.data;
-      // console.log("availableTrainerSlots:", availableTrainerSlots)
+      console.log("::availableTrainerSlots:", availableTrainerSlots)
+
       if (bookingType === BOOKING_TYPE.ONE_TIME && availableTrainerSlots[0]?.weekday) {
         setSelectedDays([availableTrainerSlots[0].weekday]);
       } else {
         setSelectedDays([]);
+        const noOfWeeks : number  = calculateWeeksBetweenDates(startDate, endDate);
+        setMaxReOccuranceWeeks(noOfWeeks>1 ? noOfWeeks-1: 1);
       }
 
-      setSlotWeeklyData(availableTrainerSlots || []);
+      setAvailableSlotWeeklyData(availableTrainerSlots || []);
       const trainerWeekDays: number[] = availableTrainerSlots.map((ele: WeeklySlotI) => ele.weekday);
       WEEKDAY_OPTIONS.forEach((ele: WeekDayOptionsI) => {
         ele.isAvailable = trainerWeekDays.includes(ele.value);
@@ -214,6 +229,33 @@ export function BookingFormDialog({
       setLoading(false);
     }
   };
+
+
+  const getDataSkippingIndices = (dataArray: WeekSlotI[], skip: number): WeekSlotI[] => {
+    const result: WeekSlotI[] = [];
+
+    // Loop through the array and push elements starting from index 0, skipping the specified number of indices
+    for (let i = 0; i < dataArray.length; i += (skip + 1)) {
+        result.push(dataArray[i]);
+    }
+
+    return result;
+}
+
+const filterAvailableTrainerSlotsByReoccurrence = (): void => {
+    // Create a deep copy of the available slots
+    const availableSlotsFilter: WeeklySlotI[] = JSON.parse(JSON.stringify(availableSlotsWeekly));
+
+    // Only process the slots if booking type is weekly and reoccurrence is enabled
+    if (bookingType === BOOKING_TYPE.WEEKLY && reOccuranceEnabled) {
+        availableSlotsFilter.forEach((ele: WeeklySlotI) => {
+            // Update weekSlots with the filtered results based on the skipping index
+            ele.weekSlots = getDataSkippingIndices(ele.weekSlots, reOccuranceWeeks);
+        });
+    }
+    setAvailableSlotWeeklyByFilterData(availableSlotsFilter)
+}
+
 
   const fetchPromocode = async (): Promise<void> => {
     try {
@@ -238,6 +280,14 @@ export function BookingFormDialog({
 
   const handleTabChange = (newValue: string) => {
     setBookingType(newValue);
+  };
+
+  const increaseReoccurrence = () => {
+    setReOccuranceWeeks((prev:number) => (prev < maxReOccuranceWeeks) ? prev + 1 : prev);
+  };
+
+  const decreaseReoccurrence = () => {
+    setReOccuranceWeeks((prev:number) => (prev > 1 ? prev - 1 : 1));
   };
 
   const handlePromocodeChange = (promocodeId: number | null) => {
@@ -265,7 +315,10 @@ export function BookingFormDialog({
     ]);
   };
 
-  const convertSelectedSlotsToSessions = (selectedSlotsForSession: SelectedSlotsI, trainerRatePerHour: number): Sessions[] => {
+  const convertSelectedSlotsToSessions = (
+    selectedSlotsForSession: SelectedSlotsI,
+    trainerRatePerHour: number
+  ): Sessions[] => {
     let sessions: Sessions[] = [];
     Object.keys(selectedSlotsForSession).forEach((weekday) => {
       const slots = selectedSlotsForSession[weekday];
@@ -319,9 +372,9 @@ export function BookingFormDialog({
 
     if (selectedPromocode) {
       if (selectedPromocode.discountType === DiscountType.Fix) {
-        totalDiscount =  Number(selectedPromocode.discountValue || 0) ;
+        totalDiscount = Number(selectedPromocode.discountValue || 0);
       } else if (selectedPromocode.discountType === DiscountType.Percentage) {
-        totalDiscount = calculatedbookingAmount * ( Number(selectedPromocode.discountValue || 0) / 100);
+        totalDiscount = calculatedbookingAmount * (Number(selectedPromocode.discountValue || 0) / 100);
       }
     }
 
@@ -420,7 +473,7 @@ export function BookingFormDialog({
             discount: discountAmount,
             netTotalAmount: netTotalAmount,
             paymentType: paymentType,
-            promocode : selectedPromocode?.id || null,
+            promocode: selectedPromocode?.id || null,
           },
           sessions: sessionsList,
         };
@@ -464,9 +517,17 @@ export function BookingFormDialog({
     convertSelectedSlotsToSessions(selectedSlots, trainerRatePerHour);
   }, [selectedSlots, selectedTrainer, selectedPromocode]);
 
+
+  React.useEffect(() => {
+     setSelectedSlots({});
+     setSelectedDays([]);
+     filterAvailableTrainerSlotsByReoccurrence();
+  }, [availableSlotsWeekly, reOccuranceWeeks, reOccuranceEnabled]);
+
+
   React.useEffect(() => {
     if (bookingType === BOOKING_TYPE.ONE_TIME && selectedTrainer && bookingDate) {
-      void  fetchTrainerSlotsData(selectedTrainer.id.toString(), bookingDate, bookingDate);
+      void fetchTrainerSlotsData(selectedTrainer.id.toString(), bookingDate, bookingDate);
     }
 
     if (bookingType === BOOKING_TYPE.WEEKLY && selectedTrainer && bookingStartDate && bookingEndDate) {
@@ -552,7 +613,10 @@ export function BookingFormDialog({
                   <CardContent>
                     <Grid container>
                       <Grid item md={4} alignContent={'center'}>
-                        <Avatar src={selectedCustomer.profileImageUrl  ||""} sx={{ height: '56px', width: '56px' }}></Avatar>
+                        <Avatar
+                          src={selectedCustomer.profileImageUrl || ''}
+                          sx={{ height: '56px', width: '56px' }}
+                        ></Avatar>
                       </Grid>
                       <Grid item md={8} alignContent={'center'}>
                         <Typography variant="subtitle1">{selectedCustomer.fullName}</Typography>
@@ -631,7 +695,10 @@ export function BookingFormDialog({
                   <CardContent>
                     <Grid container>
                       <Grid item md={4} alignContent={'center'}>
-                        <Avatar src={selectedTrainer.profileImageUrl || ""} sx={{ height: '56px', width: '56px' }}></Avatar>
+                        <Avatar
+                          src={selectedTrainer.profileImageUrl || ''}
+                          sx={{ height: '56px', width: '56px' }}
+                        ></Avatar>
                       </Grid>
                       <Grid item md={8} alignContent={'center'}>
                         <Typography variant="subtitle1">{selectedTrainer.fullName}</Typography>
@@ -668,14 +735,15 @@ export function BookingFormDialog({
               <Stack sx={{ margin: '20px', alignItems: 'center', width: '100%' }}>
                 <Divider />
                 <Tabs
-                    value={bookingType}
-                    onChange={(e: React.SyntheticEvent, newValue: string) => {handleTabChange(newValue)} }
-                    sx={{ width: '100%' }}
-                  >
-                    <Tab label="One Time Session" value={BOOKING_TYPE.ONE_TIME} />
-                    <Tab label="Weekly" value={BOOKING_TYPE.WEEKLY} />
-                  </Tabs>
-
+                  value={bookingType}
+                  onChange={(e: React.SyntheticEvent, newValue: string) => {
+                    handleTabChange(newValue);
+                  }}
+                  sx={{ width: '100%' }}
+                >
+                  <Tab label="One Time Session" value={BOOKING_TYPE.ONE_TIME} />
+                  <Tab label="Weekly" value={BOOKING_TYPE.WEEKLY} />
+                </Tabs>
               </Stack>
             </Grid>
 
@@ -780,6 +848,55 @@ export function BookingFormDialog({
                 </Grid>
 
                 <Grid item md={12}>
+                  <Grid item  md={12}>
+                    <FormControlLabel
+                      control={
+                        <Switch
+                          checked={reOccuranceEnabled}
+                          onChange={(event) => {
+                            event.stopPropagation();
+                            setReOccuranceEnabled(!reOccuranceEnabled);
+                          }}
+                        />
+                      }
+                      label="Re-occurrence every"
+                    />
+                  </Grid>
+
+                  {
+                    reOccuranceEnabled && (
+                      <Grid item  md={12}>
+                      <Grid container alignItems="center" spacing={1}>
+                        <Grid item>
+                          <Button variant="outlined" onClick={decreaseReoccurrence} sx={{ minWidth: '40px' }}>
+                            -
+                          </Button>
+                        </Grid>
+
+                        <Grid item>
+                          <Typography
+                            variant="h6"
+                            sx={{ fontWeight: 'bold', minWidth: '60px', textAlign: 'center' }}
+                          >
+                            {reOccuranceWeeks} Week{reOccuranceWeeks > 1 ? 's' : ''}
+                          </Typography>
+                        </Grid>
+
+                        <Grid item>
+                          <Button variant="outlined" onClick={increaseReoccurrence} sx={{ minWidth: '40px' }}>
+                            +
+                          </Button>
+                        </Grid>
+                      </Grid>
+                    </Grid>
+                    )
+                  }
+
+
+
+                </Grid>
+
+                <Grid item md={12}>
                   <FormControl sx={{ minWidth: 200, display: 'block' }}>
                     <Autocomplete
                       multiple
@@ -801,8 +918,8 @@ export function BookingFormDialog({
             )}
 
             <Grid item md={8} sx={{ paddingTop: '0px' }}>
-              {slotsWeekly.length > 0 ? (
-                slotsWeekly
+              {availableSlotsWeeklyByFilter.length > 0 ? (
+                availableSlotsWeeklyByFilter
                   .filter((ele) => selectedDays.includes(ele.weekday))
                   .map((weekDaySlot: WeeklySlotI, dateIndex: number) => (
                     <div key={dateIndex}>
@@ -816,7 +933,9 @@ export function BookingFormDialog({
                         }
                         getOptionDisabled={(option) => !option.isAvailable}
                         value={selectedSlots[weekDaySlot.weekday] || []}
-                        onChange={(event, newValue) =>{handleSessionSlotChange(weekDaySlot.weekday, newValue)} }
+                        onChange={(event, newValue) => {
+                          handleSessionSlotChange(weekDaySlot.weekday, newValue);
+                        }}
                         renderOption={(props, option, { selected }) => (
                           <li
                             {...props}

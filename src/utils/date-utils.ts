@@ -49,3 +49,23 @@ export function convertTo12HourFormat(time:string) {
   const hours12 = hours % 12 || 12; // Convert hour 0 to 12
   return `${hours12}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')} ${ampm}`;
 }
+
+
+
+export  function calculateWeeksBetweenDates(startDateStr: string, endDateStr: string): number {
+  // Convert the input strings to Date objects
+  const startDate = new Date(startDateStr);
+  const endDate = new Date(endDateStr);
+
+  // Calculate the difference in milliseconds
+  const diffInMs = endDate.getTime() - startDate.getTime();
+
+  // Convert the difference from milliseconds to days
+  const diffInDays = diffInMs / (1000 * 60 * 60 * 24);
+
+  // Convert days to weeks and return the integer value
+  const weeksBetween = Math.floor(diffInDays / 7);
+
+  return weeksBetween;
+}
+
