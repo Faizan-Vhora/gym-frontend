@@ -166,7 +166,6 @@ export function BookingFormDialog({
   const [reOccuranceWeeks, setReOccuranceWeeks] = React.useState<number>(1);
   const [maxReOccuranceWeeks, setMaxReOccuranceWeeks] = React.useState<number>(1);
 
-
   // Fetch data
   const fetchCustomers = async (): Promise<void> => {
     try {
@@ -211,8 +210,8 @@ export function BookingFormDialog({
         setSelectedDays([availableTrainerSlots[0].weekday]);
       } else {
         setSelectedDays([]);
-        const noOfWeeks : number  = calculateWeeksBetweenDates(startDate, endDate);
-        setMaxReOccuranceWeeks(noOfWeeks>1 ? noOfWeeks-1: 1);
+        const noOfWeeks: number = calculateWeeksBetweenDates(startDate, endDate);
+        setMaxReOccuranceWeeks(noOfWeeks > 1 ? noOfWeeks - 1 : 1);
       }
 
       setAvailableSlotWeeklyData(availableTrainerSlots || []);
@@ -230,33 +229,31 @@ export function BookingFormDialog({
     }
   };
 
-
   const getDataSkippingIndices = (dataArray: WeekSlotI[], skip: number): WeekSlotI[] => {
     const result: WeekSlotI[] = [];
 
     // Loop through the array and push elements starting from index 0, skipping the specified number of indices
-    for (let i = 0; i < dataArray.length; i += (skip + 1)) {
-        result.push(dataArray[i]);
+    for (let i = 0; i < dataArray.length; i += skip + 1) {
+      result.push(dataArray[i]);
     }
 
     return result;
-}
+  };
 
-const filterAvailableTrainerSlotsByReoccurrence = (): void => {
+  const filterAvailableTrainerSlotsByReoccurrence = (): void => {
     // Create a deep copy of the available slots
     // const availableSlotsFilter: WeeklySlotI[] = JSON.parse(JSON.stringify(availableSlotsWeekly));
     const availableSlotsFilter: WeeklySlotI[] = JSON.parse(JSON.stringify(availableSlotsWeekly)) as WeeklySlotI[];
 
     // Only process the slots if booking type is weekly and reoccurrence is enabled
     if (bookingType === BOOKING_TYPE.WEEKLY && reOccuranceEnabled) {
-        availableSlotsFilter.forEach((ele: WeeklySlotI) => {
-            // Update weekSlots with the filtered results based on the skipping index
-            ele.weekSlots = getDataSkippingIndices(ele.weekSlots, reOccuranceWeeks);
-        });
+      availableSlotsFilter.forEach((ele: WeeklySlotI) => {
+        // Update weekSlots with the filtered results based on the skipping index
+        ele.weekSlots = getDataSkippingIndices(ele.weekSlots, reOccuranceWeeks);
+      });
     }
-    setAvailableSlotWeeklyByFilterData(availableSlotsFilter)
-}
-
+    setAvailableSlotWeeklyByFilterData(availableSlotsFilter);
+  };
 
   const fetchPromocode = async (): Promise<void> => {
     try {
@@ -284,11 +281,11 @@ const filterAvailableTrainerSlotsByReoccurrence = (): void => {
   };
 
   const increaseReoccurrence = () => {
-    setReOccuranceWeeks((prev:number) => (prev < maxReOccuranceWeeks) ? prev + 1 : prev);
+    setReOccuranceWeeks((prev: number) => (prev < maxReOccuranceWeeks ? prev + 1 : prev));
   };
 
   const decreaseReoccurrence = () => {
-    setReOccuranceWeeks((prev:number) => (prev > 1 ? prev - 1 : 1));
+    setReOccuranceWeeks((prev: number) => (prev > 1 ? prev - 1 : 1));
   };
 
   const handlePromocodeChange = (promocodeId: number | null) => {
@@ -518,13 +515,11 @@ const filterAvailableTrainerSlotsByReoccurrence = (): void => {
     convertSelectedSlotsToSessions(selectedSlots, trainerRatePerHour);
   }, [selectedSlots, selectedTrainer, selectedPromocode]);
 
-
   React.useEffect(() => {
-     setSelectedSlots({});
-     setSelectedDays([]);
-     filterAvailableTrainerSlotsByReoccurrence();
+    setSelectedSlots({});
+    setSelectedDays([]);
+    filterAvailableTrainerSlotsByReoccurrence();
   }, [availableSlotsWeekly, reOccuranceWeeks, reOccuranceEnabled]);
-
 
   React.useEffect(() => {
     if (bookingType === BOOKING_TYPE.ONE_TIME && selectedTrainer && bookingDate) {
@@ -849,7 +844,7 @@ const filterAvailableTrainerSlotsByReoccurrence = (): void => {
                 </Grid>
 
                 <Grid item md={12}>
-                  <Grid item  md={12}>
+                  <Grid item md={12}>
                     <FormControlLabel
                       control={
                         <Switch
@@ -864,9 +859,8 @@ const filterAvailableTrainerSlotsByReoccurrence = (): void => {
                     />
                   </Grid>
 
-                  {
-                    reOccuranceEnabled && (
-                      <Grid item  md={12}>
+                  {reOccuranceEnabled && (
+                    <Grid item md={12}>
                       <Grid container alignItems="center" spacing={1}>
                         <Grid item>
                           <Button variant="outlined" onClick={decreaseReoccurrence} sx={{ minWidth: '40px' }}>
@@ -875,10 +869,7 @@ const filterAvailableTrainerSlotsByReoccurrence = (): void => {
                         </Grid>
 
                         <Grid item>
-                          <Typography
-                            variant="h6"
-                            sx={{ fontWeight: 'bold', minWidth: '60px', textAlign: 'center' }}
-                          >
+                          <Typography variant="h6" sx={{ fontWeight: 'bold', minWidth: '60px', textAlign: 'center' }}>
                             {reOccuranceWeeks} Week{reOccuranceWeeks > 1 ? 's' : ''}
                           </Typography>
                         </Grid>
@@ -890,11 +881,7 @@ const filterAvailableTrainerSlotsByReoccurrence = (): void => {
                         </Grid>
                       </Grid>
                     </Grid>
-                    )
-                  }
-
-
-
+                  )}
                 </Grid>
 
                 <Grid item md={12}>
@@ -974,7 +961,7 @@ const filterAvailableTrainerSlotsByReoccurrence = (): void => {
               )}
             </Grid>
 
-            {promocodeOptions.length && (
+            {availableSlotsWeeklyByFilter.length ? (
               <Grid item xs={12} md={5.8}>
                 <Controller
                   control={control}
@@ -1036,13 +1023,13 @@ const filterAvailableTrainerSlotsByReoccurrence = (): void => {
                     <CardContent>
                       <Grid container>
                         <Grid item md={8} alignContent={'center'}>
-                          <Typography variant="subtitle1">{selectedPromocode.codeName}</Typography>
+                          {/* <Typography variant="subtitle1">{selectedPromocode.codeName}</Typography> */}
 
                           {/* <Typography variant="caption" sx={{ display: 'flex', alignItems: 'center' }}>
                             {selectedPromocode.description ? selectedPromocode.description : ''}
                           </Typography> */}
 
-                          <Typography variant="body2"> Total Discount : {formatAmount(discountAmount)}</Typography>
+                          <Typography variant="subtitle1"> Total Discount {formatAmount(discountAmount)}</Typography>
                         </Grid>
                       </Grid>
 
@@ -1051,6 +1038,8 @@ const filterAvailableTrainerSlotsByReoccurrence = (): void => {
                   </Card>
                 )}
               </Grid>
+            ) : (
+              <></>
             )}
           </Grid>
         </Stack>
