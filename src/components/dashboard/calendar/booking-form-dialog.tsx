@@ -377,7 +377,7 @@ export function BookingFormDialog({
       }
     }
 
-    perHourDiscount = totalHours ? totalDiscount / totalHours : 0;
+    perHourDiscount = totalHours ? parseFloat((totalDiscount / totalHours).toFixed(2)) : 0;
 
     sessionsList.forEach((ele) => {
       ele.discount = (ele?.sessionDurationInHours || 0) * perHourDiscount;
