@@ -116,85 +116,83 @@ export function CustomersTable({
               </TableRow>
             ) : (
               rows.map((row) => (
-                <>
-                  <TableRow hover key={row.id} sx={tableCss.tableRow}>
-                    <TableCell sx={tableCss.tableCell}>
-                      <Typography
-                        variant="subtitle2"
-                        onClick={() => {
-                          handleRowClick(String(row.id));
-                        }}
-                        style={{ cursor: 'pointer' }}
-                      >
-                        {row.fullName}
-                      </Typography>
-                      <Typography
-                        color="textSecondary"
-                        variant="body2"
-                        onClick={() => {
-                          handleRowClick(String(row.id));
-                        }}
-                        style={{ cursor: 'pointer' }}
-                      >
-                        {row.email}
-                      </Typography>
-                    </TableCell>
-
-                    <TableCell
-                      sx={{
-                        ...tableCss.tableCell,
-                        width: '50px !important',
-                        whiteSpace: 'wrap',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis !important',
+                <TableRow hover key={row.id} sx={tableCss.tableRow}>
+                  <TableCell sx={tableCss.tableCell}>
+                    <Typography
+                      variant="subtitle2"
+                      onClick={() => {
+                        handleRowClick(String(row.id));
                       }}
+                      style={{ cursor: 'pointer' }}
                     >
-                      {row.address || '-'}
-                    </TableCell>
-                    <TableCell sx={tableCss.tableCell}>{row.phoneNumber || '-'}</TableCell>
-                    <TableCell sx={tableCss.tableCell}>{dayjs(row.updatedAt).format('MMM D, YYYY')}</TableCell>
-                    <TableCell sx={tableCss.tableCell}>
-                      <Typography color="black" variant="subtitle2">
-                        {row?.membership?.membershipType?.title || '-'}
-                      </Typography>
+                      {row.fullName}
+                    </Typography>
+                    <Typography
+                      color="textSecondary"
+                      variant="body2"
+                      onClick={() => {
+                        handleRowClick(String(row.id));
+                      }}
+                      style={{ cursor: 'pointer' }}
+                    >
+                      {row.email}
+                    </Typography>
+                  </TableCell>
 
-                      {row?.membership?.membershipType?.title &&
-                        row?.membership?.expiryDate &&
-                        !isNaN(new Date(row?.membership?.expiryDate).getTime()) && (
-                          <Typography color="textSecondary" variant="body2">
-                            Exp: {dayjs(row?.membership?.expiryDate).format('MMM D, YYYY')}
-                          </Typography>
-                        )}
-                    </TableCell>
+                  <TableCell
+                    sx={{
+                      ...tableCss.tableCell,
+                      width: '50px !important',
+                      whiteSpace: 'wrap',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis !important',
+                    }}
+                  >
+                    {row.address || '-'}
+                  </TableCell>
+                  <TableCell sx={tableCss.tableCell}>{row.phoneNumber || '-'}</TableCell>
+                  <TableCell sx={tableCss.tableCell}>{dayjs(row.updatedAt).format('MMM D, YYYY')}</TableCell>
+                  <TableCell sx={tableCss.tableCell}>
+                    <Typography color="black" variant="subtitle2">
+                      {row?.membership?.membershipType?.title || '-'}
+                    </Typography>
 
-                    <TableCell>
-                      <FormControlLabel
-                        control={
-                          <Switch
-                            checked={row.status === 1}
-                            onChange={(event) => {
-                              event.stopPropagation();
-                              updateCustomerStatus(String(row.id), row.status);
-                            }}
-                            color={row.status === 1 ? 'success' : 'error'}
-                          />
-                        }
-                        label={getStatusText(row.status)}
-                      />
-                    </TableCell>
-                    <TableCell sx={tableCss.tableCell}>
-                      <Stack direction="row" spacing={1} alignItems="center">
-                        <IconButton
-                          onClick={() => {
-                            handleEdit(String(row.id));
+                    {row?.membership?.membershipType?.title &&
+                      row?.membership?.expiryDate &&
+                      !isNaN(new Date(row?.membership?.expiryDate).getTime()) && (
+                        <Typography color="textSecondary" variant="body2">
+                          Exp: {dayjs(row?.membership?.expiryDate).format('MMM D, YYYY')}
+                        </Typography>
+                      )}
+                  </TableCell>
+
+                  <TableCell>
+                    <FormControlLabel
+                      control={
+                        <Switch
+                          checked={row.status === 1}
+                          onChange={(event) => {
+                            event.stopPropagation();
+                            updateCustomerStatus(String(row.id), row.status);
                           }}
-                        >
-                          <PencilSimple />
-                        </IconButton>
-                      </Stack>
-                    </TableCell>
-                  </TableRow>
-                </>
+                          color={row.status === 1 ? 'success' : 'error'}
+                        />
+                      }
+                      label={getStatusText(row.status)}
+                    />
+                  </TableCell>
+                  <TableCell sx={tableCss.tableCell}>
+                    <Stack direction="row" spacing={1} alignItems="center">
+                      <IconButton
+                        onClick={() => {
+                          handleEdit(String(row.id));
+                        }}
+                      >
+                        <PencilSimple />
+                      </IconButton>
+                    </Stack>
+                  </TableCell>
+                </TableRow>
               ))
             )}
           </TableBody>
