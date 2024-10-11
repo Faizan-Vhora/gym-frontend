@@ -2,11 +2,18 @@
 
 import * as React from 'react';
 import { useSearchParams } from 'next/navigation';
-import { BOOKING_PAYMENT_STATUS_DETAILS, BOOKING_PAYMENT_TYPE_DETAILS, BOOKING_STATUS_DETAILS } from '@/utils/constant';
+import {
+  BOOKING_PAYMENT_STATUS_DETAILS,
+  BOOKING_PAYMENT_TYPE_DETAILS,
+  BOOKING_STATUS_DETAILS,
+  BOOKING_TYPE_DETAILS,
+} from '@/utils/constant';
+import { formatHours } from '@/utils/converter';
 import { formatDate } from '@/utils/date-utils';
 import { CustomLoader } from '@/utils/loader';
 import { Avatar, Box, Card, Grid, IconButton, Stack, Typography } from '@mui/material';
 import { Barbell, Envelope, GenderIntersex, MapPin, Phone } from '@phosphor-icons/react';
+import dayjs from 'dayjs';
 import { toast, ToastContainer } from 'react-toastify';
 
 import axiosInstance from '@/lib/axios';
@@ -35,7 +42,7 @@ export default function BookingDetailsPage(): React.JSX.Element {
         // console.log('fetchedData: ', fetchedData);
         setBookingDetails(fetchedData);
       })
-      .catch((err:unknown) => {
+      .catch((err: unknown) => {
         const errorMessage = err instanceof Error ? err.message : 'An unexpected error occurred';
         toast.error(errorMessage);
       })
@@ -71,10 +78,9 @@ export default function BookingDetailsPage(): React.JSX.Element {
                   }}
                 >
                   <Typography variant="h6" textAlign={'end'} color="text.secondary" gutterBottom>
-                    {/* {BOOKING_TYPE_DETAILS[bookingDetail.bookingType].label} */}
-                    Weekly
+                    {BOOKING_TYPE_DETAILS[bookingDetail.bookingType].label}
                   </Typography>
-                  <Typography textAlign={'end'} color="text.secondary" gutterBottom>
+                  <Typography textAlign={'end'} component="span" color="text.secondary" gutterBottom>
                     {BOOKING_STATUS_DETAILS[bookingDetail.status].label}
                   </Typography>
                 </Stack>
@@ -82,27 +88,42 @@ export default function BookingDetailsPage(): React.JSX.Element {
                   sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', marginTop: '30px' }}
                 >
                   <Typography color="text.secondary" gutterBottom>
-                    Start <br /> <Typography fontSize={'12px'}>{formatDate(bookingDetail?.startDate)}</Typography>
+                    Start <br />
+                    <Typography variant="body2" component="span" fontSize={'12px'}>
+                      {formatDate(bookingDetail?.startDate)}
+                    </Typography>
                   </Typography>
                   <Typography color="text.secondary" textAlign={'center'}>
-                    Hours <br /> <Typography fontSize={'12px'}>({bookingDetail?.bookingHours} Hrs) </Typography>
+                    Hours <br />
+                    <Typography variant="body2" component="span" fontSize={'12px'}>
+                      ({formatHours(bookingDetail?.bookingHours)})
+                    </Typography>
                   </Typography>
-
                   <Typography color="text.secondary" textAlign={'center'}>
-                    End <br /> <Typography fontSize={'12px'}>{formatDate(bookingDetail?.endDate)}</Typography>
+                    End <br />
+                    <Typography variant="body2" component="span" fontSize={'12px'}>
+                      {formatDate(bookingDetail?.endDate)}
+                    </Typography>
                   </Typography>
                 </Stack>
+
                 <Stack>
                   <Stack
                     rowGap={2}
                     sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', marginTop: '30px' }}
                   >
                     <Typography color="text.secondary">
-                      Booking By <br /> <Typography fontSize={'12px'}>maaz</Typography>
+                      Booking By <br />{' '}
+                      <Typography fontSize={'12px'} component="span">
+                        {bookingDetail.createdBy.fullName}
+                      </Typography>
                     </Typography>
 
                     <Typography color="text.secondary">
-                      Booking at: <br /> <Typography fontSize={'12px'}>10/08/2024</Typography>
+                      Booking at: <br />{' '}
+                      <Typography fontSize={'12px'} component="span">
+                        {dayjs(bookingDetail.createdAt).format('DD/MM/YYYY')}
+                      </Typography>
                     </Typography>
                   </Stack>
                 </Stack>
