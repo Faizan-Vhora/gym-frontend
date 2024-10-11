@@ -44,6 +44,12 @@ export const WEEKDAY_NAME = {
 };
 
 
+export interface WeekDayOptionsI {
+  value : number,
+  label : string,
+  isAvailable? : boolean;
+}
+
 export const WEEKDAY_OPTIONS = [
   { value: WEEKDAY.SUNDAY, label: WEEKDAY_NAME[WEEKDAY.SUNDAY] },
   { value: WEEKDAY.MONDAY, label: WEEKDAY_NAME[WEEKDAY.MONDAY] },
