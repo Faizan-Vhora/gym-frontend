@@ -69,7 +69,6 @@ export default function SupportForm(): React.JSX.Element {
     if (messagesEndRef.current) {
       messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
     }
-    console.log('supportTicketMessages: ', supportTicketMessages);
   }, [supportTicketMessages]);
 
   useEffect(() => {
