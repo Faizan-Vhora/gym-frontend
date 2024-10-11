@@ -205,7 +205,7 @@ export function BookingFormDialog({
       );
 
       const availableTrainerSlots = response.data.data;
-      console.log("::availableTrainerSlots:", availableTrainerSlots)
+      // console.log("::availableTrainerSlots:", availableTrainerSlots)
 
       if (bookingType === BOOKING_TYPE.ONE_TIME && availableTrainerSlots[0]?.weekday) {
         setSelectedDays([availableTrainerSlots[0].weekday]);
@@ -244,7 +244,8 @@ export function BookingFormDialog({
 
 const filterAvailableTrainerSlotsByReoccurrence = (): void => {
     // Create a deep copy of the available slots
-    const availableSlotsFilter: WeeklySlotI[] = JSON.parse(JSON.stringify(availableSlotsWeekly));
+    // const availableSlotsFilter: WeeklySlotI[] = JSON.parse(JSON.stringify(availableSlotsWeekly));
+    const availableSlotsFilter: WeeklySlotI[] = JSON.parse(JSON.stringify(availableSlotsWeekly)) as WeeklySlotI[];
 
     // Only process the slots if booking type is weekly and reoccurrence is enabled
     if (bookingType === BOOKING_TYPE.WEEKLY && reOccuranceEnabled) {
