@@ -27,6 +27,7 @@ export function Sales({ categories, chartSeries, sx }: SalesProps): React.JSX.El
   return (
     <Card sx={sx}>
       <CardHeader
+        style={{ fontFamily: '"Audiowide", sans-serif' }}
         action={
           <Button color="inherit" size="small" startIcon={<ArrowClockwiseIcon fontSize="var(--icon-fontSize-md)" />}>
             Sync
@@ -39,7 +40,12 @@ export function Sales({ categories, chartSeries, sx }: SalesProps): React.JSX.El
       </CardContent>
       <Divider />
       <CardActions sx={{ justifyContent: 'flex-end' }}>
-        <Button color="inherit" endIcon={<ArrowRightIcon fontSize="var(--icon-fontSize-md)" />} size="small">
+        <Button
+          color="inherit"
+          style={{ fontFamily: '"Audiowide", sans-serif' }}
+          endIcon={<ArrowRightIcon fontSize="var(--icon-fontSize-md)" />}
+          size="small"
+        >
           Overview
         </Button>
       </CardActions>

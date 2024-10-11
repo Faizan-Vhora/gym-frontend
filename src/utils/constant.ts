@@ -120,6 +120,23 @@ export const BOOKING_TYPE_DETAILS: Record<string, { value: string; label: string
 
 
 
+export const GENDER_TYPE = {
+  MALE : 'male',
+  FEMALE  : 'female',
+}
+
+export const GENDER_TYPE_OPTIONS = [
+  { value: GENDER_TYPE.MALE, label: "Male" },
+  { value: GENDER_TYPE.FEMALE, label: "Female" },
+]
+
+export const GENDER_TYPE_DETAILS: Record<string, { value: string; label: string; color: 'warning' | 'success' }> = {
+  [GENDER_TYPE.MALE] : { value: GENDER_TYPE.MALE, label: "Male" , color: 'warning'},
+  [GENDER_TYPE.FEMALE] : { value: GENDER_TYPE.FEMALE, label: "Female" , color: 'success'},
+}
+
+
+
 export const BOOKING_PAYMENT_TYPE = {
   FULL : 'full',
   PER_SESSION  : 'per_session',

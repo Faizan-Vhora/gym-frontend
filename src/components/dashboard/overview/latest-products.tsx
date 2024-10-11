@@ -47,14 +47,14 @@ export function LatestProducts({ products = [] }: LatestProductsProps): React.JS
 
   return (
     <Card sx={{ height: '520px', overflowY: 'scroll' }}>
-      <CardHeader title="Incomplete Profiles" />
+      <CardHeader style={{ fontFamily: '"Audiowide", sans-serif' }} title="Incomplete Profiles" />
       <Divider />
       <List>
         {products.length === 0 ? (
           <ListItem>
             <ListItemText
               primary={
-                <Typography variant="body2" color="text.secondary">
+                <Typography variant="body2" style={{ fontFamily: '"Audiowide", sans-serif' }} color="text.secondary">
                   No Incomplete Profiles available
                 </Typography>
               }

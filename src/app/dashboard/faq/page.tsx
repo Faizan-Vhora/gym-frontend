@@ -187,7 +187,9 @@ export default function FaqManagementPage(): React.JSX.Element {
     <Stack spacing={3}>
       <Stack direction="row" spacing={3}>
         <Stack spacing={1} sx={{ flex: '1 1 auto' }}>
-          <Typography variant="h4">FAQ Management</Typography>
+          <Typography style={{ fontFamily: '"Audiowide", sans-serif' }} variant="h4">
+            FAQ Management
+          </Typography>
         </Stack>
 
         <Button
@@ -200,35 +202,33 @@ export default function FaqManagementPage(): React.JSX.Element {
         </Button>
       </Stack>
       <Card>
-
-       <Stack sx={{padding:'30px'}}>
-
-      <FaqFilters
-        onSearchChange={handleSearchChange}
-        onTypeChange={handleTypeChange}
-        onStatusChange={handleStatusChangeFilter}
-      />
-       </Stack>
-      {loading ? (
-        <CustomLoader />
-      ) : (
-        <FaqTable
-          faqs={faqs}
-          page={page}
-          rowsPerPage={rowsPerPage}
-          totalEntries={totalItems} // Display the total number of entries
-          onEdit={handleEdit}
-          onDelete={handleDelete}
-          onStatusChange={handleStatusChange}
-          onPageChange={(newPage) => {
-            setPage(newPage);
-          }}
-          onRowsPerPageChange={(newRowsPerPage) => {
-            setRowsPerPage(newRowsPerPage);
-            setPage(0); // Reset page when rows per page change
-          }}
-        />
-      )}
+        <Stack sx={{ padding: '30px' }}>
+          <FaqFilters
+            onSearchChange={handleSearchChange}
+            onTypeChange={handleTypeChange}
+            onStatusChange={handleStatusChangeFilter}
+          />
+        </Stack>
+        {loading ? (
+          <CustomLoader />
+        ) : (
+          <FaqTable
+            faqs={faqs}
+            page={page}
+            rowsPerPage={rowsPerPage}
+            totalEntries={totalItems} // Display the total number of entries
+            onEdit={handleEdit}
+            onDelete={handleDelete}
+            onStatusChange={handleStatusChange}
+            onPageChange={(newPage) => {
+              setPage(newPage);
+            }}
+            onRowsPerPageChange={(newRowsPerPage) => {
+              setRowsPerPage(newRowsPerPage);
+              setPage(0); // Reset page when rows per page change
+            }}
+          />
+        )}
       </Card>
       {error ? <Alert color="error">{error}</Alert> : null}
       <ToastContainer />

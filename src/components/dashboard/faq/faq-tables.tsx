@@ -151,7 +151,8 @@ export default function FaqTable({
                   <TableCell sx={tableCss.tableCell}>{faq.question}</TableCell>
                   <TableCell sx={tableCss.tableCell}>{faq.answer}</TableCell>
                   <TableCell sx={tableCss.tableCell}>
-                    <Select sx={{height:'40px',width:'120px'}}
+                    <Select
+                      sx={{ height: '40px', width: '120px' }}
                       value={faq.status}
                       onChange={(e) => {
                         onStatusChange(faq.id, e.target.value as FaqStatus);
@@ -187,20 +188,24 @@ export default function FaqTable({
           </TableBody>
         </Table>
       </Box>
-      <Divider />
-      <TablePagination
-        rowsPerPageOptions={[5, 10, 25]}
-        component="div"
-        count={totalEntries}
-        rowsPerPage={rowsPerPage}
-        page={page}
-        onPageChange={(event, newPage) => {
-          onPageChange(newPage);
-        }}
-        onRowsPerPageChange={(event) => {
-          onRowsPerPageChange(parseInt(event.target.value, 10));
-        }}
-      />
+      {faqs.length > 0 && (
+        <>
+          <Divider />
+          <TablePagination
+            rowsPerPageOptions={[5, 10, 25]}
+            component="div"
+            count={totalEntries}
+            rowsPerPage={rowsPerPage}
+            page={page}
+            onPageChange={(event, newPage) => {
+              onPageChange(newPage);
+            }}
+            onRowsPerPageChange={(event) => {
+              onRowsPerPageChange(parseInt(event.target.value, 10));
+            }}
+          />
+        </>
+      )}
     </Card>
   );
 }

@@ -158,7 +158,11 @@ export default function ServiceForm(): React.JSX.Element {
   return (
     <Box component="form" onSubmit={handleSubmit(onSubmit)}>
       <Card>
-        <CardHeader title={id ? 'Edit Service' : 'Create Service'} subheader="Fill in the Service details" />
+        <CardHeader
+          style={{ fontFamily: '"Audiowide", sans-serif' }}
+          title={id ? 'Edit Service' : 'Create Service'}
+          subheader="Fill in the Service details"
+        />
         <Divider />
         <CardContent>
           <Grid container spacing={2}>

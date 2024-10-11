@@ -247,17 +247,17 @@ const SessionPreview: React.FC<SessionNotesFormProps> = ({
         </Card>
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose} color="secondary">
+        <Button onClick={onClose} color="secondary" className="common-button">
           Cancel
         </Button>
-        <Button color="primary" onClick={openRescheduleDialog}>
+        <Button onClick={openRescheduleDialog} className="common-button">
           Reschedule Session
         </Button>
-        <Button color="primary" onClick={openNotesDialog}>
+        <Button onClick={openNotesDialog} className="common-button">
           Update Notes
         </Button>
         <Button
-          color="primary"
+          className="common-button"
           onClick={() => {
             handleStatusChange(String(sessionObj.id), BOOKING_STATUS.CANCELED);
           }}

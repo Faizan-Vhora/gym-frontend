@@ -113,7 +113,7 @@ export function ChangePasswordForm(): React.JSX.Element {
   return (
     <Box component="form" onSubmit={handleSubmit(onSubmit)}>
       <Card>
-        <CardHeader title="Change Password" />
+        <CardHeader style={{ fontFamily: '"Audiowide", sans-serif' }} title="Change Password" />
         <Divider />
         <CardContent>
           <Stack spacing={3}>

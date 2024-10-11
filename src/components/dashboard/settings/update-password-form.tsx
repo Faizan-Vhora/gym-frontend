@@ -20,23 +20,25 @@ export function UpdatePasswordForm(): React.JSX.Element {
       }}
     >
       <Card>
-        <CardHeader subheader="Update password" title="Password" />
+        <CardHeader style={{ fontFamily: '"Audiowide", sans-serif' }} subheader="Update password" title="Password" />
         <Divider />
         <CardContent>
           <Stack spacing={3} sx={{ maxWidth: 'sm' }}>
             <FormControl fullWidth>
-              <InputLabel>Password</InputLabel>
+              <InputLabel style={{ fontFamily: '"Audiowide", sans-serif' }}>Password</InputLabel>
               <OutlinedInput label="Password" name="password" type="password" />
             </FormControl>
             <FormControl fullWidth>
-              <InputLabel>Confirm password</InputLabel>
+              <InputLabel style={{ fontFamily: '"Audiowide", sans-serif' }}>Confirm password</InputLabel>
               <OutlinedInput label="Confirm password" name="confirmPassword" type="password" />
             </FormControl>
           </Stack>
         </CardContent>
         <Divider />
         <CardActions sx={{ justifyContent: 'flex-end' }}>
-          <Button variant="contained">Update</Button>
+          <Button variant="contained" style={{ fontFamily: '"Audiowide", sans-serif' }}>
+            Update
+          </Button>
         </CardActions>
       </Card>
     </form>

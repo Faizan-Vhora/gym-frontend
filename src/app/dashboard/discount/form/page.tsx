@@ -238,7 +238,10 @@ export default function DiscountFormPage(): React.JSX.Element {
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <Card>
-        <CardHeader title={discountId ? 'Edit Discount' : 'Create Discount'} />
+        <CardHeader
+          style={{ fontFamily: '"Audiowide", sans-serif' }}
+          title={discountId ? 'Edit Discount' : 'Create Discount'}
+        />
         <Divider />
         <CardContent>
           <Grid container spacing={3}>

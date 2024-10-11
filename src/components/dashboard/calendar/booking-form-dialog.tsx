@@ -461,7 +461,7 @@ export function BookingFormDialog({
             trainer: formValues.trainerId,
             customer: formValues.customerId,
             bookingType: bookingType,
-            startDate:  bookingType === BOOKING_TYPE.WEEKLY ? bookingStartDate : bookingDate,
+            startDate: bookingType === BOOKING_TYPE.WEEKLY ? bookingStartDate : bookingDate,
             endDate: bookingType === BOOKING_TYPE.WEEKLY ? bookingEndDate : bookingDate,
             trainerRatePerHour: trainerRatePerHour,
             weekdays: weekdaysList,
@@ -473,7 +473,6 @@ export function BookingFormDialog({
             totalAmount: bookingDetails?.bookingAmount || 0,
             discount: bookingDetails?.discountAmount || 0,
             netTotalAmount: bookingDetails?.netTotalAmount || 0,
-
           },
           sessions: selectedBookingSlots,
         };
@@ -504,7 +503,7 @@ export function BookingFormDialog({
       selectedCustomer,
       bookingDetails,
       selectedBookingSlots,
-      onCreate
+      onCreate,
     ]
   );
 
@@ -530,7 +529,7 @@ export function BookingFormDialog({
 
   React.useEffect(() => {
     const trainerRatePerHour = Number(selectedTrainer?.fees || 0);
-    const sessions =  convertSelectedSlotsToSessions(selectedSlots, trainerRatePerHour);
+    const sessions = convertSelectedSlotsToSessions(selectedSlots, trainerRatePerHour);
     setSelectedBookingSlots(sessions);
   }, [selectedSlots, selectedTrainer, selectedPromocode]);
 
@@ -860,7 +859,7 @@ export function BookingFormDialog({
                             helperText: errors.bookingEndDate?.message,
                           },
                         }}
-                        value={(bookingEndDate || field.value) ? dayjs(bookingEndDate||field.value) : dayjs()} // Default to null
+                        value={bookingEndDate || field.value ? dayjs(bookingEndDate || field.value) : dayjs()} // Default to null
                       />
                     )}
                   />
@@ -1074,13 +1073,13 @@ export function BookingFormDialog({
         </Stack>
 
         <Stack direction="row" spacing={1} sx={{ alignItems: 'center', justifyContent: 'flex-end', p: 2 }}>
-          <Button color="secondary" onClick={handlePreview}>
+          <Button color="secondary" onClick={handlePreview} className="common-button">
             Preview
           </Button>
-          <Button color="secondary" onClick={onClose}>
+          <Button color="secondary" onClick={onClose} className="common-button">
             Cancel
           </Button>
-          <Button type="submit" variant="contained" disabled={loading}>
+          <Button type="submit" variant="contained" disabled={loading} className="common-button">
             Confirm
           </Button>
         </Stack>

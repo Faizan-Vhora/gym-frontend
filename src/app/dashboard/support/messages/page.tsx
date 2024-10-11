@@ -96,10 +96,20 @@ export default function SupportForm(): React.JSX.Element {
     setLoading(true);
     const qParams = { pagination: false };
     try {
+<<<<<<< Updated upstream
       const response = await axiosInstance.get<{ data: SupportTicketMessageEntry[] }>(`/support-ticket/${id}/message`, {
         params: qParams,
       });
       setTicketMessages(response.data.data);
+=======
+      const response = await axiosInstance.get<{ data: { items: SupportEntry[]; meta: { totalItems: number } } }>(
+        `/support-ticket/${id}/message`,
+        {
+          params: qParams,
+        }
+      );
+      setTicketMessages(response.data.data.items);
+>>>>>>> Stashed changes
     } catch (err: unknown) {
       const errorMessage = err instanceof Error ? err.message : 'An unexpected error occurred';
       toast.error(errorMessage);
@@ -146,6 +156,7 @@ export default function SupportForm(): React.JSX.Element {
     <Box component="form" onSubmit={handleSubmit(onSubmit)} sx={{ p: 3 }}>
       <Card>
         <CardHeader
+          style={{ fontFamily: '"Audiowide", sans-serif' }}
           sx={{ padding: '20px' }}
           title={`Support Ticket #${supportTicket?.id} - ${supportTicket?.user?.fullName}
             ${formatUtcToLocalDatetime(supportTicket?.createdAt || null)}`}
@@ -162,7 +173,7 @@ export default function SupportForm(): React.JSX.Element {
           {/* Old Messages in Card */}
           {supportTicketMessages?.length ? (
             <Card sx={{ mb: 5, height: '450px', overflowY: 'auto' }}>
-              <CardHeader title="Messages" />
+              <CardHeader style={{ fontFamily: '"Audiowide", sans-serif' }} title="Messages" />
               <CardContent>
                 <Grid container direction="column">
                   {supportTicketMessages.map((tMessage, index) => (
@@ -188,7 +199,11 @@ export default function SupportForm(): React.JSX.Element {
 
           {/* New Message Input */}
           <Card>
-            <CardHeader sx={{ padding: '20px 20px 0px 26px' }} title="Reply" />
+            <CardHeader
+              style={{ fontFamily: '"Audiowide", sans-serif' }}
+              sx={{ padding: '20px 20px 0px 26px' }}
+              title="Reply"
+            />
             <CardContent>
               <Grid container spacing={2}>
                 <Grid item xs={12} sx={{ paddingTop: '0px' }}>

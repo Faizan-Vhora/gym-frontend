@@ -63,7 +63,9 @@ export default function CmsPage(): React.JSX.Element {
     <Stack spacing={3}>
       <Stack direction="row" spacing={3}>
         <Stack spacing={1} sx={{ flex: '1 1 auto' }}>
-          <Typography variant="h4">CMS Management</Typography>
+          <Typography style={{ fontFamily: '"Audiowide", sans-serif' }} variant="h4">
+            CMS Management
+          </Typography>
         </Stack>
       </Stack>
       {loading ? (

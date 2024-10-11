@@ -37,7 +37,7 @@ export function LatestOrders({ orders = [] }: LatestOrdersProps): React.JSX.Elem
 
   return (
     <Card sx={{ height: '520px', overflowY: 'scroll' }}>
-      <CardHeader title="Latest Booking" />
+      <CardHeader style={{ fontFamily: '"Audiowide", sans-serif' }} title="Latest Booking" />
       <Divider />
       <Box sx={{ overflowX: 'auto' }}>
         <Table sx={{ minWidth: 800 }}>
@@ -62,7 +62,7 @@ export function LatestOrders({ orders = [] }: LatestOrdersProps): React.JSX.Elem
                   }}
                   sx={{ cursor: 'pointer' }}
                 >
-                  <TableCell>{order.id}</TableCell>
+                  <TableCell>#{order.id}</TableCell>
                   <TableCell>{order.name}</TableCell>
                   <TableCell>{dayjs(order.createdAt).format('MMM D, YYYY')}</TableCell>
                   <TableCell>

@@ -4,6 +4,8 @@ import * as React from 'react';
 import { useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { SUPPORT_TICKET_STATUS_OPTIONS, SUPPORT_TICKET_USER_TYPE_OPTIONS, USER_TYPE } from '@/utils/constant';
+import { CustomLoader } from '@/utils/loader';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Alert,
@@ -25,12 +27,11 @@ import {
 import { useForm } from 'react-hook-form';
 import { toast, ToastContainer } from 'react-toastify';
 import { z } from 'zod';
+
 import axiosInstance from '@/lib/axios';
-import { Trainer } from '@/components/dashboard/trainer/trainer-table';
 import { Customer } from '@/components/dashboard/customer/customers-table';
 import { SupportEntry } from '@/components/dashboard/support/support-table';
-import { CustomLoader } from '@/utils/loader';
-import { SUPPORT_TICKET_STATUS_OPTIONS, SUPPORT_TICKET_USER_TYPE_OPTIONS, USER_TYPE } from '@/utils/constant';
+import { Trainer } from '@/components/dashboard/trainer/trainer-table';
 
 // Dynamically import the CKEditor
 const CustomEditor = dynamic(() => import('@/components/ckeditor'), { ssr: false });
@@ -120,9 +121,10 @@ export default function SupportForm(): React.JSX.Element {
   }, [supportTicket, setValue]);
 
   useEffect(() => {
-    const updatedUserOptions = userType === String(USER_TYPE.MEMBER)
-      ? customers.map(customer => ({ value: customer.id.toString(), label: customer.fullName }))
-      : trainers.map(trainer => ({ value: trainer.id.toString(), label: trainer.fullName }));
+    const updatedUserOptions =
+      userType === String(USER_TYPE.MEMBER)
+        ? customers.map((customer) => ({ value: customer.id.toString(), label: customer.fullName }))
+        : trainers.map((trainer) => ({ value: trainer.id.toString(), label: trainer.fullName }));
 
     setUserOptions(updatedUserOptions);
     if (!id) {
@@ -198,6 +200,7 @@ export default function SupportForm(): React.JSX.Element {
     <Box component="form" onSubmit={handleSubmit(onSubmit)} sx={{ p: 3 }}>
       <Card>
         <CardHeader
+          style={{ fontFamily: '"Audiowide", sans-serif' }}
           title={id ? 'Edit Support Ticket' : 'Create Support Ticket'}
           sx={{ backgroundColor: '#f5f5f5', py: 2 }}
         />
@@ -210,7 +213,9 @@ export default function SupportForm(): React.JSX.Element {
                 <Select
                   {...register('userType')}
                   value={userType}
-                  onChange={(e) => {setValue('userType', e.target.value)} }
+                  onChange={(e) => {
+                    setValue('userType', e.target.value);
+                  }}
                   label="User Type"
                 >
                   {SUPPORT_TICKET_USER_TYPE_OPTIONS.map((option) => (
@@ -233,7 +238,9 @@ export default function SupportForm(): React.JSX.Element {
                 <Select
                   {...register('user')}
                   value={user}
-                  onChange={(e) => {setValue('user', e.target.value)} }
+                  onChange={(e) => {
+                    setValue('user', e.target.value);
+                  }}
                   label="User"
                 >
                   {userOptions.map((option) => (
@@ -256,7 +263,9 @@ export default function SupportForm(): React.JSX.Element {
                 <Select
                   {...register('status')}
                   value={status}
-                  onChange={(e) =>  {setValue('status', e.target.value)}}
+                  onChange={(e) => {
+                    setValue('status', e.target.value);
+                  }}
                   label="Status"
                 >
                   {SUPPORT_TICKET_STATUS_OPTIONS.map((option) => (
@@ -290,7 +299,9 @@ export default function SupportForm(): React.JSX.Element {
               <FormControl fullWidth required>
                 <CustomEditor
                   data={description}
-                  onChange={(data) => {setTicketDescription(data)}}
+                  onChange={(data) => {
+                    setTicketDescription(data);
+                  }}
                 />
               </FormControl>
             </Grid>

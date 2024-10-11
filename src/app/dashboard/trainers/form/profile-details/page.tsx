@@ -163,21 +163,23 @@ const TrainerAdditionalForm: React.FC = () => {
                     padding: '8px', // Optional: Adds some padding inside the box
                   }}
                 >
-                  <Stack spacing={1}>
-                    {expertiseList.map((expertise) => (
-                      <FormControlLabel
-                        key={expertise.id}
-                        control={
-                          <Checkbox
-                            value={expertise.id}
-                            checked={selectedExpertise.includes(expertise.id)}
-                            onChange={handleCheckboxChange}
-                          />
-                        }
-                        label={expertise.title}
-                      />
-                    ))}
-                  </Stack>
+                  {expertiseList.length > 0 && (
+                    <Stack spacing={1}>
+                      {expertiseList.map((expertise) => (
+                        <FormControlLabel
+                          key={expertise.id}
+                          control={
+                            <Checkbox
+                              value={expertise.id}
+                              checked={selectedExpertise.includes(expertise.id)}
+                              onChange={handleCheckboxChange}
+                            />
+                          }
+                          label={expertise.title}
+                        />
+                      ))}
+                    </Stack>
+                  )}
                 </Box>
               </FormControl>
             </Grid>

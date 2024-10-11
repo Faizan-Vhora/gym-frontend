@@ -305,7 +305,9 @@ const BookingPreviewDialog: React.FC<BookingPreviewDialogProps> = ({ isOpen, han
       <Divider />
       <Stack direction="row" spacing={2} sx={{ justifyContent: 'center', p: 2 }}></Stack>
       <Stack direction="row" spacing={1} sx={{ alignItems: 'center', justifyContent: 'flex-end', p: 2 }}>
-        <Button onClick={handleClose}>Close</Button>
+        <Button onClick={handleClose} className="common-button">
+          Close
+        </Button>
       </Stack>
     </Dialog>
   );

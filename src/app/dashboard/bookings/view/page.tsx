@@ -4,8 +4,9 @@ import * as React from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Box, Card, CardHeader, Divider, Stack, Tab, Tabs } from '@mui/material';
 import { ToastContainer } from 'react-toastify';
-import BookingSessionsPage from './booking-sessions/page';
+
 import BookingDetailsPage from './booking-details/page';
+import BookingSessionsPage from './booking-sessions/page';
 
 export default function Page(): React.JSX.Element {
   const searchParams = useSearchParams();
@@ -20,26 +21,21 @@ export default function Page(): React.JSX.Element {
   return (
     <Box>
       <Card>
-        <CardHeader title={`View Booking | ${id}`} />
+        <CardHeader style={{ fontFamily: '"Audiowide", sans-serif' }} title={`View Booking | #${id}`} />
         {id && (
           <Stack sx={{ marginLeft: '20px' }}>
             <Divider />
             <Tabs value={tab} onChange={handleTabChange} aria-label="booking details tabs">
-              <Tab label="Booking Details" />
-              <Tab label="Booking Sessions" />
+              <Tab label="Booking Details" style={{ fontFamily: '"Audiowide", sans-serif' }} />
+              <Tab label="Booking Sessions" style={{ fontFamily: '"Audiowide", sans-serif' }} />
             </Tabs>
           </Stack>
         )}
         <Divider />
 
-        {tab === 0 && (
-         <BookingDetailsPage/>
-        )}
+        {tab === 0 && <BookingDetailsPage />}
 
-        {tab === 1 && (
-         <BookingSessionsPage/>
-        )}
-
+        {tab === 1 && <BookingSessionsPage />}
       </Card>
       <ToastContainer />
     </Box>

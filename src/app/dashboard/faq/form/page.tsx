@@ -135,7 +135,7 @@ export default function FaqForm(): React.JSX.Element {
   return (
     <Box component="form" onSubmit={handleSubmit(onSubmit)}>
       <Card>
-        <CardHeader title={id ? 'Edit FAQ' : 'Create FAQ'} />
+        <CardHeader style={{ fontFamily: '"Audiowide", sans-serif' }} title={id ? 'Edit FAQ' : 'Create FAQ'} />
         <Divider />
         <CardContent>
           <Grid container spacing={3}>

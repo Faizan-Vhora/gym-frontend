@@ -18,10 +18,12 @@ export function TotalProfit({ value, sx }: TotalProfitProps): React.JSX.Element 
       <CardContent>
         <Stack direction="row" sx={{ alignItems: 'flex-start', justifyContent: 'space-between' }} spacing={3}>
           <Stack spacing={1}>
-            <Typography color="text.secondary" variant="overline">
+            <Typography style={{ fontFamily: '"Audiowide", sans-serif' }} color="text.secondary" variant="overline">
               Total Payable
             </Typography>
-            <Typography variant="h4">{value}</Typography>
+            <Typography style={{ fontFamily: '"Audiowide", sans-serif' }} variant="h4">
+              {value}
+            </Typography>
           </Stack>
           <Avatar sx={{ backgroundColor: 'var(--mui-palette-primary-main)', height: '56px', width: '56px' }}>
             <ReceiptIcon fontSize="var(--icon-fontSize-lg)" />

@@ -206,16 +206,20 @@ export function DiscountTable({
             </TableBody>
           </Table>
         </Box>
-        <Divider />
-        <TablePagination
-          component="div"
-          count={totalEntries}
-          page={page}
-          onPageChange={handleChangePage}
-          rowsPerPage={rowsPerPage}
-          onRowsPerPageChange={handleChangeRowsPerPage}
-          rowsPerPageOptions={[5, 10, 25]}
-        />
+        {discounts.length > 0 && (
+          <>
+            <Divider />
+            <TablePagination
+              component="div"
+              count={totalEntries}
+              page={page}
+              onPageChange={handleChangePage}
+              rowsPerPage={rowsPerPage}
+              onRowsPerPageChange={handleChangeRowsPerPage}
+              rowsPerPageOptions={[5, 10, 25]}
+            />
+          </>
+        )}
       </Card>
 
       {/* Dialog for image preview */}

@@ -22,7 +22,11 @@ export function Notifications(): React.JSX.Element {
       }}
     >
       <Card>
-        <CardHeader subheader="Manage the notifications" title="Notifications" />
+        <CardHeader
+          style={{ fontFamily: '"Audiowide", sans-serif' }}
+          subheader="Manage the notifications"
+          title="Notifications"
+        />
         <Divider />
         <CardContent>
           <Grid container spacing={6} wrap="wrap">

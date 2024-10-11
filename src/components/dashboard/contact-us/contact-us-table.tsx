@@ -111,7 +111,8 @@ export function ContactUsTable({
                     </TableCell>
                     <TableCell sx={tableCss.tableCell}>{typeDictionary[entry.type]}</TableCell>
                     <TableCell sx={tableCss.tableCell}>
-                      <Select sx={{height:'40px'}}
+                      <Select
+                        sx={{ height: '40px' }}
                         value={entry.status}
                         onChange={(e) => {
                           handleStatusChange(entry.id, e.target.value as ContactUsEntry['status']);
@@ -140,21 +141,24 @@ export function ContactUsTable({
             </TableBody>
           </Table>
         </Box>
-        <Divider />
-        <TablePagination
-          component="div"
-          count={totalEntries}
-          page={page}
-          rowsPerPage={rowsPerPage}
-          onPageChange={(e, newPage) => {
-            onPageChange(newPage);
-          }}
-          onRowsPerPageChange={(e) => {
-            onRowsPerPageChange(parseInt(e.target.value, 10));
-          }}
-          rowsPerPageOptions={[5, 10, 25]}
-        />
-
+        {entries.length > 0 && (
+          <>
+            <Divider />
+            <TablePagination
+              component="div"
+              count={totalEntries}
+              page={page}
+              rowsPerPage={rowsPerPage}
+              onPageChange={(e, newPage) => {
+                onPageChange(newPage);
+              }}
+              onRowsPerPageChange={(e) => {
+                onRowsPerPageChange(parseInt(e.target.value, 10));
+              }}
+              rowsPerPageOptions={[5, 10, 25]}
+            />
+          </>
+        )}
         {selectedEntry ? (
           <Modal open onClose={handleClose}>
             <Box

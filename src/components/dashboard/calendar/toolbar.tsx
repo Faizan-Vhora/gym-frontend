@@ -341,6 +341,7 @@ export function Toolbar({
           {/* Add Booking Button */}
           <Button
             onClick={onAdd}
+            className="common-button"
             startIcon={<PlusIcon />}
             sx={{ width: { xs: '100%', md: 'auto' } }}
             variant="contained"

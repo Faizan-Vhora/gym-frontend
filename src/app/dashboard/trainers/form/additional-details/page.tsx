@@ -204,7 +204,7 @@ export default function TrainerEditForm(): React.JSX.Element {
   return (
     <Box component="form" onSubmit={handleSubmit((data) => onSubmit(data, redirectTo))}>
       <Card>
-        <CardHeader title="Additional Details" />
+        <CardHeader style={{ fontFamily: '"Audiowide", sans-serif' }} title="Additional Details" />
         <Divider />
         <CardContent>
           <Stack spacing={3}>

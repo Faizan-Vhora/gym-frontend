@@ -102,7 +102,10 @@ export default function ExpertiseForm(): React.JSX.Element {
 
   return (
     <Card>
-      <CardHeader title={expertiseId ? 'Edit Expertise' : 'Create Expertise'} />
+      <CardHeader
+        style={{ fontFamily: '"Audiowide", sans-serif' }}
+        title={expertiseId ? 'Edit Expertise' : 'Create Expertise'}
+      />
       <Divider />
       <CardContent>
         <form onSubmit={handleSubmit(onSubmit)}>

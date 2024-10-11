@@ -431,14 +431,17 @@ export default function CustomerEditForm(): React.JSX.Element {
   return (
     <Box component="form" onSubmit={handleSubmit((data) => onSubmit(data, redirectTo))}>
       <Card>
-        <CardHeader title={id ? `Edit Member |  ${customer?.memberId || ''}` : 'Create Member'} />
+        <CardHeader
+          style={{ fontFamily: '"Audiowide", sans-serif' }}
+          title={id ? `Edit Member |  ${customer?.memberId || ''}` : 'Create Member'}
+        />
         {id && (
           <Stack sx={{ marginLeft: '20px' }}>
             <Divider />
             <Tabs value={tab} onChange={handleTabChange} aria-label="member form tabs">
-              <Tab label="Basic Info" />
-              <Tab label="Membership" />
-              <Tab label="Check In History" />
+              <Tab label="Basic Info" style={{ fontFamily: '"Audiowide", sans-serif' }} />
+              <Tab label="Membership" style={{ fontFamily: '"Audiowide", sans-serif' }} />
+              <Tab label="Check In History" style={{ fontFamily: '"Audiowide", sans-serif' }} />
             </Tabs>
           </Stack>
         )}
@@ -747,7 +750,7 @@ export default function CustomerEditForm(): React.JSX.Element {
               )}
 
               <Card>
-                <CardHeader title="Available plans" />
+                <CardHeader style={{ fontFamily: '"Audiowide", sans-serif' }} title="Available plans" />
                 <Grid container>
                   <Grid container spacing={2} justifyContent="center" sx={{ margin: '10px' }}>
                     {plans.length > 0 ? (

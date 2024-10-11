@@ -333,18 +333,18 @@ export default function TrainerEditForm(): React.JSX.Element {
   return (
     <Box>
       <Card>
-        <CardHeader title={id ? 'Edit Trainer' : 'Create Trainer'} />
+        <CardHeader style={{ fontFamily: '"Audiowide", sans-serif' }} title={id ? 'Edit Trainer' : 'Create Trainer'} />
         <Divider />
         {id && (
           <Stack sx={{ marginLeft: '20px' }}>
             <Divider />
             <Tabs value={tab} onChange={handleTabChange} aria-label="Addiitional datials form tabs">
-              <Tab label="Basic Info" />
-              <Tab label="Profile Details" />
-              <Tab label="Banner Images" />
-              <Tab label="Check In History" />
-              <Tab label="Trainer Availability" />
-              <Tab label="Trainer Block Days" />
+              <Tab label="Basic Info" style={{ fontFamily: '"Audiowide", sans-serif' }} />
+              <Tab label="Profile Details" style={{ fontFamily: '"Audiowide", sans-serif' }} />
+              <Tab label="Banner Images" style={{ fontFamily: '"Audiowide", sans-serif' }} />
+              <Tab label="Check In History" style={{ fontFamily: '"Audiowide", sans-serif' }} />
+              <Tab label="Trainer Availability" style={{ fontFamily: '"Audiowide", sans-serif' }} />
+              <Tab label="Trainer Block Days" style={{ fontFamily: '"Audiowide", sans-serif' }} />
             </Tabs>
           </Stack>
         )}

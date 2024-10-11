@@ -177,16 +177,20 @@ export function CheckInTable({
           </TableBody>
         </Table>
       </Box>
-      <Divider />
-      <TablePagination
-        component="div"
-        count={count}
-        page={page}
-        rowsPerPage={rowsPerPage}
-        onPageChange={onPageChange}
-        onRowsPerPageChange={onRowsPerPageChange}
-        rowsPerPageOptions={[5, 10, 25]}
-      />
+      {entries.length > 0 && (
+        <>
+          <Divider />
+          <TablePagination
+            component="div"
+            count={count}
+            page={page}
+            rowsPerPage={rowsPerPage}
+            onPageChange={onPageChange}
+            onRowsPerPageChange={onRowsPerPageChange}
+            rowsPerPageOptions={[5, 10, 25]}
+          />
+        </>
+      )}
     </Card>
   );
 }

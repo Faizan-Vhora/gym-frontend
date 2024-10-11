@@ -168,21 +168,25 @@ export function TrainersTable({
           </TableBody>
         </Table>
       </Box>
-      <Divider />
-      <TablePagination
-        component="div"
-        count={count}
-        page={page}
-        rowsPerPage={rowsPerPage}
-        onPageChange={(event, newPage) => {
-          onPageChange(event, newPage);
-        }}
-        onRowsPerPageChange={(event) => {
-          const inputEvent = event as React.ChangeEvent<HTMLInputElement>;
-          onRowsPerPageChange(inputEvent);
-        }}
-        rowsPerPageOptions={[5, 10, 25]}
-      />
+      {rows.length > 0 && (
+        <>
+          <Divider />
+          <TablePagination
+            component="div"
+            count={count}
+            page={page}
+            rowsPerPage={rowsPerPage}
+            onPageChange={(event, newPage) => {
+              onPageChange(event, newPage);
+            }}
+            onRowsPerPageChange={(event) => {
+              const inputEvent = event as React.ChangeEvent<HTMLInputElement>;
+              onRowsPerPageChange(inputEvent);
+            }}
+            rowsPerPageOptions={[5, 10, 25]}
+          />
+        </>
+      )}
     </Card>
   );
 }

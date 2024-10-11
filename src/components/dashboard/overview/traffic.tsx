@@ -30,7 +30,7 @@ export function Traffic({ chartSeries, labels, sx }: TrafficProps): React.JSX.El
 
   return (
     <Card sx={sx}>
-      <CardHeader title="Subscriptions for month" />
+      <CardHeader style={{ fontFamily: '"Audiowide", sans-serif' }} title="Subscriptions for month" />
       <CardContent>
         <Stack spacing={2}>
           <Chart height={300} options={chartOptions} series={chartSeries} type="donut" width="100%" />
@@ -42,9 +42,15 @@ export function Traffic({ chartSeries, labels, sx }: TrafficProps): React.JSX.El
               return (
                 <Stack key={label} spacing={1} sx={{ alignItems: 'center' }}>
                   {Icon ? <Icon fontSize="var(--icon-fontSize-lg)" /> : null}
-                  <Typography variant="h6">{label}</Typography>
+                  <Typography style={{ fontFamily: '"Audiowide", sans-serif' }} variant="h6">
+                    {label}
+                  </Typography>
                   <Tooltip title={`${item}%`} arrow>
-                    <Typography color="text.secondary" variant="subtitle2">
+                    <Typography
+                      style={{ fontFamily: '"Audiowide", sans-serif' }}
+                      color="text.secondary"
+                      variant="subtitle2"
+                    >
                       {item}%
                     </Typography>
                   </Tooltip>

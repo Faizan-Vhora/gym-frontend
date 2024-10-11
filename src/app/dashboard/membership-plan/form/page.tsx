@@ -138,7 +138,10 @@ export default function MembershipPlanEditForm(): React.JSX.Element {
   return (
     <Box component="form" onSubmit={handleSubmit(onSubmit)}>
       <Card>
-        <CardHeader title={id ? 'Edit Membership Plan' : 'Create Membership Plan'} />
+        <CardHeader
+          style={{ fontFamily: '"Audiowide", sans-serif' }}
+          title={id ? 'Edit Membership Plan' : 'Create Membership Plan'}
+        />
         <Divider />
         <CardContent>
           <Stack spacing={3}>
