@@ -38,6 +38,16 @@ export interface SupportEntry {
   createdBy: { fullName: string; email: string };
 }
 
+export interface SupportTicketMessageEntry {
+  id: number;
+  message: string;
+  createdAt: Date | string | null;
+  createdBy: { fullName: string; email: string };
+  updatedAt: Date | string | null;
+  updatedBy: { fullName: string; email: string };
+}
+
+
 interface SupportTableProps {
   entries: SupportEntry[];
   page: number;

@@ -25,7 +25,7 @@ import { toast, ToastContainer } from 'react-toastify';
 import { z } from 'zod';
 
 import axiosInstance from '@/lib/axios';
-import type { SupportEntry } from '@/components/dashboard/support/support-table';
+import type { SupportEntry, SupportTicketMessageEntry } from '@/components/dashboard/support/support-table';
 
 // Dynamically import the CKEditor
 const CustomEditor = dynamic(() => import('@/components/ckeditor'), { ssr: false });
@@ -47,7 +47,7 @@ export default function SupportForm(): React.JSX.Element {
   const router = useRouter();
 
   const [supportTicket, setSupportTicket] = useState<SupportEntry | null>(null);
-  const [supportTicketMessages, setTicketMessages] = useState<SupportEntry[]>([]);
+  const [supportTicketMessages, setTicketMessages] = useState<SupportTicketMessageEntry[]>([]);
 
   const {
     handleSubmit,
@@ -69,6 +69,7 @@ export default function SupportForm(): React.JSX.Element {
     if (messagesEndRef.current) {
       messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
     }
+    console.log("supportTicketMessages: ", supportTicketMessages)
   }, [supportTicketMessages]);
 
   useEffect(() => {
@@ -95,10 +96,10 @@ export default function SupportForm(): React.JSX.Element {
     setLoading(true);
     const qParams = { pagination: false };
     try {
-      const response = await axiosInstance.get<{ data: { items: SupportEntry[]; meta: { totalItems: number } } }>(`/support-ticket/${id}/message`, {
+      const response = await axiosInstance.get<{ data: SupportTicketMessageEntry[] }>(`/support-ticket/${id}/message`, {
         params: qParams,
       });
-      setTicketMessages(response.data.data.items);
+      setTicketMessages(response.data.data);
     } catch (err: unknown) {
       const errorMessage = err instanceof Error ? err.message : 'An unexpected error occurred';
       toast.error(errorMessage);
