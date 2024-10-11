@@ -1,5 +1,5 @@
 import React from 'react';
-import { convertTo12HourFormat } from '@/utils/date-utils';
+import { formatTo12HourFormat } from '@/utils/date-utils';
 import {
   Box,
   Card,
@@ -98,13 +98,13 @@ export function CheckInTableView({
                     <IconButton>
                       <Clock />
                     </IconButton>
-                    {convertTo12HourFormat(entry.entryInTime)}
+                    {formatTo12HourFormat(entry.entryInTime)}
                   </TableCell>
                   <TableCell>
                     <IconButton>
                       <Clock />
                     </IconButton>
-                    {entry.entryOutTime ? convertTo12HourFormat(entry.entryOutTime) : '-'}
+                    {entry.entryOutTime ? formatTo12HourFormat(entry.entryOutTime) : '-'}
                   </TableCell>
                   <TableCell>
                     <Chip

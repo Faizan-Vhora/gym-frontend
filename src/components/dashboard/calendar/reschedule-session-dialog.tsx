@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { DateFormat } from '@/utils/constant';
-import { convertTo12HourFormat, formatDate } from '@/utils/date-utils';
+import { formatDate, formatTo12HourFormat } from '@/utils/date-utils';
 import {
   Autocomplete,
   Button,
@@ -177,7 +177,7 @@ const SlotRescheduleForm: React.FC<SlotRescheduleFormProps> = ({ sessionObj, ope
                             renderOption={(props, option, { selected }) => (
                               <li {...props} style={{ opacity: option.isAvailable ? 1 : 0.5 }}>
                                 <Checkbox checked={selected} disabled={!option.isAvailable} />
-                                {`${convertTo12HourFormat(option.startTime)} - ${convertTo12HourFormat(option.endTime)}`}
+                                {`${formatTo12HourFormat(option.startTime)} - ${formatTo12HourFormat(option.endTime)}`}
                                 {!option.isAvailable}
                               </li>
                             )}

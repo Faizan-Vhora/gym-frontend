@@ -1,7 +1,7 @@
 import React from 'react';
 import { BOOKING_TYPE_DETAILS, WEEKDAY_NAME } from '@/utils/constant';
 import { formatAmount, formatHours } from '@/utils/converter';
-import { convertTo12HourFormat, formatDate } from '@/utils/date-utils';
+import { formatDate, formatTo12HourFormat } from '@/utils/date-utils';
 import {
   Avatar,
   Box,
@@ -23,7 +23,8 @@ import {
   Typography,
 } from '@mui/material';
 import { Barbell, CurrencyCircleDollar, Envelope, Phone } from '@phosphor-icons/react';
-import { SlotI, SelectedSlotsI, BookingPreviewDialogProps } from './types';
+
+import { BookingPreviewDialogProps, SelectedSlotsI, SlotI } from './types';
 
 // Define the props interface
 
@@ -33,7 +34,6 @@ interface WeekdaySlot {
 }
 
 interface WeeklySlotsPreviewData extends Record<string, WeekdaySlot[]> {}
-
 
 const BookingPreviewDialog: React.FC<BookingPreviewDialogProps> = ({ isOpen, handleClose, bookingDetails }) => {
   const [weeklySlotsPreviewData, setWeeklySlotsPreviewData] = React.useState<WeeklySlotsPreviewData>({});
@@ -135,7 +135,7 @@ const BookingPreviewDialog: React.FC<BookingPreviewDialogProps> = ({ isOpen, han
                     <Grid container>
                       <Grid item md={4} alignContent={'center'}>
                         <Avatar
-                          src={bookingDetails.selectedCustomer.profileImageUrl || ""}
+                          src={bookingDetails.selectedCustomer.profileImageUrl || ''}
                           sx={{ height: '56px', width: '56px' }}
                         />
                       </Grid>
@@ -181,7 +181,7 @@ const BookingPreviewDialog: React.FC<BookingPreviewDialogProps> = ({ isOpen, han
                     <Grid container>
                       <Grid item md={4} alignContent={'center'}>
                         <Avatar
-                          src={bookingDetails?.selectedTrainer?.profileImageUrl || '' }
+                          src={bookingDetails?.selectedTrainer?.profileImageUrl || ''}
                           sx={{ height: '56px', width: '56px' }}
                         />
                       </Grid>
@@ -236,7 +236,8 @@ const BookingPreviewDialog: React.FC<BookingPreviewDialogProps> = ({ isOpen, han
                               </Typography>
                               {weekSlot.slots.map((slot) => (
                                 <Typography key={`${weekSlot.date}-${slot.startTime}`} variant="body2">
-                                  {slot.startTime && convertTo12HourFormat(slot.startTime)} - {slot.endTime && convertTo12HourFormat(slot.endTime)}
+                                  {slot.startTime && formatTo12HourFormat(slot.startTime)} -{' '}
+                                  {slot.endTime && formatTo12HourFormat(slot.endTime)}
                                 </Typography>
                               ))}
                             </div>
