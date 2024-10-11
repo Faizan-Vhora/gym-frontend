@@ -152,6 +152,7 @@ export function BookingFormDialog({
   const [availableWeekDayOptions, setAvailableWeekDayOptions] = React.useState<WeeklyDayOptionI[]>([]);
   const [selectedDays, setSelectedDays] = React.useState<number[]>([dayjs().day()]); // Default to today's weekday
   const [selectedSlots, setSelectedSlots] = React.useState<SelectedSlotsI>({});
+  const [selectedBookingSlots, setSelectedBookingSlots] = React.useState<Sessions[]>([]);
   const [paymentType, setPaymentType] = React.useState<string>(BOOKING_PAYMENT_TYPE.FULL); // Initialize with an empty string
   const [bookingAmount, setBookingAmount] = React.useState<number>(0);
   const [bookingHours, setBookingHours] = React.useState<number>(0);
@@ -448,12 +449,12 @@ export function BookingFormDialog({
         const trainerRatePerHour = Number(selectedTrainer.fees || 0);
         const weekdaysList = Object.keys(selectedSlots).join(',');
 
-        // Ensure convertSelectedSlotsToSessions is defined
-        if (typeof convertSelectedSlotsToSessions !== 'function') {
-          return;
-        }
+        // // Ensure convertSelectedSlotsToSessions is defined
+        // if (typeof convertSelectedSlotsToSessions !== 'function') {
+        //   return;
+        // }
 
-        const sessionsList = convertSelectedSlotsToSessions(selectedSlots, trainerRatePerHour);
+        // const sessionsList = convertSelectedSlotsToSessions(selectedSlots, trainerRatePerHour);
 
         const payload = {
           booking: {
@@ -463,17 +464,18 @@ export function BookingFormDialog({
             startDate: bookingStartDate,
             endDate: bookingEndDate,
             trainerRatePerHour: trainerRatePerHour,
-            bookingHours: bookingHours,
-            bookingAmount: bookingAmount,
             weekdays: weekdaysList,
-            recurrenceWeeks: 0,
-            totalAmount: bookingAmount,
-            discount: discountAmount,
-            netTotalAmount: netTotalAmount,
+            recurrenceWeeks: reOccuranceEnabled ? reOccuranceWeeks : 0,
             paymentType: paymentType,
             promocode: selectedPromocode?.id || null,
+            bookingHours: bookingDetails?.bookingHours || 0,
+            bookingAmount: bookingDetails?.bookingAmount || 0,
+            totalAmount: bookingDetails?.bookingAmount || 0,
+            discount: bookingDetails?.discountAmount || 0,
+            netTotalAmount: bookingDetails?.netTotalAmount || 0,
+
           },
-          sessions: sessionsList,
+          sessions: selectedBookingSlots,
         };
 
         // console.log('Payload: ', payload);
@@ -512,7 +514,8 @@ export function BookingFormDialog({
 
   React.useEffect(() => {
     const trainerRatePerHour = Number(selectedTrainer?.fees || 0);
-    convertSelectedSlotsToSessions(selectedSlots, trainerRatePerHour);
+    const sessions =  convertSelectedSlotsToSessions(selectedSlots, trainerRatePerHour);
+    setSelectedBookingSlots(sessions);
   }, [selectedSlots, selectedTrainer, selectedPromocode]);
 
   React.useEffect(() => {
@@ -798,6 +801,9 @@ export function BookingFormDialog({
                           if (selectedTrainer && startDateWeeklyOne) {
                             const startDateFormatted = dayjs(startDateWeeklyOne).format('YYYY-MM-DD');
                             setBookingStartDate(startDateFormatted);
+                            if (dayjs(bookingEndDate).isBefore(dayjs(startDateWeeklyOne))) {
+                              setBookingEndDate(startDateFormatted);
+                            }
                           }
                         }}
                         slotProps={{
@@ -822,6 +828,7 @@ export function BookingFormDialog({
                         disabled={!selectedTrainer}
                         format="MM-DD-YYYY"
                         label="End date"
+                        minDate={dayjs(bookingStartDate).isValid() ? dayjs(bookingStartDate) : undefined} // Ensure minDate is set
                         onChange={(date) => {
                           const selectedDate = date ? date.toDate() : null;
                           field.onChange(selectedDate);
@@ -837,7 +844,7 @@ export function BookingFormDialog({
                             helperText: errors.bookingEndDate?.message,
                           },
                         }}
-                        value={field.value ? dayjs(field.value) : dayjs()} // Default to today
+                        value={(bookingEndDate || field.value) ? dayjs(bookingEndDate||field.value) : dayjs()} // Default to null
                       />
                     )}
                   />
@@ -1039,7 +1046,7 @@ export function BookingFormDialog({
                 )}
               </Grid>
             ) : (
-              <></>
+              <Typography>No available promocodes</Typography>
             )}
           </Grid>
         </Stack>
