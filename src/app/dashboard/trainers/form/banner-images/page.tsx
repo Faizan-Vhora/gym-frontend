@@ -40,7 +40,7 @@ const ImageUploadCards = () => {
     imageId: string | number | null; // imageId can be a string, number, or null
   }
 
-  const defaultImage: ImageType = { url: null, imageId: null };
+  // const defaultImage: ImageType = { url: null, imageId: null };
 
   useEffect(() => {
     const fetchImages = async () => {
@@ -54,7 +54,7 @@ const ImageUploadCards = () => {
         // Fill remaining slots with null objects
         setImages([
           ...fetchedImages.slice(0, 5),
-          ...Array(Math.max(0, 5 - fetchedImages.length)).fill(defaultImage), // Ensure non-negative length
+          // ...Array(Math.max(0, 5 - fetchedImages.length)).fill(defaultImage), // Ensure non-negative length
         ]);
       } catch (error: unknown) {
         let errorMessage: string;
