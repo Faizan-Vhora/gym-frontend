@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
+import { CustomLoader } from '@/utils/loader';
 import { Button, Card, CardActions, CardContent, Stack } from '@mui/material';
 import { Minus, Plus, Trash, Upload } from '@phosphor-icons/react';
 import { toast } from 'react-toastify';
@@ -34,6 +35,7 @@ const ImageUploadCards = () => {
 
   // Update the type to allow null for the url
   const [images, setImages] = useState<ImageType[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
 
   interface ImageType {
     url: string | File | null; // URL can be a string, File, or null
@@ -142,6 +144,7 @@ const ImageUploadCards = () => {
 
   const handleUploadImages = async () => {
     try {
+      setLoading(true);
       const formData = new FormData();
 
       // Loop through the images and append them directly to formData
@@ -170,8 +173,14 @@ const ImageUploadCards = () => {
       }
       // Convert the Error object to a string
       toast.error(errorMessage);
+    } finally {
+      setLoading(false);
     }
   };
+
+  if (loading) {
+    return <CustomLoader />;
+  }
 
   return (
     <div>

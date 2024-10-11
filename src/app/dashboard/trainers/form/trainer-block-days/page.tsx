@@ -3,6 +3,7 @@
 import React from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { DateFormat } from '@/utils/constant';
+import { CustomLoader } from '@/utils/loader';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button, FormControl, FormHelperText, Grid, IconButton, Stack } from '@mui/material';
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
@@ -16,14 +17,29 @@ import { z } from 'zod';
 import axiosInstance from '@/lib/axios';
 
 // Define the Zod schema
-const dateRangeSchema = z.object({
-  unavailableDates: z.array(
-    z.object({
-      startDate: z.string().nonempty('Start date cannot be empty'),
-      endDate: z.string().nonempty('End date cannot be empty'),
-    })
-  ),
-});
+const dateRangeSchema = z
+  .object({
+    unavailableDates: z.array(
+      z.object({
+        startDate: z.string().nonempty('Start date cannot be empty'),
+        endDate: z.string().nonempty('End date cannot be empty'),
+      })
+    ),
+  })
+  .superRefine((data, ctx) => {
+    data.unavailableDates.forEach((dateRange, index) => {
+      const { startDate, endDate } = dateRange;
+
+      // Check if endDate is provided and is before the startDate
+      if (new Date(endDate) < new Date(startDate)) {
+        ctx.addIssue({
+          path: ['unavailableDates', index, 'endDate'],
+          code: z.ZodIssueCode.custom,
+          message: 'End date cannot be earlier than start date',
+        });
+      }
+    });
+  });
 
 const UnavailableDateRanges = () => {
   const searchParams = useSearchParams();
@@ -102,7 +118,7 @@ const UnavailableDateRanges = () => {
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       {isLoading ? (
-        <p>Loading...</p> // Show loading state
+        <CustomLoader /> // Show loading state
       ) : (
         <form style={{ marginTop: '40px' }} onSubmit={handleSubmit(onSubmit)}>
           {unavailableDates.map((dateRange, index) => (

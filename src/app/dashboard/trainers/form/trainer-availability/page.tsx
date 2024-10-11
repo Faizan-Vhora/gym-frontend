@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { CustomLoader } from '@/utils/loader';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Box, Button, Checkbox, FormControl, FormControlLabel, Grid, IconButton, Typography } from '@mui/material';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -397,7 +398,7 @@ export default function WeekdayTimeSlots() {
     );
   });
 
-  if (isLoading) return <div>Loading...</div>;
+  if (isLoading) return <CustomLoader />;
 
   return (
     <Box component="form" onSubmit={handleSubmit(onSubmit)} sx={{ padding: '20px' }}>
@@ -422,7 +423,7 @@ export default function WeekdayTimeSlots() {
       />
 
       {timeSlotFields}
-      <Button type="submit" variant="contained" color="primary">
+      <Button type="submit" variant="contained" className="common-button">
         Save
       </Button>
     </Box>
