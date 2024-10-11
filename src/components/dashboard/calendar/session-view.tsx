@@ -4,7 +4,8 @@ import {
   BOOKING_SESSION_STATUS_DETAILS,
   BOOKING_STATUS,
 } from '@/utils/constant';
-import { formatDate } from '@/utils/date-utils';
+import { formatAmount, formatHours } from '@/utils/converter';
+import { formatDate, formatTo12HourFormat } from '@/utils/date-utils';
 import {
   Avatar,
   Button,
@@ -19,7 +20,7 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
-import { Barbell, CurrencyCircleDollar, CurrencyDollar, Envelope, Phone } from '@phosphor-icons/react';
+import { Barbell, CurrencyCircleDollar, Envelope, Phone } from '@phosphor-icons/react';
 
 import { BookingSessionEntry } from '../booking/view/booking-sessions/booking-session-table';
 
@@ -207,36 +208,39 @@ const SessionPreview: React.FC<SessionNotesFormProps> = ({
           </Stack>
           <Stack sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', marginTop: '30px' }}>
             <Typography color="text.secondary" gutterBottom>
-              Start <br /> <Typography fontSize={'12px'}>{sessionObj?.sessionStartTime}</Typography>
+              Start <br />
+              <Typography variant="body2" component="span" fontSize={'12px'}>
+                {formatTo12HourFormat(sessionObj?.sessionStartTime)}
+              </Typography>
             </Typography>
             <Typography color="text.secondary" textAlign={'center'}>
-              Hours <br /> <Typography fontSize={'12px'}>({sessionDurationInHours} Hrs) </Typography>
+              Hours <br />
+              <Typography variant="body2" component="span" fontSize={'12px'}>
+                ({formatHours(sessionDurationInHours)})
+              </Typography>
             </Typography>
             <Typography color="text.secondary" textAlign={'center'}>
-              End <br /> <Typography fontSize={'12px'}>{sessionObj?.sessionEndTime}</Typography>
+              End <br />
+              <Typography variant="body2" component="span" fontSize={'12px'}>
+                {formatTo12HourFormat(sessionObj?.sessionEndTime)}
+              </Typography>
             </Typography>
           </Stack>
-          <Stack>
-            <Stack
-              rowGap={2}
-              sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', marginTop: '30px' }}
-            >
-              <Typography color="text.secondary">
-                Session Amount <br />
-                <Stack flexDirection={'row'} justifyContent={'center'} alignItems={'center'}>
-                  <IconButton>
-                    <CurrencyDollar size={18} />
-                  </IconButton>
-                  <Typography textAlign={'end'} color="text.secondary" gutterBottom>
-                    {sessionObj?.netTotalAmount}
-                  </Typography>
-                </Stack>
-              </Typography>
 
-              <Typography color="text.secondary">
-                Booking at: <br /> <Typography fontSize={'12px'}>{formatDate(sessionObj?.sessionDate)}</Typography>
+          <Stack sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', marginTop: '30px' }}>
+            <Typography color="text.secondary" gutterBottom>
+              Session Amount <br />
+              <Typography variant="body2" component="span" fontSize={'12px'}>
+                {formatAmount(sessionObj?.netTotalAmount)}
               </Typography>
-            </Stack>
+            </Typography>
+
+            <Typography color="text.secondary" textAlign={'center'}>
+              Booking at <br />
+              <Typography variant="body2" component="span" fontSize={'12px'}>
+                {formatDate(sessionObj?.sessionDate)}
+              </Typography>
+            </Typography>
           </Stack>
           <br />
           <Stack>Notes: {sessionObj.notes}</Stack>

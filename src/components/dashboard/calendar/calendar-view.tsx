@@ -101,6 +101,9 @@ export function CalendarView({ view = 'dayGridMonth' }: CalendarViewProps): Reac
         endDate: new Date(`${item.sessionDate}T${item.sessionEndTime}`), // Convert to Date object
         bookingType: item.bookingType,
         trainerRatePerHour: item.trainerRatePerHour, // Assuming item has this property
+        extendedProps: {
+          sessionObj: item,
+        },
       }));
 
       setEvents(formattedEvents);

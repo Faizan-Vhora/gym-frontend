@@ -20,7 +20,7 @@ import 'react-toastify/dist/ReactToastify.css'; // Import toast styles
 
 import { BOOKING_SESSION_STATUS, BOOKING_SESSION_STATUS_DETAILS } from '@/utils/constant';
 import { formatAmount } from '@/utils/converter';
-import { convertTo12HourFormat, formatDate } from '@/utils/date-utils';
+import { formatDate, formatTo12HourFormat } from '@/utils/date-utils';
 import { ArrowsClockwise, Note, XCircle } from '@phosphor-icons/react';
 
 import tableCss from '@/styles/table-css';
@@ -99,7 +99,6 @@ export function BookingSessionTable({
   onPageChange,
   onRowsPerPageChange,
 }: BookingTableProps): React.JSX.Element {
-
   const handleStatusChange = (id: number, newStatus: BookingSessionEntry['status']): void => {
     onUpdateStatus(id, newStatus);
   };
@@ -152,7 +151,7 @@ export function BookingSessionTable({
                     <TableCell sx={tableCss.tableCell}>
                       <Stack direction="row" spacing={2}>
                         <Box>
-                          <Typography variant="subtitle2">{convertTo12HourFormat(entry?.sessionStartTime)}</Typography>
+                          <Typography variant="subtitle2">{formatTo12HourFormat(entry?.sessionStartTime)}</Typography>
                         </Box>
                       </Stack>
                     </TableCell>
@@ -160,7 +159,7 @@ export function BookingSessionTable({
                     <TableCell sx={tableCss.tableCell}>
                       <Stack direction="row" spacing={2}>
                         <Box>
-                          <Typography variant="subtitle2">{convertTo12HourFormat(entry?.sessionEndTime)}</Typography>
+                          <Typography variant="subtitle2">{formatTo12HourFormat(entry?.sessionEndTime)}</Typography>
                         </Box>
                       </Stack>
                     </TableCell>
