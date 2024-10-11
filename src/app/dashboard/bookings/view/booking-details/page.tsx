@@ -91,7 +91,7 @@ export default function BookingDetailsPage(): React.JSX.Element {
                     color="text.secondary"
                     gutterBottom
                   >
-                    {BOOKING_TYPE_DETAILS[bookingDetail.bookingType].label}
+                    {BOOKING_TYPE_DETAILS[bookingDetail.bookingType]?.label}
                   </Typography>
                   <Typography
                     textAlign={'end'}
@@ -100,7 +100,7 @@ export default function BookingDetailsPage(): React.JSX.Element {
                     color="text.secondary"
                     gutterBottom
                   >
-                    {BOOKING_STATUS_DETAILS[bookingDetail.status].label}
+                    {BOOKING_STATUS_DETAILS[bookingDetail.status]?.label}
                   </Typography>
                 </Stack>
                 <Stack
@@ -195,7 +195,7 @@ export default function BookingDetailsPage(): React.JSX.Element {
                       color="text.secondary"
                       gutterBottom
                     >
-                      {BOOKING_PAYMENT_TYPE_DETAILS[bookingDetail.paymentType].label}
+                      {BOOKING_PAYMENT_TYPE_DETAILS[bookingDetail.paymentType]?.label}
                     </Typography>
                   </Typography>
                   <Typography
@@ -204,7 +204,7 @@ export default function BookingDetailsPage(): React.JSX.Element {
                     style={{ fontFamily: '"Audiowide", sans-serif' }}
                     gutterBottom
                   >
-                    {BOOKING_PAYMENT_STATUS_DETAILS[bookingDetail.paymentStatus].label}
+                    {BOOKING_PAYMENT_STATUS_DETAILS[bookingDetail.paymentStatus]?.label}
                   </Typography>
                 </Stack>
                 <Stack
@@ -354,7 +354,7 @@ export default function BookingDetailsPage(): React.JSX.Element {
                         <GenderIntersex size={25} />
                       </IconButton>
                       <Typography color="text.secondary" gutterBottom>
-                        {bookingDetail?.customer?.gender && GENDER_TYPE_DETAILS[bookingDetail?.customer?.gender].label}
+                        {bookingDetail?.customer?.gender && GENDER_TYPE_DETAILS[bookingDetail?.customer?.gender]?.label}
                       </Typography>
                     </Stack>
                     <Stack flexDirection={'row'} alignItems={'center'}>

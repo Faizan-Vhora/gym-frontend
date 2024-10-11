@@ -160,19 +160,21 @@ export const BOOKING_PAYMENT_STATUS = {
   PENDING : 'pending',
   CANCELED  : 'cancelled',
   COMPLETED  : 'completed',
+  PAID : 'paid'
 }
 
 export const BOOKING_PAYMENT_STATUS_OPTIONS = [
   { value: BOOKING_PAYMENT_STATUS.PENDING, label: "Pending" },
   { value: BOOKING_PAYMENT_STATUS.CANCELED, label: "Cancelled" },
   { value: BOOKING_PAYMENT_STATUS.COMPLETED, label: "Completed" },
+  { value: BOOKING_PAYMENT_STATUS.PAID, label: "Paid" },
 ]
 
 export const BOOKING_PAYMENT_STATUS_DETAILS: Record<string, { value: string; label: string; color: 'warning' | 'error' | 'success' }>  = {
   [BOOKING_PAYMENT_STATUS.PENDING] : { value: BOOKING_PAYMENT_STATUS.PENDING, label: "Pending" , color: 'warning'},
   [BOOKING_PAYMENT_STATUS.CANCELED] : { value: BOOKING_PAYMENT_STATUS.CANCELED, label: "Cancelled" , color: 'error'},
   [BOOKING_PAYMENT_STATUS.COMPLETED] : { value: BOOKING_PAYMENT_STATUS.COMPLETED, label: "Completed" , color: 'success'},
-
+  [BOOKING_PAYMENT_STATUS.PAID] : { value: BOOKING_PAYMENT_STATUS.PAID, label: "Paid" , color: 'success'},
 }
 
 
