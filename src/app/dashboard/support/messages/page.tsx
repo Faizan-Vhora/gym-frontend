@@ -159,7 +159,7 @@ export default function SupportForm(): React.JSX.Element {
           />
 
           {/* Old Messages in Card */}
-          {supportTicketMessages.length ? (
+          {supportTicketMessages?.length ? (
             <Card sx={{ mb: 5, height: '450px', overflowY: 'auto' }}>
               <CardHeader title="Messages" />
               <CardContent>
