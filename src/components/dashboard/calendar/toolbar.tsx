@@ -221,8 +221,10 @@ export function Toolbar({
       }}
     >
       <Stack flexDirection={'row'} columnGap={1}>
-        <Typography variant="h5">{dayjs(date).format('MMMM')}</Typography>
-        <Typography sx={{ fontWeight: 400 }} variant="h5">
+        <Typography variant="h5" style={{ fontFamily: '"Audiowide", sans-serif' }}>
+          {dayjs(date).format('MMMM')}
+        </Typography>
+        <Typography sx={{ fontWeight: 400 }} variant="h5" style={{ fontFamily: '"Audiowide", sans-serif' }}>
           {dayjs(date).format('YYYY')}
         </Typography>
       </Stack>
@@ -325,6 +327,7 @@ export function Toolbar({
           <Select
             name="view"
             onChange={handleViewChange}
+            style={{ fontFamily: '"Audiowide", sans-serif' }}
             sx={{ minWidth: '120px', order: { xs: -1, md: 0 } }}
             value={view}
           >
@@ -341,6 +344,7 @@ export function Toolbar({
             startIcon={<PlusIcon />}
             sx={{ width: { xs: '100%', md: 'auto' } }}
             variant="contained"
+            style={{ fontFamily: '"Audiowide", sans-serif' }}
           >
             New Booking
           </Button>

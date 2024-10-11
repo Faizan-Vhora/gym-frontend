@@ -64,7 +64,13 @@ export default function BookingDetailsPage(): React.JSX.Element {
           <Grid container rowGap={6} columnGap={6} justifyContent={'center'} sx={{ padding: '20px 10px' }}>
             {/*  Booking Details */}
             <Grid item xs={12} sm={6} md={4}>
-              <Typography variant="h6" component="div" color="black" marginBottom={'10px'}>
+              <Typography
+                variant="h6"
+                component="div"
+                style={{ fontFamily: '"Audiowide", sans-serif' }}
+                color="black"
+                marginBottom={'10px'}
+              >
                 Booking
               </Typography>
               <Card sx={{ height: 280, padding: 2 }} className="bookin-card">
@@ -77,29 +83,49 @@ export default function BookingDetailsPage(): React.JSX.Element {
                     borderColor: '#dcdfe4',
                   }}
                 >
-                  <Typography variant="h6" textAlign={'end'} color="text.secondary" gutterBottom>
+                  <Typography
+                    variant="h6"
+                    textAlign={'end'}
+                    style={{ fontFamily: '"Audiowide", sans-serif' }}
+                    color="text.secondary"
+                    gutterBottom
+                  >
                     {BOOKING_TYPE_DETAILS[bookingDetail.bookingType].label}
                   </Typography>
-                  <Typography textAlign={'end'} component="span" color="text.secondary" gutterBottom>
+                  <Typography
+                    textAlign={'end'}
+                    component="span"
+                    style={{ fontFamily: '"Audiowide", sans-serif' }}
+                    color="text.secondary"
+                    gutterBottom
+                  >
                     {BOOKING_STATUS_DETAILS[bookingDetail.status].label}
                   </Typography>
                 </Stack>
                 <Stack
                   sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', marginTop: '30px' }}
                 >
-                  <Typography color="text.secondary" gutterBottom>
+                  <Typography color="text.secondary" style={{ fontFamily: '"Audiowide", sans-serif' }} gutterBottom>
                     Start <br />
                     <Typography variant="body2" component="span" fontSize={'12px'}>
                       {formatDate(bookingDetail?.startDate)}
                     </Typography>
                   </Typography>
-                  <Typography color="text.secondary" textAlign={'center'}>
+                  <Typography
+                    color="text.secondary"
+                    style={{ fontFamily: '"Audiowide", sans-serif' }}
+                    textAlign={'center'}
+                  >
                     Hours <br />
                     <Typography variant="body2" component="span" fontSize={'12px'}>
                       ({formatHours(bookingDetail?.bookingHours)})
                     </Typography>
                   </Typography>
-                  <Typography color="text.secondary" textAlign={'center'}>
+                  <Typography
+                    color="text.secondary"
+                    style={{ fontFamily: '"Audiowide", sans-serif' }}
+                    textAlign={'center'}
+                  >
                     End <br />
                     <Typography variant="body2" component="span" fontSize={'12px'}>
                       {formatDate(bookingDetail?.endDate)}
@@ -112,14 +138,14 @@ export default function BookingDetailsPage(): React.JSX.Element {
                     rowGap={2}
                     sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', marginTop: '30px' }}
                   >
-                    <Typography color="text.secondary">
+                    <Typography color="text.secondary" style={{ fontFamily: '"Audiowide", sans-serif' }}>
                       Booking By <br />{' '}
                       <Typography fontSize={'12px'} component="span">
                         {bookingDetail.createdBy.fullName}
                       </Typography>
                     </Typography>
 
-                    <Typography color="text.secondary">
+                    <Typography color="text.secondary" style={{ fontFamily: '"Audiowide", sans-serif' }}>
                       Booking at: <br />{' '}
                       <Typography fontSize={'12px'} component="span">
                         {dayjs(bookingDetail.createdAt).format('DD/MM/YYYY')}
@@ -129,7 +155,7 @@ export default function BookingDetailsPage(): React.JSX.Element {
                 </Stack>
                 <Stack>
                   {bookingDetail?.recurrenceWeeks ? (
-                    <Typography color="text.secondary" gutterBottom>
+                    <Typography color="text.secondary" gutterBottom style={{ fontFamily: '"Audiowide", sans-serif' }}>
                       Recurrence Weeks: {bookingDetail?.recurrenceWeeks}
                     </Typography>
                   ) : (
@@ -141,7 +167,13 @@ export default function BookingDetailsPage(): React.JSX.Element {
             <Grid item xs={12} sm={6} md={4}>
               {/*  Payment Details */}
 
-              <Typography variant="h6" component="div" color="black" marginBottom={'10px'}>
+              <Typography
+                variant="h6"
+                component="div"
+                color="black"
+                style={{ fontFamily: '"Audiowide", sans-serif' }}
+                marginBottom={'10px'}
+              >
                 Payment Details
               </Typography>
               <Card sx={{ height: 280, padding: 2 }} className="bookin-card">
@@ -155,11 +187,22 @@ export default function BookingDetailsPage(): React.JSX.Element {
                   }}
                 >
                   <Typography variant="h6" textAlign={'end'} color="text.secondary" gutterBottom>
-                    <Typography textAlign={'end'} fontWeight={'600'} color="text.secondary" gutterBottom>
+                    <Typography
+                      textAlign={'end'}
+                      fontWeight={'600'}
+                      style={{ fontFamily: '"Audiowide", sans-serif' }}
+                      color="text.secondary"
+                      gutterBottom
+                    >
                       {BOOKING_PAYMENT_TYPE_DETAILS[bookingDetail.paymentType].label}
                     </Typography>
                   </Typography>
-                  <Typography textAlign={'end'} color="text.secondary" gutterBottom>
+                  <Typography
+                    textAlign={'end'}
+                    color="text.secondary"
+                    style={{ fontFamily: '"Audiowide", sans-serif' }}
+                    gutterBottom
+                  >
                     {BOOKING_PAYMENT_STATUS_DETAILS[bookingDetail.paymentStatus].label}
                   </Typography>
                 </Stack>
@@ -167,23 +210,48 @@ export default function BookingDetailsPage(): React.JSX.Element {
                   sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', marginTop: '20px' }}
                 >
                   <Stack rowGap={1}>
-                    <Typography color="text.secondary" fontWeight={'600'} gutterBottom>
+                    <Typography
+                      color="text.secondary"
+                      style={{ fontFamily: '"Audiowide", sans-serif' }}
+                      fontWeight={'600'}
+                      gutterBottom
+                    >
                       Booking Hours :
                     </Typography>
 
-                    <Typography color="text.secondary" fontWeight={'600'} gutterBottom>
+                    <Typography
+                      color="text.secondary"
+                      style={{ fontFamily: '"Audiowide", sans-serif' }}
+                      fontWeight={'600'}
+                      gutterBottom
+                    >
                       Trainer Rate Per Hour :
                     </Typography>
                     {/* <Typography color="text.secondary" fontWeight={'600'} gutterBottom>
                       Payment Type:
                     </Typography> */}
-                    <Typography color="text.secondary" fontWeight={'600'} gutterBottom>
+                    <Typography
+                      color="text.secondary"
+                      style={{ fontFamily: '"Audiowide", sans-serif' }}
+                      fontWeight={'600'}
+                      gutterBottom
+                    >
                       Booking Amount :
                     </Typography>
-                    <Typography color="text.secondary" fontWeight={'600'} gutterBottom>
+                    <Typography
+                      color="text.secondary"
+                      style={{ fontFamily: '"Audiowide", sans-serif' }}
+                      fontWeight={'600'}
+                      gutterBottom
+                    >
                       Discount :
                     </Typography>
-                    <Typography color="text.secondary" fontWeight={'600'} gutterBottom>
+                    <Typography
+                      color="text.secondary"
+                      style={{ fontFamily: '"Audiowide", sans-serif' }}
+                      fontWeight={'600'}
+                      gutterBottom
+                    >
                       Total Amount :
                     </Typography>
                     {/* <Typography color="text.secondary" fontWeight={'600'} gutterBottom>
@@ -191,22 +259,47 @@ export default function BookingDetailsPage(): React.JSX.Element {
                     </Typography> */}
                   </Stack>
                   <Stack rowGap={1}>
-                    <Typography textAlign={'end'} color="text.secondary" gutterBottom>
+                    <Typography
+                      textAlign={'end'}
+                      style={{ fontFamily: '"Audiowide", sans-serif' }}
+                      color="text.secondary"
+                      gutterBottom
+                    >
                       {bookingDetail?.bookingHours}
                     </Typography>
-                    <Typography textAlign={'end'} color="text.secondary" gutterBottom>
+                    <Typography
+                      textAlign={'end'}
+                      style={{ fontFamily: '"Audiowide", sans-serif' }}
+                      color="text.secondary"
+                      gutterBottom
+                    >
                       ${bookingDetail?.trainerRatePerHour}
                     </Typography>
                     {/* <Typography textAlign={'end'} color="text.secondary" gutterBottom>
                       {BOOKING_PAYMENT_TYPE_DETAILS[bookingDetail.paymentType].label}
                     </Typography> */}
-                    <Typography textAlign={'end'} color="text.secondary" gutterBottom>
+                    <Typography
+                      textAlign={'end'}
+                      style={{ fontFamily: '"Audiowide", sans-serif' }}
+                      color="text.secondary"
+                      gutterBottom
+                    >
                       ${bookingDetail?.bookingAmount}
                     </Typography>
-                    <Typography textAlign={'end'} color="text.secondary" gutterBottom>
+                    <Typography
+                      textAlign={'end'}
+                      style={{ fontFamily: '"Audiowide", sans-serif' }}
+                      color="text.secondary"
+                      gutterBottom
+                    >
                       ${bookingDetail?.discount}
                     </Typography>
-                    <Typography textAlign={'end'} color="text.secondary" gutterBottom>
+                    <Typography
+                      textAlign={'end'}
+                      style={{ fontFamily: '"Audiowide", sans-serif' }}
+                      color="text.secondary"
+                      gutterBottom
+                    >
                       ${bookingDetail?.netTotalAmount}
                     </Typography>
                     {/* <Typography textAlign={'end'} color="text.secondary" gutterBottom>
@@ -219,7 +312,13 @@ export default function BookingDetailsPage(): React.JSX.Element {
 
             <Grid item xs={12} sm={6} md={4}>
               {/* Member Details */}
-              <Typography variant="h6" component="div" color="black" marginBottom={'10px'}>
+              <Typography
+                variant="h6"
+                component="div"
+                style={{ fontFamily: '"Audiowide", sans-serif' }}
+                color="black"
+                marginBottom={'10px'}
+              >
                 Member Details
               </Typography>
               <Card className="bookin-card">
@@ -233,10 +332,20 @@ export default function BookingDetailsPage(): React.JSX.Element {
                     marginBottom: '30px',
                   }}
                 >
-                  <Typography color="text.secondary" fontWeight={'600'} gutterBottom>
+                  <Typography
+                    color="text.secondary"
+                    style={{ fontFamily: '"Audiowide", sans-serif' }}
+                    fontWeight={'600'}
+                    gutterBottom
+                  >
                     Member Id :
                   </Typography>
-                  <Typography textAlign={'end'} color="text.secondary" gutterBottom>
+                  <Typography
+                    textAlign={'end'}
+                    style={{ fontFamily: '"Audiowide", sans-serif' }}
+                    color="text.secondary"
+                    gutterBottom
+                  >
                     {bookingDetail?.customer?.memberId}
                   </Typography>
                 </Stack>
@@ -255,7 +364,12 @@ export default function BookingDetailsPage(): React.JSX.Element {
                   <Avatar sx={{ height: '76px', width: '76px' }}></Avatar>
 
                   <Stack>
-                    <Typography color="text.secondary" fontWeight={'600'} gutterBottom>
+                    <Typography
+                      color="text.secondary"
+                      style={{ fontFamily: '"Audiowide", sans-serif' }}
+                      fontWeight={'600'}
+                      gutterBottom
+                    >
                       {bookingDetail?.customer?.fullName}
                     </Typography>
 
@@ -266,6 +380,7 @@ export default function BookingDetailsPage(): React.JSX.Element {
 
                       <Typography
                         color="text.secondary"
+                        style={{ fontFamily: '"Audiowide", sans-serif' }}
                         gutterBottom
                         sx={{
                           wordBreak: 'break-word',
@@ -288,7 +403,7 @@ export default function BookingDetailsPage(): React.JSX.Element {
                       <IconButton>
                         <GenderIntersex size={25} />
                       </IconButton>
-                      <Typography color="text.secondary" gutterBottom>
+                      <Typography color="text.secondary" style={{ fontFamily: '"Audiowide", sans-serif' }} gutterBottom>
                         {bookingDetail?.customer?.gender}
                       </Typography>
                     </Stack>
@@ -296,7 +411,7 @@ export default function BookingDetailsPage(): React.JSX.Element {
                       <IconButton>
                         <MapPin size={25} />
                       </IconButton>
-                      <Typography color="text.secondary" gutterBottom>
+                      <Typography color="text.secondary" style={{ fontFamily: '"Audiowide", sans-serif' }} gutterBottom>
                         {bookingDetail?.customer?.address}
                       </Typography>
                     </Stack>
@@ -308,7 +423,13 @@ export default function BookingDetailsPage(): React.JSX.Element {
             </Grid>
             <Grid item xs={12} sm={6} md={4}>
               {/* Trainer Details */}
-              <Typography variant="h6" component="div" color="black" marginBottom={'10px'}>
+              <Typography
+                variant="h6"
+                component="div"
+                style={{ fontFamily: '"Audiowide", sans-serif' }}
+                color="black"
+                marginBottom={'10px'}
+              >
                 Trainer Details
               </Typography>
               <Card className="bookin-card">
@@ -322,10 +443,20 @@ export default function BookingDetailsPage(): React.JSX.Element {
                     marginBottom: '30px',
                   }}
                 >
-                  <Typography color="text.secondary" fontWeight={'600'} gutterBottom>
+                  <Typography
+                    color="text.secondary"
+                    style={{ fontFamily: '"Audiowide", sans-serif' }}
+                    fontWeight={'600'}
+                    gutterBottom
+                  >
                     Trainer Id :
                   </Typography>
-                  <Typography textAlign={'end'} color="text.secondary" gutterBottom>
+                  <Typography
+                    textAlign={'end'}
+                    style={{ fontFamily: '"Audiowide", sans-serif' }}
+                    color="text.secondary"
+                    gutterBottom
+                  >
                     {bookingDetail?.trainer?.memberId}
                   </Typography>
                 </Stack>
@@ -347,13 +478,18 @@ export default function BookingDetailsPage(): React.JSX.Element {
                       <IconButton>
                         <Barbell size={18} />
                       </IconButton>
-                      <Typography color="text.secondary" gutterBottom>
+                      <Typography color="text.secondary" style={{ fontFamily: '"Audiowide", sans-serif' }} gutterBottom>
                         {bookingDetail?.trainer?.experience}
                       </Typography>
                     </Stack>
                   </Stack>
                   <Stack>
-                    <Typography color="text.secondary" fontWeight={'600'} gutterBottom>
+                    <Typography
+                      color="text.secondary"
+                      style={{ fontFamily: '"Audiowide", sans-serif' }}
+                      fontWeight={'600'}
+                      gutterBottom
+                    >
                       {bookingDetail?.trainer?.fullName}
                     </Typography>
 
@@ -361,7 +497,7 @@ export default function BookingDetailsPage(): React.JSX.Element {
                       <IconButton>
                         <Envelope size={25} />
                       </IconButton>
-                      <Typography color="text.secondary" gutterBottom>
+                      <Typography color="text.secondary" style={{ fontFamily: '"Audiowide", sans-serif' }} gutterBottom>
                         {bookingDetail?.trainer?.email}
                       </Typography>
                     </Stack>
@@ -370,7 +506,7 @@ export default function BookingDetailsPage(): React.JSX.Element {
                         {' '}
                         <Phone size={25} />
                       </IconButton>
-                      <Typography color="text.secondary" gutterBottom>
+                      <Typography color="text.secondary" style={{ fontFamily: '"Audiowide", sans-serif' }} gutterBottom>
                         {bookingDetail?.trainer?.phoneNumber}
                       </Typography>
                     </Stack>
@@ -378,7 +514,7 @@ export default function BookingDetailsPage(): React.JSX.Element {
                       <IconButton>
                         <GenderIntersex size={25} />
                       </IconButton>
-                      <Typography color="text.secondary" gutterBottom>
+                      <Typography color="text.secondary" style={{ fontFamily: '"Audiowide", sans-serif' }} gutterBottom>
                         {bookingDetail?.trainer?.gender}
                       </Typography>
                     </Stack>
@@ -386,7 +522,7 @@ export default function BookingDetailsPage(): React.JSX.Element {
                       <IconButton>
                         <MapPin size={25} />
                       </IconButton>
-                      <Typography color="text.secondary" gutterBottom>
+                      <Typography color="text.secondary" style={{ fontFamily: '"Audiowide", sans-serif' }} gutterBottom>
                         {bookingDetail?.trainer?.address}
                       </Typography>
                     </Stack>

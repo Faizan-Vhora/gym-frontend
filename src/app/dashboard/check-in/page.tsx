@@ -147,13 +147,16 @@ export default function CheckinPage(): React.JSX.Element {
     <Stack spacing={3}>
       <Stack direction="row" spacing={3}>
         <Stack spacing={1} sx={{ flex: '1 1 auto' }}>
-          <Typography variant="h4">Checkin Management</Typography>
+          <Typography variant="h4" style={{ fontFamily: '"Audiowide", sans-serif' }}>
+            Checkin Management
+          </Typography>
         </Stack>
         <Button
           className="common-button"
           startIcon={<PlusIcon fontSize="var(--icon-fontSize-md)" />}
           variant="contained"
           onClick={handleAddClick}
+          style={{ fontFamily: '"Audiowide", sans-serif' }}
         >
           Add
         </Button>
