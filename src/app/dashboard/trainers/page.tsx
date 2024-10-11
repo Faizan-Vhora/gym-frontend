@@ -181,6 +181,7 @@ export default function TrainersPage(): React.JSX.Element {
           startIcon={<PlusIcon fontSize="var(--icon-fontSize-md)" />}
           variant="contained"
           onClick={handleAddClick}
+          style={{ fontFamily: '"Audiowide", sans-serif' }}
         >
           Add
         </Button>

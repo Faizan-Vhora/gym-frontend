@@ -80,13 +80,13 @@ export function CheckInTable({
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell>User Details</TableCell>
-              <TableCell>Entry Date</TableCell>
-              <TableCell>Entry In Time</TableCell>
-              <TableCell>Entry Out Time</TableCell>
-              <TableCell>User Type</TableCell>
-              <TableCell>Status</TableCell>
-              <TableCell>Actions</TableCell>
+              <TableCell sx={tableCss.tableHeaderCell}>User Details</TableCell>
+              <TableCell sx={tableCss.tableHeaderCell}>Entry Date</TableCell>
+              <TableCell sx={tableCss.tableHeaderCell}>Entry In Time</TableCell>
+              <TableCell sx={tableCss.tableHeaderCell}>Entry Out Time</TableCell>
+              <TableCell sx={tableCss.tableHeaderCell}>User Type</TableCell>
+              <TableCell sx={tableCss.tableHeaderCell}>Status</TableCell>
+              <TableCell sx={tableCss.tableHeaderCell}>Actions</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
