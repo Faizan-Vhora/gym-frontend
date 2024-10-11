@@ -110,7 +110,7 @@ const bookingSchema = zod.object({
   bookingEndDate: zod.date().optional(),
   bookingType: zod.string().optional(),
   paymentType: zod.string().optional(),
-  promocodeId: zod.number().optional(),
+  promocodeId: zod.number().nullable(),
 });
 
 type BookingFormInputs = zod.infer<typeof bookingSchema>;
@@ -460,9 +460,9 @@ export function BookingFormDialog({
           booking: {
             trainer: formValues.trainerId,
             customer: formValues.customerId,
-            bookingType,
-            startDate: bookingStartDate,
-            endDate: bookingEndDate,
+            bookingType: bookingType,
+            startDate:  bookingType === BOOKING_TYPE.WEEKLY ? bookingStartDate : bookingDate,
+            endDate: bookingType === BOOKING_TYPE.WEEKLY ? bookingEndDate : bookingDate,
             trainerRatePerHour: trainerRatePerHour,
             weekdays: weekdaysList,
             recurrenceWeeks: reOccuranceEnabled ? reOccuranceWeeks : 0,
@@ -478,7 +478,10 @@ export function BookingFormDialog({
           sessions: selectedBookingSlots,
         };
 
-        // console.log('Payload: ', payload);
+        // console.log('(submit)Payload: ', payload);
+
+        // console.log("(submit)bookingDetails:", bookingDetails)
+        // console.log("(submit)selectedBookingSlots:", selectedBookingSlots)
 
         await axiosInstance.post('/session-booking', payload);
         toast.success('Booking added successfully');
@@ -489,7 +492,20 @@ export function BookingFormDialog({
         }
       }
     },
-    [bookingType, selectedSlots, selectedTrainer, onCreate]
+    [
+      bookingType,
+      paymentType,
+      bookingDate,
+      bookingStartDate,
+      bookingEndDate,
+      selectedPromocode,
+      selectedSlots,
+      selectedTrainer,
+      selectedCustomer,
+      bookingDetails,
+      selectedBookingSlots,
+      onCreate
+    ]
   );
 
   // Fetch data on mount
@@ -505,12 +521,12 @@ export function BookingFormDialog({
   // }, [selectedDays]);
 
   // React.useEffect(() => {
-  //   console.log('Update : paymentType:: ', paymentType);
-  // }, [paymentType]);
+  //   console.log('Update : bookingDetails:: ', bookingDetails);
+  // }, [bookingDetails]);
 
   // React.useEffect(() => {
-  //   console.log('Update : selectedPromocode:: ', selectedPromocode);
-  // }, [selectedPromocode]);
+  //   console.log('Update : selectedBookingSlots:: ', selectedBookingSlots);
+  // }, [selectedBookingSlots]);
 
   React.useEffect(() => {
     const trainerRatePerHour = Number(selectedTrainer?.fees || 0);
