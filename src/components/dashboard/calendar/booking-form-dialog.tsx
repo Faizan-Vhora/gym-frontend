@@ -667,10 +667,15 @@ export function BookingFormDialog({
             <Grid item xs={12}>
               <Stack sx={{ margin: '20px', alignItems: 'center', width: '100%' }}>
                 <Divider />
-                <Tabs value={bookingType} onChange={(e, newValue) => {handleTabChange(newValue)} } sx={{ width: '100%' }}>
-                  <Tab label="One Time Session" value={BOOKING_TYPE.ONE_TIME} />
-                  <Tab label="Weekly" value={BOOKING_TYPE.WEEKLY} />
-                </Tabs>
+                <Tabs
+                    value={bookingType}
+                    onChange={(e: React.SyntheticEvent, newValue: string) => {handleTabChange(newValue)} }
+                    sx={{ width: '100%' }}
+                  >
+                    <Tab label="One Time Session" value={BOOKING_TYPE.ONE_TIME} />
+                    <Tab label="Weekly" value={BOOKING_TYPE.WEEKLY} />
+                  </Tabs>
+
               </Stack>
             </Grid>
 
