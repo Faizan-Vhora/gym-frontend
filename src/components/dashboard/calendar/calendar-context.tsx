@@ -2,45 +2,45 @@
 
 import * as React from 'react';
 
-import type { BookingType, Event } from './types';
+import type { Event } from './types';
 
 function noop(): void {
   return undefined;
 }
 
-interface EventCreateParams {
-  trainer: string;
-  customer: string;
-  selectDate: Date;
-  start: Date;
-  end: Date;
-  bookingType: BookingType;
-}
+// interface EventCreateParams {
+//   trainer: string;
+//   customer: string;
+//   selectDate: Date;
+//   start: Date;
+//   end: Date;
+//   bookingType: BookingType;
+// }
 
-interface EventUpdateParams {
-  trainer?: string;
-  customer?: string;
-  selectDate?: Date;
-  start?: Date;
-  end?: Date;
-  bookingType?: string;
-}
+// interface EventUpdateParams {
+//   trainer?: string;
+//   customer?: string;
+//   selectDate?: Date;
+//   start?: Date;
+//   end?: Date;
+//   bookingType?: string;
+// }
 
 export interface CalendarContextValue {
   events: Map<string, Event>;
   currentEventId?: string;
   setCurrentEventId: (eventId?: string) => void;
-  createEvent: (params: EventCreateParams) => void;
+  // createEvent: (params: EventCreateParams) => void;
   deleteEvent: (eventId: string) => void;
-  updateEvent: (eventId: string, params: EventUpdateParams) => void;
+  // updateEvent: (eventId: string, params: EventUpdateParams) => void;
 }
 
 export const CalendarContext = React.createContext<CalendarContextValue>({
   events: new Map(),
   setCurrentEventId: noop,
-  createEvent: noop,
+  // createEvent: noop,
   deleteEvent: noop,
-  updateEvent: noop,
+  // updateEvent: noop,
 });
 
 export interface CalendarProviderProps {
@@ -56,41 +56,41 @@ export function CalendarProvider({ children, events: initialEvents = [] }: Calen
     setEvents(new Map(initialEvents.map((event) => [event.id, event])));
   }, [initialEvents]);
 
-  const handleCreateEvent = React.useCallback(
-    (params: EventCreateParams) => {
-      const updatedEvents = new Map<string, Event>(events);
+  // const handleCreateEvent = React.useCallback(
+  //   (params: EventCreateParams) => {
+  //     const updatedEvents = new Map<string, Event>(events);
 
-      // Create event
-      const event: Event = { id: `EV-${Date.now()}`, ...params };
+  //     // Create event
+  //     const event: Event = { id: `EV-${Date.now()}`, ...params };
 
-      // Add event
-      updatedEvents.set(event.id, event);
+  //     // Add event
+  //     updatedEvents.set(event.id, event);
 
-      // Dispatch update
-      setEvents(updatedEvents);
-    },
-    [events]
-  );
+  //     // Dispatch update
+  //     setEvents(updatedEvents);
+  //   },
+  //   [events]
+  // );
 
-  const handleUpdateEvent = React.useCallback(
-    (eventId: string, params: EventUpdateParams) => {
-      const event = events.get(eventId);
+  // const handleUpdateEvent = React.useCallback(
+  //   (eventId: string, params: EventUpdateParams) => {
+  //     const event = events.get(eventId);
 
-      // Event might no longer exist
-      if (!event) {
-        return;
-      }
+  //     // Event might no longer exist
+  //     if (!event) {
+  //       return;
+  //     }
 
-      const updatedEvents = new Map<string, Event>(events);
+  //     const updatedEvents = new Map<string, Event>(events);
 
-      // Update event
-      updatedEvents.set(eventId, { ...event, ...params });
+  //     // Update event
+  //     updatedEvents.set(eventId, { ...event, ...params });
 
-      // Dispatch update
-      setEvents(updatedEvents);
-    },
-    [events]
-  );
+  //     // Dispatch update
+  //     setEvents(updatedEvents);
+  //   },
+  //   [events]
+  // );
 
   const handleDeleteEvent = React.useCallback(
     (eventId: string) => {
@@ -118,9 +118,9 @@ export function CalendarProvider({ children, events: initialEvents = [] }: Calen
         events,
         currentEventId,
         setCurrentEventId,
-        createEvent: handleCreateEvent,
+        // createEvent: handleCreateEvent,
         deleteEvent: handleDeleteEvent,
-        updateEvent: handleUpdateEvent,
+        // updateEvent: handleUpdateEvent,
       }}
     >
       {children}

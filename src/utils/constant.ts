@@ -17,6 +17,11 @@ export const USER_TYPE_OPTIONS = [
   { value: USER_TYPE.MEMBER , label: "Member" },
 ]
 
+export interface  UserTypeOption {
+  value: number;
+  label: string;
+}
+
 
 export const WEEKDAY = {
   SUNDAY: 0,
@@ -38,6 +43,12 @@ export const WEEKDAY_NAME = {
   [WEEKDAY.SATURDAY]: 'Saturday'
 };
 
+
+export interface WeekDayOptionsI {
+  value : number,
+  label : string,
+  isAvailable? : boolean;
+}
 
 export const WEEKDAY_OPTIONS = [
   { value: WEEKDAY.SUNDAY, label: WEEKDAY_NAME[WEEKDAY.SUNDAY] },

@@ -15,26 +15,26 @@ import {
   TableRow,
   Typography,
 } from '@mui/material';
-
-import { toast, ToastContainer } from 'react-toastify'; // Import toast and ToastContainer
+import { ToastContainer } from 'react-toastify'; // Import toast and ToastContainer
 
 import 'react-toastify/dist/ReactToastify.css'; // Import toast styles
 
-import tableCss from '@/styles/table-css';
-import { Chat, PencilSimple } from '@phosphor-icons/react';
 import { useRouter } from 'next/navigation';
-import { SUPPORT_TICKET_STATUS_OPTIONS, USER_TYPE_OPTIONS } from '@/utils/constant';
+import { SUPPORT_TICKET_STATUS_OPTIONS, USER_TYPE_OPTIONS, UserTypeOption } from '@/utils/constant';
+import { Chat, PencilSimple } from '@phosphor-icons/react';
+
+import tableCss from '@/styles/table-css';
 
 export interface SupportEntry {
   id: number;
-  user: {  id:number, fullName: string; email: string } | null;
+  user: { id: number; fullName: string; email: string } | null;
   type: 'user' | 'trainer' | 'web';
   status: 'pending' | 'resolved' | 'reviewed';
-  userType : '2' | '3';
-  subject : string;
+  userType: 2 | 3;
+  subject: string;
   message: string;
-  description: string,
-  createdAt: Date | string |null;
+  description: string;
+  createdAt: Date | string | null;
   createdBy: { fullName: string; email: string };
 }
 
@@ -57,8 +57,6 @@ export function SupportTable({
   onPageChange,
   onRowsPerPageChange,
 }: SupportTableProps): React.JSX.Element {
-
-
   const router = useRouter();
 
   const handleEdit = React.useCallback(
@@ -75,10 +73,8 @@ export function SupportTable({
     [router]
   );
 
-
   const handleStatusChange = (id: number, newStatus: SupportEntry['status']): void => {
     onUpdateStatus(id, newStatus);
-    // toast.success('Status updated successfully!'); // Show success toast
   };
 
   return (
@@ -116,13 +112,13 @@ export function SupportTable({
                         </Box>
                       </Stack>
                     </TableCell>
-                    <TableCell sx={tableCss.tableCell}>{
-                    USER_TYPE_OPTIONS.find((ele:any)=> ele.value==entry.userType)?.label || '-'
-                    }</TableCell>
-                    <TableCell sx={tableCss.tableCell}>{ entry.subject}</TableCell>
+                    <TableCell sx={tableCss.tableCell}>
+                      {USER_TYPE_OPTIONS.find((ele: UserTypeOption) => ele.value === entry.userType)?.label || '-'}
+                    </TableCell>
+                    <TableCell sx={tableCss.tableCell}>{entry.subject}</TableCell>
                     <TableCell>
                       <Select
-                        sx={{height:'40px',width:'120px'}}
+                        sx={{ height: '40px', width: '120px' }}
                         value={entry.status}
                         onChange={(e) => {
                           handleStatusChange(entry.id, e.target.value as SupportEntry['status']);
@@ -135,10 +131,8 @@ export function SupportTable({
                             {option.label}
                           </MenuItem>
                         ))}
-
                       </Select>
                     </TableCell>
-
 
                     <TableCell sx={tableCss.tableCell}>
                       <Stack direction="row" spacing={1} alignItems="center">
@@ -157,11 +151,8 @@ export function SupportTable({
                         >
                           <Chat />
                         </IconButton>
-
                       </Stack>
                     </TableCell>
-
-
                   </TableRow>
                 ))
               )}
@@ -185,12 +176,10 @@ export function SupportTable({
                 const inputEvent = event as React.ChangeEvent<HTMLInputElement>;
                 onRowsPerPageChange(inputEvent);
               }}
-
               rowsPerPageOptions={[5, 10, 25]}
             />
           </>
         )}
-
       </Card>
       <ToastContainer /> {/* Add ToastContainer to your component tree */}
     </>

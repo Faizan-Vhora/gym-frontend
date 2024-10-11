@@ -145,7 +145,9 @@ export default function ExpertiseForm(): React.JSX.Element {
               <Grid item>
                 <Button
                   variant="outlined"
-                  onClick={() => router.push('/dashboard/expertise')}
+                  onClick={() => {
+                    router.push('/dashboard/expertise');
+                  }}
                   disabled={loading}
                   sx={{
                     borderColor: '#d0021b',

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField, Typography } from '@mui/material';
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField } from '@mui/material';
 import { Controller, useForm } from 'react-hook-form';
 
 import { BookingSessionEntry } from '../booking/view/booking-sessions/booking-session-table';
@@ -56,7 +56,7 @@ const SessionNotesForm: React.FC<SessionNotesFormProps> = ({ sessionObj, open, o
                 rows={4}
                 variant="outlined"
                 fullWidth
-                error={!!errors.notes}
+                error={Boolean(errors.notes)}
                 helperText={errors.notes ? errors.notes.message : ''}
                 placeholder="Enter your notes here..."
               />
@@ -68,7 +68,7 @@ const SessionNotesForm: React.FC<SessionNotesFormProps> = ({ sessionObj, open, o
         <Button onClick={onClose} color="secondary">
           Cancel
         </Button>
-        <Button onClick={handleSubmit(onSubmitForm)} color="primary" disabled={!!errors.notes || loading}>
+        <Button onClick={handleSubmit(onSubmitForm)} color="primary" disabled={Boolean(errors.notes) || loading}>
           Submit
         </Button>
       </DialogActions>

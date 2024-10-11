@@ -1,44 +1,75 @@
-
 'use client';
-
-
 
 import React, { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { Button, Card, CardActions, CardContent, Grid, Stack } from '@mui/material';
+import { Button, Card, CardActions, CardContent, Stack } from '@mui/material';
 import { Minus, Plus, Trash, Upload } from '@phosphor-icons/react';
 import { toast } from 'react-toastify';
 import Swal from 'sweetalert2';
 
 import axiosInstance from '@/lib/axios';
 
+interface TrainerBannerImages {
+  bannerImageUrl: string;
+  id: number;
+}
+
+interface TrainerS {
+  id: string;
+  fullName: string;
+  email: string;
+  phoneNumber: string;
+  address: string;
+  createdAt: string;
+  updatedAt: string;
+  memberId: string;
+  status: number; // Ensure this is part of the interface
+  qrCodeImageUrl: string;
+  trainerBannerImages: TrainerBannerImages[];
+}
+
 const ImageUploadCards = () => {
   const searchParams = useSearchParams();
   const id = searchParams.get('id');
 
   // Update the type to allow null for the url
-  const [images, setImages] = useState<{ url: string | File | null; imageId: string | number | null }[]>([]);
+  const [images, setImages] = useState<ImageType[]>([]);
+
+  interface ImageType {
+    url: string | File | null; // URL can be a string, File, or null
+    imageId: string | number | null; // imageId can be a string, number, or null
+  }
+
+  // const defaultImage: ImageType = { url: null, imageId: null };
 
   useEffect(() => {
     const fetchImages = async () => {
       try {
-        const response = await axiosInstance.get(`/users/${id}`, { params: { userType: 2 } });
-        const fetchedImages = response.data.data.trainerBannerImages.map((img: any) => ({
-          url: img.bannerImageUrl, // The URL of the image
-          imageId: img.id, // Assuming the ID is in `img.id`
+        const response = await axiosInstance.get<{ data: TrainerS }>(`/users/${id}`, { params: { userType: 2 } });
+        const fetchedImages: ImageType[] = response.data.data.trainerBannerImages.map((img: TrainerBannerImages) => ({
+          url: img.bannerImageUrl,
+          imageId: img.id,
         }));
 
         // Fill remaining slots with null objects
         setImages([
           ...fetchedImages.slice(0, 5),
-          ...Array(5 - fetchedImages.length).fill({ url: null, imageId: null }),
+          // ...Array(Math.max(0, 5 - fetchedImages.length)).fill(defaultImage), // Ensure non-negative length
         ]);
-      } catch (error) {
-        console.error('Error fetching images:', error);
+      } catch (error: unknown) {
+        let errorMessage: string;
+        if (typeof error === 'string') {
+          errorMessage = error;
+        } else {
+          // Handle other types of errors, or set a generic message
+          errorMessage = 'An unexpected error occurred';
+        }
+        // Convert the Error object to a string
+        toast.error(errorMessage);
       }
     };
 
-    fetchImages();
+    void fetchImages();
   }, [id]);
 
   const handleImageChange = (index: number) => (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -76,9 +107,16 @@ const ImageUploadCards = () => {
           } else {
             toast.error('Failed to delete image');
           }
-        } catch (error) {
-          console.error('An error occurred while deleting the image:', error);
-          toast.error('An error occurred while deleting the image');
+        } catch (error: unknown) {
+          let errorMessage: string;
+          if (typeof error === 'string') {
+            errorMessage = error;
+          } else {
+            // Handle other types of errors, or set a generic message
+            errorMessage = 'An unexpected error occurred';
+          }
+          // Convert the Error object to a string
+          toast.error(errorMessage);
         }
       } else {
         // Handle case where the image does not have an ID (e.g., a newly uploaded image)
@@ -107,7 +145,7 @@ const ImageUploadCards = () => {
       const formData = new FormData();
 
       // Loop through the images and append them directly to formData
-      images.forEach((image, index) => {
+      images.forEach((image) => {
         if (image.url instanceof File) {
           // Only append if it's a file being uploaded
           formData.append(`bannerImage`, image.url);
@@ -122,58 +160,74 @@ const ImageUploadCards = () => {
       } else {
         toast.error('Failed to upload images');
       }
-    } catch (error) {
-      console.error('An error occurred while uploading images:', error);
-      toast.error('An error occurred while uploading images: ' + error);
+    } catch (error: unknown) {
+      let errorMessage: string;
+      if (typeof error === 'string') {
+        errorMessage = error;
+      } else {
+        // Handle other types of errors, or set a generic message
+        errorMessage = 'An unexpected error occurred';
+      }
+      // Convert the Error object to a string
+      toast.error(errorMessage);
     }
   };
 
   return (
     <div>
-    <Stack className='banner-image' >
-    {/* <Grid item md={6}> */}
-    {/* <Stack> */}
+      <Stack className="banner-image">
+        {/* <Grid item md={6}> */}
+        {/* <Stack> */}
         {images.map((imagePreview, index) => (
-
-            <Card sx={{ margin:'30px 20px',width:'45%'}}>
-              <CardActions>
-                <Button component="label" fullWidth variant="text">
-                  Upload picture
-                  <input type="file" accept="image/*" hidden onChange={handleImageChange(index)} />
-                </Button>
-              </CardActions>
-              <CardContent >
-                <Stack sx={{alignItems: 'center' }}>
-                  {imagePreview.url && (
-                    <Stack spacing={1} >
-                      <img
-                        src={
-                          imagePreview.url instanceof File ? URL.createObjectURL(imagePreview.url) : imagePreview.url
-                        } // Check if imagePreview is a File object
-                        alt={`Profile Preview ${index + 1}`}
-                        style={{ width: '100%', height: '200px', objectFit: 'cover' }}
-                      />
-                      <Button color="error" startIcon={<Trash />} onClick={handleRemoveImage(index)}>
-                        Remove Image
-                      </Button>
-                    </Stack>
-                  )}
-                </Stack>
-              </CardContent>
-            </Card>
-      ))}
-          {/* </Grid> */}
+          <Card key={index} sx={{ margin: '30px 20px', width: '45%' }}>
+            <CardActions>
+              <Button component="label" fullWidth variant="text">
+                Upload picture
+                <input type="file" accept="image/*" hidden onChange={handleImageChange(index)} />
+              </Button>
+            </CardActions>
+            <CardContent>
+              <Stack sx={{ alignItems: 'center' }}>
+                {imagePreview.url && (
+                  <Stack spacing={1}>
+                    <img
+                      src={imagePreview.url instanceof File ? URL.createObjectURL(imagePreview.url) : imagePreview.url} // Check if imagePreview is a File object
+                      alt={`Profile Preview ${index + 1}`}
+                      style={{ width: '100%', height: '200px', objectFit: 'cover' }}
+                    />
+                    <Button color="error" startIcon={<Trash />} onClick={handleRemoveImage(index)}>
+                      Remove Image
+                    </Button>
+                  </Stack>
+                )}
+              </Stack>
+            </CardContent>
+          </Card>
+        ))}
+        {/* </Grid> */}
         {/* </Stack> */}
-        </Stack>
+      </Stack>
 
       {images.length < 5 && (
-        <Button sx={{margin:'20px 20px'}} variant="contained" color="primary" startIcon={<Plus />} onClick={handleAddCard}>
+        <Button
+          sx={{ margin: '20px 20px' }}
+          variant="contained"
+          color="primary"
+          startIcon={<Plus />}
+          onClick={handleAddCard}
+        >
           Add Another Image
         </Button>
       )}
 
       {images.length > 1 && (
-        <Button sx={{margin:'20px 20px'}} variant="contained" color="secondary" startIcon={<Minus />} onClick={handleRemoveLastCard}>
+        <Button
+          sx={{ margin: '20px 20px' }}
+          variant="contained"
+          color="secondary"
+          startIcon={<Minus />}
+          onClick={handleRemoveLastCard}
+        >
           Remove Last Image
         </Button>
       )}
@@ -184,7 +238,7 @@ const ImageUploadCards = () => {
         startIcon={<Upload />}
         onClick={handleUploadImages}
         disabled={images.every((image) => image.url === null)}
-        sx={{margin:'20px 20px'}}
+        sx={{ margin: '20px 20px' }}
       >
         Upload Images
       </Button>

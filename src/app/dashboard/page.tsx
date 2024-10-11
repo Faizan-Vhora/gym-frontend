@@ -34,7 +34,7 @@ export default function Page(): React.JSX.Element {
   const [latestBookings, setLatestBookings] = React.useState<
     { id: number; name: string; createdAt: string; status: string }[]
   >([]);
-  const [sessionAttendedPercentage, setSessionAttendedPercentage] = React.useState([]);
+  const [sessionAttendedPercentage, setSessionAttendedPercentage] = React.useState<number | null>(null);
   const [loading, setLoading] = React.useState(false);
 
   interface Progress {
@@ -165,46 +165,71 @@ export default function Page(): React.JSX.Element {
     void fetchIncompleteProfiles();
   }, []);
 
+  interface Customer {
+    fullName: string;
+  }
+
+  interface Booking {
+    id: number;
+    customer: Customer;
+    createdAt: string;
+    status: string;
+  }
+
+  interface ApiResponse<T> {
+    data: {
+      items: T[];
+    };
+  }
   React.useEffect(() => {
     const fetchLatestBooking = async (): Promise<void> => {
       setLoading(true);
       try {
-        const response = await axiosInstance.get('/deshboard/latest-booking');
+        // Type the API response to ensure we know what is being returned
+        const response = await axiosInstance.get<ApiResponse<Booking>>('/deshboard/latest-booking');
 
-        const LatestBooking = response.data.data;
+        const latestBooking = response.data.data;
 
-        // Map the response to match the structure required by LatestProducts
-        const mappedBookings = LatestBooking.items.map((booking: any) => ({
-          id: booking.id, // Assuming the booking has an 'id' property
-          name: booking.customer.fullName, // Accessing the nested structure
-          createdAt: booking.createdAt, // Assuming this is the correct path
-          status: booking.status, // Assuming this is the correct path
+        // Safely map the response to match the structure required by LatestProducts
+        const mappedBookings = latestBooking.items.map((booking: Booking) => ({
+          id: booking.id,
+          name: booking.customer.fullName, // Safe access to the customer name
+          createdAt: booking.createdAt,
+          status: booking.status,
         }));
-        console.log('mapped Booking', mappedBookings);
-        // Set the mapped data into products state
+
+        // Set the mapped data into the latestBookings state
         setLatestBookings(mappedBookings);
       } catch (error) {
-        toast.error('Failed to load incomplete profiles');
+        toast.error('Failed to load latest bookings');
       } finally {
         setLoading(false);
       }
     };
-
     void fetchLatestBooking();
   }, []);
+
+  interface SessionAttendanceResponse {
+    month: string;
+    totalSessions: number;
+    attendedSessions: number;
+    attendancePercentage: string;
+  }
 
   React.useEffect(() => {
     const fetchSessionAttended = async (): Promise<void> => {
       setLoading(true);
       try {
-        const response = await axiosInstance.get('/deshboard/current-month-session-attendance');
+        const response = await axiosInstance.get<{ data: SessionAttendanceResponse }>(
+          '/deshboard/current-month-session-attendance'
+        );
 
-        const sessionAttended = response.data.data;
+        const sessionAttendanceData = response.data.data;
 
-        // Set the mapped data into products state
-        setSessionAttendedPercentage(sessionAttended.attendancePercentage);
+        // Update state with the mapped data
+        setSessionAttendedPercentage(parseFloat(sessionAttendanceData.attendancePercentage));
       } catch (error) {
-        toast.error('Failed to load incomplete profiles');
+        toast.error('Failed to load session attendance');
       } finally {
         setLoading(false);
       }
@@ -235,7 +260,7 @@ export default function Page(): React.JSX.Element {
         <Traffic chartSeries={mebershipPlanChartSeries} labels={labels} sx={{ height: '100%' }} />
       </Grid>
       <Grid lg={4} md={6} xs={12}>
-        <LatestProducts products={members} sx={{ height: '100%' }} />
+        <LatestProducts products={members} />
       </Grid>
       <Grid lg={8} md={12} xs={12}>
         <LatestOrders
@@ -284,7 +309,6 @@ export default function Page(): React.JSX.Element {
           //     createdAt: dayjs().subtract(10, 'minutes').toDate(),
           //   },
           // ]}
-          sx={{ height: '100%' }}
         />
       </Grid>
 

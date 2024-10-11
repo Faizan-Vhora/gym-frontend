@@ -4,13 +4,13 @@ import * as React from 'react';
 
 // Define the user interface
 interface User {
-  id: string;
+  id: number;
   fullName: string;
   email: string;
   phoneNumber: string;
   address: string;
   createdAt: string;
-  status: number; 
+  status: number;
   // Add any other user properties you need
 }
 

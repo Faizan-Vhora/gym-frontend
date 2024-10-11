@@ -4,7 +4,7 @@ import {
   BOOKING_SESSION_STATUS_DETAILS,
   BOOKING_STATUS,
 } from '@/utils/constant';
-import { formatDate } from '@/utils/dateUtils';
+import { formatDate } from '@/utils/date-utils';
 import {
   Avatar,
   Button,
@@ -54,13 +54,13 @@ const SessionPreview: React.FC<SessionNotesFormProps> = ({
     (1000 * 60 * 60); // Calculate duration in hours
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
+    <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth sx={{ zIndex: 999 }}>
       {/* <DialogTitle>Session Details</DialogTitle> */}
       <DialogContent>
         <Typography variant="h6" component="div" color="black" marginBottom={'10px'}>
           Session Preview
         </Typography>
-        <Card sx={{ padding: 2 }} className="bookin-card">
+        <Card sx={{ padding: 2 }} className="session-card">
           <Stack
             sx={{
               display: 'flex',

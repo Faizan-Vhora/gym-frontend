@@ -2,6 +2,7 @@
 
 import * as React from 'react';
 import { BOOKING_SESSION_STATUS_OPTIONS } from '@/utils/constant';
+import { CustomLoader } from '@/utils/loader';
 import { FormControl, Grid, IconButton, InputAdornment, InputLabel, MenuItem, TextField } from '@mui/material';
 import Button from '@mui/material/Button';
 import type { SelectChangeEvent } from '@mui/material/Select';
@@ -63,7 +64,6 @@ export function Toolbar({
   const [selectedMember, setSelectedMember] = React.useState<string>('');
   const [selectedStatus, setSelectedStatus] = React.useState<string>('');
   const [customers, setCustomers] = React.useState<Customer[]>([]);
-  const [status, setStatus] = React.useState('ALL');
   const [startDate, setStartDate] = React.useState<Dayjs | null>(null); // Change to Dayjs
   const [endDate, setEndDate] = React.useState<Dayjs | null>(null); // Change to Dayjs
 
@@ -100,7 +100,7 @@ export function Toolbar({
   }, []);
 
   React.useEffect(() => {
-    fetchTrainers();
+    void fetchTrainers();
   }, [fetchTrainers]);
 
   interface CustomerResponse {
@@ -167,13 +167,13 @@ export function Toolbar({
     onSearchChange('');
   };
 
-  const handleTrainerSelect = (event: SelectChangeEvent<string>): void => {
+  const handleTrainerSelect = (event: SelectChangeEvent): void => {
     const trainerId = Number(event.target.value);
     setSelectedTrainer(event.target.value);
     handleTrainerChange(trainerId);
   };
 
-  const handleMemberSelect = (event: SelectChangeEvent<string>): void => {
+  const handleMemberSelect = (event: SelectChangeEvent): void => {
     const memberId = Number(event.target.value);
     setSelectedMember(event.target.value);
     handleMemberChange(memberId);
@@ -181,23 +181,23 @@ export function Toolbar({
 
   const handleStatusChange = (event: SelectChangeEvent): void => {
     const newStatus = event.target.value;
-    setStatus(newStatus);
+    // setStatus(newStatus);
     onStatusChange(newStatus);
     setSelectedStatus(newStatus);
   };
 
-  const handleStartDateChange = (date: Dayjs | null): void => {
-    setStartDate(date);
-    onStartDateChange(date ? dayjs(date).format('YYYY-MM-DD') : '');
-    // If endDate is not null and is before the new startDate, reset it
-    if (date && endDate && endDate.isBefore(date)) {
+  const handleStartDateChange = (newStartDate: Dayjs | null): void => {
+    setStartDate(newStartDate);
+    onStartDateChange(newStartDate ? dayjs(newStartDate).format('YYYY-MM-DD') : '');
+    // Reset endDate if it's before the new start date
+    if (newStartDate && endDate?.isBefore(newStartDate)) {
       setEndDate(null);
     }
   };
 
-  const handleEndDateChange = (date: Dayjs | null): void => {
-    setEndDate(date);
-    onEndDateChange(date ? dayjs(date).format('YYYY-MM-DD') : '');
+  const handleEndDateChange = (newEndDate: Dayjs | null): void => {
+    setEndDate(newEndDate);
+    onEndDateChange(newEndDate ? dayjs(newEndDate).format('YYYY-MM-DD') : '');
   };
 
   const handleClearStartDate = (): void => {
@@ -279,9 +279,9 @@ export function Toolbar({
             <Select value={selectedStatus} onChange={handleStatusChange} label="Status">
               {/* Option for 'All' */}
               <MenuItem value="ALL">All</MenuItem>
-              {BOOKING_SESSION_STATUS_OPTIONS.map((status) => (
-                <MenuItem key={status.value} value={status.value}>
-                  {status.label}
+              {BOOKING_SESSION_STATUS_OPTIONS.map((sessionStatus) => (
+                <MenuItem key={sessionStatus.value} value={sessionStatus.value}>
+                  {sessionStatus.label}
                 </MenuItem>
               ))}
             </Select>
@@ -346,6 +346,7 @@ export function Toolbar({
           </Button>
         </Grid>
       </Grid>
+      {loading && <CustomLoader />}
     </Stack>
   );
 }

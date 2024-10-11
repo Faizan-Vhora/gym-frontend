@@ -30,14 +30,16 @@ export const formatDate = (dateString: string)=>{
 }
 
 
-export const formatTime = (date: Date) => {
-  if(typeof(date) == 'string'){
-    date = new Date(date)
-  }
-  if (!date) return null; // Handle null case
+export const formatTime = (inputDate: Date | string | null) => {
+  if (!inputDate) return null; // Handle null case
+
+  // Create a new date object if the input is a string
+  const date = typeof inputDate === 'string' ? new Date(inputDate) : inputDate;
+
   const hours = String(date.getHours()).padStart(2, '0'); // Get hours and pad with zeros
   const minutes = String(date.getMinutes()).padStart(2, '0'); // Get minutes
   const seconds = String(date.getSeconds()).padStart(2, '0'); // Get seconds
+
   return `${hours}:${minutes}:${seconds}`; // Return formatted time
 };
 
@@ -47,3 +49,23 @@ export function convertTo12HourFormat(time:string) {
   const hours12 = hours % 12 || 12; // Convert hour 0 to 12
   return `${hours12}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')} ${ampm}`;
 }
+
+
+
+export  function calculateWeeksBetweenDates(startDateStr: string, endDateStr: string): number {
+  // Convert the input strings to Date objects
+  const startDate = new Date(startDateStr);
+  const endDate = new Date(endDateStr);
+
+  // Calculate the difference in milliseconds
+  const diffInMs = endDate.getTime() - startDate.getTime();
+
+  // Convert the difference from milliseconds to days
+  const diffInDays = diffInMs / (1000 * 60 * 60 * 24);
+
+  // Convert days to weeks and return the integer value
+  const weeksBetween = Math.floor(diffInDays / 7);
+
+  return weeksBetween;
+}
+

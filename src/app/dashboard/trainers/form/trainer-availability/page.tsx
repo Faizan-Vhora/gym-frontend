@@ -1,6 +1,7 @@
+'use client';
+
 import React, { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { DateFormat } from '@/utils/constant';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Box, Button, Checkbox, FormControl, FormControlLabel, Grid, IconButton, Typography } from '@mui/material';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -14,7 +15,6 @@ import Swal from 'sweetalert2';
 import { z } from 'zod';
 
 import axiosInstance from '@/lib/axios';
-import { padding } from '@mui/system';
 
 const timeSlotSchema = z
   .object({
@@ -88,31 +88,47 @@ export default function WeekdayTimeSlots() {
 
   useEffect(() => {
     const fetchTrainerAvailabilitySlots = async () => {
-      if (!id) return setIsLoading(false);
+      if (!id) {
+        setIsLoading(false);
+        return; // Just use return without a value
+      }
       try {
-        const response = await axiosInstance.get(`/trainer/${id}/trainer-availability-slots`);
-        const slots = response.data.data;
+        // Specify the expected structure of the response using generics
+        const response = await axiosInstance.get<{ data: ApiTimeSlot[] }>(`/trainer/${id}/trainer-availability-slots`);
 
-        const updatedDays = daysOfWeek.map((day, index) => {
-          const daySlots = slots.filter((slot: ApiTimeSlot) => slot.weekday === index);
+        // Type the `slots` correctly to avoid `any` issue
+        const slots: ApiTimeSlot[] = response.data.data;
+
+        // Map through days of the week and filter slots based on the weekday
+        const updatedDays: Day[] = daysOfWeek.map((_, index) => {
+          const daySlots = slots.filter((slot) => slot.weekday === index);
           return {
             isChecked: daySlots.length > 0,
-            timeSlots: daySlots.map((slot: ApiTimeSlot) => ({
+            timeSlots: daySlots.map((slot) => ({
               startTime: dayjs(`2000-01-01T${slot.startTime}`).toDate(),
               endTime: dayjs(`2000-01-01T${slot.endTime}`).toDate(),
             })),
           };
         });
 
+        // Set the value for `days` with proper typing
         setValue('days', updatedDays);
-      } catch (error) {
-        console.error('Error fetching trainer availability slots:', error);
+      } catch (error: unknown) {
+        let errorMessage: string;
+        if (typeof error === 'string') {
+          errorMessage = error;
+        } else {
+          // Handle other types of errors, or set a generic message
+          errorMessage = 'An unexpected error occurred';
+        }
+        // Convert the Error object to a string
+        toast.error(errorMessage);
       } finally {
         setIsLoading(false);
       }
     };
 
-    fetchTrainerAvailabilitySlots();
+    void fetchTrainerAvailabilitySlots();
   }, [id, setValue]);
 
   const applySameTimeToAll = () => {
@@ -126,7 +142,7 @@ export default function WeekdayTimeSlots() {
 
     const firstDayTimeSlots = currentDays[firstCheckedDayIndex].timeSlots;
 
-    const updatedDays = currentDays.map((day, index) => ({
+    const updatedDays = currentDays.map((day) => ({
       ...day,
       timeSlots: day.isChecked ? [...firstDayTimeSlots] : [],
     }));
@@ -245,13 +261,10 @@ export default function WeekdayTimeSlots() {
     try {
       if (!id) throw new Error('Trainer ID is missing');
 
-      console.log('Payload:', { trainerAvailabilitySlot });
-
       await axiosInstance.put(`/trainer/${id}/trainer-availability-slots`, { trainerAvailabilitySlot });
       toast.success('Time slots saved successfully!');
       router.push('/dashboard/trainers');
     } catch (error) {
-      console.error('Error saving time slots:', error);
       toast.error('An error occurred while saving the time slots.');
     }
   };
@@ -305,22 +318,19 @@ export default function WeekdayTimeSlots() {
                 >
                   <Plus />
                 </IconButton>
-                
               </Grid>
-              
-              <Grid item md={9} >
+
+              <Grid item md={9}>
                 <Controller
-                
                   name={`days.${dayIndex}.timeSlots`}
                   control={control}
                   render={({ field }) => (
                     <>
                       {field.value.map((slot, slotIndex) => (
-                        <Grid container  key={slotIndex} alignItems="center" >
-
-                          <Grid item xs={12} sm={6} md={4} sx={{padding:'10px 10px'}}>
+                        <Grid container key={slotIndex} alignItems="center">
+                          <Grid item xs={12} sm={6} md={4} sx={{ padding: '10px 10px' }}>
                             <LocalizationProvider dateAdapter={AdapterDayjs}>
-                              <FormControl fullWidth >
+                              <FormControl fullWidth>
                                 <TimePicker
                                   label="Start Time"
                                   value={slot.startTime ? dayjs(slot.startTime) : null}
@@ -338,7 +348,7 @@ export default function WeekdayTimeSlots() {
                             </LocalizationProvider>
                           </Grid>
 
-                          <Grid item xs={12} sm={6} md={4} sx={{padding:'10px 10px'}}>
+                          <Grid item xs={12} sm={6} md={4} sx={{ padding: '10px 10px' }}>
                             <LocalizationProvider dateAdapter={AdapterDayjs}>
                               <FormControl fullWidth>
                                 <TimePicker
@@ -374,7 +384,6 @@ export default function WeekdayTimeSlots() {
                               <Minus />
                             </IconButton>
                           </Grid>
-
                         </Grid>
                       ))}
                     </>

@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useState } from 'react';
 import { BOOKING_STATUS_OPTIONS, BOOKING_TYPE_OPTIONS } from '@/utils/constant';
-import { DATE_FORMAT } from '@/utils/dateUtils';
+import { DATE_FORMAT } from '@/utils/date-utils';
 import {
   Box,
   FormControl,
@@ -28,7 +28,6 @@ import { Trainer } from '../trainer/trainer-table';
 
 interface SupportFiltersProps {
   onSearchChange: (searchTerm: string) => void;
-  onStatusChange: (status: string) => void;
   onBookingTypeChange: (bookingType: string) => void;
   onTrainerIdChange: (trainerId: string) => void;
   onCustomerIdChange: (customerId: string) => void;
@@ -38,7 +37,6 @@ interface SupportFiltersProps {
 
 export function BookingFilters({
   onSearchChange,
-  onStatusChange,
   onBookingTypeChange,
   onTrainerIdChange,
   onCustomerIdChange,
@@ -54,15 +52,14 @@ export function BookingFilters({
   const [trainerOptions, setTrainerOptions] = useState<Trainer[]>([]);
   const [customerOptions, setCustomerOptions] = useState<Customer[]>([]);
 
-  const [startDate, setStartDate] = useState<Dayjs | null>(null); // Change to Dayjs
-  const [endDate, setEndDate] = useState<Dayjs | null>(null); // Change to Dayjs
+  const [startDate, setStartDate] = useState<Dayjs | null>(null);
+  const [endDate, setEndDate] = useState<Dayjs | null>(null);
 
-  // Create a debounced version of the search handler
   const debouncedSearch = React.useCallback(
     debounce((value: string) => {
       onSearchChange(value);
-    }, 300), // Adjust the debounce delay as needed
-    [onSearchChange] // Dependency array
+    }, 300),
+    [onSearchChange]
   );
 
   const fetchTrainers = async (): Promise<void> => {
@@ -86,11 +83,10 @@ export function BookingFilters({
   };
 
   React.useEffect(() => {
-    fetchTrainers();
-    fetchCustomers();
+    void fetchTrainers(); // Awaiting the promise
+    void fetchCustomers(); // Awaiting the promise
   }, []);
 
-  // Clean up the debounce function on component unmount
   React.useEffect(() => {
     return () => {
       debouncedSearch.cancel();
@@ -136,8 +132,7 @@ export function BookingFilters({
     setStartDate(date);
     onStartDateChange(date ? dayjs(date).format('YYYY-MM-DD') : '');
 
-    // If endDate is not null and is before the new startDate, reset it
-    if (date && endDate && endDate.isBefore(date)) {
+    if (endDate?.isBefore(date)) {
       setEndDate(null);
     }
   };
@@ -170,7 +165,7 @@ export function BookingFilters({
             endAdornment: searchTerm && (
               <InputAdornment position="end">
                 <IconButton onClick={handleSearchClear} edge="end">
-                  <XIcon size={15} /> {/* Adjust size as needed */}
+                  <XIcon size={15} />
                 </IconButton>
               </InputAdornment>
             ),
@@ -181,7 +176,7 @@ export function BookingFilters({
       <Grid item md={3} xs={12}>
         <Box display="flex" alignItems="center">
           <DatePicker
-            format={`${DATE_FORMAT}`}
+            format={DATE_FORMAT}
             views={['year', 'month', 'day']}
             label="Start Date"
             value={startDate}
@@ -194,7 +189,7 @@ export function BookingFilters({
           />
           {startDate && (
             <IconButton onClick={handleClearStartDate} edge="end">
-              <XIcon size={20} /> {/* Adjust icon size as needed */}
+              <XIcon size={20} />
             </IconButton>
           )}
         </Box>
@@ -203,22 +198,21 @@ export function BookingFilters({
       <Grid item md={3} xs={12}>
         <Box display="flex" alignItems="center">
           <DatePicker
-            format={`${DATE_FORMAT}`}
+            format={DATE_FORMAT}
             views={['year', 'month', 'day']}
             label="End Date"
             value={endDate}
             onChange={handleEndDateChange}
-            minDate={startDate ? startDate : undefined} // Pass undefined if startDate is null
+            minDate={startDate ?? undefined} // Use nullish coalescing
             slotProps={{
               textField: {
                 fullWidth: true,
               },
             }}
           />
-
           {endDate && (
             <IconButton onClick={handleClearEndDate} edge="end">
-              <XIcon size={20} /> {/* Adjust icon size as needed */}
+              <XIcon size={20} />
             </IconButton>
           )}
         </Box>

@@ -24,7 +24,7 @@ import {
 } from '@mui/material';
 import { useForm } from 'react-hook-form';
 import { toast, ToastContainer } from 'react-toastify';
-import { string, z } from 'zod';
+import { z } from 'zod';
 import axiosInstance from '@/lib/axios';
 import { Trainer } from '@/components/dashboard/trainer/trainer-table';
 import { Customer } from '@/components/dashboard/customer/customers-table';
@@ -35,8 +35,7 @@ import { SUPPORT_TICKET_STATUS_OPTIONS, SUPPORT_TICKET_USER_TYPE_OPTIONS, USER_T
 // Dynamically import the CKEditor
 const CustomEditor = dynamic(() => import('@/components/ckeditor'), { ssr: false });
 
-
-export interface supportTicketPayloadDataI {
+export interface SupportTicketPayloadDataI {
   subject: string;
   userType: number;
   user: number;
@@ -48,7 +47,7 @@ export interface supportTicketPayloadDataI {
 const supportSchema = z.object({
   subject: z.string().min(1, 'Subject is required'),
   userType: z.string().min(1, 'User Type is required'),
-  user: z.string().min(1, 'User is required'), // Changed to string
+  user: z.string().min(1, 'User is required'),
   status: z.string().min(1, 'Status is required'),
   description: z.string().optional(),
 });
@@ -60,7 +59,7 @@ export default function SupportForm(): React.JSX.Element {
   const id = searchParams.get('id');
   const router = useRouter();
 
-  // form fields
+  // Form fields
   const [trainers, setTrainers] = useState<Trainer[]>([]);
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [userOptions, setUserOptions] = useState<{ value: string; label: string }[]>([]);
@@ -69,7 +68,7 @@ export default function SupportForm(): React.JSX.Element {
 
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = React.useState(false);
+  const [loading, setLoading] = useState(false);
 
   const {
     register,
@@ -92,7 +91,6 @@ export default function SupportForm(): React.JSX.Element {
       axiosInstance
         .get<{ data: SupportEntry }>(`/support-ticket/${id}`)
         .then((response) => {
-          // Type assertion to ensure data conforms to FaqData
           const fetchedData: SupportEntry = response.data.data;
           setSupportTicket({
             subject: fetchedData.subject,
@@ -100,30 +98,20 @@ export default function SupportForm(): React.JSX.Element {
             user: fetchedData.user ? String(fetchedData.user.id) : '',
             status: fetchedData.status,
           });
-
           setTicketDescription(fetchedData.description);
-
         })
         .catch((err: unknown) => {
-          let errorMessage: string;
-          if (err instanceof Error) {
-            errorMessage = err.message; // Safely access the message property
-          } else {
-            errorMessage = 'An unexpected error occurred'; // Fallback message
-          }
+          const errorMessage = err instanceof Error ? err.message : 'An unexpected error occurred';
           toast.error(errorMessage);
         })
         .finally(() => {
-          setLoading(false); // End loading state
+          setLoading(false);
         });
     }
   }, [id]);
 
-
-
   useEffect(() => {
     if (supportTicket) {
-      console.log(">>> supportTicket::: ", supportTicket)
       setValue('subject', supportTicket.subject);
       setValue('userType', supportTicket.userType);
       setValue('user', supportTicket.user);
@@ -131,21 +119,16 @@ export default function SupportForm(): React.JSX.Element {
     }
   }, [supportTicket, setValue]);
 
-
   useEffect(() => {
-    // Reset user options based on userType
-    console.log("userType: ", userType)
-    const updatedUserOptions = userType ==  String(USER_TYPE.MEMBER)
+    const updatedUserOptions = userType === String(USER_TYPE.MEMBER)
       ? customers.map(customer => ({ value: customer.id.toString(), label: customer.fullName }))
       : trainers.map(trainer => ({ value: trainer.id.toString(), label: trainer.fullName }));
 
-    console.log("updatedUserOptions: ", updatedUserOptions)
     setUserOptions(updatedUserOptions);
-    if(!id){
-      setValue('user', ''); // Reset user selection when userType changes
+    if (!id) {
+      setValue('user', '');
     }
   }, [userType, customers, trainers, setValue]);
-
 
   const fetchTrainers = async (): Promise<void> => {
     try {
@@ -167,11 +150,8 @@ export default function SupportForm(): React.JSX.Element {
     }
   };
 
-
   const onSubmit = async (formData: SupportFormInputs): Promise<void> => {
-    formData.description = description; // Attach description to formData
-    console.log('formData: ', formData);
-
+    formData.description = description;
     setIsSubmitting(true);
     setError(null);
     setLoading(true);
@@ -180,44 +160,35 @@ export default function SupportForm(): React.JSX.Element {
       const method = id ? 'put' : 'post';
       const url = id ? `/support-ticket/${id}` : '/support-ticket';
 
-      const data : supportTicketPayloadDataI = {
+      const data: SupportTicketPayloadDataI = {
         subject: formData.subject,
         userType: parseInt(formData.userType),
         user: parseInt(formData.user),
         status: formData.status,
         description: formData.description,
-      }
+      };
 
       await axiosInstance({
         method,
         url,
         data,
       });
-      toast.success('support ticket saved successfully');
-      router.push('/dashboard/support'); // Redirect to the listing page after successful save
+      toast.success('Support ticket saved successfully');
+      router.push('/dashboard/support');
     } catch (err: unknown) {
-      let errorMessage: string;
-      if (err instanceof Error) {
-        errorMessage = err.message; // Safely access the message property
-      } else {
-        errorMessage = 'An unexpected error occurred'; // Fallback message
-      }
+      const errorMessage = err instanceof Error ? err.message : 'An unexpected error occurred';
       toast.error(errorMessage);
       setError('Failed to save support ticket details.');
     } finally {
       setIsSubmitting(false);
       setLoading(false);
     }
-
-
   };
 
-
   useEffect(() => {
-    fetchTrainers();
-    fetchCustomers();
+    void fetchTrainers();
+    void fetchCustomers();
   }, []);
-
 
   if (!supportTicket && id) {
     return <div>{loading && <CustomLoader />}</div>;
@@ -231,17 +202,15 @@ export default function SupportForm(): React.JSX.Element {
           sx={{ backgroundColor: '#f5f5f5', py: 2 }}
         />
         <Divider />
-
         <CardContent>
           <Grid container spacing={3}>
-            {/* User Type */}
             <Grid item xs={12} sm={4}>
-              <FormControl fullWidth variant="outlined" error={!!errors.userType}>
+              <FormControl fullWidth variant="outlined" error={Boolean(errors.userType)}>
                 <InputLabel>User Type</InputLabel>
                 <Select
                   {...register('userType')}
                   value={userType}
-                  onChange={(e) => setValue('userType', e.target.value)}
+                  onChange={(e) => {setValue('userType', e.target.value)} }
                   label="User Type"
                 >
                   {SUPPORT_TICKET_USER_TYPE_OPTIONS.map((option) => (
@@ -258,14 +227,13 @@ export default function SupportForm(): React.JSX.Element {
               </FormControl>
             </Grid>
 
-            {/* User */}
             <Grid item xs={12} sm={4}>
-              <FormControl fullWidth variant="outlined" error={!!errors.user}>
+              <FormControl fullWidth variant="outlined" error={Boolean(errors.user)}>
                 <InputLabel>User</InputLabel>
                 <Select
                   {...register('user')}
                   value={user}
-                  onChange={(e) => setValue('user', e.target.value)}
+                  onChange={(e) => {setValue('user', e.target.value)} }
                   label="User"
                 >
                   {userOptions.map((option) => (
@@ -282,14 +250,13 @@ export default function SupportForm(): React.JSX.Element {
               </FormControl>
             </Grid>
 
-            {/* Status */}
             <Grid item xs={12} sm={4}>
-              <FormControl fullWidth variant="outlined" error={!!errors.status}>
+              <FormControl fullWidth variant="outlined" error={Boolean(errors.status)}>
                 <InputLabel>Status</InputLabel>
                 <Select
                   {...register('status')}
                   value={status}
-                  onChange={(e) => setValue('status', e.target.value)}
+                  onChange={(e) =>  {setValue('status', e.target.value)}}
                   label="Status"
                 >
                   {SUPPORT_TICKET_STATUS_OPTIONS.map((option) => (
@@ -306,9 +273,8 @@ export default function SupportForm(): React.JSX.Element {
               </FormControl>
             </Grid>
 
-            {/* Subject */}
             <Grid item xs={12}>
-              <FormControl fullWidth required error={!!errors.subject}>
+              <FormControl fullWidth required error={Boolean(errors.subject)}>
                 <InputLabel>Subject</InputLabel>
                 <OutlinedInput {...register('subject')} label="Subject" />
                 {errors.subject && (
@@ -319,21 +285,18 @@ export default function SupportForm(): React.JSX.Element {
               </FormControl>
             </Grid>
 
-            {/* Description */}
             <Grid item xs={12}>
               <InputLabel>Description</InputLabel>
               <FormControl fullWidth required>
                 <CustomEditor
                   data={description}
-                  onChange={(data) => setTicketDescription(data)}
+                  onChange={(data) => {setTicketDescription(data)}}
                 />
               </FormControl>
             </Grid>
           </Grid>
         </CardContent>
-
         <Divider />
-
         <CardActions sx={{ justifyContent: 'flex-end', p: 2 }}>
           <Button className="common-button" variant="contained" type="submit" sx={{ mr: 2 }} disabled={isSubmitting}>
             Save
@@ -356,7 +319,6 @@ export default function SupportForm(): React.JSX.Element {
           </Button>
         </CardActions>
       </Card>
-
 
       {loading && <CustomLoader />}
       {error ? <Alert color="error">{error}</Alert> : null}
