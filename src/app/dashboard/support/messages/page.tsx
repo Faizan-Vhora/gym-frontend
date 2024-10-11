@@ -69,7 +69,7 @@ export default function SupportForm(): React.JSX.Element {
     if (messagesEndRef.current) {
       messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
     }
-    console.log("supportTicketMessages: ", supportTicketMessages)
+    console.log('supportTicketMessages: ', supportTicketMessages);
   }, [supportTicketMessages]);
 
   useEffect(() => {
@@ -96,20 +96,10 @@ export default function SupportForm(): React.JSX.Element {
     setLoading(true);
     const qParams = { pagination: false };
     try {
-<<<<<<< Updated upstream
       const response = await axiosInstance.get<{ data: SupportTicketMessageEntry[] }>(`/support-ticket/${id}/message`, {
         params: qParams,
       });
       setTicketMessages(response.data.data);
-=======
-      const response = await axiosInstance.get<{ data: { items: SupportEntry[]; meta: { totalItems: number } } }>(
-        `/support-ticket/${id}/message`,
-        {
-          params: qParams,
-        }
-      );
-      setTicketMessages(response.data.data.items);
->>>>>>> Stashed changes
     } catch (err: unknown) {
       const errorMessage = err instanceof Error ? err.message : 'An unexpected error occurred';
       toast.error(errorMessage);
