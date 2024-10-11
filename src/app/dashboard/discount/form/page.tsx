@@ -263,7 +263,7 @@ export default function DiscountFormPage(): React.JSX.Element {
                   {imagePreview && (
                     <Stack spacing={1} mt={2}>
                       <img
-                        src={imagePreview}
+                        src={imagePreview || '/assets/logo.svg'}
                         alt="Preview"
                         style={{ width: '100%', maxHeight: '200px', objectFit: 'cover', marginTop: '1rem' }}
                       />

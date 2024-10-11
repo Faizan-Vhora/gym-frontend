@@ -135,7 +135,7 @@ const BookingPreviewDialog: React.FC<BookingPreviewDialogProps> = ({ isOpen, han
                     <Grid container>
                       <Grid item md={4} alignContent={'center'}>
                         <Avatar
-                          src={bookingDetails.selectedCustomer.profileImageUrl || ''}
+                          src={bookingDetails.selectedCustomer.profileImageUrl || '/assets/User@3x-1.png'}
                           sx={{ height: '56px', width: '56px' }}
                         />
                       </Grid>
@@ -181,7 +181,7 @@ const BookingPreviewDialog: React.FC<BookingPreviewDialogProps> = ({ isOpen, han
                     <Grid container>
                       <Grid item md={4} alignContent={'center'}>
                         <Avatar
-                          src={bookingDetails?.selectedTrainer?.profileImageUrl || ''}
+                          src={bookingDetails?.selectedTrainer?.profileImageUrl || '/assets/User@3x-1.png'}
                           sx={{ height: '56px', width: '56px' }}
                         />
                       </Grid>

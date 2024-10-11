@@ -177,7 +177,7 @@ export function AccountDetailsForm(): React.JSX.Element {
               <Card>
                 <CardContent>
                   <Stack spacing={2} sx={{ alignItems: 'center' }}>
-                    <Avatar src={user.profileImageUrl || ''} sx={{ height: '100px', width: '100px' }} />
+                    <Avatar src={user.profileImageUrl || '/assets/User@3x-1.png'} sx={{ height: '100px', width: '100px' }} />
                   </Stack>
                 </CardContent>
                 <CardActions sx={{ justifyContent: 'center', marginBottom: '10px' }}>

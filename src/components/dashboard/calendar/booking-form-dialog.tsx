@@ -629,7 +629,7 @@ export function BookingFormDialog({
                     <Grid container>
                       <Grid item md={4} alignContent={'center'}>
                         <Avatar
-                          src={selectedCustomer.profileImageUrl || ''}
+                          src={selectedCustomer.profileImageUrl || '/assets/User@3x-1.png'}
                           sx={{ height: '56px', width: '56px' }}
                         ></Avatar>
                       </Grid>
@@ -711,7 +711,7 @@ export function BookingFormDialog({
                     <Grid container>
                       <Grid item md={4} alignContent={'center'}>
                         <Avatar
-                          src={selectedTrainer.profileImageUrl || ''}
+                          src={selectedTrainer.profileImageUrl || '/assets/User@3x-1.png'}
                           sx={{ height: '56px', width: '56px' }}
                         ></Avatar>
                       </Grid>

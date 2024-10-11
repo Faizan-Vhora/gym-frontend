@@ -139,7 +139,7 @@ export function DiscountTable({
                   <TableRow key={discount.id} sx={tableCss.tableRow}>
                     <TableCell sx={tableCss.tableCell}>
                       <Image
-                        src={discount?.discountImageUrl || ''}
+                        src={discount?.discountImageUrl || '/assets/logo.svg'}
                         alt="Discount Preview"
                         width={50}
                         height={50}

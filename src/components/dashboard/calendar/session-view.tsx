@@ -118,7 +118,7 @@ const SessionPreview: React.FC<SessionNotesFormProps> = ({
                     <Grid container>
                       <Grid item md={4} alignContent={'center'}>
                         <Avatar
-                          src={sessionObj.customer?.profileImageUrl}
+                          src={sessionObj.customer?.profileImageUrl || '/assets/User@3x-1.png'}
                           sx={{ height: '56px', width: '56px' }}
                         ></Avatar>
                       </Grid>
@@ -171,7 +171,7 @@ const SessionPreview: React.FC<SessionNotesFormProps> = ({
                     <Grid container>
                       <Grid item md={4} alignContent={'center'}>
                         <Avatar
-                          src={sessionObj.trainer?.profileImageUrl}
+                          src={sessionObj.trainer?.profileImageUrl || '/assets/User@3x-1.png'}
                           sx={{ height: '56px', width: '56px' }}
                         ></Avatar>
                       </Grid>
