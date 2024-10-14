@@ -61,6 +61,10 @@ export const paths = {
     bookingsView: (id?: number) => `/dashboard/bookings/view/${id}`
   },
 
+  notification: {
+    notificationList: '/dashboard/notification',
+    
+  },
 
   dashboard: {
     dashboard: '/dashboard',

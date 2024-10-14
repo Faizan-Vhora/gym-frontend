@@ -1,8 +1,10 @@
 import type { Icon } from '@phosphor-icons/react/dist/lib/types';
 import { AddressBook as AddressBookIcon } from '@phosphor-icons/react/dist/ssr/AddressBook';
 import { AlignLeft as AlignLeftIcon } from '@phosphor-icons/react/dist/ssr/AlignLeft';
+import { Bell as BellIcon } from '@phosphor-icons/react/dist/ssr/Bell';
 import { CalendarCheck as CalendarCheckIcon } from '@phosphor-icons/react/dist/ssr/CalendarCheck';
 import { ChartPie as ChartPieIcon } from '@phosphor-icons/react/dist/ssr/ChartPie';
+import { ChatCenteredDots as ChatCenteredDotsIcon } from '@phosphor-icons/react/dist/ssr/ChatCenteredDots';
 import { ChatsCircle as ChatsCircleIcon } from '@phosphor-icons/react/dist/ssr/ChatsCircle';
 import { ClockUser as ClockUserIcon } from '@phosphor-icons/react/dist/ssr/ClockUser';
 import { CreditCard as CreditCardIcon } from '@phosphor-icons/react/dist/ssr/CreditCard';
@@ -20,23 +22,22 @@ import { Kanban as KanbanIcon } from '@phosphor-icons/react/dist/ssr/Kanban';
 import { Link as LinkIcon } from '@phosphor-icons/react/dist/ssr/Link';
 import { Lock as LockIcon } from '@phosphor-icons/react/dist/ssr/Lock';
 import { MoneyWavy as MoneyWavyIcon } from '@phosphor-icons/react/dist/ssr/MoneyWavy';
+import { Notepad as NotepadIcon } from '@phosphor-icons/react/dist/ssr/Notepad';
 import { ReadCvLogo as ReadCvLogoIcon } from '@phosphor-icons/react/dist/ssr/ReadCvLogo';
 import { Receipt as ReceiptIcon } from '@phosphor-icons/react/dist/ssr/Receipt';
 import { ShareNetwork as ShareNetworkIcon } from '@phosphor-icons/react/dist/ssr/ShareNetwork';
 import { ShoppingBagOpen as ShoppingBagOpenIcon } from '@phosphor-icons/react/dist/ssr/ShoppingBagOpen';
 import { ShoppingCartSimple as ShoppingCartSimpleIcon } from '@phosphor-icons/react/dist/ssr/ShoppingCartSimple';
 import { SignOut as SignOutIcon } from '@phosphor-icons/react/dist/ssr/SignOut';
+import { Tag as TagIcon } from '@phosphor-icons/react/dist/ssr/Tag';
 import { TextAlignLeft as TextAlignLeftIcon } from '@phosphor-icons/react/dist/ssr/TextAlignLeft';
 import { Translate as TranslateIcon } from '@phosphor-icons/react/dist/ssr/Translate';
 import { Truck as TruckIcon } from '@phosphor-icons/react/dist/ssr/Truck';
 import { Upload as UploadIcon } from '@phosphor-icons/react/dist/ssr/Upload';
+import { UserCheck as UserCheckIcon } from '@phosphor-icons/react/dist/ssr/UserCheck';
+import { UserCircleGear as UserCircleGearIcon } from '@phosphor-icons/react/dist/ssr/UserCircleGear';
 import { Users as UsersIcon } from '@phosphor-icons/react/dist/ssr/Users';
 import { WarningDiamond as WarningDiamondIcon } from '@phosphor-icons/react/dist/ssr/WarningDiamond';
-import { ChatCenteredDots as  ChatCenteredDotsIcon} from '@phosphor-icons/react/dist/ssr/ChatCenteredDots';
-import { Tag as TagIcon} from '@phosphor-icons/react/dist/ssr/Tag';
-import { UserCheck  as UserCheckIcon} from '@phosphor-icons/react/dist/ssr/UserCheck';
-import { UserCircleGear as UserCircleGearIcon } from '@phosphor-icons/react/dist/ssr/UserCircleGear';
-import { Notepad as NotepadIcon} from '@phosphor-icons/react/dist/ssr/Notepad';
 
 export const navIcons = {
   'address-book': AddressBookIcon,
@@ -60,10 +61,11 @@ export const navIcons = {
   'money-wavy': MoneyWavyIcon,
   'clock-user': ClockUserIcon,
   'chat-centered-dots': ChatCenteredDotsIcon,
-  'tag': TagIcon,
+  tag: TagIcon,
+  bell: BellIcon,
   'user-check': UserCheckIcon,
   'user-circle-gear': UserCircleGearIcon,
-  'notepad': NotepadIcon,
+  notepad: NotepadIcon,
   headset: HeadsetIcon,
   cube: CubeIcon,
   file: FileIcon,
