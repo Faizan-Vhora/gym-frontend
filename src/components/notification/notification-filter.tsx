@@ -1,18 +1,15 @@
 import * as React from 'react';
 import { useState } from 'react';
-import { FormControl, Grid, IconButton, InputAdornment, InputLabel, MenuItem, Select, TextField } from '@mui/material';
-import type { SelectChangeEvent } from '@mui/material';
+import { Grid, IconButton, InputAdornment, TextField } from '@mui/material';
 import { X as XIcon } from '@phosphor-icons/react'; // Import XIcon from phosphor-react
 import debounce from 'lodash/debounce';
 
 interface NotificationFiltersProps {
   onSearchChange: (searchTerm: string) => void;
-  onFromChange: (from: string) => void;
 }
 
-export function NotificationFilters({ onSearchChange, onFromChange }: NotificationFiltersProps): React.JSX.Element {
+export function NotificationFilters({ onSearchChange }: NotificationFiltersProps): React.JSX.Element {
   const [searchTerm, setSearchTerm] = useState('');
-  const [from, setFrom] = useState('All');
 
   // Create a debounced version of the search handler
   const debouncedSearch = React.useCallback(
@@ -40,12 +37,6 @@ export function NotificationFilters({ onSearchChange, onFromChange }: Notificati
     onSearchChange('');
   };
 
-  const handleFromChange = (e: SelectChangeEvent): void => {
-    const value = e.target.value;
-    setFrom(value);
-    onFromChange(value);
-  };
-
   return (
     <Grid container spacing={2}>
       <Grid item md={6} xs={12}>
@@ -66,19 +57,6 @@ export function NotificationFilters({ onSearchChange, onFromChange }: Notificati
           }}
         />
       </Grid>
-      {/* <Grid item md={6} xs={12}>
-        <FormControl fullWidth variant="outlined">
-          <InputLabel>From</InputLabel>
-          <Select value={from} onChange={handleFromChange} label="From">
-            <MenuItem value="All">All</MenuItem>
-            {SUPPORT_TICKET_USER_TYPE_OPTIONS.map((option) => (
-              <MenuItem key={option.value} value={option.value}>
-                {option.label}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-      </Grid> */}
     </Grid>
   );
 }

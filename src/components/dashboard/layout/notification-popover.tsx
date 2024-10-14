@@ -1,10 +1,10 @@
 'use client';
 
 import * as React from 'react';
+import { CustomLoader } from '@/utils/loader';
 import Avatar from '@mui/material/Avatar';
 import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
-import Link from '@mui/material/Link';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import Popover from '@mui/material/Popover';
@@ -41,13 +41,6 @@ export function NotificationsPopover({
   const getNotificationListData = React.useCallback(async (): Promise<void> => {
     setLoading(true);
     try {
-      //   const qParams = {
-      //     page: page + 1,
-      //     limit: rowsPerPage,
-      //     search: searchTerm,
-      //     userType: fromFilter !== 'All' ? fromFilter : null,
-      //   };
-
       const response = await axiosInstance.get<{ data: NotificationEntry[] }>('/notification/my/unread');
 
       setNotifications(response.data.data);
@@ -58,10 +51,16 @@ export function NotificationsPopover({
     }
   }, []);
 
+  React.useEffect(() => {
+    if (open) {
+      void getNotificationListData();
+    }
+  }, [open]);
+
   return (
     <Popover
       anchorEl={anchorEl}
-      anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+      anchorOrigin={{ horizontal: 'right', vertical: 'top' }}
       onClose={onClose}
       open={open}
       slotProps={{ paper: { sx: { width: '380px' } } }}
@@ -93,6 +92,7 @@ export function NotificationsPopover({
               />
             ))}
           </List>
+          {loading && <CustomLoader />}
         </Box>
       )}
     </Popover>

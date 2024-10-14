@@ -19,7 +19,6 @@ export default function Page(): React.JSX.Element {
   // State variables
   const [entries, setEntries] = React.useState<NotificationEntry[]>([]);
   const [searchTerm, setSearchTerm] = React.useState('');
-  const [fromFilter, setFromFilter] = React.useState('All');
   const [page, setPage] = React.useState<number>(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [count, setCount] = React.useState<number>(0);
@@ -33,7 +32,6 @@ export default function Page(): React.JSX.Element {
         page: page + 1,
         limit: rowsPerPage,
         search: searchTerm,
-        userType: fromFilter !== 'All' ? fromFilter : null,
       };
 
       const response = await axiosInstance.get<{ data: { items: NotificationEntry[]; meta: { totalItems: number } } }>(
@@ -48,7 +46,7 @@ export default function Page(): React.JSX.Element {
     } finally {
       setLoading(false);
     }
-  }, [page, rowsPerPage, searchTerm, fromFilter]);
+  }, [page, rowsPerPage, searchTerm]);
 
   const handleAddClick = (): void => {
     router.push('/dashboard/notification/form');
@@ -65,11 +63,6 @@ export default function Page(): React.JSX.Element {
 
   const handleSearchChange = (search: string): void => {
     setSearchTerm(search);
-    setPage(0);
-  };
-
-  const handleFromChange = (type: string): void => {
-    setFromFilter(type);
     setPage(0);
   };
 
@@ -97,7 +90,7 @@ export default function Page(): React.JSX.Element {
       </Stack>
       <Card>
         <Stack sx={{ padding: '30px' }}>
-          <NotificationFilters onSearchChange={handleSearchChange} onFromChange={handleFromChange} />
+          <NotificationFilters onSearchChange={handleSearchChange} />
         </Stack>
 
         {loading ? (

@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { Badge, Tooltip } from '@mui/material';
 import Avatar from '@mui/material/Avatar';
 import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
@@ -22,7 +23,6 @@ interface User {
 
 export function MainNav(): React.JSX.Element {
   const [openNav, setOpenNav] = React.useState<boolean>(false);
-  const [openNavForNotification, setOpenNavForNotification] = React.useState<boolean>(false);
   const [user, setUser] = React.useState<User | null>(null);
 
   const userPopover = usePopover<HTMLDivElement>();
@@ -64,9 +64,14 @@ export function MainNav(): React.JSX.Element {
             </IconButton>
           </Stack>
           <Stack sx={{ alignItems: 'center' }} direction="row" spacing={2}>
-            <IconButton onClick={notificationPopover.handleOpen}>
-              <Bell />
-            </IconButton>
+            <Tooltip title="Notifications">
+              <Badge badgeContent={4} color="success" variant="dot">
+                <IconButton onClick={notificationPopover.handleOpen}>
+                  <Bell />
+                </IconButton>
+              </Badge>
+            </Tooltip>
+
             <Avatar
               onClick={userPopover.handleOpen}
               ref={userPopover.anchorRef}

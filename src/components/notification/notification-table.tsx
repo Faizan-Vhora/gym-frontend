@@ -4,8 +4,6 @@ import {
   Card,
   Divider,
   IconButton,
-  MenuItem,
-  Select,
   Stack,
   Table,
   TableBody,
@@ -20,7 +18,7 @@ import { ToastContainer } from 'react-toastify'; // Import toast and ToastContai
 import 'react-toastify/dist/ReactToastify.css'; // Import toast styles
 
 import { useRouter } from 'next/navigation';
-import { Chat, PencilSimple } from '@phosphor-icons/react';
+import { PencilSimple } from '@phosphor-icons/react';
 import dayjs from 'dayjs';
 
 import tableCss from '@/styles/table-css';
