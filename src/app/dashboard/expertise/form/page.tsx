@@ -93,8 +93,7 @@ export default function ExpertiseForm(): React.JSX.Element {
       toast.success(`Expertise ${expertiseId ? 'updated' : 'created'} successfully`);
       router.push('/dashboard/expertise');
     } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred';
-      toast.error(errorMessage); // Display toast error message
+      error instanceof Error ? error.message : 'An unexpected error occurred';
     } finally {
       setLoading(false);
     }

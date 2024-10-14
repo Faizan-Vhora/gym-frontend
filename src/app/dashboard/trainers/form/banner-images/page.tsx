@@ -221,9 +221,9 @@ const ImageUploadCards = () => {
         <Button
           sx={{ margin: '20px 20px' }}
           variant="contained"
-          color="primary"
           startIcon={<Plus />}
           onClick={handleAddCard}
+          className="common-button"
         >
           Add Another Image
         </Button>
@@ -236,6 +236,7 @@ const ImageUploadCards = () => {
           color="secondary"
           startIcon={<Minus />}
           onClick={handleRemoveLastCard}
+          className="common-button btnsecondary"
         >
           Remove Last Image
         </Button>
@@ -248,6 +249,7 @@ const ImageUploadCards = () => {
         onClick={handleUploadImages}
         disabled={images.every((image) => image.url === null)}
         sx={{ margin: '20px 20px' }}
+        className="common-button btnsuccess"
       >
         Upload Images
       </Button>

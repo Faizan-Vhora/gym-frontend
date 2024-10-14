@@ -27,7 +27,7 @@ export function Sales({ categories, chartSeries, sx }: SalesProps): React.JSX.El
   return (
     <Card sx={sx}>
       <CardHeader
-        style={{ fontFamily: '"Audiowide", sans-serif' }}
+        style={{ fontFamily: '"Audiowide", sans-serif !important' }}
         action={
           <Button color="inherit" size="small" startIcon={<ArrowClockwiseIcon fontSize="var(--icon-fontSize-md)" />}>
             Sync

@@ -30,7 +30,7 @@ export function Traffic({ chartSeries, labels, sx }: TrafficProps): React.JSX.El
 
   return (
     <Card sx={sx}>
-      <CardHeader style={{ fontFamily: '"Audiowide", sans-serif' }} title="Subscriptions for month" />
+      <CardHeader style={{ fontFamily: '"Audiowide", sans-serif !important' }} title="Subscriptions for month" />
       <CardContent>
         <Stack spacing={2}>
           <Chart height={300} options={chartOptions} series={chartSeries} type="donut" width="100%" />

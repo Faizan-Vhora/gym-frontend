@@ -90,9 +90,9 @@ export function ExpertiseTable({
                   textOverflow: 'ellipsis',
                 }}
               >
-                Actions
+                Status
               </TableCell>
-              <TableCell sx={tableCss.tableHeaderCell}>Status</TableCell>
+              <TableCell sx={tableCss.tableHeaderCell}>Action</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>

@@ -56,10 +56,19 @@ body {
   position: relative;
   border: none;
   cursor: pointer;
-  font-family: '"Audiowide", sans-serif';
+  font-family: '"Audiowide", sans-serif' !important;
   outline: none;
   transform: skewX(-20deg); /* Skew the button to create the angled effect */
 }
+.btnsecondary {
+  background-color: #212636 !important; /* Red color */
+}
+
+.btnsuccess {
+  background-color: #15b79f!important; /* Red color */
+}
+
+
 
 .common-button span {
   display: inline-block;
