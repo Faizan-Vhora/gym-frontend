@@ -248,7 +248,7 @@ export default function WeekdayTimeSlots() {
     trainerAvailabilitySlot.forEach((slot) => {
       const daySlots = trainerAvailabilitySlot.filter((s) => s.weekday === slot.weekday);
       if (hasOverlappingTimeSlots(daySlots, slot)) {
-        overlappingDays.add(daysOfWeek[slot.weekday].label);
+        overlappingDays.add(daysOfWeek[slot.weekday]?.label);
       }
     });
 
@@ -298,7 +298,7 @@ export default function WeekdayTimeSlots() {
                   )}
                 />
               }
-              label={daysOfWeek[dayIndex].label}
+              label={daysOfWeek[dayIndex]?.label}
             />
           </Grid>
 
