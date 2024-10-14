@@ -16,7 +16,7 @@ const createError = (message = 'Server Error'): Error => {
 };
 
 const axiosInstance = axios.create({
-  // baseURL: 'http://18.188.170.111:3001/',
+  // baseURL: process.env.NEXT_BACKEND_BASE_URL,
   baseURL: APP_BASE_URL,
 });
 

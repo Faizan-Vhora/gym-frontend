@@ -16,6 +16,7 @@ export default function Page(): React.JSX.Element {
   const [entries, setEntries] = React.useState<BookingEntry[]>([]);
   const [searchTerm, setSearchTerm] = React.useState('');
   const [bookingTypeFilter, setBookingTypeFilter] = React.useState('All');
+  const [bookingStatusFilter, setBookingStatusFilter] = React.useState('All');
   const [trainerIdFilter, setTrainerIdFilter] = React.useState('All');
   const [customerIdFilter, setCustomerIdFilter] = React.useState('All');
   const [startDateFilter, setStartDateFilter] = React.useState('');
@@ -33,6 +34,7 @@ export default function Page(): React.JSX.Element {
         limit: rowsPerPage,
         search: searchTerm,
         bookingType: bookingTypeFilter !== 'All' ? bookingTypeFilter : null,
+        status: bookingStatusFilter !== 'All' ? bookingStatusFilter : null,
         trainerId: trainerIdFilter !== 'All' ? trainerIdFilter : null,
         customerId: customerIdFilter !== 'All' ? customerIdFilter : null,
         startDate: startDateFilter !== '' ? startDateFilter : null,
@@ -64,6 +66,7 @@ export default function Page(): React.JSX.Element {
     customerIdFilter,
     startDateFilter,
     endDateFilter,
+    bookingStatusFilter,
   ]);
 
   const handleUpdateStatus = async (id: number, newStatus: BookingEntry['status']): Promise<void> => {
@@ -123,6 +126,11 @@ export default function Page(): React.JSX.Element {
     setPage(0);
   };
 
+  const handleStatusChange = (status: string): void => {
+    setBookingStatusFilter(status);
+    setPage(0);
+  };
+
   const handleCustomerIdChange = (customerId: string): void => {
     setCustomerIdFilter(customerId);
     setPage(0);
@@ -159,6 +167,7 @@ export default function Page(): React.JSX.Element {
             onTrainerIdChange={handleTrainerIdChange}
             onCustomerIdChange={handleCustomerIdChange}
             onStartDateChange={handleStartDateChange}
+            onStatusChange={handleStatusChange}
             onEndDateChange={handleEndDateChange}
           />
         </Stack>

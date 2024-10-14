@@ -110,7 +110,7 @@ const bookingSchema = zod.object({
   bookingEndDate: zod.date().optional(),
   bookingType: zod.string().optional(),
   paymentType: zod.string().optional(),
-  promocodeId: zod.number().nullable(),
+  promocodeId: zod.number().nullable().optional(),
 });
 
 type BookingFormInputs = zod.infer<typeof bookingSchema>;
@@ -1073,13 +1073,41 @@ export function BookingFormDialog({
         </Stack>
 
         <Stack direction="row" spacing={1} sx={{ alignItems: 'center', justifyContent: 'flex-end', p: 2 }}>
-          <Button color="secondary" onClick={handlePreview} className="common-button">
+          <Button
+            color="secondary"
+            onClick={handlePreview}
+            variant="outlined"
+            sx={{
+              borderColor: '#d0021b',
+              color: '#d0021b',
+              marginLeft: '15px',
+              transform: 'skewX(-20deg)',
+              '&:hover': {
+                borderColor: 'darkred',
+                backgroundColor: 'rgba(255, 0, 0, 0.1)',
+              },
+            }}
+          >
             Preview
           </Button>
-          <Button color="secondary" onClick={onClose} className="common-button">
+          <Button
+            color="secondary"
+            variant="outlined"
+            onClick={onClose}
+            sx={{
+              borderColor: '#d0021b',
+              color: '#d0021b',
+              marginLeft: '15px',
+              transform: 'skewX(-20deg)',
+              '&:hover': {
+                borderColor: 'darkred',
+                backgroundColor: 'rgba(255, 0, 0, 0.1)',
+              },
+            }}
+          >
             Cancel
           </Button>
-          <Button type="submit" variant="contained" disabled={loading} className="common-button">
+          <Button type="submit" variant="contained" className="common-button" disabled={loading}>
             Confirm
           </Button>
         </Stack>

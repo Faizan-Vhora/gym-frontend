@@ -15,8 +15,10 @@ const config = {
               pathname: '/public/**',
             },
         ],
+        // disableStaticImages: true,
       },
     experimental: {esmExternals: false,},
+    reactStrictMode: true,
     async redirects() {
       return [
         {

@@ -32,6 +32,7 @@ interface SupportFiltersProps {
   onTrainerIdChange: (trainerId: string) => void;
   onCustomerIdChange: (customerId: string) => void;
   onStartDateChange: (startDate: string) => void;
+  onStatusChange: (status: string) => void;
   onEndDateChange: (endDate: string) => void;
 }
 
@@ -41,6 +42,7 @@ export function BookingFilters({
   onTrainerIdChange,
   onCustomerIdChange,
   onStartDateChange,
+  onStatusChange,
   onEndDateChange,
 }: SupportFiltersProps): React.JSX.Element {
   const [searchTerm, setSearchTerm] = useState('');
@@ -107,7 +109,7 @@ export function BookingFilters({
   const handleStatusChange = (e: SelectChangeEvent): void => {
     const value = e.target.value;
     setStatus(value);
-    onTrainerIdChange(value);
+    onStatusChange(value);
   };
 
   const handleBookingTypeChange = (e: SelectChangeEvent): void => {

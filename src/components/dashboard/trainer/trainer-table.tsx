@@ -129,6 +129,7 @@ export function TrainersTable({
                     >
                       {row.trainerExpertise
                         ?.map((expertiseItem: TrainerExpertise) => expertiseItem.expertise?.title) // Extract the title
+                        .filter((title) => title && title !== '') // Filter out empty or undefined titles
                         .join(', ')}{' '}
                       {/* Join titles with a comma */}
                     </Typography>
