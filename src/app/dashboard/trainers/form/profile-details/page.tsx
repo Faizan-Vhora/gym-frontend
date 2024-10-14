@@ -175,7 +175,7 @@ const TrainerAdditionalForm: React.FC = () => {
                               onChange={handleCheckboxChange}
                             />
                           }
-                          label={expertise.title}
+                          label={expertise?.title}
                         />
                       ))}
                     </Stack>
