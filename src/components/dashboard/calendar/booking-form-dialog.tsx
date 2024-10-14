@@ -524,8 +524,8 @@ export function BookingFormDialog({
   // }, [bookingDetails]);
 
   // React.useEffect(() => {
-  //   console.log('Update : selectedBookingSlots:: ', selectedBookingSlots);
-  // }, [selectedBookingSlots]);
+  //   console.log('Update : availableSlotsWeeklyByFilter:: ', availableSlotsWeeklyByFilter);
+  // }, [availableSlotsWeeklyByFilter]);
 
   React.useEffect(() => {
     const trainerRatePerHour = Number(selectedTrainer?.fees || 0);
@@ -535,9 +535,11 @@ export function BookingFormDialog({
 
   React.useEffect(() => {
     setSelectedSlots({});
-    setSelectedDays([]);
+    if(bookingType === BOOKING_TYPE.WEEKLY){
+      setSelectedDays([]);
+    }
     filterAvailableTrainerSlotsByReoccurrence();
-  }, [availableSlotsWeekly, reOccuranceWeeks, reOccuranceEnabled]);
+  }, [availableSlotsWeekly, reOccuranceWeeks, reOccuranceEnabled, bookingType]);
 
   React.useEffect(() => {
     if (bookingType === BOOKING_TYPE.ONE_TIME && selectedTrainer && bookingDate) {
@@ -983,7 +985,7 @@ export function BookingFormDialog({
               )}
             </Grid>
 
-            {availableSlotsWeeklyByFilter.length ? (
+            {promocodeOptions.length ? (
               <Grid item xs={12} md={5.8}>
                 <Controller
                   control={control}
