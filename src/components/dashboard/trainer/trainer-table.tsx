@@ -128,7 +128,7 @@ export function TrainersTable({
                       style={{ cursor: 'pointer' }}
                     >
                       {row.trainerExpertise
-                        ?.map((expertiseItem: TrainerExpertise) => expertiseItem.expertise.title) // Extract the title
+                        ?.map((expertiseItem: TrainerExpertise) => expertiseItem.expertise?.title) // Extract the title
                         .join(', ')}{' '}
                       {/* Join titles with a comma */}
                     </Typography>
