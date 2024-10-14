@@ -47,7 +47,7 @@ export function LatestProducts({ products = [] }: LatestProductsProps): React.JS
 
   return (
     <Card sx={{ height: '520px', overflowY: 'scroll' }}>
-      <CardHeader style={{ fontFamily: '"Audiowide", sans-serif' }} title="Incomplete Profiles" />
+      <CardHeader style={{ fontFamily: '"Audiowide", sans-serif !important' }} title="Incomplete Profiles" />
       <Divider />
       <List>
         {products.length === 0 ? (

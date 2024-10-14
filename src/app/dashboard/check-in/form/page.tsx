@@ -320,8 +320,26 @@ const CheckinForm = () => {
               </Grid>
 
               <Grid item xs={12}>
-                <Button type="submit" variant="contained" color="primary">
+                <Button type="submit" variant="contained" className="common-button">
                   {checkInId ? 'Update Check-in' : 'Add Check-in'}
+                </Button>
+                <Button
+                  variant="outlined"
+                  onClick={() => {
+                    router.push('/dashboard/check-in');
+                  }}
+                  sx={{
+                    borderColor: '#d0021b',
+                    color: '#d0021b',
+                    marginLeft: '15px',
+                    transform: 'skewX(-20deg)',
+                    '&:hover': {
+                      borderColor: 'darkred',
+                      backgroundColor: 'rgba(255, 0, 0, 0.1)',
+                    },
+                  }}
+                >
+                  Cancel
                 </Button>
               </Grid>
             </Grid>

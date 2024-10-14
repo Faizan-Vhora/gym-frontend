@@ -242,7 +242,7 @@ export default function BookingDetailsPage(): React.JSX.Element {
                       {formatAmount(bookingDetail?.trainerRatePerHour)}
                     </Typography>
                     {/* <Typography textAlign={'end'} color="text.secondary" gutterBottom>
-                      {BOOKING_PAYMENT_TYPE_DETAILS[bookingDetail.paymentType].label}
+                      {BOOKING_PAYMENT_TYPE_DETAILS[bookingDetail.paymentType]?.label}
                     </Typography> */}
                     <Typography textAlign={'end'} color="text.secondary" gutterBottom>
                       {formatAmount(bookingDetail?.bookingAmount)}
@@ -254,7 +254,7 @@ export default function BookingDetailsPage(): React.JSX.Element {
                       {formatAmount(bookingDetail?.netTotalAmount)}
                     </Typography>
                     {/* <Typography textAlign={'end'} color="text.secondary" gutterBottom>
-                      {BOOKING_PAYMENT_STATUS_DETAILS[bookingDetail.paymentStatus].label}
+                      {BOOKING_PAYMENT_STATUS_DETAILS[bookingDetail.paymentStatus]?.label}
                     </Typography> */}
                   </Stack>
                 </Stack>
@@ -465,7 +465,7 @@ export default function BookingDetailsPage(): React.JSX.Element {
                         <GenderIntersex size={25} />
                       </IconButton>
                       <Typography color="text.secondary" gutterBottom>
-                        {bookingDetail?.trainer?.gender && GENDER_TYPE_DETAILS[bookingDetail?.trainer?.gender].label}
+                        {bookingDetail?.trainer?.gender && GENDER_TYPE_DETAILS[bookingDetail?.trainer?.gender]?.label}
                       </Typography>
                     </Stack>
                     <Stack flexDirection={'row'} alignItems={'center'}>

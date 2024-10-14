@@ -28,7 +28,9 @@ export function Budget({ diff, trend, sx, value }: BudgetProps): React.JSX.Eleme
               <Typography style={{ fontFamily: '"Audiowide", sans-serif' }} color="text.secondary" variant="overline">
                 Earning
               </Typography>
-              <Typography variant="h4">{value}</Typography>
+              <Typography variant="h4" style={{ fontFamily: '"Audiowide", sans-serif' }}>
+                {value}
+              </Typography>
             </Stack>
             <Avatar
               src="/assets/salary.png"
