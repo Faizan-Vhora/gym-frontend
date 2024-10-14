@@ -102,8 +102,7 @@ export default function SupportForm(): React.JSX.Element {
           setTicketDescription(fetchedData.description);
         })
         .catch((err: unknown) => {
-          const errorMessage = err instanceof Error ? err.message : 'An unexpected error occurred';
-          toast.error(errorMessage);
+          err instanceof Error ? err.message : 'An unexpected error occurred';
         })
         .finally(() => {
           setLoading(false);
@@ -137,8 +136,7 @@ export default function SupportForm(): React.JSX.Element {
       const response = await axiosInstance.get<{ data: Trainer[] }>('/users/trainer/dropdown');
       setTrainers(response.data.data);
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to load data.';
-      toast.error(`Error fetching trainers: ${errorMessage}`);
+      err instanceof Error ? err.message : 'An unexpected error occurred';
     }
   };
 
@@ -147,8 +145,7 @@ export default function SupportForm(): React.JSX.Element {
       const response = await axiosInstance.get<{ data: Customer[] }>('/users/customer/dropdown');
       setCustomers(response.data.data);
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to load data.';
-      toast.error(`Error fetching customers: ${errorMessage}`);
+      err instanceof Error ? err.message : 'An unexpected error occurred';
     }
   };
 
@@ -178,8 +175,7 @@ export default function SupportForm(): React.JSX.Element {
       toast.success('Support ticket saved successfully');
       router.push('/dashboard/support');
     } catch (err: unknown) {
-      const errorMessage = err instanceof Error ? err.message : 'An unexpected error occurred';
-      toast.error(errorMessage);
+      err instanceof Error ? err.message : 'An unexpected error occurred';
       setError('Failed to save support ticket details.');
     } finally {
       setIsSubmitting(false);

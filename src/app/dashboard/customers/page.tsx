@@ -67,15 +67,7 @@ export default function Page(): React.JSX.Element {
       try {
         await fetchCustomers();
       } catch (error: unknown) {
-        let errorMessage: string;
-        if (typeof error === 'string') {
-          errorMessage = error;
-        } else {
-          // Handle other types of errors, or set a generic message
-          errorMessage = 'An unexpected error occurred';
-        }
-        // Convert the Error object to a string
-        toast.error(errorMessage);
+        error instanceof Error ? error.message : 'An unexpected error occurred';
       }
     };
 
@@ -131,13 +123,7 @@ export default function Page(): React.JSX.Element {
         toast.success(`Status updated to ${newStatus === 1 ? 'Active' : 'Inactive'}`);
         await fetchCustomers(); // Refresh customer data
       } catch (error: unknown) {
-        let errorMessage: string;
-        if (typeof error === 'string') {
-          errorMessage = error;
-        } else {
-          errorMessage = 'An unexpected error occurred';
-        }
-        toast.error(errorMessage);
+        error instanceof Error ? error.message : 'An unexpected error occurred';
       }
     }
   };

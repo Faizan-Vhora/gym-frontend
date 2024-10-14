@@ -41,7 +41,8 @@ export default function Page(): React.JSX.Element {
 
       setEntries(response.data.data.items);
       setCount(response.data.data.meta.totalItems);
-    } catch (error) {
+    } catch (error: unknown) {
+      error instanceof Error ? error.message : 'An unexpected error occurred';
       await Swal.fire('Error!', 'Something went wrong.', 'error');
     } finally {
       setLoading(false);

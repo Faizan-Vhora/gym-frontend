@@ -12,6 +12,7 @@ import {
   Card,
   CardActions,
   CardContent,
+  CardHeader,
   Checkbox,
   Divider,
   FormControl,
@@ -33,9 +34,19 @@ import { ExpertiseEntry } from '@/components/dashboard/expertise/expertise-table
 
 // Define validation schemas
 const TrainerSchema = z.object({
-  experience: z.coerce.number().optional(),
+  experience: z.coerce
+    .number()
+    .optional()
+    .refine((value) => value === undefined || value <= 99999, {
+      message: 'Experience must be at most 5 digits.',
+    }),
   aboutMe: z.string().nullable(),
-  fees: z.coerce.number().optional(),
+  fees: z.coerce
+    .number()
+    .optional()
+    .refine((value) => value === undefined || value <= 99999, {
+      message: 'Fees must be at most 5 digits.',
+    }),
 });
 
 type TrainerFormInputs = z.infer<typeof TrainerSchema>;
@@ -86,7 +97,7 @@ const TrainerAdditionalForm: React.FC = () => {
           setValue('aboutMe', trainerData.aboutMe);
           setValue('fees', trainerData.fees);
         } catch (err) {
-          toast.error('An unexpected error occurred');
+          err instanceof Error ? err.message : 'An unexpected error occurred';
         } finally {
           setLoading(false);
         }
@@ -133,8 +144,7 @@ const TrainerAdditionalForm: React.FC = () => {
         router.push(`/dashboard/trainers/form/banner-images?id=${id}`);
       }
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'An unexpected error occurred';
-      toast.error(errorMessage);
+      err instanceof Error ? err.message : 'An unexpected error occurred';
       setError('Failed to save Trainer details.');
     } finally {
       setIsSubmitting(false);
@@ -149,6 +159,8 @@ const TrainerAdditionalForm: React.FC = () => {
   return (
     <Box component="form" onSubmit={handleSubmit((data) => onSubmit(data, redirectTo))}>
       <Card>
+        <CardHeader style={{ fontFamily: '"Audiowide", sans-serif' }} title="Profile Details" />
+        <Divider />
         <CardContent>
           <Grid container spacing={8}>
             {/* Expertise List */}
@@ -167,6 +179,7 @@ const TrainerAdditionalForm: React.FC = () => {
                     <Stack spacing={1}>
                       {expertiseList.map((expertise) => (
                         <FormControlLabel
+                          required
                           key={expertise.id}
                           control={
                             <Checkbox
@@ -187,7 +200,7 @@ const TrainerAdditionalForm: React.FC = () => {
               <Grid container spacing={2}>
                 {/* Experience Selector */}
                 <Grid item md={6} xs={12}>
-                  <FormControl required fullWidth>
+                  <FormControl required fullWidth error={Boolean(errors.experience)}>
                     <InputLabel htmlFor="experience">Experience (Years)</InputLabel>
                     <OutlinedInput
                       id="experience"
@@ -201,7 +214,7 @@ const TrainerAdditionalForm: React.FC = () => {
 
                 {/* Fees Field */}
                 <Grid item md={6} xs={12}>
-                  <FormControl required fullWidth>
+                  <FormControl required fullWidth error={Boolean(errors.fees)}>
                     <InputLabel htmlFor="fees">Fees</InputLabel>
                     <OutlinedInput
                       id="fees"

@@ -76,13 +76,7 @@ export default function MembershipPlanEditForm(): React.JSX.Element {
           setMembershipPlans(response.data.data);
         })
         .catch((err: unknown) => {
-          let errorMessage: string;
-          if (typeof err === 'string') {
-            errorMessage = err;
-          } else {
-            errorMessage = 'An unexpected error occurred';
-          }
-          toast.error(errorMessage);
+          err instanceof Error ? err.message : 'An unexpected error occurred';
         });
     }
   }, [id]);
@@ -117,13 +111,7 @@ export default function MembershipPlanEditForm(): React.JSX.Element {
 
       router.push('/dashboard/membership-plan');
     } catch (err: unknown) {
-      let errorMessage: string;
-      if (err instanceof Error) {
-        errorMessage = err.message;
-      } else {
-        errorMessage = 'An unexpected error occurred';
-      }
-      toast.error(errorMessage);
+      err instanceof Error ? err.message : 'An unexpected error occurred';
       setError('Failed to save Membership Type details.');
     } finally {
       setIsSubmitting(false);

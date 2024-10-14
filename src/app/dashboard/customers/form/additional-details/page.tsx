@@ -34,8 +34,10 @@ import axiosInstance from '@/lib/axios';
 import 'react-toastify/dist/ReactToastify.css';
 
 import { CustomLoader } from '@/utils/loader';
+import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { Trash } from '@phosphor-icons/react';
-import dayjs from 'dayjs';
+import dayjs, { Dayjs } from 'dayjs';
 
 import { Customer } from '@/components/dashboard/customer/customers-table';
 
@@ -94,13 +96,7 @@ export default function CustomerEditForm(): React.JSX.Element {
           setCustomer(response.data.data);
         })
         .catch((err: unknown) => {
-          let errorMessage: string;
-          if (typeof err === 'string') {
-            errorMessage = err;
-          } else {
-            errorMessage = 'An unexpected error occurred';
-          }
-          toast.error(errorMessage);
+          err instanceof Error ? err.message : 'An unexpected error occurred';
         });
     }
   }, [id]);
@@ -185,13 +181,7 @@ export default function CustomerEditForm(): React.JSX.Element {
         router.push(`/dashboard/customers/form/membership-form?id=${response?.data?.data?.id}`);
       }
     } catch (err: unknown) {
-      let errorMessage: string;
-      if (err instanceof Error) {
-        errorMessage = err.message;
-      } else {
-        errorMessage = 'An unexpected error occurred';
-      }
-      toast.error(errorMessage);
+      err instanceof Error ? err.message : 'An unexpected error occurred';
       setError('Failed to save Member details.');
     } finally {
       setIsSubmitting(false);
@@ -266,42 +256,41 @@ export default function CustomerEditForm(): React.JSX.Element {
                         </FormControl>
                       </Grid>
                       <Grid item md={6} p={2}>
-                        <FormControl fullWidth>
-                          <Controller
-                            name="dateOfBirth"
-                            control={control}
-                            defaultValue={customer?.dateOfBirth ? dayjs(customer.dateOfBirth).format('YYYY-MM-DD') : ''}
-                            render={({ field }) => (
-                              <TextField
-                                {...field}
-                                label="Date of Birth"
-                                type="date"
-                                fullWidth
-                                InputLabelProps={{
-                                  shrink: true,
-                                }}
-                                error={Boolean(errors.dateOfBirth)}
-                                helperText={errors.dateOfBirth ? errors.dateOfBirth.message : ''}
-                                inputProps={{
-                                  shrink: true,
-                                }}
-                                onChange={(e) => {
-                                  const value = e.target.value;
-                                  const date = new Date(value);
-                                  if (date > new Date()) {
-                                    // Handle the case where the selected date is in the future
-                                    toast.error('Date of birth cannot be in the future');
-                                    return;
-                                  }
-                                  field.onChange(e);
-                                }}
-                              />
-                            )}
-                          />
-                          {errors.dateOfBirth?.message && (
-                            <FormHelperText error>{errors.dateOfBirth.message}</FormHelperText>
-                          )}
-                        </FormControl>
+                        <LocalizationProvider dateAdapter={AdapterDayjs}>
+                          <FormControl fullWidth>
+                            <Controller
+                              name="dateOfBirth"
+                              control={control}
+                              render={({ field, fieldState }) => {
+                                const errorMessage = fieldState.error ? fieldState.error.message : '';
+
+                                return (
+                                  <DatePicker
+                                    disableFuture
+                                    format="MM-DD-YYYY"
+                                    views={['year', 'month', 'day']}
+                                    defaultValue={customer?.dateOfBirth ? dayjs(customer.dateOfBirth) : null}
+                                    label="Date of Birth"
+                                    value={customer?.dateOfBirth ? dayjs(customer.dateOfBirth) : null}
+                                    onChange={(newValue: Dayjs | null) => {
+                                      if (newValue) {
+                                        field.onChange(newValue.format('YYYY-MM-DD'));
+                                      }
+                                    }}
+                                    slotProps={{
+                                      textField: {
+                                        fullWidth: true,
+                                        error: Boolean(fieldState.error),
+                                        helperText: errorMessage,
+                                      },
+                                    }}
+                                  />
+                                );
+                              }}
+                            />
+                            {errors.dateOfBirth && <FormHelperText>{errors.dateOfBirth.message}</FormHelperText>}
+                          </FormControl>
+                        </LocalizationProvider>
                       </Grid>
                       <Grid item md={6} p={2}>
                         <FormControl fullWidth>

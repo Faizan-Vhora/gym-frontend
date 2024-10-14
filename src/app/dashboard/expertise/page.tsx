@@ -66,26 +66,15 @@ export default function ExpertisePage(): React.JSX.Element {
           );
           setError('Unexpected data format.');
         }
-      } catch (err) {
-        let errorMessage = 'Failed to load data.';
-        if (err instanceof Error) {
-          errorMessage = `Error fetching expertise: ${err.message}`;
-        }
-        toast.error(errorMessage);
-        setError(errorMessage);
+      } catch (err: unknown) {
+        err instanceof Error ? err.message : 'An unexpected error occurred';
       } finally {
         setLoading(false);
       }
     };
 
     fetchEntries().catch((err: unknown) => {
-      let errorMessage: string;
-      if (err instanceof Error) {
-        errorMessage = err.message; // Safely access the message property
-      } else {
-        errorMessage = 'An unexpected error occurred'; // Fallback message
-      }
-      toast.error(errorMessage);
+      err instanceof Error ? err.message : 'An unexpected error occurred';
     });
   }, [searchTerm, statusFilter, page, rowsPerPage]);
 
@@ -126,7 +115,7 @@ export default function ExpertisePage(): React.JSX.Element {
         toast.success('Expertise deleted successfully');
         setPage(0); // Reset or update the page state if necessary
       } catch (err) {
-        toast.error('Failed to delete Expertise');
+        await Swal.fire('Failed to delete Expertise');
       }
     }
   };
@@ -159,7 +148,7 @@ export default function ExpertisePage(): React.JSX.Element {
         );
         toast.success(`Status updated to ${newStatus === 'active' ? 'Active' : 'Inactive'}`);
       } catch (err) {
-        toast.error('Failed to update status');
+        await Swal.fire('Failed to update status');
       }
     }
   };
@@ -195,26 +184,25 @@ export default function ExpertisePage(): React.JSX.Element {
         </Button>
       </Stack>
       <Card>
-        <Stack sx={{padding:'30px'}}>
-          
-      <ExpertiseFilters onSearchChange={handleSearchChange} onStatusChange={handleStatusChange} />
+        <Stack sx={{ padding: '30px' }}>
+          <ExpertiseFilters onSearchChange={handleSearchChange} onStatusChange={handleStatusChange} />
         </Stack>
-      {loading ? (
-        <CustomLoader />
-      ) : (
-        <ExpertiseTable
-          entries={entries}
-          count={totalEntries}
-          page={page}
-          rowsPerPage={rowsPerPage}
-          onPageChange={handlePageChange}
-          onRowsPerPageChange={handleRowsPerPageChange}
-          totalEntries={totalEntries}
-          onEdit={handleEdit}
-          onDelete={handleDelete}
-          onToggleStatus={handleToggleStatus}
-        />
-      )}
+        {loading ? (
+          <CustomLoader />
+        ) : (
+          <ExpertiseTable
+            entries={entries}
+            count={totalEntries}
+            page={page}
+            rowsPerPage={rowsPerPage}
+            onPageChange={handlePageChange}
+            onRowsPerPageChange={handleRowsPerPageChange}
+            totalEntries={totalEntries}
+            onEdit={handleEdit}
+            onDelete={handleDelete}
+            onToggleStatus={handleToggleStatus}
+          />
+        )}
       </Card>
       {error ? <Alert color="error">{error}</Alert> : null}
       <ToastContainer /> {/* Add ToastContainer here */}

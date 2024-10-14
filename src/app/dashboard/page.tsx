@@ -5,7 +5,6 @@ import { CustomLoader } from '@/utils/loader';
 // import type { Metadata } from 'next';
 import Grid from '@mui/material/Unstable_Grid2';
 import dayjs from 'dayjs';
-import { toast } from 'react-toastify';
 
 // import { config } from '@/config';
 import axiosInstance from '@/lib/axios';
@@ -76,7 +75,7 @@ export default function Page(): React.JSX.Element {
         setDiff(progress.diffValue);
         setTrend(progress.trendType);
       } catch (error) {
-        toast.error('Failed to load total members count');
+        error instanceof Error ? error.message : 'An unexpected error occurred';
       } finally {
         setLoading(false);
       }
@@ -96,7 +95,7 @@ export default function Page(): React.JSX.Element {
         setChartSeries(totalMemberRegisteredData.chartSeries);
         setCategories(totalMemberRegisteredData.categories);
       } catch (error) {
-        toast.error('Failed to load total members count');
+        error instanceof Error ? error.message : 'An unexpected error occurred';
       } finally {
         setLoading(false);
       }
@@ -116,7 +115,7 @@ export default function Page(): React.JSX.Element {
         setMebershipPlanChartSeries(totalMembershipPlansData.chartSeries);
         setLabels(totalMembershipPlansData.labels);
       } catch (error) {
-        toast.error('Failed to load total members count');
+        error instanceof Error ? error.message : 'An unexpected error occurred';
       } finally {
         setLoading(false);
       }
@@ -156,7 +155,7 @@ export default function Page(): React.JSX.Element {
         // Set the mapped data into products state
         setMembers(mappedMembers);
       } catch (error) {
-        toast.error('Failed to load incomplete profiles');
+        error instanceof Error ? error.message : 'An unexpected error occurred';
       } finally {
         setLoading(false);
       }
@@ -201,7 +200,7 @@ export default function Page(): React.JSX.Element {
         // Set the mapped data into the latestBookings state
         setLatestBookings(mappedBookings);
       } catch (error) {
-        toast.error('Failed to load latest bookings');
+        error instanceof Error ? error.message : 'An unexpected error occurred';
       } finally {
         setLoading(false);
       }
@@ -229,7 +228,7 @@ export default function Page(): React.JSX.Element {
         // Update state with the mapped data
         setSessionAttendedPercentage(parseFloat(sessionAttendanceData.attendancePercentage));
       } catch (error) {
-        toast.error('Failed to load session attendance');
+        error instanceof Error ? error.message : 'An unexpected error occurred';
       } finally {
         setLoading(false);
       }

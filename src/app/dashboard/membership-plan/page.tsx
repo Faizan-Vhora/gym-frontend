@@ -50,9 +50,7 @@ export default function MembershipPlanPage(): React.JSX.Element {
       setMembershipPlans(response.data.data.items);
       setCount(response.data.data.meta.totalItems);
     } catch (error) {
-      // Proper error handling
-      const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred';
-      toast.error(`Failed to fetch customers: ${errorMessage}`);
+      error instanceof Error ? error.message : 'An unexpected error occurred';
     } finally {
       setLoading(false);
     }
@@ -64,15 +62,7 @@ export default function MembershipPlanPage(): React.JSX.Element {
       try {
         await fetchMembershipPlans();
       } catch (error: unknown) {
-        let errorMessage: string;
-        if (typeof error === 'string') {
-          errorMessage = error;
-        } else {
-          // Handle other types of errors, or set a generic message
-          errorMessage = 'An unexpected error occurred';
-        }
-        // Convert the Error object to a string
-        toast.error(errorMessage);
+        error instanceof Error ? error.message : 'An unexpected error occurred';
       }
     };
 
@@ -123,13 +113,8 @@ export default function MembershipPlanPage(): React.JSX.Element {
         toast.success(`Status updated to ${newStatus === 'active' ? 'Active' : 'Inactive'}`);
         await fetchMembershipPlans(); // Refresh data
       } catch (error: unknown) {
-        let errorMessage: string;
-        if (typeof error === 'string') {
-          errorMessage = error;
-        } else {
-          errorMessage = 'An unexpected error occurred';
-        }
-        toast.error(errorMessage);
+        error instanceof Error ? error.message : 'An unexpected error occurred';
+        await Swal.fire('Failed to update Plan status');
       }
     }
   };
@@ -157,13 +142,8 @@ export default function MembershipPlanPage(): React.JSX.Element {
         toast.success('Membership plan deleted successfully');
         await fetchMembershipPlans(); // Refresh data
       } catch (error: unknown) {
-        let errorMessage: string;
-        if (typeof error === 'string') {
-          errorMessage = error;
-        } else {
-          errorMessage = 'An unexpected error occurred';
-        }
-        toast.error(errorMessage);
+        error instanceof Error ? error.message : 'An unexpected error occurred';
+        await Swal.fire('Failed to delete Plan');
       }
     }
   };

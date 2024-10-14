@@ -5,7 +5,7 @@ import dynamic from 'next/dynamic';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Box, Button, CardActions, Typography } from '@mui/material';
 import omit from 'lodash/omit';
-import { toast } from 'react-toastify';
+import { ToastContainer } from 'react-toastify';
 
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -47,15 +47,7 @@ export default function EditPage(): React.JSX.Element {
           // Handle successful fetch if necessary
         })
         .catch((error: unknown) => {
-          let errorMessage: string;
-          if (typeof error === 'string') {
-            errorMessage = error;
-          } else {
-            // Handle other types of errors, or set a generic message
-            errorMessage = 'An unexpected error occurred';
-          }
-          // Convert the Error object to a string
-          toast.error(errorMessage);
+          error instanceof Error ? error.message : 'An unexpected error occurred';
         });
     }
   }, [cmsId]);
@@ -67,15 +59,7 @@ export default function EditPage(): React.JSX.Element {
       await axiosInstance.put(`/cms/${cmsId}`, updatedPayload);
       router.push('/dashboard/cms'); // Awaiting to ensure that routing is complete
     } catch (error) {
-      let errorMessage: string;
-      if (typeof error === 'string') {
-        errorMessage = error;
-      } else {
-        // Handle other types of errors, or set a generic message
-        errorMessage = 'An unexpected error occurred';
-      }
-      // Convert the Error object to a string
-      toast.error(errorMessage);
+      error instanceof Error ? error.message : 'An unexpected error occurred';
     }
   };
 
@@ -123,6 +107,7 @@ export default function EditPage(): React.JSX.Element {
           </Button>
         </Box>
       </CardActions>
+      <ToastContainer />
     </Box>
   );
 }

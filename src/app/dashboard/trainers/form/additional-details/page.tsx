@@ -33,9 +33,12 @@ import axiosInstance from '@/lib/axios';
 
 import 'react-toastify/dist/ReactToastify.css';
 
+import { REGEX_VALIDATION } from '@/utils/constant';
 import { CustomLoader } from '@/utils/loader';
+import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { Trash } from '@phosphor-icons/react';
-import dayjs from 'dayjs';
+import dayjs, { Dayjs } from 'dayjs';
 
 import { Trainer } from '@/components/dashboard/trainer/trainer-table';
 
@@ -54,7 +57,21 @@ export default function TrainerEditForm(): React.JSX.Element {
   const trainerSchema = z.object({
     fullName: z.string().min(1, 'Full Name is required'),
     email: z.string().email('Invalid email address'),
-    phoneNumber: z.string().optional(),
+    phoneNumber: z
+      .string()
+      .optional()
+      .refine(
+        (value) => {
+          // Only validate if value is present
+          if (!value) return true; // Skip validation if value is not present
+          // Example regex for phone number validation (modify as needed)
+          const phoneRegex = REGEX_VALIDATION.PHONE_NUMBER; // Adjust the regex pattern to your needs
+          return phoneRegex.test(value);
+        },
+        {
+          message: 'Invalid phone number format', // Custom error message
+        }
+      ),
     address: z.string().optional(),
     password: id
       ? z.string().optional()
@@ -97,13 +114,7 @@ export default function TrainerEditForm(): React.JSX.Element {
           setTrainer(response.data.data);
         })
         .catch((err: unknown) => {
-          let errorMessage: string;
-          if (typeof err === 'string') {
-            errorMessage = err;
-          } else {
-            errorMessage = 'An unexpected error occurred';
-          }
-          toast.error(errorMessage);
+          err instanceof Error ? err.message : 'An unexpected error occurred';
         });
     }
   }, [id]);
@@ -184,14 +195,7 @@ export default function TrainerEditForm(): React.JSX.Element {
         router.push(`/dashboard/trainers/form/profile-details?id=${response?.data?.data?.id}`);
       }
     } catch (err: unknown) {
-      let errorMessage: string;
-      if (err instanceof Error) {
-        errorMessage = err.message;
-      } else {
-        errorMessage = 'An unexpected error occurred';
-      }
-      toast.error(errorMessage);
-      setError('Failed to save Trainer details.');
+      err instanceof Error ? err.message : 'An unexpected error occurred';
     } finally {
       setIsSubmitting(false);
       setLoading(false);
@@ -264,42 +268,37 @@ export default function TrainerEditForm(): React.JSX.Element {
                         </FormControl>
                       </Grid>
                       <Grid item md={6} p={2}>
-                        <FormControl fullWidth>
-                          <Controller
-                            name="dateOfBirth"
-                            control={control}
-                            defaultValue={trainer?.dateOfBirth ? dayjs(trainer.dateOfBirth).format('YYYY-MM-DD') : ''}
-                            render={({ field }) => (
-                              <TextField
-                                {...field}
-                                label="Date of Birth"
-                                type="date"
-                                fullWidth
-                                InputLabelProps={{
-                                  shrink: true,
-                                }}
-                                error={Boolean(errors.dateOfBirth)}
-                                helperText={errors.dateOfBirth ? errors.dateOfBirth.message : ''}
-                                inputProps={{
-                                  shrink: true,
-                                }}
-                                onChange={(e) => {
-                                  const value = e.target.value;
-                                  const date = new Date(value);
-                                  if (date > new Date()) {
-                                    // Handle the case where the selected date is in the future
-                                    toast.error('Date of birth cannot be in the future');
-                                    return;
-                                  }
-                                  field.onChange(e);
-                                }}
-                              />
-                            )}
-                          />
-                          {errors.dateOfBirth?.message && (
-                            <FormHelperText error>{errors.dateOfBirth.message}</FormHelperText>
-                          )}
-                        </FormControl>
+                        <LocalizationProvider dateAdapter={AdapterDayjs}>
+                          <FormControl fullWidth>
+                            <Controller
+                              name="dateOfBirth"
+                              control={control}
+                              render={({ field, fieldState: { error: fieldError } }) => (
+                                <DatePicker
+                                  disableFuture
+                                  format="MM-DD-YYYY"
+                                  views={['year', 'month', 'day']}
+                                  defaultValue={trainer?.dateOfBirth ? dayjs(trainer.dateOfBirth) : null}
+                                  label="Date of Birth"
+                                  value={trainer?.dateOfBirth ? dayjs(trainer.dateOfBirth) : null}
+                                  onChange={(newValue: Dayjs | null) => {
+                                    if (newValue) {
+                                      field.onChange(newValue.format('YYYY-MM-DD'));
+                                    }
+                                  }}
+                                  slotProps={{
+                                    textField: {
+                                      fullWidth: true,
+                                      error: Boolean(fieldError), // Use Boolean to convert to a boolean value
+                                      helperText: fieldError ? fieldError.message : '', // Use fieldError instead of error
+                                    },
+                                  }}
+                                />
+                              )}
+                            />
+                            {errors.dateOfBirth ? <FormHelperText>{errors.dateOfBirth.message}</FormHelperText> : null}
+                          </FormControl>
+                        </LocalizationProvider>
                       </Grid>
                       <Grid item md={6} p={2}>
                         <FormControl fullWidth>

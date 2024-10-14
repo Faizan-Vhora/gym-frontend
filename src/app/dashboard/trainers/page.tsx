@@ -72,13 +72,8 @@ export default function TrainersPage(): React.JSX.Element {
         );
         setError('Unexpected data format.');
       }
-    } catch (err) {
-      let errorMessage = 'Failed to load data.';
-      if (err instanceof Error) {
-        errorMessage = `Error fetching trainers: ${err.message}`;
-      }
-      toast.error(errorMessage);
-      setError(errorMessage);
+    } catch (err: unknown) {
+      err instanceof Error ? err.message : 'An unexpected error occurred';
     } finally {
       setLoading(false);
     }
@@ -89,21 +84,13 @@ export default function TrainersPage(): React.JSX.Element {
       try {
         await fetchTrainers();
       } catch (err: unknown) {
-        let errorMessage = 'Failed to load data.';
-        if (err instanceof Error) {
-          errorMessage = `Error fetching Trainers: ${err.message}`;
-        }
-        toast.error(errorMessage);
+        err instanceof Error ? err.message : 'An unexpected error occurred';
       }
     };
 
     // Immediately invoke the async function and handle the promise
     loadTrainers().catch((err: unknown) => {
-      let errorMessage = 'Failed to load data.';
-      if (err instanceof Error) {
-        errorMessage = `Error fetching Trainers: ${err.message}`;
-      }
-      toast.error(errorMessage);
+      err instanceof Error ? err.message : 'An unexpected error occurred';
     });
   }, [fetchTrainers]);
 
@@ -154,16 +141,9 @@ export default function TrainersPage(): React.JSX.Element {
       try {
         await axiosInstance.patch(`/users/update-status/${id}`, { status: newStatus });
         toast.success(`Status updated to ${newStatus === 1 ? 'Active' : 'Inactive'}`);
-        // Update local state directly instead of re-fetching
-        setTrainers((prevTrainers) =>
-          prevTrainers.map((trainer) => (trainer.id === id ? { ...trainer, status: newStatus } : trainer))
-        );
+        await fetchTrainers();
       } catch (err: unknown) {
-        let errorMessage = 'Failed to load data.';
-        if (err instanceof Error) {
-          errorMessage = `Error fetching trainers: ${err.message}`;
-        }
-        toast.error(errorMessage);
+        err instanceof Error ? err.message : 'An unexpected error occurred';
       }
     }
   };

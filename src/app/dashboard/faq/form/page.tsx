@@ -29,6 +29,7 @@ import axiosInstance from '@/lib/axios';
 
 import 'react-toastify/dist/ReactToastify.css';
 
+import { REGEX_VALIDATION } from '@/utils/constant';
 import { CustomLoader } from '@/utils/loader';
 
 import { FaqStatus, FaqType } from '@/components/dashboard/faq/faq-tables';
@@ -36,8 +37,14 @@ import type { FaqEntry } from '@/components/dashboard/faq/faq-tables';
 
 // Define validation schemas
 const faqSchema = z.object({
-  question: z.string().min(1, 'Question is required'),
-  answer: z.string().min(1, 'Answer is required'),
+  question: z
+    .string()
+    .min(1, 'Question is required')
+    .regex(REGEX_VALIDATION.LETTERS_AND_NUMBERS, 'Question should not contain only numbers or special characters'),
+  answer: z
+    .string()
+    .min(1, 'Answer is required')
+    .regex(REGEX_VALIDATION.LETTERS_AND_NUMBERS, 'Answer should not contain only numbers or special characters'),
   type: z.enum([FaqType.General, FaqType.User, FaqType.Trainer]).optional(),
   status: z.enum([FaqStatus.Active, FaqStatus.Inactive, FaqStatus.Archived]).optional(),
 });
@@ -74,13 +81,7 @@ export default function FaqForm(): React.JSX.Element {
           setFaq(fetchedData);
         })
         .catch((err: unknown) => {
-          let errorMessage: string;
-          if (err instanceof Error) {
-            errorMessage = err.message; // Safely access the message property
-          } else {
-            errorMessage = 'An unexpected error occurred'; // Fallback message
-          }
-          toast.error(errorMessage);
+          err instanceof Error ? err.message : 'An unexpected error occurred';
         })
         .finally(() => {
           setLoading(false); // End loading state
@@ -114,14 +115,7 @@ export default function FaqForm(): React.JSX.Element {
       toast.success('FAQ saved successfully');
       router.push('/dashboard/faq'); // Redirect to the listing page after successful save
     } catch (err: unknown) {
-      let errorMessage: string;
-      if (err instanceof Error) {
-        errorMessage = err.message; // Safely access the message property
-      } else {
-        errorMessage = 'An unexpected error occurred'; // Fallback message
-      }
-      toast.error(errorMessage);
-      setError('Failed to save FAQ details.');
+      err instanceof Error ? err.message : 'An unexpected error occurred';
     } finally {
       setIsSubmitting(false);
       setLoading(true);

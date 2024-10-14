@@ -69,8 +69,7 @@ export default function ExpertiseForm(): React.JSX.Element {
           reset(response.data.data);
         })
         .catch((error: unknown) => {
-          const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred';
-          toast.error(errorMessage); // Display toast error message
+          error instanceof Error ? error.message : 'An unexpected error occurred';
         })
         .finally(() => {
           setLoading(false);

@@ -1,9 +1,9 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { CustomLoader } from '@/utils/loader';
-import { Button, Card, CardActions, CardContent, Stack } from '@mui/material';
+import { Button, Card, CardActions, CardContent, CardHeader, Divider, Stack } from '@mui/material';
 import { Minus, Plus, Trash, Upload } from '@phosphor-icons/react';
 import { toast } from 'react-toastify';
 import Swal from 'sweetalert2';
@@ -32,7 +32,7 @@ interface TrainerS {
 const ImageUploadCards = () => {
   const searchParams = useSearchParams();
   const id = searchParams.get('id');
-
+  const router = useRouter();
   // Update the type to allow null for the url
   const [images, setImages] = useState<ImageType[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
@@ -59,15 +59,7 @@ const ImageUploadCards = () => {
           // ...Array(Math.max(0, 5 - fetchedImages.length)).fill(defaultImage), // Ensure non-negative length
         ]);
       } catch (error: unknown) {
-        let errorMessage: string;
-        if (typeof error === 'string') {
-          errorMessage = error;
-        } else {
-          // Handle other types of errors, or set a generic message
-          errorMessage = 'An unexpected error occurred';
-        }
-        // Convert the Error object to a string
-        toast.error(errorMessage);
+        error instanceof Error ? error.message : 'An unexpected error occurred';
       }
     };
 
@@ -110,15 +102,7 @@ const ImageUploadCards = () => {
             toast.error('Failed to delete image');
           }
         } catch (error: unknown) {
-          let errorMessage: string;
-          if (typeof error === 'string') {
-            errorMessage = error;
-          } else {
-            // Handle other types of errors, or set a generic message
-            errorMessage = 'An unexpected error occurred';
-          }
-          // Convert the Error object to a string
-          toast.error(errorMessage);
+          error instanceof Error ? error.message : 'An unexpected error occurred';
         }
       } else {
         // Handle case where the image does not have an ID (e.g., a newly uploaded image)
@@ -164,15 +148,7 @@ const ImageUploadCards = () => {
         toast.error('Failed to upload images');
       }
     } catch (error: unknown) {
-      let errorMessage: string;
-      if (typeof error === 'string') {
-        errorMessage = error;
-      } else {
-        // Handle other types of errors, or set a generic message
-        errorMessage = 'An unexpected error occurred';
-      }
-      // Convert the Error object to a string
-      toast.error(errorMessage);
+      error instanceof Error ? error.message : 'An unexpected error occurred';
     } finally {
       setLoading(false);
     }
@@ -184,75 +160,98 @@ const ImageUploadCards = () => {
 
   return (
     <div>
-      <Stack className="banner-image">
-        {/* <Grid item md={6}> */}
-        {/* <Stack> */}
-        {images.map((imagePreview, index) => (
-          <Card key={index} sx={{ margin: '30px 20px', width: '45%' }}>
-            <CardActions>
-              <Button component="label" fullWidth variant="text">
-                Upload picture
-                <input type="file" accept="image/*" hidden onChange={handleImageChange(index)} />
-              </Button>
-            </CardActions>
-            <CardContent>
-              <Stack sx={{ alignItems: 'center' }}>
-                {imagePreview.url && (
-                  <Stack spacing={1}>
-                    <img
-                      src={imagePreview.url instanceof File ? URL.createObjectURL(imagePreview.url) : imagePreview.url} // Check if imagePreview is a File object
-                      alt={`Profile Preview ${index + 1}`}
-                      style={{ width: '100%', height: '200px', objectFit: 'cover' }}
-                    />
-                    <Button color="error" startIcon={<Trash />} onClick={handleRemoveImage(index)}>
-                      Remove Image
-                    </Button>
-                  </Stack>
-                )}
-              </Stack>
-            </CardContent>
-          </Card>
-        ))}
-        {/* </Grid> */}
-        {/* </Stack> */}
-      </Stack>
+      <Card>
+        <CardHeader style={{ fontFamily: '"Audiowide", sans-serif' }} title="Banner Images" />
+        <Divider />
+        <Stack className="banner-image">
+          {/* <Grid item md={6}> */}
+          {/* <Stack> */}
+          {images.map((imagePreview, index) => (
+            <Card key={index} sx={{ margin: '30px 20px', width: '45%' }}>
+              <CardActions>
+                <Button component="label" fullWidth variant="text">
+                  Upload picture
+                  <input type="file" accept="image/*" hidden onChange={handleImageChange(index)} />
+                </Button>
+              </CardActions>
+              <CardContent>
+                <Stack sx={{ alignItems: 'center' }}>
+                  {imagePreview.url && (
+                    <Stack spacing={1}>
+                      <img
+                        src={
+                          imagePreview.url instanceof File ? URL.createObjectURL(imagePreview.url) : imagePreview.url
+                        } // Check if imagePreview is a File object
+                        alt={`Profile Preview ${index + 1}`}
+                        style={{ width: '100%', height: '200px', objectFit: 'cover' }}
+                      />
+                      <Button color="error" startIcon={<Trash />} onClick={handleRemoveImage(index)}>
+                        Remove Image
+                      </Button>
+                    </Stack>
+                  )}
+                </Stack>
+              </CardContent>
+            </Card>
+          ))}
+          {/* </Grid> */}
+          {/* </Stack> */}
+        </Stack>
 
-      {images.length < 5 && (
+        {images.length < 5 && (
+          <Button
+            sx={{ margin: '20px 20px' }}
+            variant="contained"
+            startIcon={<Plus />}
+            onClick={handleAddCard}
+            className="common-button"
+          >
+            Add Another Image
+          </Button>
+        )}
+
+        {images.length > 1 && (
+          <Button
+            sx={{ margin: '20px 20px' }}
+            variant="contained"
+            color="secondary"
+            startIcon={<Minus />}
+            onClick={handleRemoveLastCard}
+            className="common-button btnsecondary"
+          >
+            Remove Last Image
+          </Button>
+        )}
+
         <Button
-          sx={{ margin: '20px 20px' }}
           variant="contained"
-          startIcon={<Plus />}
-          onClick={handleAddCard}
-          className="common-button"
+          color="success"
+          startIcon={<Upload />}
+          onClick={handleUploadImages}
+          disabled={images.every((image) => image.url === null)}
+          sx={{ margin: '20px 20px' }}
+          className="common-button btnsuccess"
         >
-          Add Another Image
+          Upload Images
         </Button>
-      )}
-
-      {images.length > 1 && (
         <Button
-          sx={{ margin: '20px 20px' }}
-          variant="contained"
-          color="secondary"
-          startIcon={<Minus />}
-          onClick={handleRemoveLastCard}
-          className="common-button btnsecondary"
+          variant="outlined"
+          onClick={() => {
+            router.push('/dashboard/trainers');
+          }}
+          sx={{
+            borderColor: '#d0021b',
+            color: '#d0021b',
+            transform: 'skewX(-20deg)',
+            '&:hover': {
+              borderColor: 'darkred',
+              backgroundColor: 'rgba(255, 0, 0, 0.1)',
+            },
+          }}
         >
-          Remove Last Image
+          Skip
         </Button>
-      )}
-
-      <Button
-        variant="contained"
-        color="success"
-        startIcon={<Upload />}
-        onClick={handleUploadImages}
-        disabled={images.every((image) => image.url === null)}
-        sx={{ margin: '20px 20px' }}
-        className="common-button btnsuccess"
-      >
-        Upload Images
-      </Button>
+      </Card>
     </div>
   );
 };

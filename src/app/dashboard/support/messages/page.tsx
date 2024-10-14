@@ -84,8 +84,7 @@ export default function SupportForm(): React.JSX.Element {
       const response = await axiosInstance.get<{ data: SupportEntry }>(`/support-ticket/${id}`);
       setSupportTicket(response.data.data);
     } catch (err: unknown) {
-      const errorMessage = err instanceof Error ? err.message : 'An unexpected error occurred';
-      toast.error(errorMessage);
+      err instanceof Error ? err.message : 'An unexpected error occurred';
     } finally {
       setLoading(false);
     }
@@ -100,8 +99,7 @@ export default function SupportForm(): React.JSX.Element {
       });
       setTicketMessages(response.data.data);
     } catch (err: unknown) {
-      const errorMessage = err instanceof Error ? err.message : 'An unexpected error occurred';
-      toast.error(errorMessage);
+      err instanceof Error ? err.message : 'An unexpected error occurred';
     } finally {
       setLoading(false);
     }
@@ -128,8 +126,7 @@ export default function SupportForm(): React.JSX.Element {
       setTicketMessage('');
       await getTicketMessages();
     } catch (err: unknown) {
-      const errorMessage = err instanceof Error ? err.message : 'An unexpected error occurred';
-      toast.error(errorMessage);
+      err instanceof Error ? err.message : 'An unexpected error occurred';
       setError('Failed to save support ticket details.');
     } finally {
       setIsSubmitting(false);

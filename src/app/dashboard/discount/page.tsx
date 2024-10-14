@@ -66,15 +66,7 @@ export default function DiscountManagementPage(): React.JSX.Element {
         );
       }
     } catch (err) {
-      let errorMessage = 'Failed to load data.';
-      if (err instanceof Error) {
-        errorMessage = `Error fetching discounts: ${err.message}`;
-      } else if (typeof err === 'string') {
-        errorMessage = err;
-      } else {
-        errorMessage = 'An unexpected error occurred'; // Fallback message
-      }
-      toast.error(errorMessage);
+      err instanceof Error ? err.message : 'An unexpected error occurred';
     } finally {
       setLoading(false); // End loading state
     }
@@ -83,13 +75,7 @@ export default function DiscountManagementPage(): React.JSX.Element {
   React.useEffect(() => {
     fetchDiscounts().catch((err: unknown) => {
       // Handle any errors that might occur during the fetch
-      let errorMessage: string;
-      if (err instanceof Error) {
-        errorMessage = err.message; // Safely access the message property
-      } else {
-        errorMessage = 'An unexpected error occurred'; // Fallback message
-      }
-      toast.error(errorMessage);
+      err instanceof Error ? err.message : 'An unexpected error occurred';
     });
   }, [fetchDiscounts]);
 
@@ -150,13 +136,7 @@ export default function DiscountManagementPage(): React.JSX.Element {
         // Swal.fire('Updated!', 'The discount status has been changed.', 'success');
         await fetchDiscounts(); // Refresh the list
       } catch (error: unknown) {
-        // let errorMessage: string;
-        // if (typeof error === 'string') {
-        //   errorMessage = error;
-        // } else {
-        //   errorMessage = 'An unexpected error occurred';
-        // }
-        // Swal.fire('Error', errorMessage, 'error'); // Show error alert
+        error instanceof Error ? error.message : 'An unexpected error occurred';
       }
     }
   };
@@ -209,56 +189,55 @@ export default function DiscountManagementPage(): React.JSX.Element {
         </Button>
       </Stack>
       <Card>
-      
-      {/* Search Field */}
-      <Stack sx={{padding:'30px'}}>
-      <Grid container spacing={2}>
-        <Grid item md={6} xs={12}>
-          <TextField
-            variant="outlined"
-            label="Search"
-            value={search}
-            fullWidth
-            onChange={(e) => {
-              handleSearchChange(e.target.value);
+        {/* Search Field */}
+        <Stack sx={{ padding: '30px' }}>
+          <Grid container spacing={2}>
+            <Grid item md={6} xs={12}>
+              <TextField
+                variant="outlined"
+                label="Search"
+                value={search}
+                fullWidth
+                onChange={(e) => {
+                  handleSearchChange(e.target.value);
+                }}
+                InputProps={{
+                  endAdornment: search && (
+                    <InputAdornment position="end">
+                      <IconButton onClick={handleClearSearch} edge="end">
+                        <XIcon size={15} /> {/* Adjust size as needed */}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
+              />
+            </Grid>
+            <Grid item md={6} xs={12}>
+              {/* Discount Filter and Search Components */}
+              <DiscountFilter onFilterChange={handleFilterChange} />
+            </Grid>
+          </Grid>
+        </Stack>
+        {loading ? (
+          <CustomLoader />
+        ) : (
+          <DiscountTable
+            discounts={discounts}
+            page={page}
+            rowsPerPage={rowsPerPage}
+            totalEntries={totalItems}
+            onEdit={handleEdit}
+            onDelete={handleDelete}
+            onStatusChange={handleStatusChange}
+            onPageChange={(newPage) => {
+              setPage(newPage);
             }}
-            InputProps={{
-              endAdornment: search && (
-                <InputAdornment position="end">
-                  <IconButton onClick={handleClearSearch} edge="end">
-                    <XIcon size={15} /> {/* Adjust size as needed */}
-                  </IconButton>
-                </InputAdornment>
-              ),
+            onRowsPerPageChange={(newRowsPerPage) => {
+              setRowsPerPage(newRowsPerPage);
+              setPage(0);
             }}
           />
-        </Grid>
-        <Grid item md={6} xs={12}>
-          {/* Discount Filter and Search Components */}
-          <DiscountFilter onFilterChange={handleFilterChange} />
-        </Grid>
-      </Grid>
-      </Stack>
-      {loading ? (
-        <CustomLoader />
-      ) : (
-        <DiscountTable
-          discounts={discounts}
-          page={page}
-          rowsPerPage={rowsPerPage}
-          totalEntries={totalItems}
-          onEdit={handleEdit}
-          onDelete={handleDelete}
-          onStatusChange={handleStatusChange}
-          onPageChange={(newPage) => {
-            setPage(newPage);
-          }}
-          onRowsPerPageChange={(newRowsPerPage) => {
-            setRowsPerPage(newRowsPerPage);
-            setPage(0);
-          }}
-        />
-      )}
+        )}
       </Card>
     </Stack>
   );

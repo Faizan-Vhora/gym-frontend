@@ -4,14 +4,26 @@ import React, { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { CustomLoader } from '@/utils/loader';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Box, Button, Checkbox, FormControl, FormControlLabel, Grid, IconButton, Typography } from '@mui/material';
+import {
+  Box,
+  Button,
+  Card,
+  CardHeader,
+  Checkbox,
+  Divider,
+  FormControl,
+  FormControlLabel,
+  Grid,
+  IconButton,
+  Typography,
+} from '@mui/material';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import { Minus, Plus } from '@phosphor-icons/react';
 import dayjs from 'dayjs';
 import { Controller, useFieldArray, useForm } from 'react-hook-form';
-import { toast } from 'react-toastify';
+import { toast, ToastContainer } from 'react-toastify';
 import Swal from 'sweetalert2';
 import { z } from 'zod';
 
@@ -115,15 +127,7 @@ export default function WeekdayTimeSlots() {
         // Set the value for `days` with proper typing
         setValue('days', updatedDays);
       } catch (error: unknown) {
-        let errorMessage: string;
-        if (typeof error === 'string') {
-          errorMessage = error;
-        } else {
-          // Handle other types of errors, or set a generic message
-          errorMessage = 'An unexpected error occurred';
-        }
-        // Convert the Error object to a string
-        toast.error(errorMessage);
+        error instanceof Error ? error.message : 'An unexpected error occurred';
       } finally {
         setIsLoading(false);
       }
@@ -266,7 +270,7 @@ export default function WeekdayTimeSlots() {
       toast.success('Time slots saved successfully!');
       router.push('/dashboard/trainers');
     } catch (error) {
-      toast.error('An error occurred while saving the time slots.');
+      error instanceof Error ? error.message : 'An unexpected error occurred';
     }
   };
 
@@ -277,123 +281,128 @@ export default function WeekdayTimeSlots() {
 
     return (
       <Box key={day.id} sx={{ marginBottom: 2 }}>
-        <Grid container sx={{ padding: '5px' }} alignItems="center">
-          <Grid item md={2}>
-            <FormControlLabel
-              control={
-                <Controller
-                  name={`days.${dayIndex}.isChecked`}
-                  control={control}
-                  render={({ field }) => (
-                    <Checkbox
-                      {...field}
-                      checked={field.value}
-                      onChange={(e) => {
-                        field.onChange(e.target.checked);
-                        if (setSameTimeForAll) {
-                          applySameTimeToAll();
-                        }
-                      }}
-                    />
-                  )}
-                />
-              }
-              label={daysOfWeek[dayIndex]?.label}
-            />
+        <Card>
+          <CardHeader style={{ fontFamily: '"Audiowide", sans-serif' }} title="Trainer Availability" />
+          <Divider />
+          <Grid container sx={{ padding: '5px' }} alignItems="center">
+            <Grid item md={2}>
+              <FormControlLabel
+                control={
+                  <Controller
+                    name={`days.${dayIndex}.isChecked`}
+                    control={control}
+                    render={({ field }) => (
+                      <Checkbox
+                        {...field}
+                        checked={field.value}
+                        onChange={(e) => {
+                          field.onChange(e.target.checked);
+                          if (setSameTimeForAll) {
+                            applySameTimeToAll();
+                          }
+                        }}
+                      />
+                    )}
+                  />
+                }
+                label={daysOfWeek[dayIndex]?.label}
+              />
+            </Grid>
+
+            {isChecked && (
+              <>
+                <Grid item md={1}>
+                  <IconButton
+                    onClick={() => {
+                      if (setSameTimeForAll && dayIndex !== 0) return;
+                      const currentTimeSlots = watch(`days.${dayIndex}.timeSlots`);
+                      const newTimeSlot = { startTime: null, endTime: null };
+                      setValue(`days.${dayIndex}.timeSlots`, [...currentTimeSlots, newTimeSlot]);
+                      if (setSameTimeForAll) {
+                        applySameTimeToAll();
+                      }
+                    }}
+                    disabled={isDisabled}
+                  >
+                    <Plus />
+                  </IconButton>
+                </Grid>
+
+                <Grid item md={9}>
+                  <Controller
+                    name={`days.${dayIndex}.timeSlots`}
+                    control={control}
+                    render={({ field }) => (
+                      <>
+                        {field.value.map((slot, slotIndex) => (
+                          <Grid container key={slotIndex} alignItems="center">
+                            <Grid item xs={12} sm={6} md={4} sx={{ padding: '10px 10px' }}>
+                              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                <FormControl fullWidth>
+                                  <TimePicker
+                                    label="Start Time"
+                                    value={slot.startTime ? dayjs(slot.startTime) : null}
+                                    onChange={(newValue) => {
+                                      const updatedTimeSlots = [...field.value];
+                                      updatedTimeSlots[slotIndex].startTime = newValue?.toDate() ?? null;
+                                      setValue(`days.${dayIndex}.timeSlots`, updatedTimeSlots);
+                                      if (setSameTimeForAll) {
+                                        applySameTimeToAll();
+                                      }
+                                    }}
+                                    disabled={isDisabled}
+                                  />
+                                </FormControl>
+                              </LocalizationProvider>
+                            </Grid>
+
+                            <Grid item xs={12} sm={6} md={4} sx={{ padding: '10px 10px' }}>
+                              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                <FormControl fullWidth>
+                                  <TimePicker
+                                    label="End Time"
+                                    value={slot.endTime ? dayjs(slot.endTime) : null}
+                                    onChange={(newValue) => {
+                                      const updatedTimeSlots = [...field.value];
+                                      updatedTimeSlots[slotIndex].endTime = newValue?.toDate() ?? null;
+                                      setValue(`days.${dayIndex}.timeSlots`, updatedTimeSlots);
+                                      if (setSameTimeForAll) {
+                                        applySameTimeToAll();
+                                      }
+                                    }}
+                                    disabled={isDisabled}
+                                  />
+                                </FormControl>
+                              </LocalizationProvider>
+                            </Grid>
+
+                            <Grid item xs={12} sm={6} md={1}>
+                              <IconButton
+                                onClick={() => {
+                                  if (setSameTimeForAll && dayIndex !== 0) return;
+                                  const currentTimeSlots = [...field.value];
+                                  currentTimeSlots.splice(slotIndex, 1);
+                                  setValue(`days.${dayIndex}.timeSlots`, currentTimeSlots);
+                                  if (setSameTimeForAll) {
+                                    applySameTimeToAll();
+                                  }
+                                }}
+                                disabled={isDisabled}
+                              >
+                                <Minus />
+                              </IconButton>
+                            </Grid>
+                          </Grid>
+                        ))}
+                      </>
+                    )}
+                  />
+                </Grid>
+              </>
+            )}
           </Grid>
-
-          {isChecked && (
-            <>
-              <Grid item md={1}>
-                <IconButton
-                  onClick={() => {
-                    if (setSameTimeForAll && dayIndex !== 0) return;
-                    const currentTimeSlots = watch(`days.${dayIndex}.timeSlots`);
-                    const newTimeSlot = { startTime: null, endTime: null };
-                    setValue(`days.${dayIndex}.timeSlots`, [...currentTimeSlots, newTimeSlot]);
-                    if (setSameTimeForAll) {
-                      applySameTimeToAll();
-                    }
-                  }}
-                  disabled={isDisabled}
-                >
-                  <Plus />
-                </IconButton>
-              </Grid>
-
-              <Grid item md={9}>
-                <Controller
-                  name={`days.${dayIndex}.timeSlots`}
-                  control={control}
-                  render={({ field }) => (
-                    <>
-                      {field.value.map((slot, slotIndex) => (
-                        <Grid container key={slotIndex} alignItems="center">
-                          <Grid item xs={12} sm={6} md={4} sx={{ padding: '10px 10px' }}>
-                            <LocalizationProvider dateAdapter={AdapterDayjs}>
-                              <FormControl fullWidth>
-                                <TimePicker
-                                  label="Start Time"
-                                  value={slot.startTime ? dayjs(slot.startTime) : null}
-                                  onChange={(newValue) => {
-                                    const updatedTimeSlots = [...field.value];
-                                    updatedTimeSlots[slotIndex].startTime = newValue?.toDate() ?? null;
-                                    setValue(`days.${dayIndex}.timeSlots`, updatedTimeSlots);
-                                    if (setSameTimeForAll) {
-                                      applySameTimeToAll();
-                                    }
-                                  }}
-                                  disabled={isDisabled}
-                                />
-                              </FormControl>
-                            </LocalizationProvider>
-                          </Grid>
-
-                          <Grid item xs={12} sm={6} md={4} sx={{ padding: '10px 10px' }}>
-                            <LocalizationProvider dateAdapter={AdapterDayjs}>
-                              <FormControl fullWidth>
-                                <TimePicker
-                                  label="End Time"
-                                  value={slot.endTime ? dayjs(slot.endTime) : null}
-                                  onChange={(newValue) => {
-                                    const updatedTimeSlots = [...field.value];
-                                    updatedTimeSlots[slotIndex].endTime = newValue?.toDate() ?? null;
-                                    setValue(`days.${dayIndex}.timeSlots`, updatedTimeSlots);
-                                    if (setSameTimeForAll) {
-                                      applySameTimeToAll();
-                                    }
-                                  }}
-                                  disabled={isDisabled}
-                                />
-                              </FormControl>
-                            </LocalizationProvider>
-                          </Grid>
-
-                          <Grid item xs={12} sm={6} md={1}>
-                            <IconButton
-                              onClick={() => {
-                                if (setSameTimeForAll && dayIndex !== 0) return;
-                                const currentTimeSlots = [...field.value];
-                                currentTimeSlots.splice(slotIndex, 1);
-                                setValue(`days.${dayIndex}.timeSlots`, currentTimeSlots);
-                                if (setSameTimeForAll) {
-                                  applySameTimeToAll();
-                                }
-                              }}
-                              disabled={isDisabled}
-                            >
-                              <Minus />
-                            </IconButton>
-                          </Grid>
-                        </Grid>
-                      ))}
-                    </>
-                  )}
-                />
-              </Grid>
-            </>
-          )}
-        </Grid>
+        </Card>
+        <ToastContainer />
       </Box>
     );
   });

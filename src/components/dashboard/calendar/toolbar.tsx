@@ -251,29 +251,35 @@ export function Toolbar({
         </Grid>
         <Grid item md={3.5} sm={6} xs={12}>
           {/* Trainer Selection */}
-          <Select value={selectedTrainer} onChange={handleTrainerSelect} displayEmpty fullWidth label="Trainer">
-            <Option value="">
-              <em>Select a Trainer</em>
-            </Option>
-            {trainers.map((trainer) => (
-              <Option key={trainer.id} value={trainer.id}>
-                {trainer.fullName}
+          <FormControl fullWidth variant="outlined">
+            <InputLabel>Trainers</InputLabel>
+            <Select value={selectedTrainer} onChange={handleTrainerSelect} displayEmpty fullWidth label="Trainers">
+              <Option value="">
+                <em>All</em>
               </Option>
-            ))}
-          </Select>
+              {trainers.map((trainer) => (
+                <Option key={trainer.id} value={trainer.id}>
+                  {trainer.fullName}
+                </Option>
+              ))}
+            </Select>
+          </FormControl>
         </Grid>
         <Grid item md={3.5} sm={6} xs={12}>
           {/* Member Selection */}
-          <Select value={selectedMember} onChange={handleMemberSelect} displayEmpty fullWidth label="Trainer">
-            <Option value="">
-              <em>Select a Member</em>
-            </Option>
-            {customers.map((member) => (
-              <Option key={member.id} value={member.id}>
-                {member.fullName}
+          <FormControl fullWidth variant="outlined">
+            <InputLabel>Members</InputLabel>
+            <Select value={selectedMember} onChange={handleMemberSelect} displayEmpty fullWidth label="Members">
+              <Option value="">
+                <em>All</em>
               </Option>
-            ))}
-          </Select>
+              {customers.map((member) => (
+                <Option key={member.id} value={member.id}>
+                  {member.fullName}
+                </Option>
+              ))}
+            </Select>
+          </FormControl>
         </Grid>
         <Grid item md={2} sm={6} xs={12}>
           <FormControl variant="outlined" fullWidth>

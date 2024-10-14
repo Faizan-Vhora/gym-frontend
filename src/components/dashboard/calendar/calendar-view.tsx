@@ -108,15 +108,7 @@ export function CalendarView({ view = 'dayGridMonth' }: CalendarViewProps): Reac
 
       setEvents(formattedEvents);
     } catch (error: unknown) {
-      let errorMessage: string;
-      if (typeof error === 'string') {
-        errorMessage = error;
-      } else {
-        // Handle other types of errors, or set a generic message
-        errorMessage = 'An unexpected error occurred';
-      }
-      // Convert the Error object to a string
-      toast.error(errorMessage);
+      error instanceof Error ? error.message : 'An unexpected error occurred';
     }
   };
 

@@ -71,11 +71,7 @@ export default function FaqManagementPage(): React.JSX.Element {
         setError('Unexpected data format.');
       }
     } catch (err) {
-      let errorMessage = 'Failed to load data.';
-      if (err instanceof Error) {
-        errorMessage = `Error fetching FAQs: ${err.message}`;
-      }
-      setError(errorMessage);
+      err instanceof Error ? err.message : 'An unexpected error occurred';
     } finally {
       setLoading(false);
     }
@@ -86,11 +82,7 @@ export default function FaqManagementPage(): React.JSX.Element {
       try {
         await fetchFaqs();
       } catch (err: unknown) {
-        let errorMessage = 'Failed to load data.';
-        if (err instanceof Error) {
-          errorMessage = `Error fetching FAQs: ${err.message}`;
-        }
-        toast.error(errorMessage);
+        err instanceof Error ? err.message : 'An unexpected error occurred';
       }
     };
 
@@ -133,11 +125,7 @@ export default function FaqManagementPage(): React.JSX.Element {
         toast.success('FAQ deleted successfully');
       }
     } catch (err: unknown) {
-      let errorMessage = 'Failed to delete FAQ.';
-      if (err instanceof Error) {
-        errorMessage = `Error deleting FAQ: ${err.message}`;
-      }
-      toast.error(errorMessage);
+      err instanceof Error ? err.message : 'An unexpected error occurred';
     }
   };
 
@@ -164,11 +152,7 @@ export default function FaqManagementPage(): React.JSX.Element {
         setFaqs((prevFaqs) => prevFaqs.map((faq) => (faq.id === id ? { ...faq, status } : faq)));
         toast.success('Status updated successfully');
       } catch (err: unknown) {
-        let errorMessage = 'Failed to load data.';
-        if (err instanceof Error) {
-          errorMessage = `Error fetching FAQ: ${err.message}`;
-        }
-        toast.error(errorMessage);
+        err instanceof Error ? err.message : 'An unexpected error occurred';
       }
     }
   };

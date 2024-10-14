@@ -144,13 +144,7 @@ export default function TrainerEditForm(): React.JSX.Element {
           setTrainer(response.data.data);
         })
         .catch((err: unknown) => {
-          let errorMessage: string;
-          if (typeof err === 'string') {
-            errorMessage = err;
-          } else {
-            errorMessage = 'An unexpected error occurred';
-          }
-          toast.error(errorMessage);
+          err instanceof Error ? err.message : 'An unexpected error occurred';
         });
     }
   }, [id]);
@@ -202,12 +196,7 @@ export default function TrainerEditForm(): React.JSX.Element {
           setError('Unexpected data format.');
         }
       } catch (err) {
-        let errorMessage = 'Failed to load data.';
-        if (err instanceof Error) {
-          errorMessage = `Error fetching check-ins: ${err.message}`;
-        }
-        toast.error(errorMessage);
-        setError(errorMessage);
+        err instanceof Error ? err.message : 'An unexpected error occurred';
       } finally {
         setLoading(false);
       }
@@ -312,13 +301,7 @@ export default function TrainerEditForm(): React.JSX.Element {
         router.push(`/dashboard/trainers/form/additional-details?id=${response?.data?.data?.id}`);
       }
     } catch (err: unknown) {
-      let errorMessage: string;
-      if (err instanceof Error) {
-        errorMessage = err.message;
-      } else {
-        errorMessage = 'An unexpected error occurred';
-      }
-      toast.error(errorMessage);
+      err instanceof Error ? err.message : 'An unexpected error occurred';
       setError('Failed to save Trainer details.');
     } finally {
       setIsSubmitting(false);

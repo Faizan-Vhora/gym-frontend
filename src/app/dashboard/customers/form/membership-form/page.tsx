@@ -4,7 +4,7 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { CustomLoader } from '@/utils/loader';
-import { Alert, Button, Grid, Stack, Typography } from '@mui/material';
+import { Alert, Button, Card, CardHeader, Divider, Grid, Stack, Typography } from '@mui/material';
 import { toast, ToastContainer } from 'react-toastify';
 
 import axiosInstance from '@/lib/axios';
@@ -101,13 +101,7 @@ const MembershipPlansForm: React.FC = () => {
       router.push('/dashboard/customers');
       // Update the customerS state with the new data
     } catch (err: unknown) {
-      let errorMessage: string;
-      if (err instanceof Error) {
-        errorMessage = err.message;
-      } else {
-        errorMessage = 'An unexpected error occurred';
-      }
-      toast.error(errorMessage);
+      err instanceof Error ? err.message : 'An unexpected error occurred';
     }
   };
 
@@ -129,52 +123,56 @@ const MembershipPlansForm: React.FC = () => {
 
   return (
     <Grid>
-      <Stack spacing={5}>
-        <Button
-          variant="outlined"
-          onClick={() => {
-            router.push('/dashboard/customers');
-          }}
-          sx={{
-            width: '10%',
-            marginLeft: 'auto',
-            borderColor: '#d0021b',
-            color: '#d0021b',
-            transform: 'skewX(-20deg)',
-            '&:hover': {
-              borderColor: 'darkred',
-              backgroundColor: 'rgba(255, 0, 0, 0.1)',
-            },
-          }}
-        >
-          Skip
-        </Button>
-      </Stack>
-      <Grid container spacing={3} justifyContent="center" style={{ marginTop: '20px' }}>
-        {plans.length > 0 ? (
-          plans.map((plan: PlanI) => (
-            <Grid item xs={12} sm={6} md={4} key={plan.id}>
-              <MembershipPlanCard
-                title={plan.title}
-                durationInMonths={plan.durationInMonths}
-                expiryDate={plan.expiryDate}
-                description={plan.description}
-                cost={plan.cost}
-                onlyShow={true}
-                onButtonClick={() => {
-                  void handleButtonClick(plan.id);
-                }}
-              />
-            </Grid>
-          ))
-        ) : (
-          <Typography variant="h6" color="text.secondary" align="center">
-            No membership plans available.
-          </Typography>
-        )}
+      <Card>
+        <CardHeader style={{ fontFamily: '"Audiowide", sans-serif' }} title="Membership Plans" />
+        <Divider />
+        <Stack spacing={5}>
+          <Button
+            variant="outlined"
+            onClick={() => {
+              router.push('/dashboard/customers');
+            }}
+            sx={{
+              width: '10%',
+              marginLeft: 'auto',
+              borderColor: '#d0021b',
+              color: '#d0021b',
+              transform: 'skewX(-20deg)',
+              '&:hover': {
+                borderColor: 'darkred',
+                backgroundColor: 'rgba(255, 0, 0, 0.1)',
+              },
+            }}
+          >
+            Skip
+          </Button>
+        </Stack>
+        <Grid container spacing={3} justifyContent="center" style={{ marginTop: '20px' }}>
+          {plans.length > 0 ? (
+            plans.map((plan: PlanI) => (
+              <Grid item xs={12} sm={6} md={4} key={plan.id}>
+                <MembershipPlanCard
+                  title={plan.title}
+                  durationInMonths={plan.durationInMonths}
+                  expiryDate={plan.expiryDate}
+                  description={plan.description}
+                  cost={plan.cost}
+                  onlyShow={true}
+                  onButtonClick={() => {
+                    void handleButtonClick(plan.id);
+                  }}
+                />
+              </Grid>
+            ))
+          ) : (
+            <Typography variant="h6" color="text.secondary" align="center">
+              No membership plans available.
+            </Typography>
+          )}
 
-        <ToastContainer />
-      </Grid>
+          <ToastContainer />
+        </Grid>
+      </Card>
     </Grid>
   );
 };

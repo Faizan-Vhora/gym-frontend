@@ -19,7 +19,7 @@ import {
   TextField,
 } from '@mui/material';
 import type { SelectChangeEvent } from '@mui/material';
-import { toast, ToastContainer } from 'react-toastify'; // Import the toast function
+import { ToastContainer } from 'react-toastify'; // Import the toast function
 
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -113,11 +113,7 @@ export default function DiscountFormPage(): React.JSX.Element {
           }
         })
         .catch((error: unknown) => {
-          let errorMessage = 'An unexpected error occurred';
-          if (error instanceof Error) {
-            errorMessage = `An unexpected error occurred: ${error.message}`;
-          }
-          toast.error(errorMessage);
+          error instanceof Error ? error.message : 'An unexpected error occurred';
         });
     }
   }, [discountId]);
@@ -222,14 +218,8 @@ export default function DiscountFormPage(): React.JSX.Element {
       });
 
       router.push('/dashboard/discount');
-    } catch (err) {
-      let _errorMessage = 'Failed to load data.';
-      if (err instanceof Error) {
-        _errorMessage = err.message;
-      } else {
-        _errorMessage = 'An unexpected error occurred'; // Fallback message
-      }
-      // Optionally handle or log the error
+    } catch (err: unknown) {
+      err instanceof Error ? err.message : 'An unexpected error occurred';
     } finally {
       setLoading(false); // End loading state
     }
