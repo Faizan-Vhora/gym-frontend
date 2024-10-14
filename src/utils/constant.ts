@@ -202,10 +202,20 @@ export const BOOKING_SESSION_PAYMENT_STATUS_DETAILS: Record<string, { value: str
 
 }
 
-// Other
-
-
-// Other
+export const NOTIFICATION_TYPES = {
+ 
+  NONE : 0,
+   
+  EMAIL : 1,
+  PUSH_NOTIFICATION: 2,
+   
+  ADMIN_ALERT_NOTIFICATION:3,
+  USER_ALERT_NOTIFICATION:4,
+   
+  ADMIN_PUSH_NOTIFICATION: 5,
+  USER_PUSH_NOTIFICATION: 6
+   
+  }
 
 
 

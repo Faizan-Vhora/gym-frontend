@@ -5,11 +5,13 @@ import Avatar from '@mui/material/Avatar';
 import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
 import Stack from '@mui/material/Stack';
+import { Bell } from '@phosphor-icons/react';
 import { List as ListIcon } from '@phosphor-icons/react/dist/ssr/List';
 
 import { usePopover } from '@/hooks/use-popover';
 
 import { MobileNav } from './mobile-nav';
+import { NotificationsPopover } from './notification-popover';
 import { UserPopover } from './user-popover';
 
 // Define a type for the user object
@@ -20,9 +22,12 @@ interface User {
 
 export function MainNav(): React.JSX.Element {
   const [openNav, setOpenNav] = React.useState<boolean>(false);
+  const [openNavForNotification, setOpenNavForNotification] = React.useState<boolean>(false);
   const [user, setUser] = React.useState<User | null>(null);
 
   const userPopover = usePopover<HTMLDivElement>();
+
+  const notificationPopover = usePopover<HTMLDivElement>();
 
   React.useEffect(() => {
     // Retrieve user data from localStorage
@@ -59,6 +64,9 @@ export function MainNav(): React.JSX.Element {
             </IconButton>
           </Stack>
           <Stack sx={{ alignItems: 'center' }} direction="row" spacing={2}>
+            <IconButton onClick={notificationPopover.handleOpen}>
+              <Bell />
+            </IconButton>
             <Avatar
               onClick={userPopover.handleOpen}
               ref={userPopover.anchorRef}
@@ -68,7 +76,13 @@ export function MainNav(): React.JSX.Element {
           </Stack>
         </Stack>
       </Box>
+
       <UserPopover anchorEl={userPopover.anchorRef.current} onClose={userPopover.handleClose} open={userPopover.open} />
+      <NotificationsPopover
+        anchorEl={notificationPopover.anchorRef.current}
+        onClose={notificationPopover.handleClose}
+        open={notificationPopover.open}
+      />
       <MobileNav
         onClose={() => {
           setOpenNav(false);

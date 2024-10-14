@@ -31,6 +31,8 @@ export const navItems = [
 
       { key: 'support', title: 'Support', href: paths.support.supportList, icon: 'headset', items:[] },
 
+      { key: 'notification', title: 'Notification', href: paths.notification.notificationList, icon: 'bell', items:[] },
+
       // { key: 'integrations', title: 'Integrations', href: paths.dashboard.integrations, icon: 'plugs-connected' },
       // { key: 'settings', title: 'Settings', href: paths.dashboard.settings, icon: 'gear-six' },
       // { key: 'account', title: 'Account', href: paths.dashboard.account, icon: 'user' },

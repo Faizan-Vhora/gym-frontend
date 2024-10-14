@@ -1,89 +1,60 @@
 'use client';
 
 import * as React from 'react';
-import { useCallback, useEffect, useState } from 'react';
-import Stack from '@mui/material/Stack';
-import Typography from '@mui/material/Typography';
-import { Plus as PlusIcon } from '@phosphor-icons/react';
-import { toast, ToastContainer } from 'react-toastify'; // Import the toast function
-
-import 'react-toastify/dist/ReactToastify.css';
-
+import { useCallback, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { CustomLoader } from '@/utils/loader';
-import { Button, Card } from '@mui/material';
+import { Button, Card, Stack, Typography } from '@mui/material';
+import { Plus as PlusIcon } from '@phosphor-icons/react';
+import { ToastContainer } from 'react-toastify';
 import Swal from 'sweetalert2';
 
 import axiosInstance from '@/lib/axios';
-import { MembershipPlanFilters } from '@/components/dashboard/membership-plan/mebership-plan-filters';
-import { MembershipPlanTable } from '@/components/dashboard/membership-plan/membership-plan-table';
-import type { MembershipPlans } from '@/components/dashboard/membership-plan/membership-plan-table';
+import { NotificationFilters } from '@/components/notification/notification-filter';
+import { NotificationEntry, NotificationTable } from '@/components/notification/notification-table';
 
-export default function MembershipPlanPage(): React.JSX.Element {
-  const [membershipPlans, setMembershipPlans] = useState<MembershipPlans[]>([]);
-  const [count, setCount] = useState<number>(0);
-  const [page, setPage] = useState<number>(0);
-  const [rowsPerPage, setRowsPerPage] = useState<number>(5);
-  const [statusFilter, setStatusFilter] = useState<string>('ALL'); // Status filter
-  const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = React.useState('');
+export default function Page(): React.JSX.Element {
   const router = useRouter();
 
-  interface MembershipPlanResponse {
-    data: {
-      items: MembershipPlans[];
-      meta: { totalItems: number };
-    };
-  }
+  // State variables
+  const [entries, setEntries] = React.useState<NotificationEntry[]>([]);
+  const [searchTerm, setSearchTerm] = React.useState('');
+  const [fromFilter, setFromFilter] = React.useState('All');
+  const [page, setPage] = React.useState<number>(0);
+  const [rowsPerPage, setRowsPerPage] = React.useState(5);
+  const [count, setCount] = React.useState<number>(0);
+  const [loading, setLoading] = React.useState(true);
 
-  const fetchMembershipPlans = useCallback(async () => {
+  // Fetch support list data
+  const getNotificationListData = useCallback(async (): Promise<void> => {
     setLoading(true);
     try {
-      const response = await axiosInstance.get<MembershipPlanResponse>('/membership-types', {
-        params: {
-          page: page + 1,
-          limit: rowsPerPage,
-          search: searchTerm, // Search term
-          status: statusFilter !== 'ALL' ? statusFilter : undefined,
-        },
-      });
-      setMembershipPlans(response.data.data.items);
+      const qParams = {
+        page: page + 1,
+        limit: rowsPerPage,
+        search: searchTerm,
+        userType: fromFilter !== 'All' ? fromFilter : null,
+      };
+
+      const response = await axiosInstance.get<{ data: { items: NotificationEntry[]; meta: { totalItems: number } } }>(
+        '/notification',
+        { params: qParams }
+      );
+
+      setEntries(response.data.data.items);
       setCount(response.data.data.meta.totalItems);
     } catch (error) {
-      // Proper error handling
-      const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred';
-      toast.error(`Failed to fetch customers: ${errorMessage}`);
+      await Swal.fire('Error!', 'Something went wrong.', 'error');
     } finally {
       setLoading(false);
     }
-  }, [page, rowsPerPage, searchTerm, statusFilter]);
-
-  useEffect(() => {
-    // Define an async function and invoke it
-    const loadMembershipPlans = async (): Promise<void> => {
-      try {
-        await fetchMembershipPlans();
-      } catch (error: unknown) {
-        let errorMessage: string;
-        if (typeof error === 'string') {
-          errorMessage = error;
-        } else {
-          // Handle other types of errors, or set a generic message
-          errorMessage = 'An unexpected error occurred';
-        }
-        // Convert the Error object to a string
-        toast.error(errorMessage);
-      }
-    };
-
-    void loadMembershipPlans();
-  }, [fetchMembershipPlans]);
+  }, [page, rowsPerPage, searchTerm, fromFilter]);
 
   const handleAddClick = (): void => {
-    router.push('/dashboard/membership-plan/form');
+    router.push('/dashboard/notification/form');
   };
 
-  const handlePageChange = (event: React.MouseEvent<HTMLButtonElement> | null, newPage: number): void => {
+  const handlePageChange = (newPage: number): void => {
     setPage(newPage);
   };
 
@@ -97,49 +68,22 @@ export default function MembershipPlanPage(): React.JSX.Element {
     setPage(0);
   };
 
-  const handleStatusChange = (status: string): void => {
-    setStatusFilter(status);
-    setPage(0); // Reset to first page on status filter change
+  const handleFromChange = (type: string): void => {
+    setFromFilter(type);
+    setPage(0);
   };
 
-  const updatePlanStatus = async (id: string, currentStatus: string): Promise<void> => {
-    const newStatus = currentStatus === 'active' ? 'inactive' : 'active'; // Toggle status
-
-    // Show confirmation dialog
-    const result = await Swal.fire({
-      title: 'Are you sure?',
-      text: `You are about to ${newStatus === 'active' ? 'activate' : 'deactivate'} this membership plan.`,
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: `Yes, ${newStatus === 'active' ? 'activate' : 'deactivate'} it!`,
-    });
-
-    // If confirmed, proceed with the status update
-    if (result.isConfirmed) {
-      try {
-        await axiosInstance.patch(`/membership-types/update-status/${id}`, { status: newStatus });
-        toast.success(`Status updated to ${newStatus === 'active' ? 'Active' : 'Inactive'}`);
-        await fetchMembershipPlans(); // Refresh data
-      } catch (error: unknown) {
-        let errorMessage: string;
-        if (typeof error === 'string') {
-          errorMessage = error;
-        } else {
-          errorMessage = 'An unexpected error occurred';
-        }
-        toast.error(errorMessage);
-      }
-    }
-  };
+  // Lifecycle hooks
+  useEffect(() => {
+    void getNotificationListData(); // Ignore the warning
+  }, [getNotificationListData]);
 
   return (
     <Stack spacing={3}>
       <Stack direction="row" spacing={3}>
         <Stack spacing={1} sx={{ flex: '1 1 auto' }}>
           <Typography variant="h4" style={{ fontFamily: '"Audiowide", sans-serif' }}>
-            Membership Plan
+            Notification
           </Typography>
         </Stack>
         <Button
@@ -153,26 +97,23 @@ export default function MembershipPlanPage(): React.JSX.Element {
       </Stack>
       <Card>
         <Stack sx={{ padding: '30px' }}>
-          <MembershipPlanFilters
-            onSearchChange={handleSearchChange}
-            onStatusChange={handleStatusChange} // Pass status change handler
-          />
+          <NotificationFilters onSearchChange={handleSearchChange} onFromChange={handleFromChange} />
         </Stack>
+
         {loading ? (
           <CustomLoader />
         ) : (
-          <MembershipPlanTable
-            count={count}
+          <NotificationTable
+            entries={entries}
             page={page}
             rowsPerPage={rowsPerPage}
-            rows={membershipPlans}
+            totalEntries={count}
             onPageChange={handlePageChange}
             onRowsPerPageChange={handleRowsPerPageChange}
-            updatePlanStatus={updatePlanStatus}
           />
         )}
       </Card>
-      <ToastContainer /> {/* Add ToastContainer here */}
+      <ToastContainer />
     </Stack>
   );
 }
