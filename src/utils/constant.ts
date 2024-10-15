@@ -2,7 +2,8 @@ export const REGEX_VALIDATION = {
     FULL_NAME : /^[A-Za-z\s]+$/, //Full name can only contain letters and spaces!
     ZIP_CODE  : /^[0-9]+$/, // Zip code must contain only numeric digits without any letters or special characters,
     PHONE_NUMBER : /^\(?\+?1?\)?[-. ]?\(?\d{3}\)?[-. ]?\d{3}[-. ]?\d{4}$/, // Phone number must be a valid US number
-    LETTERS_AND_NUMBERS: /^(?![\d\s\W]+$).+/
+    QUESTION: /^[^!^&%#]+$/,
+    PROMOCODE: /^(?=.{10}$)(?:[A-Za-z0-9]*[A-Za-z]){5}[A-Za-z0-9]*$/
   }
 
 // USER
@@ -207,19 +208,21 @@ export const BOOKING_SESSION_PAYMENT_STATUS = {
   PENDING : 'pending',
   CANCELED  : 'cancelled',
   COMPLETED  : 'completed',
+  PAID : 'paid',
 }
 
 export const BOOKING_SESSION_PAYMENT_STATUS_OPTIONS = [
   { value: BOOKING_SESSION_PAYMENT_STATUS.PENDING, label: "Pending" },
   { value: BOOKING_SESSION_PAYMENT_STATUS.CANCELED, label: "Cancelled" },
   { value: BOOKING_SESSION_PAYMENT_STATUS.COMPLETED, label: "Completed" },
+  { value: BOOKING_SESSION_PAYMENT_STATUS.PAID, label: "Paid" },
 ]
 
 export const BOOKING_SESSION_PAYMENT_STATUS_DETAILS: Record<string, { value: string; label: string; color: 'warning' | 'error' | 'success' }>  = {
   [BOOKING_SESSION_PAYMENT_STATUS.PENDING] : { value: BOOKING_SESSION_PAYMENT_STATUS.PENDING, label: "Pending" , color: 'warning'},
   [BOOKING_SESSION_PAYMENT_STATUS.CANCELED] : { value: BOOKING_SESSION_PAYMENT_STATUS.CANCELED, label: "Cancelled" , color: 'error'},
   [BOOKING_SESSION_PAYMENT_STATUS.COMPLETED] : { value: BOOKING_SESSION_PAYMENT_STATUS.COMPLETED, label: "Completed" , color: 'success'},
-
+  [BOOKING_SESSION_PAYMENT_STATUS.PAID] : { value: BOOKING_SESSION_PAYMENT_STATUS.PAID, label: "Paid" , color: 'success'},
 }
 
 export const NOTIFICATION_TYPES = {

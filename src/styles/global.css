@@ -156,7 +156,9 @@ body {
    /* .banner-image .mui-p2z5n0-MuiPaper-root-MuiCard-root{
     margin: 20px;
   } */
-
+/* .mui-3y1h91{
+  font-family: '"Audiowide", sans-serif' !important;
+} */
    @media only screen and (max-width:768px) {
     .banner-image .mui-1phv87n-MuiPaper-root-MuiCard-root{
       width: 100% !important;

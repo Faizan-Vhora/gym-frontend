@@ -76,7 +76,7 @@ const SessionPreview: React.FC<SessionNotesFormProps> = ({
               <Chip
                 label={PaymentStatus?.label} // Show label based on the status
                 color={PaymentStatus?.color} // Set color based on the status
-                variant="outlined" // You can change to "filled" if desired
+                variant="filled" // You can change to "filled" if desired
               />
             </Typography>
             <Typography variant="h6" textAlign={'end'} color="text.secondary" gutterBottom>
@@ -84,7 +84,7 @@ const SessionPreview: React.FC<SessionNotesFormProps> = ({
               <Chip
                 label={statusDetail?.label} // Show label based on the status
                 color={statusDetail?.color} // Set color based on the status
-                variant="outlined" // You can change to "filled" if desired
+                variant="filled" // You can change to "filled" if desired
               />
             </Typography>
           </Stack>
@@ -247,13 +247,25 @@ const SessionPreview: React.FC<SessionNotesFormProps> = ({
         </Card>
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose} color="secondary" className="common-button">
+        <Button
+          onClick={onClose}
+          color="secondary"
+          sx={{
+            borderColor: '#d0021b',
+            color: '#d0021b',
+            transform: 'skewX(-20deg)',
+            '&:hover': {
+              borderColor: 'darkred',
+              backgroundColor: 'rgba(255, 0, 0, 0.1)',
+            },
+          }}
+        >
           Cancel
         </Button>
-        <Button onClick={openRescheduleDialog} className="common-button">
+        <Button onClick={openRescheduleDialog} className="common-button btnsuccess">
           Reschedule Session
         </Button>
-        <Button onClick={openNotesDialog} className="common-button">
+        <Button onClick={openNotesDialog} className="common-button btnsuccess">
           Update Notes
         </Button>
         <Button

@@ -24,6 +24,7 @@ import {
   OutlinedInput,
   Stack,
   TextField,
+  Typography,
 } from '@mui/material';
 import { useForm } from 'react-hook-form';
 import { toast, ToastContainer } from 'react-toastify';
@@ -165,6 +166,7 @@ const TrainerAdditionalForm: React.FC = () => {
           <Grid container spacing={8}>
             {/* Expertise List */}
             <Grid item md={5} xs={12}>
+              <Typography>Expertise</Typography>
               <FormControl fullWidth>
                 <Box
                   sx={{
@@ -179,7 +181,6 @@ const TrainerAdditionalForm: React.FC = () => {
                     <Stack spacing={1}>
                       {expertiseList.map((expertise) => (
                         <FormControlLabel
-                          required
                           key={expertise.id}
                           control={
                             <Checkbox

@@ -23,11 +23,13 @@ import { ToastContainer } from 'react-toastify'; // Import the toast function
 
 import 'react-toastify/dist/ReactToastify.css';
 
+import { REGEX_VALIDATION } from '@/utils/constant';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import dayjs, { Dayjs } from 'dayjs';
 import { Controller, useForm } from 'react-hook-form';
+import Swal from 'sweetalert2';
 import { z, ZodError } from 'zod';
 import type { ZodFormattedError } from 'zod';
 
@@ -40,11 +42,11 @@ const baseDiscountSchema = z.object({
   codeName: z
     .string()
     .regex(
-      /^[A-Z0-9][A-Z0-9-_]{4,9}$/,
+      REGEX_VALIDATION.PROMOCODE,
       'Promo code must be 5-10 characters long, and can only contain letters, numbers, hyphens, and underscores.'
     )
     .transform((val) => val.toUpperCase()),
-  expiryDate: z.string(),
+  expiryDate: z.string().min(1, 'Expiry Date is required'),
   discountType: z.nativeEnum(DiscountType, { errorMap: () => ({ message: 'Discount Type is required' }) }),
   usageLimit: z.nativeEnum(UsageLimit, { errorMap: () => ({ message: 'Usage Limit is required' }) }),
   discountValue: z.number().min(1, 'Discount Value must be at least 1'),
@@ -156,6 +158,15 @@ export default function DiscountFormPage(): React.JSX.Element {
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     const file = e.target.files?.[0] || null;
+    if (file) {
+      const fileType = file.type;
+
+      // Check if the file type starts with 'image/'
+      if (!fileType.startsWith('image/')) {
+        void Swal.fire('Please select a valid Image');
+        return;
+      }
+    }
     setImageFile(file);
 
     if (file) {
@@ -283,7 +294,7 @@ export default function DiscountFormPage(): React.JSX.Element {
                 </Grid>
                 <Grid item md={6} xs={12}>
                   <LocalizationProvider dateAdapter={AdapterDayjs}>
-                    <FormControl fullWidth required>
+                    <FormControl fullWidth required error={Boolean(errors?.expiryDate)}>
                       <Controller
                         name="expiryDate"
                         control={control}
@@ -321,7 +332,7 @@ export default function DiscountFormPage(): React.JSX.Element {
                 </Grid>
 
                 <Grid item md={6} xs={12}>
-                  <FormControl variant="outlined" fullWidth required>
+                  <FormControl variant="outlined" fullWidth required error={Boolean(errors?.discountType)}>
                     <InputLabel>Discount Type</InputLabel>
                     <Select
                       label="Discount Type"
@@ -339,7 +350,7 @@ export default function DiscountFormPage(): React.JSX.Element {
                 </Grid>
 
                 <Grid item xs={12} md={6}>
-                  <FormControl variant="outlined" fullWidth required>
+                  <FormControl variant="outlined" fullWidth required error={Boolean(errors?.usageLimit)}>
                     <InputLabel>Usage Limit</InputLabel>
                     <Select
                       label="Usage Limit"

@@ -69,6 +69,15 @@ const ImageUploadCards = () => {
   const handleImageChange = (index: number) => (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
+      const fileType = file.type;
+
+      // Check if the file type starts with 'image/'
+      if (!fileType.startsWith('image/')) {
+        void Swal.fire('Please select a valid Image');
+        return;
+      }
+    }
+    if (file) {
       const updatedImages = [...images];
       updatedImages[index] = { url: file, imageId: null }; // Store file and set ID to null for new uploads
       setImages(updatedImages);

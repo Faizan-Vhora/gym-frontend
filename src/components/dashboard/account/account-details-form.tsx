@@ -23,6 +23,7 @@ import axiosInstance from '@/lib/axios';
 import 'react-toastify/dist/ReactToastify.css';
 
 import { REGEX_VALIDATION } from '@/utils/constant';
+import Swal from 'sweetalert2';
 
 const accountDetailsSchema = z.object({
   fullName: z
@@ -106,6 +107,15 @@ export function AccountDetailsForm(): React.JSX.Element {
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
     const selectedFile = event.target.files?.[0];
+    if (selectedFile) {
+      const fileType = selectedFile.type;
+
+      // Check if the file type starts with 'image/'
+      if (!fileType.startsWith('image/')) {
+        void Swal.fire('Please select a valid Image');
+        return;
+      }
+    }
 
     if (selectedFile) {
       setFile(selectedFile);
@@ -153,11 +163,7 @@ export function AccountDetailsForm(): React.JSX.Element {
       toast.success('Profile updated successfully');
       router.push('/dashboard');
     } catch (err: unknown) {
-      let errorMessage = 'Failed to update user details';
-      if (err instanceof Error) {
-        errorMessage = err.message;
-      }
-      toast.error(errorMessage);
+      err instanceof Error ? err.message : 'An unexpected error occurred';
     } finally {
       setIsSubmitting(false);
     }
@@ -177,7 +183,10 @@ export function AccountDetailsForm(): React.JSX.Element {
               <Card>
                 <CardContent>
                   <Stack spacing={2} sx={{ alignItems: 'center' }}>
-                    <Avatar src={user.profileImageUrl || '/assets/User@3x-1.png'} sx={{ height: '100px', width: '100px' }} />
+                    <Avatar
+                      src={user.profileImageUrl || '/assets/User@3x-1.png'}
+                      sx={{ height: '100px', width: '100px' }}
+                    />
                   </Stack>
                 </CardContent>
                 <CardActions sx={{ justifyContent: 'center', marginBottom: '10px' }}>

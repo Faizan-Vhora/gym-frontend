@@ -253,10 +253,8 @@ export function Toolbar({
           {/* Trainer Selection */}
           <FormControl fullWidth variant="outlined">
             <InputLabel>Trainers</InputLabel>
-            <Select value={selectedTrainer} onChange={handleTrainerSelect} displayEmpty fullWidth label="Trainers">
-              <Option value="">
-                <em>All</em>
-              </Option>
+            <Select value={selectedTrainer} onChange={handleTrainerSelect} fullWidth label="Trainers">
+              <MenuItem value="All">All</MenuItem>
               {trainers.map((trainer) => (
                 <Option key={trainer.id} value={trainer.id}>
                   {trainer.fullName}
@@ -269,10 +267,9 @@ export function Toolbar({
           {/* Member Selection */}
           <FormControl fullWidth variant="outlined">
             <InputLabel>Members</InputLabel>
-            <Select value={selectedMember} onChange={handleMemberSelect} displayEmpty fullWidth label="Members">
-              <Option value="">
-                <em>All</em>
-              </Option>
+            <Select value={selectedMember} onChange={handleMemberSelect} fullWidth label="Members">
+              <MenuItem value="All">All</MenuItem>
+
               {customers.map((member) => (
                 <Option key={member.id} value={member.id}>
                   {member.fullName}

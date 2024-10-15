@@ -180,26 +180,9 @@ export function CalendarView({ view = 'dayGridMonth' }: CalendarViewProps): Reac
     }
   }, []);
 
-  // const handleAdd = React.useCallback(() => {
-  //   createDialog.handleOpen();
-  // }, [createDialog]);
-
   const handleAdd = React.useCallback(() => {
     bookingFormDialog.handleOpen();
   }, [bookingFormDialog]);
-
-  // const handleRangeSelect = React.useCallback(
-  //   (arg: DateSelectArg) => {
-  //     const calendarApi = calendarRef.current?.getApi();
-
-  //     if (calendarApi) {
-  //       calendarApi.unselect();
-  //     }
-
-  //     createDialog.handleOpen({ range: { start: arg.start, end: arg.end } });
-  //   },
-  //   [createDialog]
-  // );
 
   const handleRangeSelect = React.useCallback(
     (arg: DateSelectArg) => {

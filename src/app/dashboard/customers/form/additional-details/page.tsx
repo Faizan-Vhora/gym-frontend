@@ -38,6 +38,7 @@ import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { Trash } from '@phosphor-icons/react';
 import dayjs, { Dayjs } from 'dayjs';
+import Swal from 'sweetalert2';
 
 import { Customer } from '@/components/dashboard/customer/customers-table';
 
@@ -118,6 +119,15 @@ export default function CustomerEditForm(): React.JSX.Element {
 
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
     const file = event.target.files?.[0];
+    if (file) {
+      const fileType = file.type;
+
+      // Check if the file type starts with 'image/'
+      if (!fileType.startsWith('image/')) {
+        void Swal.fire('Please select a valid Image');
+        return;
+      }
+    }
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {

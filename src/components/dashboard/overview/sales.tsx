@@ -1,11 +1,11 @@
 'use client';
 
 import * as React from 'react';
+import { Stack, Typography } from '@mui/material';
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
-import CardHeader from '@mui/material/CardHeader';
 import Divider from '@mui/material/Divider';
 import { alpha, useTheme } from '@mui/material/styles';
 import type { SxProps } from '@mui/material/styles';
@@ -26,15 +26,29 @@ export function Sales({ categories, chartSeries, sx }: SalesProps): React.JSX.El
 
   return (
     <Card sx={sx}>
-      <CardHeader
-        style={{ fontFamily: '"Audiowide", sans-serif !important' }}
-        action={
-          <Button color="inherit" size="small" startIcon={<ArrowClockwiseIcon fontSize="var(--icon-fontSize-md)" />}>
-            Sync
-          </Button>
-        }
-        title="Member Registered"
-      />
+      <Stack
+        sx={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          margin: '20px',
+          marginTop: '40px',
+        }}
+      >
+        <Typography style={{ fontFamily: '"Audiowide", sans-serif' }} color="text.secondary" variant="h5">
+          Member Registered
+        </Typography>
+
+        <Button
+          color="inherit"
+          size="small"
+          style={{ fontFamily: '"Audiowide", sans-serif' }}
+          startIcon={<ArrowClockwiseIcon fontSize="var(--icon-fontSize-md)" />}
+        >
+          Sync
+        </Button>
+      </Stack>
+
       <CardContent>
         <Chart height={350} options={chartOptions} series={chartSeries} type="bar" width="100%" />
       </CardContent>

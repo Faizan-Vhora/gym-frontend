@@ -40,11 +40,11 @@ const faqSchema = z.object({
   question: z
     .string()
     .min(1, 'Question is required')
-    .regex(REGEX_VALIDATION.LETTERS_AND_NUMBERS, 'Question should not contain only numbers or special characters'),
+    .regex(REGEX_VALIDATION.QUESTION, 'Question should not contain only numbers or special characters'),
   answer: z
     .string()
     .min(1, 'Answer is required')
-    .regex(REGEX_VALIDATION.LETTERS_AND_NUMBERS, 'Answer should not contain only numbers or special characters'),
+    .regex(REGEX_VALIDATION.QUESTION, 'Answer should not contain only numbers or special characters'),
   type: z.enum([FaqType.General, FaqType.User, FaqType.Trainer]).optional(),
   status: z.enum([FaqStatus.Active, FaqStatus.Inactive, FaqStatus.Archived]).optional(),
 });
