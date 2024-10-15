@@ -210,15 +210,17 @@ export function BookingFormDialog({
       );
 
       const availableTrainerSlots = response.data.data;
-      // console.log("::availableTrainerSlots:", availableTrainerSlots)
+      // console.log("*** availableTrainerSlots:", availableTrainerSlots)
 
-      if (bookingType === BOOKING_TYPE.ONE_TIME && availableTrainerSlots[0]?.weekday) {
+      if (bookingType === BOOKING_TYPE.ONE_TIME && ( availableTrainerSlots.length && (availableTrainerSlots[0]?.weekday || availableTrainerSlots[0]?.weekday === 0) )) {
         setSelectedDays([availableTrainerSlots[0].weekday]);
       } else {
         setSelectedDays([]);
         const noOfWeeks: number = calculateWeeksBetweenDates(startDate, endDate);
         setMaxReOccuranceWeeks(noOfWeeks > 1 ? noOfWeeks - 1 : 1);
       }
+      // console.log("*** selectedDays", selectedDays)
+
 
       setAvailableSlotWeeklyData(availableTrainerSlots || []);
       const trainerWeekDays: number[] = availableTrainerSlots.map((ele: WeeklySlotI) => ele.weekday);
@@ -613,9 +615,11 @@ export function BookingFormDialog({
   //   console.log('Update : bookingDetails:: ', bookingDetails);
   // }, [bookingDetails]);
 
-  // React.useEffect(() => {
-  //   console.log('Update : availableSlotsWeeklyByFilter:: ', availableSlotsWeeklyByFilter);
-  // }, [availableSlotsWeeklyByFilter]);
+  React.useEffect(() => {
+    // console.log('Update : availableSlotsWeeklyByFilter:: ', availableSlotsWeeklyByFilter);
+    // console.log('Update : selectedDays:: ', selectedDays);
+
+  }, [availableSlotsWeeklyByFilter]);
 
   React.useEffect(() => {
     const trainerRatePerHour = Number(selectedTrainer?.fees || 0);
