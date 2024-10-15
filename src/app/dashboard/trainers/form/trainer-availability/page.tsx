@@ -345,7 +345,7 @@ export default function WeekdayTimeSlots() {
                   <Controller
                     name={`days.${dayIndex}.timeSlots`}
                     control={control}
-                    render={({ field }) => (
+                    render={({ field, fieldState: { error: fieldError } }) => (
                       <>
                         {field.value.map((slot, slotIndex) => (
                           <Grid container key={slotIndex} alignItems="center">
@@ -365,6 +365,13 @@ export default function WeekdayTimeSlots() {
                                       }
                                     }}
                                     disabled={isDisabled}
+                                    slotProps={{
+                                      textField: {
+                                        fullWidth: true,
+                                        error: Boolean(fieldError),
+                                        helperText: fieldError ? fieldError.message : '',
+                                      },
+                                    }}
                                   />
                                 </FormControl>
                               </LocalizationProvider>
@@ -387,6 +394,13 @@ export default function WeekdayTimeSlots() {
                                       }
                                     }}
                                     disabled={isDisabled}
+                                    slotProps={{
+                                      textField: {
+                                        fullWidth: true,
+                                        error: Boolean(fieldError),
+                                        helperText: fieldError ? fieldError.message : '',
+                                      },
+                                    }}
                                   />
                                 </FormControl>
                               </LocalizationProvider>

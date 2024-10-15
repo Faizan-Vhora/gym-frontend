@@ -168,6 +168,7 @@ const UnavailableDateRanges = () => {
                           format="MM-DD-YYYY"
                           views={['year', 'month', 'day']}
                           label="End Date"
+                          minDate={dateRange.startDate ? dayjs(dateRange.startDate) : undefined}
                           value={dateRange.endDate ? dayjs(dateRange.endDate) : null}
                           onChange={(newValue) => {
                             field.onChange(newValue ? newValue.format('YYYY-MM-DDTHH:mm:ss.SSS[Z]') : '');
