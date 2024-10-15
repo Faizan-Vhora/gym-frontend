@@ -203,21 +203,23 @@ export function BookingTable({
 
                     <TableCell sx={tableCss.tableCell}>
                       <Stack direction="row" spacing={1} alignItems="center">
-                        {/* <IconButton
-                          onClick={() => {
-                            handleEdit(entry.id);
-                          }}
-                        >
-                          <PencilSimple />
-                        </IconButton> */}
 
-                        <IconButton
+                      {
+                        entry.status !== BOOKING_STATUS.CANCELED
+                        ?
+                        (
+                          <IconButton
                           onClick={() => {
                             handleStatusChange(entry.id, BOOKING_STATUS.CANCELED);
                           }}
                         >
                           <XCircle />
                         </IconButton>
+                        )
+                        : <></>
+
+                      }
+
                       </Stack>
                     </TableCell>
                   </TableRow>

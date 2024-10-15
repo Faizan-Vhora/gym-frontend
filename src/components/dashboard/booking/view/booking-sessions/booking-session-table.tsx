@@ -212,13 +212,6 @@ export function BookingSessionTable({
 
                     <TableCell sx={tableCss.tableCell}>
                       <Stack direction="row" spacing={1} alignItems="center">
-                        <IconButton
-                          onClick={() => {
-                            handleStatusChange(entry.id, BOOKING_SESSION_STATUS.CANCELLED);
-                          }}
-                        >
-                          <XCircle />
-                        </IconButton>
 
                         <IconButton
                           onClick={() => {
@@ -235,6 +228,23 @@ export function BookingSessionTable({
                         >
                           <ArrowsClockwise />
                         </IconButton>
+
+                        {
+                        entry.status !== BOOKING_SESSION_STATUS.CANCELLED
+                        ?
+                        (
+                          <IconButton
+                          onClick={() => {
+                            handleStatusChange(entry.id, BOOKING_SESSION_STATUS.CANCELLED);
+                          }}
+                        >
+                          <XCircle />
+                        </IconButton>
+                        )
+                        : <></>
+
+                      }
+
                       </Stack>
                     </TableCell>
                   </TableRow>
