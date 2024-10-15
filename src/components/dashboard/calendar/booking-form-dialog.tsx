@@ -167,6 +167,10 @@ export function BookingFormDialog({
   const [reOccuranceWeeks, setReOccuranceWeeks] = React.useState<number>(1);
   const [maxReOccuranceWeeks, setMaxReOccuranceWeeks] = React.useState<number>(1);
 
+  const [sameTimeForSelectedDays, setSameTimeForSelectedDays] = React.useState<boolean>(false);
+  const [referenceSlotsForSameTime, setReferenceSlotsForSameTime] = React.useState<SlotI[]>([]);
+  const [selectedSlotsForSameDays, setSelectedSlotsForSameDays] = React.useState<SelectedSlotsI>({});
+
   // Fetch data
   const fetchCustomers = async (): Promise<void> => {
     try {
@@ -190,6 +194,7 @@ export function BookingFormDialog({
 
   const fetchTrainerSlotsData = async (trainerId: string, startDate: string, endDate: string): Promise<void> => {
     setSelectedSlots({});
+    setSelectedSlotsForSameDays({});
     setSelectedDays([]);
 
     setMaxReOccuranceWeeks(1);
@@ -299,6 +304,91 @@ export function BookingFormDialog({
       ...prev,
       [weekday]: selectedSlotsForSession,
     }));
+  };
+
+  function doesSlotExist(slotToCheck: SlotI, slotsArray: SlotI[]): boolean {
+    return slotsArray.some(
+      (slot) =>
+        slot.startTime === slotToCheck.startTime &&
+        slot.endTime === slotToCheck.endTime &&
+        slot.isAvailable === slotToCheck.isAvailable
+    );
+  }
+
+  const handleSessionSlotChangeForSameDays = (weekday: string | number, selectedSlotsForSession: SlotI[]) => {
+    let sameTimeSelectedSlots: SelectedSlotsI = {};
+
+    availableSlotsWeeklyByFilter
+      .filter((ele: WeeklySlotI) => selectedDays.includes(ele.weekday))
+      .forEach((ele: WeeklySlotI) => {
+        sameTimeSelectedSlots[ele.weekday] = [];
+        ele.weekSlots.forEach((weekSlot: WeekSlotI) => {
+          // console.log('weekSlot:: ', weekSlot);
+          weekSlot.slots.forEach((slot: SlotI) => {
+            if (doesSlotExist(slot, selectedSlotsForSession)) {
+              sameTimeSelectedSlots[ele.weekday].push(slot);
+            }
+          });
+        });
+      });
+
+    setSelectedSlotsForSameDays((prev) => ({
+      ...prev,
+      [weekday]: selectedSlotsForSession,
+    }));
+
+    Object.keys(sameTimeSelectedSlots).forEach((weekday) => {
+      setSelectedSlots((prev) => ({
+        ...prev,
+        [weekday]: sameTimeSelectedSlots[weekday],
+      }));
+    });
+  };
+
+  function checkAllSlotsIdentical(data: WeeklySlotI[]): boolean {
+    // Get the reference slots from the first weekSlot of the first object
+    const referenceSlots = data[0]?.weekSlots[0]?.slots;
+
+    // Return false if reference slots are not found or if they are empty
+    if (!referenceSlots || referenceSlots.length === 0) return false;
+
+    setReferenceSlotsForSameTime(referenceSlots);
+
+    // Compare each week's slots with the reference slots
+    const referenceLength = referenceSlots.length;
+
+    for (const day of data) {
+      for (const weekSlot of day.weekSlots) {
+        if (weekSlot.slots.length !== referenceLength) {
+          return false; // Return false if the number of slots doesn't match
+        }
+
+        // Use every to check all slots against the reference slots
+        if (!weekSlot.slots.every((slot, index) => areSlotsIdentical(slot, referenceSlots[index]))) {
+          return false; // Return false if any slot does not match
+        }
+      }
+    }
+
+    return true; // All slots match
+  }
+
+  function areSlotsIdentical(slot1: SlotI, slot2: SlotI): boolean {
+    return (
+      slot1.startTime === slot2.startTime && slot1.endTime === slot2.endTime && slot1.isAvailable === slot2.isAvailable
+    );
+  }
+
+  const checkCanSetSameTimeForSelectedDays = () => {
+    const canSelect = checkAllSlotsIdentical(
+      availableSlotsWeeklyByFilter.filter((ele: WeeklySlotI) => selectedDays.includes(ele.weekday))
+    );
+
+    if (canSelect) {
+      setSameTimeForSelectedDays(!sameTimeForSelectedDays);
+    } else {
+      toast.error('All slots timing not same. Please select manually!');
+    }
   };
 
   const transformSlots = (input: WeekSlotI[]): SlotI[] => {
@@ -535,11 +625,23 @@ export function BookingFormDialog({
 
   React.useEffect(() => {
     setSelectedSlots({});
-    if(bookingType === BOOKING_TYPE.WEEKLY){
+    setSelectedSlotsForSameDays({});
+    if (bookingType === BOOKING_TYPE.WEEKLY) {
       setSelectedDays([]);
     }
     filterAvailableTrainerSlotsByReoccurrence();
   }, [availableSlotsWeekly, reOccuranceWeeks, reOccuranceEnabled, bookingType]);
+
+
+  React.useEffect(() => {
+    setSelectedSlots({});
+    setSelectedSlotsForSameDays({});
+  }, [availableSlotsWeekly, reOccuranceWeeks, sameTimeForSelectedDays, reOccuranceEnabled, bookingType]);
+
+  React.useEffect(() => {
+    setSameTimeForSelectedDays(false);
+  }, [selectedDays]);
+
 
   React.useEffect(() => {
     if (bookingType === BOOKING_TYPE.ONE_TIME && selectedTrainer && bookingDate) {
@@ -926,27 +1028,47 @@ export function BookingFormDialog({
                     />
                   </FormControl>
                 </Grid>
+
+                {selectedDays.length ? (
+                  <Grid item md={12}>
+                    <Grid item md={12}>
+                      <FormControlLabel
+                        control={
+                          <Switch
+                            checked={sameTimeForSelectedDays}
+                            onChange={(event) => {
+                              event.stopPropagation();
+                              checkCanSetSameTimeForSelectedDays();
+                            }}
+                          />
+                        }
+                        label="Set same time for selected day"
+                      />
+                    </Grid>
+                  </Grid>
+                ) : (
+                  <></>
+                )}
               </>
             )}
 
-            <Grid item md={8} sx={{ paddingTop: '0px' }}>
-              {availableSlotsWeeklyByFilter.length > 0 ? (
-                availableSlotsWeeklyByFilter
-                  .filter((ele) => selectedDays.includes(ele.weekday))
-                  .map((weekDaySlot: WeeklySlotI, dateIndex: number) => (
+            {sameTimeForSelectedDays ? (
+              <Grid item md={8} sx={{ paddingTop: '0px' }}>
+                {availableSlotsWeeklyByFilter.length > 0 ? (
+                  [availableSlotsWeeklyByFilter[0]].map((weekDaySlot: WeeklySlotI, dateIndex: number) => (
                     <div key={dateIndex}>
-                      <Typography variant="subtitle1">{WEEKDAY_NAME[weekDaySlot.weekday]}</Typography>
+                      {/* <Typography variant="subtitle1">{WEEKDAY_NAME[weekDaySlot.weekday]}</Typography> */}
                       <Autocomplete
                         multiple
-                        options={transformSlots(weekDaySlot.weekSlots)}
+                        options={referenceSlotsForSameTime}
                         disableCloseOnSelect
                         getOptionLabel={(option) =>
                           option.isDateLabel ? `${option.date}` : `${option.startTime} - ${option.endTime}`
                         }
                         getOptionDisabled={(option) => !option.isAvailable}
-                        value={selectedSlots[weekDaySlot.weekday] || []}
+                        value={selectedSlotsForSameDays[weekDaySlot.weekday] || []}
                         onChange={(event, newValue) => {
-                          handleSessionSlotChange(weekDaySlot.weekday, newValue);
+                          handleSessionSlotChangeForSameDays(weekDaySlot.weekday, newValue);
                         }}
                         renderOption={(props, option, { selected }) => (
                           <li
@@ -955,7 +1077,7 @@ export function BookingFormDialog({
                             key={`${option.date}-${option.startTime}`}
                           >
                             {option.isDateLabel ? (
-                              `${option.date}`
+                              'Time slots for all selected days'
                             ) : (
                               <>
                                 <Checkbox checked={selected} disabled={!option.isAvailable} />
@@ -980,10 +1102,67 @@ export function BookingFormDialog({
                       />
                     </div>
                   ))
-              ) : (
-                <Typography>No available slots</Typography>
-              )}
-            </Grid>
+                ) : (
+                  <Typography>No available slots</Typography>
+                )}
+              </Grid>
+            ) : (
+              <Grid item md={8} sx={{ paddingTop: '0px' }}>
+                {availableSlotsWeeklyByFilter.length > 0 ? (
+                  availableSlotsWeeklyByFilter
+                    .filter((ele) => selectedDays.includes(ele.weekday))
+                    .map((weekDaySlot: WeeklySlotI, dateIndex: number) => (
+                      <div key={dateIndex}>
+                        <Typography variant="subtitle1">{WEEKDAY_NAME[weekDaySlot.weekday]}</Typography>
+                        <Autocomplete
+                          multiple
+                          options={transformSlots(weekDaySlot.weekSlots)}
+                          disableCloseOnSelect
+                          getOptionLabel={(option) =>
+                            option.isDateLabel ? `${option.date}` : `${option.startTime} - ${option.endTime}`
+                          }
+                          getOptionDisabled={(option) => !option.isAvailable}
+                          value={selectedSlots[weekDaySlot.weekday] || []}
+                          onChange={(event, newValue) => {
+                            handleSessionSlotChange(weekDaySlot.weekday, newValue);
+                          }}
+                          renderOption={(props, option, { selected }) => (
+                            <li
+                              {...props}
+                              style={{ opacity: option.isAvailable ? 1 : 0.5 }}
+                              key={`${option.date}-${option.startTime}`}
+                            >
+                              {option.isDateLabel ? (
+                                `${option.date}`
+                              ) : (
+                                <>
+                                  <Checkbox checked={selected} disabled={!option.isAvailable} />
+                                  {`${option.startTime} - ${option.endTime}`}
+                                </>
+                              )}
+                            </li>
+                          )}
+                          renderInput={(params) => (
+                            <TextField
+                              {...params}
+                              label="Select Time Slots"
+                              variant="outlined"
+                              placeholder="Choose slots"
+                            />
+                          )}
+                          isOptionEqualToValue={(option, value) =>
+                            option.date === value.date &&
+                            option.startTime === value.startTime &&
+                            option.endTime === value.endTime
+                          }
+                        />
+                      </div>
+                    ))
+                ) : (
+                  <Typography>No available slots</Typography>
+                )}
+              </Grid>
+            )}
 
             {promocodeOptions.length ? (
               <Grid item xs={12} md={5.8}>
