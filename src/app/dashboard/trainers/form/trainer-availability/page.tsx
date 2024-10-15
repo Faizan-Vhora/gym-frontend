@@ -8,9 +8,9 @@ import {
   Box,
   Button,
   Card,
-  CardHeader,
+  // CardHeader,
   Checkbox,
-  Divider,
+  // Divider,
   FormControl,
   FormControlLabel,
   Grid,
@@ -355,6 +355,7 @@ export default function WeekdayTimeSlots() {
                                   <TimePicker
                                     label="Start Time"
                                     value={slot.startTime ? dayjs(slot.startTime) : null}
+                                    minutesStep={30}
                                     onChange={(newValue) => {
                                       const updatedTimeSlots = [...field.value];
                                       updatedTimeSlots[slotIndex].startTime = newValue?.toDate() ?? null;
@@ -375,6 +376,8 @@ export default function WeekdayTimeSlots() {
                                   <TimePicker
                                     label="End Time"
                                     value={slot.endTime ? dayjs(slot.endTime) : null}
+                                    minTime={slot.startTime ? dayjs(slot.startTime).add(30, 'minute') : undefined}
+                                    minutesStep={30}
                                     onChange={(newValue) => {
                                       const updatedTimeSlots = [...field.value];
                                       updatedTimeSlots[slotIndex].endTime = newValue?.toDate() ?? null;
