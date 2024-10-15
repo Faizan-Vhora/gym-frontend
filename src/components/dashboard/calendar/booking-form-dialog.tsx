@@ -337,10 +337,10 @@ export function BookingFormDialog({
       [weekday]: selectedSlotsForSession,
     }));
 
-    Object.keys(sameTimeSelectedSlots).forEach((weekday) => {
+    Object.keys(sameTimeSelectedSlots).forEach((selectedWeekday) => {
       setSelectedSlots((prev) => ({
         ...prev,
-        [weekday]: sameTimeSelectedSlots[weekday],
+        [selectedWeekday]: sameTimeSelectedSlots[selectedWeekday],
       }));
     });
   };
