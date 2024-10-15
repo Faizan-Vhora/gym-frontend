@@ -142,8 +142,8 @@ export function CustomersTable({
                   <TableCell
                     sx={{
                       ...tableCss.tableCell,
-                      width: '50px !important',
-                      whiteSpace: 'wrap',
+                      maxWidth: '50px !important',
+                      whiteSpace: 'nowrap',
                       overflow: 'hidden',
                       textOverflow: 'ellipsis !important',
                     }}

@@ -3,6 +3,7 @@ const tableCss = {
     padding: '8px 30px',
     fontSize: '14px',
     color: '#555',
+    whiteSpace:'nowrap',
     borderBottom: '1px solid #eaeaea',
     // whiteSpace: 'nowrap !important', // Prevent wrapping
     // overflow: 'hidden !important', // Hide overflowed text
@@ -13,7 +14,7 @@ const tableCss = {
   tableHeaderCell: {
     fontWeight: 'bold',
     fontSize: '14px',
-    // padding: '16px',
+    whiteSpace:'nowrap',
     padding: '16px 30px',
     backgroundColor: '#f9fafb !important', // Dark blue background for header
     color: '#667085 !important', // White text color
@@ -21,6 +22,7 @@ const tableCss = {
   },
   tableRow: {
     backgroundColor: '#fff !important',
+    
     borderRadius: '8px', // Round the corners
     boxShadow: '0 4px 8px rgba(0,0,0,0.1)', // Shadow for a card-like appearance
     marginBottom: '10px', // Space between rows
