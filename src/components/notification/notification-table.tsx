@@ -3,7 +3,6 @@ import {
   Box,
   Card,
   Divider,
-  IconButton,
   Stack,
   Table,
   TableBody,
@@ -17,8 +16,6 @@ import { ToastContainer } from 'react-toastify'; // Import toast and ToastContai
 
 import 'react-toastify/dist/ReactToastify.css'; // Import toast styles
 
-import { useRouter } from 'next/navigation';
-import { PencilSimple } from '@phosphor-icons/react';
 import dayjs from 'dayjs';
 
 import tableCss from '@/styles/table-css';
@@ -53,15 +50,6 @@ export function NotificationTable({
   onPageChange,
   onRowsPerPageChange,
 }: NotificationTableProps): React.JSX.Element {
-  const router = useRouter();
-
-  const handleEdit = React.useCallback(
-    (id: number) => {
-      router.push(`/dashboard/notification/form?id=${id}`);
-    },
-    [router]
-  );
-
   return (
     <>
       <Card>
@@ -73,7 +61,6 @@ export function NotificationTable({
                 <TableCell sx={tableCss.tableHeaderCell}>Title</TableCell>
                 <TableCell sx={tableCss.tableHeaderCell}>Message</TableCell>
                 <TableCell sx={tableCss.tableHeaderCell}>Created At</TableCell>
-                <TableCell sx={tableCss.tableHeaderCell}>Actions</TableCell>
               </TableRow>
             </TableHead>
 
@@ -101,17 +88,6 @@ export function NotificationTable({
                     <TableCell sx={tableCss.tableCell}>{entry?.message}</TableCell>
 
                     <TableCell sx={tableCss.tableCell}>{dayjs(entry.createdAt).format('MMM D, YYYY')}</TableCell>
-                    <TableCell sx={tableCss.tableCell}>
-                      <Stack direction="row" spacing={1} alignItems="center">
-                        <IconButton
-                          onClick={() => {
-                            handleEdit(entry.id);
-                          }}
-                        >
-                          <PencilSimple />
-                        </IconButton>
-                      </Stack>
-                    </TableCell>
                   </TableRow>
                 ))
               )}
