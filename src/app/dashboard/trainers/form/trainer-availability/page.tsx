@@ -168,7 +168,23 @@ export default function WeekdayTimeSlots() {
 
       if (result.isConfirmed) {
         setValue('setSameTimeForAll', true);
-        applySameTimeToAll();
+
+        // applySameTimeToAll();
+
+        const currentDays = watch('days');
+        const firstCheckedDayIndex = currentDays.findIndex((day) => day.isChecked);
+
+        if (!(firstCheckedDayIndex === -1)) {
+          const firstDayTimeSlots = currentDays[firstCheckedDayIndex].timeSlots;
+
+          const updatedDays = currentDays.map((day) => ({
+            ...day,
+            timeSlots: day.isChecked ? [...firstDayTimeSlots] : [],
+          }));
+
+          setValue('days', updatedDays);
+        }
+
         toast.success('Time slots have been applied to all checked days.');
       } else {
         setValue('setSameTimeForAll', false);
@@ -282,8 +298,8 @@ export default function WeekdayTimeSlots() {
     return (
       <Box key={day.id} sx={{ marginBottom: 2 }}>
         <Card>
-          <CardHeader style={{ fontFamily: '"Audiowide", sans-serif' }} title="Trainer Availability" />
-          <Divider />
+          {/* <CardHeader style={{ fontFamily: '"Audiowide", sans-serif' }} title="Trainer Availability" /> */}
+          {/* <Divider /> */}
           <Grid container sx={{ padding: '5px' }} alignItems="center">
             <Grid item md={2}>
               <FormControlLabel
@@ -300,6 +316,20 @@ export default function WeekdayTimeSlots() {
                           if (setSameTimeForAll) {
                             applySameTimeToAll();
                           }
+
+                          //
+
+                          if (setSameTimeForAll && dayIndex !== 0) return;
+                          const currentTimeSlots = watch(`days.${dayIndex}.timeSlots`);
+                          if (currentTimeSlots.length === 0) {
+                            const newTimeSlot = { startTime: null, endTime: null };
+                            setValue(`days.${dayIndex}.timeSlots`, [...currentTimeSlots, newTimeSlot]);
+                            if (setSameTimeForAll) {
+                              applySameTimeToAll();
+                            }
+                          }
+
+                          //
                         }}
                       />
                     )}
@@ -311,24 +341,7 @@ export default function WeekdayTimeSlots() {
 
             {isChecked && (
               <>
-                <Grid item md={1}>
-                  <IconButton
-                    onClick={() => {
-                      if (setSameTimeForAll && dayIndex !== 0) return;
-                      const currentTimeSlots = watch(`days.${dayIndex}.timeSlots`);
-                      const newTimeSlot = { startTime: null, endTime: null };
-                      setValue(`days.${dayIndex}.timeSlots`, [...currentTimeSlots, newTimeSlot]);
-                      if (setSameTimeForAll) {
-                        applySameTimeToAll();
-                      }
-                    }}
-                    disabled={isDisabled}
-                  >
-                    <Plus />
-                  </IconButton>
-                </Grid>
-
-                <Grid item md={9}>
+                <Grid item md={10}>
                   <Controller
                     name={`days.${dayIndex}.timeSlots`}
                     control={control}
@@ -377,20 +390,37 @@ export default function WeekdayTimeSlots() {
                             </Grid>
 
                             <Grid item xs={12} sm={6} md={1}>
-                              <IconButton
-                                onClick={() => {
-                                  if (setSameTimeForAll && dayIndex !== 0) return;
-                                  const currentTimeSlots = [...field.value];
-                                  currentTimeSlots.splice(slotIndex, 1);
-                                  setValue(`days.${dayIndex}.timeSlots`, currentTimeSlots);
-                                  if (setSameTimeForAll) {
-                                    applySameTimeToAll();
-                                  }
-                                }}
-                                disabled={isDisabled}
-                              >
-                                <Minus />
-                              </IconButton>
+                              {slotIndex ? (
+                                <IconButton
+                                  onClick={() => {
+                                    if (setSameTimeForAll && dayIndex !== 0) return;
+                                    const currentTimeSlots = [...field.value];
+                                    currentTimeSlots.splice(slotIndex, 1);
+                                    setValue(`days.${dayIndex}.timeSlots`, currentTimeSlots);
+                                    if (setSameTimeForAll) {
+                                      applySameTimeToAll();
+                                    }
+                                  }}
+                                  disabled={isDisabled}
+                                >
+                                  <Minus />
+                                </IconButton>
+                              ) : (
+                                <IconButton
+                                  onClick={() => {
+                                    if (setSameTimeForAll && dayIndex !== 0) return;
+                                    const currentTimeSlots = watch(`days.${dayIndex}.timeSlots`);
+                                    const newTimeSlot = { startTime: null, endTime: null };
+                                    setValue(`days.${dayIndex}.timeSlots`, [...currentTimeSlots, newTimeSlot]);
+                                    if (setSameTimeForAll) {
+                                      applySameTimeToAll();
+                                    }
+                                  }}
+                                  disabled={isDisabled}
+                                >
+                                  <Plus />
+                                </IconButton>
+                              )}
                             </Grid>
                           </Grid>
                         ))}
