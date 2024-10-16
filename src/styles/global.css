@@ -47,12 +47,13 @@ body {
   display: inline-block;
   background-color: #d0021b !important; /* Red color */
   color: white !important;
-  font-size: 16px;
+  font-size: 18px !important;
+  font-weight: 400 !important;
   padding: 10px 20px;
   text-align: center;
   text-decoration: none;
   text-transform: uppercase;
-  font-weight: bold;
+ 
   position: relative;
   border: none;
   cursor: pointer;
@@ -62,6 +63,9 @@ body {
 }
 .btnsecondary {
   background-color: #212636 !important; /* Red color */
+}
+ .mui-0 {
+  text-wrap: wrap;
 }
 
 .btnsuccess {

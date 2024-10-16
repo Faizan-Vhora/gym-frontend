@@ -205,7 +205,7 @@ const CheckinForm = () => {
 
           <form onSubmit={handleSubmit(onSubmit)} style={{ marginTop: '20px' }}>
             <Grid container spacing={3}>
-              <Grid item xs={12} sm={4}>
+              <Grid item md={3} sm={6} xs={12}>
                 <Controller
                   name="userId"
                   control={control}
@@ -229,7 +229,7 @@ const CheckinForm = () => {
                 />
               </Grid>
 
-              <Grid item md={6} xs={12}>
+              <Grid item md={3} sm={6} xs={12}>
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <FormControl fullWidth required>
                     <Controller
@@ -261,7 +261,7 @@ const CheckinForm = () => {
                 </LocalizationProvider>
               </Grid>
 
-              <Grid item md={6} xs={12}>
+              <Grid item md={3} sm={6} xs={12}>
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <FormControl fullWidth required>
                     <Controller
@@ -290,7 +290,7 @@ const CheckinForm = () => {
                 </LocalizationProvider>
               </Grid>
 
-              <Grid item md={6} xs={12}>
+              <Grid item md={3} sm={6} xs={12}>
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <FormControl fullWidth>
                     <Controller

@@ -71,11 +71,11 @@ export default function CmsPage(): React.JSX.Element {
       {loading ? (
         <CustomLoader />
       ) : (
-        <Box sx={{ padding: 4 }}>
+        <Box   sx={{ padding: 4, }}>
           {aboutUsId !== null && <CmsSection id={aboutUsId} title="About Us" content={aboutUsContent} />}
           {termsId !== null && <CmsSection id={termsId} title="Terms and Conditions" content={termsContent} />}
           {privacyPolicyId !== null && (
-            <CmsSection id={privacyPolicyId} title="Privacy Policy" content={privacyPolicyContent} />
+            <CmsSection id={privacyPolicyId} title="Privacy Policy" content={privacyPolicyContent}/>
           )}
           {/* Add more sections as needed */}
         </Box>
