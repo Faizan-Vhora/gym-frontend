@@ -42,6 +42,7 @@ import { DiscountEntry, DiscountType } from '../discount/discount-table';
 import BookingPreviewDialog from './booking-preview';
 import PaymentToggle from './payment-toggle';
 import { Customer, Sessions, Trainer } from './types';
+import moment from 'moment';
 
 // Interfaces
 export interface BookingFormDialogPropsI {
@@ -270,6 +271,18 @@ export function BookingFormDialog({
 
     return result;
   };
+
+
+  const isPastDatetime = (slotOption: SlotI): boolean => {
+    // Combine date and time strings to create full datetime strings
+    // console.log("slotOption:: ", slotOption)
+    const startDatetime = moment(`${slotOption.date} ${slotOption.startTime}`, 'YYYY-MM-DD HH:mm:ss');
+    // const endDatetime = moment(`${slotOption.date} ${slotOption.endTime}`, 'YYYY-MM-DD HH:mm:ss');
+    // Get the current date and time
+    const now = moment();
+    return startDatetime.isSameOrBefore(now);
+  };
+
 
   const filterAvailableTrainerSlotsByReoccurrence = (): void => {
     // Create a deep copy of the available slots
@@ -1103,7 +1116,7 @@ export function BookingFormDialog({
                         getOptionLabel={(option) =>
                           option.isDateLabel ? `${option.date}` : `${option.startTime} - ${option.endTime}`
                         }
-                        getOptionDisabled={(option) => !option.isAvailable}
+                        getOptionDisabled={(option) => !option.isAvailable || isPastDatetime(option) }
                         value={selectedSlotsForSameDays[weekDaySlot.weekday] || []}
                         onChange={(event, newValue) => {
                           handleSessionSlotChangeForSameDays(weekDaySlot.weekday, newValue);
@@ -1118,7 +1131,7 @@ export function BookingFormDialog({
                               'Time slots for all selected days'
                             ) : (
                               <>
-                                <Checkbox checked={selected} disabled={!option.isAvailable} />
+                                <Checkbox checked={selected} disabled={!option.isAvailable || isPastDatetime(option)} />
                                 {`${option.startTime} - ${option.endTime}`}
                               </>
                             )}
@@ -1159,7 +1172,7 @@ export function BookingFormDialog({
                           getOptionLabel={(option) =>
                             option.isDateLabel ? `${option.date}` : `${option.startTime} - ${option.endTime}`
                           }
-                          getOptionDisabled={(option) => !option.isAvailable}
+                          getOptionDisabled={(option) => !option.isAvailable || isPastDatetime(option)}
                           value={selectedSlots[weekDaySlot.weekday] || []}
                           onChange={(event, newValue) => {
                             handleSessionSlotChange(weekDaySlot.weekday, newValue);
@@ -1174,7 +1187,7 @@ export function BookingFormDialog({
                                 `${option.date}`
                               ) : (
                                 <>
-                                  <Checkbox checked={selected} disabled={!option.isAvailable} />
+                                  <Checkbox checked={selected} disabled={!option.isAvailable || isPastDatetime(option)} />
                                   {`${option.startTime} - ${option.endTime}`}
                                 </>
                               )}
