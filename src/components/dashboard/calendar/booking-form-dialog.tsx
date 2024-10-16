@@ -81,6 +81,10 @@ interface TrainerTimeslotResponse {
   data: WeeklySlotI[];
 }
 
+interface TrainerBlockDatesResponse {
+  data: string[];
+}
+
 export type SelectedSlotsI = Record<string, SlotI[]>;
 
 export interface BookingDetailsI {
@@ -149,6 +153,7 @@ export function BookingFormDialog({
   );
   const [availableSlotsWeekly, setAvailableSlotWeeklyData] = React.useState<WeeklySlotI[]>([]);
   const [availableSlotsWeeklyByFilter, setAvailableSlotWeeklyByFilterData] = React.useState<WeeklySlotI[]>([]);
+  const [trainerBlockDatesList, setTrainerBlockDatesList] = React.useState<string[]>(['2024-10-20', '2024-10-21', '2024-10-22', '2024-10-26', '2024-10-27', '2024-10-28']);
   const [availableWeekDayOptions, setAvailableWeekDayOptions] = React.useState<WeeklyDayOptionI[]>([]);
   const [selectedDays, setSelectedDays] = React.useState<number[]>([dayjs().day()]); // Default to today's weekday
   const [selectedSlots, setSelectedSlots] = React.useState<SelectedSlotsI>({});
@@ -171,6 +176,7 @@ export function BookingFormDialog({
   const [referenceSlotsForSameTime, setReferenceSlotsForSameTime] = React.useState<SlotI[]>([]);
   const [selectedSlotsForSameDays, setSelectedSlotsForSameDays] = React.useState<SelectedSlotsI>({});
 
+
   // Fetch data
   const fetchCustomers = async (): Promise<void> => {
     try {
@@ -192,7 +198,7 @@ export function BookingFormDialog({
     }
   };
 
-  const fetchTrainerSlotsData = async (trainerId: string, startDate: string, endDate: string): Promise<void> => {
+  const fetchTrainerSlotsData = async (trainerId: number, startDate: string, endDate: string): Promise<void> => {
     setSelectedSlots({});
     setSelectedSlotsForSameDays({});
     setSelectedDays([]);
@@ -236,6 +242,23 @@ export function BookingFormDialog({
       setLoading(false);
     }
   };
+
+
+  const fetchTrainerBlockDatesData = async (trainerId:number): Promise<void> => {
+    try {
+      const response = await axiosInstance.get<TrainerBlockDatesResponse>(
+        '/session-booking/trainer/block-dates',
+        {
+          params: { trainerId },
+        }
+      );
+      const trainerBlockDates = response.data.data;
+      setTrainerBlockDatesList(trainerBlockDates || []);
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred';
+      toast.error(`Failed to fetch block dates data: ${errorMessage}`);
+    }
+  }
 
   const getDataSkippingIndices = (dataArray: WeekSlotI[], skip: number): WeekSlotI[] => {
     const result: WeekSlotI[] = [];
@@ -649,11 +672,13 @@ export function BookingFormDialog({
 
   React.useEffect(() => {
     if (bookingType === BOOKING_TYPE.ONE_TIME && selectedTrainer && bookingDate) {
-      void fetchTrainerSlotsData(selectedTrainer.id.toString(), bookingDate, bookingDate);
+      void fetchTrainerSlotsData(selectedTrainer.id, bookingDate, bookingDate);
+      void fetchTrainerBlockDatesData(selectedTrainer.id)
     }
 
     if (bookingType === BOOKING_TYPE.WEEKLY && selectedTrainer && bookingStartDate && bookingEndDate) {
-      void fetchTrainerSlotsData(selectedTrainer.id.toString(), bookingStartDate, bookingEndDate);
+      void fetchTrainerSlotsData(selectedTrainer.id, bookingStartDate, bookingEndDate);
+      void fetchTrainerBlockDatesData(selectedTrainer.id)
     }
   }, [selectedTrainer, bookingType, bookingDate, bookingStartDate, bookingEndDate]);
 
@@ -897,6 +922,9 @@ export function BookingFormDialog({
                             helperText: errors.bookingDate?.message,
                           },
                         }}
+                        shouldDisableDate={(date) => {
+                          return trainerBlockDatesList.includes(dayjs(date).format('YYYY-MM-DD'));
+                        }}
                         value={field.value ? dayjs(field.value) : dayjs()} // Set today's date as default if no value
                       />
                     )}
@@ -935,6 +963,9 @@ export function BookingFormDialog({
                             helperText: errors.bookingStartDate?.message,
                           },
                         }}
+                        shouldDisableDate={(date) => {
+                          return trainerBlockDatesList.includes(dayjs(date).format('YYYY-MM-DD'));
+                        }}
                         value={field.value ? dayjs(field.value) : dayjs()} // Default to today
                       />
                     )}
@@ -966,6 +997,9 @@ export function BookingFormDialog({
                             error: Boolean(errors.bookingEndDate),
                             helperText: errors.bookingEndDate?.message,
                           },
+                        }}
+                        shouldDisableDate={(date) => {
+                          return trainerBlockDatesList.includes(dayjs(date).format('YYYY-MM-DD'));
                         }}
                         value={bookingEndDate || field.value ? dayjs(bookingEndDate || field.value) : dayjs()} // Default to null
                       />
