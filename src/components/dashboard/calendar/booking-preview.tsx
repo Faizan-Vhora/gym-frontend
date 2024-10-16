@@ -8,6 +8,7 @@ import {
   Button,
   Card,
   CardContent,
+  Collapse,
   Dialog,
   Divider,
   Grid,
@@ -222,8 +223,17 @@ const BookingPreviewDialog: React.FC<BookingPreviewDialogProps> = ({ isOpen, han
                     <TableRow>
                       <TableCell>Weekday</TableCell>
                       <TableCell>Slots</TableCell>
+                      {/* <ExpandMore
+          expand={expanded}
+          onClick={handleExpandClick}
+          aria-expanded={expanded}
+          aria-label="show more"
+        >
+          <ExpandMoreIcon />
+        </ExpandMore> */}
                     </TableRow>
                   </TableHead>
+                  {/* <Collapse in={expanded} timeout="auto" unmountOnExit> */}
                   <TableBody>
                     {Object.keys(weeklySlotsPreviewData).map((weekday) => (
                       <TableRow key={weekday}>
@@ -246,6 +256,7 @@ const BookingPreviewDialog: React.FC<BookingPreviewDialogProps> = ({ isOpen, han
                       </TableRow>
                     ))}
                   </TableBody>
+                  {/* </Collapse> */}
                 </Table>
               </TableContainer>
             </Stack>
