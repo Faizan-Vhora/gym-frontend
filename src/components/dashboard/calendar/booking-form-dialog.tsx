@@ -30,6 +30,7 @@ import {
 } from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers';
 import { Barbell, CurrencyCircleDollar, Envelope, Phone, XCircle } from '@phosphor-icons/react';
+import moment from 'moment';
 import { Controller, useForm } from 'react-hook-form';
 import { toast, ToastContainer } from 'react-toastify';
 import { z as zod } from 'zod';
@@ -42,7 +43,6 @@ import { DiscountEntry, DiscountType } from '../discount/discount-table';
 import BookingPreviewDialog from './booking-preview';
 import PaymentToggle from './payment-toggle';
 import { Customer, Sessions, Trainer } from './types';
-import moment from 'moment';
 
 // Interfaces
 export interface BookingFormDialogPropsI {
@@ -154,7 +154,14 @@ export function BookingFormDialog({
   );
   const [availableSlotsWeekly, setAvailableSlotWeeklyData] = React.useState<WeeklySlotI[]>([]);
   const [availableSlotsWeeklyByFilter, setAvailableSlotWeeklyByFilterData] = React.useState<WeeklySlotI[]>([]);
-  const [trainerBlockDatesList, setTrainerBlockDatesList] = React.useState<string[]>(['2024-10-20', '2024-10-21', '2024-10-22', '2024-10-26', '2024-10-27', '2024-10-28']);
+  const [trainerBlockDatesList, setTrainerBlockDatesList] = React.useState<string[]>([
+    '2024-10-20',
+    '2024-10-21',
+    '2024-10-22',
+    '2024-10-26',
+    '2024-10-27',
+    '2024-10-28',
+  ]);
   const [availableWeekDayOptions, setAvailableWeekDayOptions] = React.useState<WeeklyDayOptionI[]>([]);
   const [selectedDays, setSelectedDays] = React.useState<number[]>([dayjs().day()]); // Default to today's weekday
   const [selectedSlots, setSelectedSlots] = React.useState<SelectedSlotsI>({});
@@ -184,11 +191,12 @@ export function BookingFormDialog({
         setCleared(false);
       }, 1500);
 
-      return () => clearTimeout(timeout);
+      return () => {
+        clearTimeout(timeout);
+      };
     }
-    return () => {};
+    return;
   }, [cleared]);
-
 
   // Fetch data
   const fetchCustomers = async (): Promise<void> => {
@@ -231,7 +239,11 @@ export function BookingFormDialog({
       const availableTrainerSlots = response.data.data;
       // console.log("*** availableTrainerSlots:", availableTrainerSlots)
 
-      if (bookingType === BOOKING_TYPE.ONE_TIME && ( availableTrainerSlots.length && (availableTrainerSlots[0]?.weekday || availableTrainerSlots[0]?.weekday === 0) )) {
+      if (
+        bookingType === BOOKING_TYPE.ONE_TIME &&
+        availableTrainerSlots.length &&
+        (availableTrainerSlots[0]?.weekday || availableTrainerSlots[0]?.weekday === 0)
+      ) {
         setSelectedDays([availableTrainerSlots[0].weekday]);
       } else {
         setSelectedDays([]);
@@ -239,7 +251,6 @@ export function BookingFormDialog({
         setMaxReOccuranceWeeks(noOfWeeks > 1 ? noOfWeeks - 1 : 1);
       }
       // console.log("*** selectedDays", selectedDays)
-
 
       setAvailableSlotWeeklyData(availableTrainerSlots || []);
       const trainerWeekDays: number[] = availableTrainerSlots.map((ele: WeeklySlotI) => ele.weekday);
@@ -256,22 +267,18 @@ export function BookingFormDialog({
     }
   };
 
-
-  const fetchTrainerBlockDatesData = async (trainerId:number): Promise<void> => {
+  const fetchTrainerBlockDatesData = async (trainerId: number): Promise<void> => {
     try {
-      const response = await axiosInstance.get<TrainerBlockDatesResponse>(
-        '/session-booking/trainer/block-dates',
-        {
-          params: { trainerId },
-        }
-      );
+      const response = await axiosInstance.get<TrainerBlockDatesResponse>('/session-booking/trainer/block-dates', {
+        params: { trainerId },
+      });
       const trainerBlockDates = response.data.data;
       setTrainerBlockDatesList(trainerBlockDates || []);
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred';
       toast.error(`Failed to fetch block dates data: ${errorMessage}`);
     }
-  }
+  };
 
   const getDataSkippingIndices = (dataArray: WeekSlotI[], skip: number): WeekSlotI[] => {
     const result: WeekSlotI[] = [];
@@ -284,7 +291,6 @@ export function BookingFormDialog({
     return result;
   };
 
-
   const isPastDatetime = (slotOption: SlotI): boolean => {
     // Combine date and time strings to create full datetime strings
     // console.log("slotOption:: ", slotOption)
@@ -294,7 +300,6 @@ export function BookingFormDialog({
     const now = moment();
     return startDatetime.isSameOrBefore(now);
   };
-
 
   const filterAvailableTrainerSlotsByReoccurrence = (): void => {
     // Create a deep copy of the available slots
@@ -666,7 +671,6 @@ export function BookingFormDialog({
   React.useEffect(() => {
     // console.log('Update : availableSlotsWeeklyByFilter:: ', availableSlotsWeeklyByFilter);
     // console.log('Update : selectedDays:: ', selectedDays);
-
   }, [availableSlotsWeeklyByFilter]);
 
   React.useEffect(() => {
@@ -684,7 +688,6 @@ export function BookingFormDialog({
     filterAvailableTrainerSlotsByReoccurrence();
   }, [availableSlotsWeekly, reOccuranceWeeks, reOccuranceEnabled, bookingType]);
 
-
   React.useEffect(() => {
     setSelectedSlots({});
     setSelectedSlotsForSameDays({});
@@ -694,16 +697,15 @@ export function BookingFormDialog({
     setSameTimeForSelectedDays(false);
   }, [selectedDays]);
 
-
   React.useEffect(() => {
     if (bookingType === BOOKING_TYPE.ONE_TIME && selectedTrainer && bookingDate) {
       void fetchTrainerSlotsData(selectedTrainer.id, bookingDate, bookingDate);
-      void fetchTrainerBlockDatesData(selectedTrainer.id)
+      void fetchTrainerBlockDatesData(selectedTrainer.id);
     }
 
     if (bookingType === BOOKING_TYPE.WEEKLY && selectedTrainer && bookingStartDate && bookingEndDate) {
       void fetchTrainerSlotsData(selectedTrainer.id, bookingStartDate, bookingEndDate);
-      void fetchTrainerBlockDatesData(selectedTrainer.id)
+      void fetchTrainerBlockDatesData(selectedTrainer.id);
     }
   }, [selectedTrainer, bookingType, bookingDate, bookingStartDate, bookingEndDate]);
 
@@ -731,12 +733,11 @@ export function BookingFormDialog({
   return (
     <Dialog fullWidth maxWidth="sm" onClose={onClose} open={open}>
       <form onSubmit={handleSubmit(onSubmit)}>
-        <Box sx={{ p: 3,display:'flex', alignItems:"center",justifyContent:'space-between' }}>
+        <Box sx={{ p: 3, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <Typography sx={{ textAlign: 'center' }} variant="h5">
             Add Booking
           </Typography>
-          <XCircle style={{cursor: 'pointer' }} size={32}  
-          onClick={onClose} />
+          <XCircle style={{ cursor: 'pointer' }} size={32} onClick={onClose} />
         </Box>
 
         <Stack spacing={2} sx={{ p: 3 }}>
@@ -923,7 +924,7 @@ export function BookingFormDialog({
 
             {bookingType === BOOKING_TYPE.ONE_TIME && (
               <>
-                <Grid item  md={8}>
+                <Grid item md={8}>
                   <Controller
                     control={control}
                     name="bookingDate"
@@ -948,7 +949,12 @@ export function BookingFormDialog({
                             error: Boolean(errors.bookingDate),
                             helperText: errors.bookingDate?.message,
                           },
-                          field: { clearable: true, onClear: () => setCleared(true) },
+                          field: {
+                            clearable: true,
+                            onClear: () => {
+                              setCleared(true);
+                            },
+                          },
                         }}
                         shouldDisableDate={(date) => {
                           return trainerBlockDatesList.includes(dayjs(date).format('YYYY-MM-DD'));
@@ -969,7 +975,7 @@ export function BookingFormDialog({
                     name="bookingStartDate"
                     render={({ field }) => (
                       <DatePicker
-                      sx={{ width: '100%' }}
+                        sx={{ width: '100%' }}
                         disablePast
                         disabled={!selectedTrainer}
                         format="DD-MM-YYYY"
@@ -991,7 +997,12 @@ export function BookingFormDialog({
                             error: Boolean(errors.bookingStartDate),
                             helperText: errors.bookingStartDate?.message,
                           },
-                          field: { clearable: true, onClear: () => setCleared(true) },
+                          field: {
+                            clearable: true,
+                            onClear: () => {
+                              setCleared(true);
+                            },
+                          },
                         }}
                         shouldDisableDate={(date) => {
                           return trainerBlockDatesList.includes(dayjs(date).format('YYYY-MM-DD'));
@@ -1008,7 +1019,7 @@ export function BookingFormDialog({
                     name="bookingEndDate"
                     render={({ field }) => (
                       <DatePicker
-                      sx={{ width: '100%' }}
+                        sx={{ width: '100%' }}
                         disablePast
                         disabled={!selectedTrainer}
                         format="DD-MM-YYYY"
@@ -1028,7 +1039,12 @@ export function BookingFormDialog({
                             error: Boolean(errors.bookingEndDate),
                             helperText: errors.bookingEndDate?.message,
                           },
-                          field: { clearable: true, onClear: () => setCleared(true) },
+                          field: {
+                            clearable: true,
+                            onClear: () => {
+                              setCleared(true);
+                            },
+                          },
                         }}
                         shouldDisableDate={(date) => {
                           return trainerBlockDatesList.includes(dayjs(date).format('YYYY-MM-DD'));
@@ -1135,7 +1151,7 @@ export function BookingFormDialog({
                         getOptionLabel={(option) =>
                           option.isDateLabel ? `${option.date}` : `${option.startTime} - ${option.endTime}`
                         }
-                        getOptionDisabled={(option) => !option.isAvailable || isPastDatetime(option) }
+                        getOptionDisabled={(option) => !option.isAvailable || isPastDatetime(option)}
                         value={selectedSlotsForSameDays[weekDaySlot.weekday] || []}
                         onChange={(event, newValue) => {
                           handleSessionSlotChangeForSameDays(weekDaySlot.weekday, newValue);
@@ -1206,7 +1222,10 @@ export function BookingFormDialog({
                                 `${option.date}`
                               ) : (
                                 <>
-                                  <Checkbox checked={selected} disabled={!option.isAvailable || isPastDatetime(option)} />
+                                  <Checkbox
+                                    checked={selected}
+                                    disabled={!option.isAvailable || isPastDatetime(option)}
+                                  />
                                   {`${option.startTime} - ${option.endTime}`}
                                 </>
                               )}
@@ -1262,7 +1281,7 @@ export function BookingFormDialog({
                         ))}
                       </Select>
                       {errors.promocodeId && <FormHelperText>{errors.promocodeId.message}</FormHelperText>}
- 
+
                       {/* Cancel Button */}
                       {/* {field.value && (
                         <Button
@@ -1293,30 +1312,45 @@ export function BookingFormDialog({
                       marginTop: '10px',
                     }}
                   >
-                    <CardContent sx={{padding:'10px 10px', paddingBottom:'20px'}}>
+                    <CardContent sx={{ padding: '10px 10px', paddingBottom: '20px' }}>
                       {/* <Grid container>
                         <Grid item md={8} alignContent={'center'}> */}
-                        
-                        <Stack alignItems={'end'}>
-                          <XCircle size={32}  
-                            onClick={() => {
+
+                      <Stack alignItems={'end'}>
+                        <XCircle
+                          size={32}
+                          onClick={() => {
                             handlePromocodeChange(null); // or any other logic you need
                           }}
-                          />
-                        </Stack>
-                        
-                          <Stack flexDirection={'row'} justifyContent={'space-between'} alignItems={'center'} margin={'5px 0px'}>
-                          <Typography variant="subtitle1">{selectedPromocode.codeName}</Typography>
-                           
-                          <Typography variant="subtitle1"> Total Discount {formatAmount(discountAmount)}</Typography>
-                          </Stack>
+                        />
+                      </Stack>
 
-                          <Typography variant="caption" sx={{ display: 'flex', alignItems: 'center', maxWidth:'420px', textOverflow:'ellipsis',overflow:'hidden',marginBottom:'10px'}}>
-                            {selectedPromocode.description ? selectedPromocode.description : ''}
-                          </Typography>
+                      <Stack
+                        flexDirection={'row'}
+                        justifyContent={'space-between'}
+                        alignItems={'center'}
+                        margin={'5px 0px'}
+                      >
+                        <Typography variant="subtitle1">{selectedPromocode.codeName}</Typography>
 
-                         
-                        {/* </Grid>
+                        <Typography variant="subtitle1"> Total Discount {formatAmount(discountAmount)}</Typography>
+                      </Stack>
+
+                      <Typography
+                        variant="caption"
+                        sx={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          maxWidth: '420px',
+                          textOverflow: 'ellipsis',
+                          overflow: 'hidden',
+                          marginBottom: '10px',
+                        }}
+                      >
+                        {selectedPromocode.description ? selectedPromocode.description : ''}
+                      </Typography>
+
+                      {/* </Grid>
                       </Grid> */}
 
                       {/* Add other fields as necessary */}
@@ -1344,7 +1378,7 @@ export function BookingFormDialog({
             sx={{
               borderColor: '#d0021b',
               color: '#d0021b',
-              fontSize:'15px !important',
+              fontSize: '15px !important',
               marginLeft: '15px',
               transform: 'skewX(-20deg)',
               fontFamily: 'Audiowide, sans-serif !important',
@@ -1373,7 +1407,13 @@ export function BookingFormDialog({
           >
             Cancel
           </Button> */}
-          <Button sx={{fontFamily: 'Audiowide, sans-serif !important',}} type="submit" variant="contained" className="common-button" disabled={loading}>
+          <Button
+            sx={{ fontFamily: 'Audiowide, sans-serif !important' }}
+            type="submit"
+            variant="contained"
+            className="common-button"
+            disabled={loading}
+          >
             Confirm
           </Button>
         </Stack>
