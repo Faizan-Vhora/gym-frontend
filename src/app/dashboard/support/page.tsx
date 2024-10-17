@@ -120,6 +120,7 @@ export default function Page(): React.JSX.Element {
         </Stack>
         <Button
           className="common-button"
+          style={{fontFamily:'"Audiowide", sans-serif'}}
           startIcon={<PlusIcon fontSize="var(--icon-fontSize-md)" />}
           variant="contained"
           onClick={handleAddClick}
