@@ -109,7 +109,7 @@ export default function ExpertiseForm(): React.JSX.Element {
         <form onSubmit={handleSubmit(onSubmit)}>
           <Grid container spacing={3}>
             {/* Title Field */}
-            <Grid item xs={4}>
+            <Grid item xs={12} sm={9}>
               <FormControl fullWidth required error={Boolean(errors.title)}>
                 <InputLabel htmlFor="title">Title</InputLabel>
                 <Controller
@@ -121,7 +121,7 @@ export default function ExpertiseForm(): React.JSX.Element {
               </FormControl>
             </Grid>
             {/* Description Field */}
-            <Grid item xs={9}>
+            <Grid item xs={12} sm={9}>
               <FormControl fullWidth>
               <InputLabel htmlFor="description">Description</InputLabel>
                 <TextField

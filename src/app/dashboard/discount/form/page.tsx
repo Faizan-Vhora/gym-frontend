@@ -291,7 +291,7 @@ export default function DiscountFormPage(): React.JSX.Element {
 
             <Grid item md={8} xs={12}>
               <Grid container spacing={3}>
-                <Grid item md={6} xs={12}>
+                <Grid item sm={6} xs={12}>
                   <TextField
                     required
                     label="Code Name"
@@ -303,7 +303,7 @@ export default function DiscountFormPage(): React.JSX.Element {
                     helperText={errors?.codeName?._errors[0]}
                   />
                 </Grid>
-                <Grid item md={6} xs={12}>
+                <Grid item sm={6} xs={12}>
                   <LocalizationProvider dateAdapter={AdapterDayjs}>
                     <FormControl fullWidth required error={Boolean(errors?.expiryDate)}>
                       <Controller
@@ -347,7 +347,7 @@ export default function DiscountFormPage(): React.JSX.Element {
                     </FormControl>
                   </LocalizationProvider>
                 </Grid>
-                <Grid item xs={12} md={6}>
+                <Grid item xs={12} sm={6}>
                   <TextField
                     required
                     label="Discount Value"
@@ -368,7 +368,7 @@ export default function DiscountFormPage(): React.JSX.Element {
                   />
                 </Grid>
 
-                <Grid item md={6} xs={12}>
+                <Grid item sm={6} xs={12}>
                   <FormControl variant="outlined" fullWidth required error={Boolean(errors?.discountType)}>
                     <InputLabel>Discount Type</InputLabel>
                     <Select
@@ -386,7 +386,7 @@ export default function DiscountFormPage(): React.JSX.Element {
                   </FormControl>
                 </Grid>
 
-                <Grid item xs={12} md={6}>
+                <Grid item xs={12} sm={6}>
                   <FormControl variant="outlined" fullWidth required error={Boolean(errors?.usageLimit)}>
                     <InputLabel>Usage Limit</InputLabel>
                     <Select

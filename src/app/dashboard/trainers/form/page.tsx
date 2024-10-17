@@ -442,7 +442,7 @@ export default function TrainerEditForm(): React.JSX.Element {
                               render={({ field }) => (
                                 <FormControl fullWidth required={!id} error={Boolean(errors.password)}>
                                   <InputLabel>Password</InputLabel>
-                                  <OutlinedInput
+                                  <OutlinedInput sx={{background:'#e8f0fe'}}
                                     {...field}
                                     label="Password"
                                     type={showPassword ? 'text' : 'password'}

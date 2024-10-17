@@ -504,34 +504,34 @@ export default function CustomerEditForm(): React.JSX.Element {
                   <Grid container spacing={10}>
                     <Grid item md={12} xs={12}>
                       <Grid container spacing={4}>
-                        <Grid item md={id ? 6 : 4} p={2}>
+                        <Grid item md={id ? 6 : 4} sm={6} xs={12} p={2}>
                           <FormControl fullWidth error={Boolean(errors.fullName)} required>
                             <InputLabel>Full Name</InputLabel>
                             <OutlinedInput {...register('fullName')} label="Full Name" />
                             {errors.fullName ? <FormHelperText>{errors.fullName.message}</FormHelperText> : null}
                           </FormControl>
                         </Grid>
-                        <Grid item md={id ? 6 : 4} p={2}>
+                        <Grid item md={id ? 6 : 4} sm={6} xs={12} p={2}>
                           <FormControl fullWidth error={Boolean(errors.email)} required>
                             <InputLabel>Email</InputLabel>
                             <OutlinedInput {...register('email')} label="Email" type="email" />
                             {errors.email ? <FormHelperText>{errors.email.message}</FormHelperText> : null}
                           </FormControl>
                         </Grid>
-                        <Grid item md={id ? 6 : 4} p={2}>
+                        <Grid item md={id ? 6 : 4} sm={6} xs={12} p={2}>
                           <Controller
                             name="password"
                             control={control}
                             rules={{ required: !id ? 'Password is required' : false }}
                             render={({ field }) => (
-                              <FormControl fullWidth required={!id} error={Boolean(errors.password)}>
+                              <FormControl  fullWidth required={!id} error={Boolean(errors.password)}>
                                 <InputLabel>Password</InputLabel>
-                                <OutlinedInput
+                                <OutlinedInput sx={{background:'#e8f0fe'}}
                                   {...field}
                                   label="Password"
                                   type={showPassword ? 'text' : 'password'}
                                   endAdornment={
-                                    <Box
+                                    <Box 
                                       component="span"
                                       onClick={() => {
                                         setShowPassword(!showPassword);
@@ -549,7 +549,7 @@ export default function CustomerEditForm(): React.JSX.Element {
                         </Grid>
                         {id && (
                           <>
-                            <Grid item md={6} p={2}>
+                            <Grid item md={6} sm={6} xs={12} p={2}>
                               <FormControl fullWidth error={Boolean(errors.zipCode)}>
                                 <InputLabel>Zipcode</InputLabel>
                                 <OutlinedInput
@@ -562,7 +562,7 @@ export default function CustomerEditForm(): React.JSX.Element {
                                 ) : null}
                               </FormControl>
                             </Grid>
-                            <Grid item md={6} p={2}>
+                            <Grid item md={6} sm={6} xs={12} p={2}>
                               <LocalizationProvider dateAdapter={AdapterDayjs}>
                                 <FormControl fullWidth>
                                   <Controller
@@ -599,7 +599,7 @@ export default function CustomerEditForm(): React.JSX.Element {
                                 </FormControl>
                               </LocalizationProvider>
                             </Grid>
-                            <Grid item md={6} p={2}>
+                            <Grid item md={6} sm={6} xs={12} p={2}>
                               <FormControl fullWidth>
                                 <Controller
                                   name="gender"
@@ -615,7 +615,7 @@ export default function CustomerEditForm(): React.JSX.Element {
                                 {errors.gender ? <FormHelperText>{errors.gender.message}</FormHelperText> : null}
                               </FormControl>
                             </Grid>
-                            <Grid item md={6} p={2}>
+                            <Grid item md={6} sm={6} xs={12} p={2}>
                               <FormControl fullWidth error={Boolean(errors.phoneNumber)}>
                                 <InputLabel>Phone Number</InputLabel>
                                 <OutlinedInput
@@ -628,7 +628,7 @@ export default function CustomerEditForm(): React.JSX.Element {
                                 ) : null}
                               </FormControl>
                             </Grid>
-                            <Grid item md={12} p={2}>
+                            <Grid item xs={12} p={2}>
                               <FormControl fullWidth>
                                 <TextField
                                   {...register('address')}

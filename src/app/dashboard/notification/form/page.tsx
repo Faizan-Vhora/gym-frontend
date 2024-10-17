@@ -172,7 +172,7 @@ export default function NotificationForm() {
                 />
               </Grid>
               {!sendToAll && (
-                <Grid item md={5} xs={12}>
+                <Grid item sm={6} xs={12}>
                   <Controller
                     name="userIds"
                     control={control}
@@ -197,7 +197,7 @@ export default function NotificationForm() {
                   />
                 </Grid>
               )}
-              <Grid item md={5} xs={12}>
+              <Grid item sm={6} xs={12}>
                 <Controller
                   name="title"
                   control={control}

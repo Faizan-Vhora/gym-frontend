@@ -50,7 +50,7 @@ export default function ExpertiseFilters({ onSearchChange, onStatusChange }: Exp
 
   return (
     <Grid container spacing={2}>
-      <Grid item md={6} xs={12}>
+      <Grid item md={6} sm={6} xs={12}>
         {/* <Stack direction="row" spacing={5} sx={{ marginBottom: 3 }}> */}
         <TextField
           label="Search"
@@ -69,7 +69,7 @@ export default function ExpertiseFilters({ onSearchChange, onStatusChange }: Exp
           }}
         />
       </Grid>
-      <Grid item md={6} xs={12}>
+      <Grid item md={6} sm={6} xs={12}>
         <FormControl fullWidth variant="outlined">
           <InputLabel>Status</InputLabel>
           <Select label="Status" value={status} onChange={handleStatusChange} variant="outlined" fullWidth>
