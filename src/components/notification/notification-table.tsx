@@ -112,6 +112,7 @@ export function NotificationTable({
                 onRowsPerPageChange(inputEvent);
               }}
               rowsPerPageOptions={[5, 10, 25]}
+              labelRowsPerPage={'Records per page'}
             />
           </>
         )}

@@ -66,6 +66,7 @@ export function Toolbar({
   const [customers, setCustomers] = React.useState<Customer[]>([]);
   const [startDate, setStartDate] = React.useState<Dayjs | null>(null); // Change to Dayjs
   const [endDate, setEndDate] = React.useState<Dayjs | null>(null); // Change to Dayjs
+  const [cleared, setCleared] = React.useState<boolean>(false);
 
   // Trainer API
   interface ErrorDetail {
@@ -98,6 +99,19 @@ export function Toolbar({
       setLoading(false);
     }
   }, []);
+
+  React.useEffect(() => {
+    if (cleared) {
+      const timeout = setTimeout(() => {
+        setCleared(false);
+      }, 1500);
+
+      return () => {
+        clearTimeout(timeout);
+      };
+    }
+    return;
+  }, [cleared]);
 
   React.useEffect(() => {
     void fetchTrainers();
@@ -200,16 +214,6 @@ export function Toolbar({
     onEndDateChange(newEndDate ? dayjs(newEndDate).format('YYYY-MM-DD') : '');
   };
 
-  const handleClearStartDate = (): void => {
-    setStartDate(null);
-    onStartDateChange('');
-  };
-
-  const handleClearEndDate = (): void => {
-    setEndDate(null);
-    onEndDateChange('');
-  };
-
   return (
     <Stack
       spacing={3}
@@ -309,47 +313,51 @@ export function Toolbar({
           </FormControl>
         </Grid>
 
-        <LocalizationProvider dateAdapter={AdapterDayjs} >
+        <LocalizationProvider dateAdapter={AdapterDayjs}>
           <Grid item md={3} sm={6} xs={12}>
             {/* Start Date Picker */}
             <DatePicker
               label="Start Date"
               value={startDate ? dayjs(startDate) : null}
               onChange={handleStartDateChange}
-              slotProps={{ textField: { fullWidth: true } }}
-              
+              slotProps={{
+                textField: { fullWidth: true },
+                field: {
+                  clearable: true,
+                  onClear: () => {
+                    setCleared(true);
+                  },
+                },
+              }}
             />
-            {startDate && (
-              <IconButton onClick={handleClearStartDate} edge="end">
-                <XIcon size={20} /> {/* Adjust icon size as needed */}
-              </IconButton>
-            )}
           </Grid>
           <Grid item md={3} sm={6} xs={12}>
             {/* End Date Picker */}
             <DatePicker
-             
               label="End Date"
               value={endDate ? dayjs(endDate) : null}
               onChange={handleEndDateChange}
               minDate={startDate ? startDate : undefined}
-              slotProps={{ textField: { fullWidth: true } }}
+              slotProps={{
+                textField: { fullWidth: true },
+                field: {
+                  clearable: true,
+                  onClear: () => {
+                    setCleared(true);
+                  },
+                },
+              }}
             />
-            {endDate && (
-              <IconButton onClick={handleClearEndDate} edge="end">
-                <XIcon size={20} /> {/* Adjust icon size as needed */}
-              </IconButton>
-            )}
           </Grid>
         </LocalizationProvider>
 
-        <Grid item md={2} sm={6} xs={12} sx={{marginLeft:'auto'}}>
+        <Grid item md={2} sm={6} xs={12} sx={{ marginLeft: 'auto' }}>
           {/* Add Booking Button */}
           <Button
             onClick={onAdd}
             className="common-button"
             startIcon={<PlusIcon />}
-            sx={{marginLeft:'auto' }}
+            sx={{ marginLeft: 'auto' }}
             variant="contained"
             style={{ fontFamily: '"Audiowide", sans-serif' }}
           >

@@ -19,10 +19,7 @@ import { ToastContainer } from 'react-toastify'; // Import toast and ToastContai
 import 'react-toastify/dist/ReactToastify.css'; // Import toast styles
 
 import { useRouter } from 'next/navigation';
-import {
-  BOOKING_STATUS,
-  BOOKING_STATUS_DETAILS
-} from '@/utils/constant';
+import { BOOKING_STATUS, BOOKING_STATUS_DETAILS } from '@/utils/constant';
 import { formatHours } from '@/utils/converter';
 import { formatDate } from '@/utils/date-utils';
 import { XCircle } from '@phosphor-icons/react';
@@ -203,23 +200,17 @@ export function BookingTable({
 
                     <TableCell sx={tableCss.tableCell}>
                       <Stack direction="row" spacing={1} alignItems="center">
-
-                      {
-                        entry.status !== BOOKING_STATUS.CANCELED
-                        ?
-                        (
+                        {entry.status !== BOOKING_STATUS.CANCELED ? (
                           <IconButton
-                          onClick={() => {
-                            handleStatusChange(entry.id, BOOKING_STATUS.CANCELED);
-                          }}
-                        >
-                          <XCircle />
-                        </IconButton>
-                        )
-                        : <></>
-
-                      }
-
+                            onClick={() => {
+                              handleStatusChange(entry.id, BOOKING_STATUS.CANCELED);
+                            }}
+                          >
+                            <XCircle />
+                          </IconButton>
+                        ) : (
+                          <></>
+                        )}
                       </Stack>
                     </TableCell>
                   </TableRow>
@@ -246,6 +237,7 @@ export function BookingTable({
                 onRowsPerPageChange(inputEvent);
               }}
               rowsPerPageOptions={[5, 10, 25]}
+              labelRowsPerPage={'Records per page'}
             />
           </>
         )}

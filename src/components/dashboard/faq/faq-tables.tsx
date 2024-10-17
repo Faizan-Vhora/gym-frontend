@@ -148,8 +148,16 @@ export default function FaqTable({
                     {typeMappings[faq.type.toLowerCase()] || faq.type}
                     {/* Fallback to original type if it's not in the mapping */}
                   </TableCell>
-                  <TableCell sx={tableCss.tableCell}>{faq.question}</TableCell>
-                  <TableCell sx={tableCss.tableCell}>{faq.answer}</TableCell>
+                  <TableCell
+                    sx={{ ...tableCss.tableCell, textOverflow: 'ellipsis', maxWidth: '120px', overflow: 'hidden' }}
+                  >
+                    {faq.question}
+                  </TableCell>
+                  <TableCell
+                    sx={{ ...tableCss.tableCell, textOverflow: 'ellipsis', maxWidth: '120px', overflow: 'hidden' }}
+                  >
+                    {faq.answer}
+                  </TableCell>
                   <TableCell sx={tableCss.tableCell}>
                     <Select
                       sx={{ height: '40px', width: '120px' }}
@@ -203,6 +211,7 @@ export default function FaqTable({
             onRowsPerPageChange={(event) => {
               onRowsPerPageChange(parseInt(event.target.value, 10));
             }}
+            labelRowsPerPage={'Records per page'}
           />
         </>
       )}

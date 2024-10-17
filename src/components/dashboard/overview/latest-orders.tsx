@@ -81,6 +81,9 @@ export function LatestOrders({ orders = [] }: LatestOrdersProps): React.JSX.Elem
           endIcon={<ArrowRightIcon fontSize="var(--icon-fontSize-md)" />}
           size="small"
           variant="text"
+          onClick={() => {
+            router.push('/dashboard/bookings');
+          }}
         >
           View all
         </Button>

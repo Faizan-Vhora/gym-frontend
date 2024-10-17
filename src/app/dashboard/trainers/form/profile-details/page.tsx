@@ -37,6 +37,7 @@ import { ExpertiseEntry } from '@/components/dashboard/expertise/expertise-table
 const TrainerSchema = z.object({
   experience: z.coerce
     .number()
+    .min(1, 'Experience must be at least 1')
     .optional()
     .refine((value) => value === undefined || value <= 99999, {
       message: 'Experience must be at most 5 digits.',
@@ -44,9 +45,10 @@ const TrainerSchema = z.object({
   aboutMe: z.string().nullable(),
   fees: z.coerce
     .number()
+    .min(1, 'Cost must be at least 1')
     .optional()
     .refine((value) => value === undefined || value <= 99999, {
-      message: 'Fees must be at most 5 digits.',
+      message: 'Cost must be at most 5 digits.',
     }),
 });
 

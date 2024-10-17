@@ -1,10 +1,10 @@
 import * as React from 'react';
 import { useState } from 'react';
+import { SUPPORT_TICKET_STATUS_OPTIONS, SUPPORT_TICKET_USER_TYPE_OPTIONS } from '@/utils/constant';
 import { FormControl, Grid, IconButton, InputAdornment, InputLabel, MenuItem, Select, TextField } from '@mui/material';
 import type { SelectChangeEvent } from '@mui/material';
 import { X as XIcon } from '@phosphor-icons/react'; // Import XIcon from phosphor-react
 import debounce from 'lodash/debounce';
-import { SUPPORT_TICKET_STATUS_OPTIONS, SUPPORT_TICKET_USER_TYPE_OPTIONS } from '@/utils/constant';
 
 interface SupportFiltersProps {
   onSearchChange: (searchTerm: string) => void;
@@ -81,10 +81,10 @@ export function SupportFilters({
       </Grid>
       <Grid item md={4} xs={12}>
         <FormControl fullWidth variant="outlined">
-          <InputLabel>Status</InputLabel>
-          <Select value={status} onChange={handleStatusChange} label="Status">
-          <MenuItem value="All">All</MenuItem>
-            {SUPPORT_TICKET_STATUS_OPTIONS.map((option) => (
+          <InputLabel>From</InputLabel>
+          <Select value={from} onChange={handleFromChange} label="From">
+            <MenuItem value="All">All</MenuItem>
+            {SUPPORT_TICKET_USER_TYPE_OPTIONS.map((option) => (
               <MenuItem key={option.value} value={option.value}>
                 {option.label}
               </MenuItem>
@@ -94,10 +94,10 @@ export function SupportFilters({
       </Grid>
       <Grid item md={4} xs={12}>
         <FormControl fullWidth variant="outlined">
-          <InputLabel>From</InputLabel>
-          <Select value={from} onChange={handleFromChange} label="From">
-          <MenuItem value="All">All</MenuItem>
-            {SUPPORT_TICKET_USER_TYPE_OPTIONS.map((option) => (
+          <InputLabel>Status</InputLabel>
+          <Select value={status} onChange={handleStatusChange} label="Status">
+            <MenuItem value="All">All</MenuItem>
+            {SUPPORT_TICKET_STATUS_OPTIONS.map((option) => (
               <MenuItem key={option.value} value={option.value}>
                 {option.label}
               </MenuItem>

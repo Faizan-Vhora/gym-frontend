@@ -156,6 +156,7 @@ export function ContactUsTable({
                 onRowsPerPageChange(parseInt(e.target.value, 10));
               }}
               rowsPerPageOptions={[5, 10, 25]}
+              labelRowsPerPage={'Records per page'}
             />
           </>
         )}

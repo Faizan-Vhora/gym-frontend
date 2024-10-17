@@ -24,6 +24,7 @@ import tableCss from '@/styles/table-css';
 export interface ExpertiseEntry {
   id: number;
   title: string;
+  description: string;
   status: 'active' | 'inactive';
   createdAt: Date | string;
   updatedAt: Date | string;
@@ -80,6 +81,7 @@ export function ExpertiseTable({
           <TableHead>
             <TableRow sx={tableCss.tableRow}>
               <TableCell sx={tableCss.tableHeaderCell}>Title</TableCell>
+              <TableCell sx={tableCss.tableHeaderCell}>Description</TableCell>
               <TableCell sx={tableCss.tableHeaderCell}>Updated At</TableCell>
               <TableCell
                 sx={{
@@ -113,6 +115,16 @@ export function ExpertiseTable({
                     style={{ cursor: 'pointer' }}
                   >
                     {entry.title}
+                  </TableCell>
+                  <TableCell
+                    sx={{
+                      ...tableCss.tableCell,
+                      textOverflow: 'ellipsis',
+                      maxWidth: '100px',
+                      overflow: 'hidden',
+                    }}
+                  >
+                    {entry.description || '-'}
                   </TableCell>
                   <TableCell sx={tableCss.tableCell}>{dayjs(entry.updatedAt).format('MMM D, YYYY')}</TableCell>
 
@@ -165,6 +177,7 @@ export function ExpertiseTable({
             onPageChange={onPageChange}
             onRowsPerPageChange={onRowsPerPageChange}
             rowsPerPageOptions={[5, 10, 25]}
+            labelRowsPerPage={'Records per page'}
           />
         </>
       )}

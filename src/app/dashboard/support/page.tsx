@@ -2,22 +2,17 @@
 
 import * as React from 'react';
 import { useCallback, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { CustomLoader } from '@/utils/loader';
-import {
-  Button,
-  Card,
-  Stack,
-  Typography,
-} from '@mui/material';
+import { Button, Card, Stack, Typography } from '@mui/material';
 import { Plus as PlusIcon } from '@phosphor-icons/react';
+import { ToastContainer } from 'react-toastify';
 import Swal from 'sweetalert2';
 
 import axiosInstance from '@/lib/axios';
+import { SupportFilters } from '@/components/dashboard/support/support-filters';
 import type { SupportEntry } from '@/components/dashboard/support/support-table'; // Use import type here
 import { SupportTable } from '@/components/dashboard/support/support-table';
-import { SupportFilters } from '@/components/dashboard/support/support-filters';
-import { ToastContainer } from 'react-toastify';
-import { useRouter } from 'next/navigation';
 
 export default function Page(): React.JSX.Element {
   const router = useRouter();
@@ -79,6 +74,7 @@ export default function Page(): React.JSX.Element {
           prevEntries.map((entry) => (entry.id === id ? { ...entry, status: newStatus } : entry))
         );
         await Swal.fire('Updated!', 'The status has been updated.', 'success');
+        router.back();
       } catch (error) {
         await Swal.fire('Error!', 'Failed to update status.', 'error');
       }

@@ -22,6 +22,7 @@ import 'react-toastify/dist/ReactToastify.css'; // Import toast styles
 import { useRouter } from 'next/navigation';
 import { SUPPORT_TICKET_STATUS_OPTIONS, USER_TYPE_OPTIONS, UserTypeOption } from '@/utils/constant';
 import { Chat, PencilSimple } from '@phosphor-icons/react';
+import dayjs from 'dayjs';
 
 import tableCss from '@/styles/table-css';
 
@@ -46,7 +47,6 @@ export interface SupportTicketMessageEntry {
   updatedAt: Date | string | null;
   updatedBy: { fullName: string; email: string };
 }
-
 
 interface SupportTableProps {
   entries: SupportEntry[];
@@ -97,6 +97,7 @@ export function SupportTable({
                 <TableCell sx={tableCss.tableHeaderCell}>User Details</TableCell>
                 <TableCell sx={tableCss.tableHeaderCell}>From</TableCell>
                 <TableCell sx={tableCss.tableHeaderCell}>Subject</TableCell>
+                <TableCell sx={tableCss.tableHeaderCell}>Created At</TableCell>
                 <TableCell sx={tableCss.tableHeaderCell}>Status</TableCell>
                 <TableCell sx={tableCss.tableHeaderCell}>Actions</TableCell>
               </TableRow>
@@ -126,6 +127,7 @@ export function SupportTable({
                       {USER_TYPE_OPTIONS.find((ele: UserTypeOption) => ele.value === entry.userType)?.label || '-'}
                     </TableCell>
                     <TableCell sx={tableCss.tableCell}>{entry.subject}</TableCell>
+                    <TableCell sx={tableCss.tableCell}>{dayjs(entry.createdAt).format('MMM D, YYYY')}</TableCell>
                     <TableCell>
                       <Select
                         sx={{ height: '40px', width: '120px' }}

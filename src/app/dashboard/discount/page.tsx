@@ -3,11 +3,10 @@
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import { CustomLoader } from '@/utils/loader';
-import { Button, Card, Grid, IconButton, InputAdornment, Stack, TextField, Typography } from '@mui/material';
-import { Plus as PlusIcon, X as XIcon } from '@phosphor-icons/react'; // Import XIcon from phosphor-react
+import { Button, Card, Stack, Typography } from '@mui/material';
+import { Plus as PlusIcon } from '@phosphor-icons/react'; // Import XIcon from phosphor-react
 
-import debounce from 'lodash/debounce';
-import { toast } from 'react-toastify';
+import { toast, ToastContainer } from 'react-toastify';
 import Swal from 'sweetalert2';
 
 import axiosInstance from '@/lib/axios';
@@ -51,7 +50,7 @@ export default function DiscountManagementPage(): React.JSX.Element {
         page: page + 1, // Adjust for API pagination
         limit: rowsPerPage,
         status: filterType !== 'All' ? filterType : undefined,
-        search,
+        search: search,
       };
 
       const response = await axiosInstance.get<FetchDiscountsResponse>('/discount', { params });
@@ -90,7 +89,7 @@ export default function DiscountManagementPage(): React.JSX.Element {
   const handleDelete = async (id: number): Promise<void> => {
     const result = await Swal.fire({
       title: 'Are you sure?',
-      text: 'You will not be able to recover this discount!',
+      text: 'This action cannot be undone!',
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#3085d6',
@@ -152,27 +151,6 @@ export default function DiscountManagementPage(): React.JSX.Element {
     // Call your search function here, e.g., fetchResults(value);
   };
 
-  // Debounced search function
-  const debouncedSearch = React.useCallback(
-    debounce((value: string) => {
-      handleSearchChange(value);
-    }, 200), // Adjust the debounce delay as needed
-    []
-  );
-
-  // Effect for cleanup
-  React.useEffect(() => {
-    return () => {
-      debouncedSearch.cancel();
-    };
-  }, [debouncedSearch]);
-
-  // Clear search input
-  const handleClearSearch = () => {
-    setSearch('');
-    setPage(0);
-  };
-
   return (
     <Stack spacing={3}>
       <Stack direction="row" spacing={3}>
@@ -191,34 +169,9 @@ export default function DiscountManagementPage(): React.JSX.Element {
         </Button>
       </Stack>
       <Card>
-        {/* Search Field */}
+        {/* Discount Filter and Search Components */}
         <Stack sx={{ padding: '30px' }}>
-          <Grid container spacing={2}>
-            <Grid item md={6} xs={12}>
-              <TextField
-                variant="outlined"
-                label="Search"
-                value={search}
-                fullWidth
-                onChange={(e) => {
-                  handleSearchChange(e.target.value);
-                }}
-                InputProps={{
-                  endAdornment: search && (
-                    <InputAdornment position="end">
-                      <IconButton onClick={handleClearSearch} edge="end">
-                        <XIcon size={15} /> {/* Adjust size as needed */}
-                      </IconButton>
-                    </InputAdornment>
-                  ),
-                }}
-              />
-            </Grid>
-            <Grid item md={6} xs={12}>
-              {/* Discount Filter and Search Components */}
-              <DiscountFilter onFilterChange={handleFilterChange} />
-            </Grid>
-          </Grid>
+          <DiscountFilter onSearchChange={handleSearchChange} onStatusChange={handleFilterChange} />
         </Stack>
         {loading ? (
           <CustomLoader />
@@ -241,6 +194,7 @@ export default function DiscountManagementPage(): React.JSX.Element {
           />
         )}
       </Card>
+      <ToastContainer />
     </Stack>
   );
 }

@@ -126,7 +126,7 @@ export function CalendarView({ view = 'dayGridMonth' }: CalendarViewProps): Reac
 
       router.push(`${paths.dashboard.calendar}?view=${value}`);
     },
-    [router]
+    [router, events]
   );
 
   const handleSearchChange: (newSearchTerm: string) => void = (newSearchTerm) => {
@@ -338,7 +338,7 @@ export function CalendarView({ view = 'dayGridMonth' }: CalendarViewProps): Reac
               allDayMaintainDuration
               dayMaxEventRows={3}
               droppable
-              editable
+              editable={false}
               eventClick={handleEventSelect}
               eventContent={EventContent}
               eventDisplay="block"
@@ -357,6 +357,7 @@ export function CalendarView({ view = 'dayGridMonth' }: CalendarViewProps): Reac
               select={handleRangeSelect}
               selectable
               weekends
+              showNonCurrentDates={false}
             />
           </Box>
         </Card>

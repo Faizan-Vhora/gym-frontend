@@ -212,7 +212,6 @@ export function BookingSessionTable({
 
                     <TableCell sx={tableCss.tableCell}>
                       <Stack direction="row" spacing={1} alignItems="center">
-
                         <IconButton
                           onClick={() => {
                             handleNotesChange(entry);
@@ -229,22 +228,17 @@ export function BookingSessionTable({
                           <ArrowsClockwise />
                         </IconButton>
 
-                        {
-                        entry.status !== BOOKING_SESSION_STATUS.CANCELLED
-                        ?
-                        (
+                        {entry.status !== BOOKING_SESSION_STATUS.CANCELLED ? (
                           <IconButton
-                          onClick={() => {
-                            handleStatusChange(entry.id, BOOKING_SESSION_STATUS.CANCELLED);
-                          }}
-                        >
-                          <XCircle />
-                        </IconButton>
-                        )
-                        : <></>
-
-                      }
-
+                            onClick={() => {
+                              handleStatusChange(entry.id, BOOKING_SESSION_STATUS.CANCELLED);
+                            }}
+                          >
+                            <XCircle />
+                          </IconButton>
+                        ) : (
+                          <></>
+                        )}
                       </Stack>
                     </TableCell>
                   </TableRow>
@@ -271,6 +265,7 @@ export function BookingSessionTable({
                 onRowsPerPageChange(inputEvent);
               }}
               rowsPerPageOptions={[5, 10, 25]}
+              labelRowsPerPage={'Records per page'}
             />
           </>
         )}

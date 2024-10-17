@@ -56,6 +56,7 @@ export function BookingFilters({
 
   const [startDate, setStartDate] = useState<Dayjs | null>(null);
   const [endDate, setEndDate] = useState<Dayjs | null>(null);
+  const [cleared, setCleared] = React.useState<boolean>(false);
 
   const debouncedSearch = React.useCallback(
     debounce((value: string) => {
@@ -83,6 +84,19 @@ export function BookingFilters({
       toast.error(`Error fetching customers: ${errorMessage}`);
     }
   };
+
+  React.useEffect(() => {
+    if (cleared) {
+      const timeout = setTimeout(() => {
+        setCleared(false);
+      }, 1500);
+
+      return () => {
+        clearTimeout(timeout);
+      };
+    }
+    return;
+  }, [cleared]);
 
   React.useEffect(() => {
     void fetchTrainers(); // Awaiting the promise
@@ -144,16 +158,6 @@ export function BookingFilters({
     onEndDateChange(date ? dayjs(date).format('YYYY-MM-DD') : '');
   };
 
-  const handleClearStartDate = (): void => {
-    setStartDate(null);
-    onStartDateChange('');
-  };
-
-  const handleClearEndDate = (): void => {
-    setEndDate(null);
-    onEndDateChange('');
-  };
-
   return (
     <Grid container spacing={2}>
       <Grid item md={6} xs={12}>
@@ -187,13 +191,14 @@ export function BookingFilters({
               textField: {
                 fullWidth: true,
               },
+              field: {
+                clearable: true,
+                onClear: () => {
+                  setCleared(true);
+                },
+              },
             }}
           />
-          {startDate && (
-            <IconButton onClick={handleClearStartDate} edge="end">
-              <XIcon size={20} />
-            </IconButton>
-          )}
         </Box>
       </Grid>
 
@@ -210,13 +215,14 @@ export function BookingFilters({
               textField: {
                 fullWidth: true,
               },
+              field: {
+                clearable: true,
+                onClear: () => {
+                  setCleared(true);
+                },
+              },
             }}
           />
-          {endDate && (
-            <IconButton onClick={handleClearEndDate} edge="end">
-              <XIcon size={20} />
-            </IconButton>
-          )}
         </Box>
       </Grid>
 

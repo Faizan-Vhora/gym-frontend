@@ -4,9 +4,11 @@ import React, { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { CustomLoader } from '@/utils/loader';
 import { Button, Card, CardActions, CardContent, CardHeader, Divider, Stack } from '@mui/material';
-import { Minus, Plus, Trash, Upload } from '@phosphor-icons/react';
-import { toast } from 'react-toastify';
+import { Trash, Upload } from '@phosphor-icons/react';
+import { toast, ToastContainer } from 'react-toastify';
 import Swal from 'sweetalert2';
+
+import 'react-toastify/dist/ReactToastify.css';
 
 import axiosInstance from '@/lib/axios';
 
@@ -42,6 +44,10 @@ const ImageUploadCards = () => {
     imageId: string | number | null; // imageId can be a string, number, or null
   }
 
+  interface Image {
+    url: string | null;
+    imageId: string | null;
+  }
   // const defaultImage: ImageType = { url: null, imageId: null };
 
   useEffect(() => {
@@ -53,11 +59,13 @@ const ImageUploadCards = () => {
           imageId: img.id,
         }));
 
-        // Fill remaining slots with null objects
-        setImages([
-          ...fetchedImages.slice(0, 5),
-          // ...Array(Math.max(0, 5 - fetchedImages.length)).fill(defaultImage), // Ensure non-negative length
-        ]);
+        // If less than 5 images are present, fill the remaining slots with placeholder objects
+        const totalCards = 5;
+        const emptySlots: Image[] = Array.from({ length: totalCards - fetchedImages.length }, () => ({
+          url: null,
+          imageId: null,
+        }));
+        setImages([...fetchedImages, ...emptySlots]);
       } catch (error: unknown) {
         error instanceof Error ? error.message : 'An unexpected error occurred';
       }
@@ -123,18 +131,6 @@ const ImageUploadCards = () => {
     }
   };
 
-  const handleAddCard = () => {
-    if (images.length < 5) {
-      setImages([...images, { url: null, imageId: null }]); // Add a new empty image object to the array
-    }
-  };
-
-  const handleRemoveLastCard = () => {
-    if (images.length > 1) {
-      setImages(images.slice(0, -1)); // Remove the last card
-    }
-  };
-
   const handleUploadImages = async () => {
     try {
       setLoading(true);
@@ -173,8 +169,6 @@ const ImageUploadCards = () => {
         <CardHeader style={{ fontFamily: '"Audiowide", sans-serif' }} title="Banner Images" />
         <Divider />
         <Stack className="banner-image">
-          {/* <Grid item md={6}> */}
-          {/* <Stack> */}
           {images.map((imagePreview, index) => (
             <Card key={index} sx={{ margin: '30px 20px', width: '45%' }}>
               <CardActions>
@@ -190,7 +184,7 @@ const ImageUploadCards = () => {
                       <img
                         src={
                           imagePreview.url instanceof File ? URL.createObjectURL(imagePreview.url) : imagePreview.url
-                        } // Check if imagePreview is a File object
+                        }
                         alt={`Profile Preview ${index + 1}`}
                         style={{ width: '100%', height: '200px', objectFit: 'cover' }}
                       />
@@ -203,34 +197,7 @@ const ImageUploadCards = () => {
               </CardContent>
             </Card>
           ))}
-          {/* </Grid> */}
-          {/* </Stack> */}
         </Stack>
-
-        {images.length < 5 && (
-          <Button
-            sx={{ margin: '20px 20px' }}
-            variant="contained"
-            startIcon={<Plus />}
-            onClick={handleAddCard}
-            className="common-button"
-          >
-            Add Another Image
-          </Button>
-        )}
-
-        {images.length > 1 && (
-          <Button
-            sx={{ margin: '20px 20px' }}
-            variant="contained"
-            color="secondary"
-            startIcon={<Minus />}
-            onClick={handleRemoveLastCard}
-            className=" btnsecondary"
-          >
-            Remove Last Image
-          </Button>
-        )}
 
         <Button
           variant="contained"
@@ -238,8 +205,8 @@ const ImageUploadCards = () => {
           startIcon={<Upload />}
           onClick={handleUploadImages}
           disabled={images.every((image) => image.url === null)}
-          sx={{ margin: '20px 20px',  }}
-          className=" btnsuccess"
+          sx={{ margin: '20px 20px' }}
+          className="common-button"
         >
           Upload Images
         </Button>
@@ -258,8 +225,9 @@ const ImageUploadCards = () => {
             },
           }}
         >
-          Skip
+          Cancel
         </Button>
+        <ToastContainer />
       </Card>
     </div>
   );

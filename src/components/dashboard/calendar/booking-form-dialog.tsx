@@ -42,6 +42,7 @@ import { DiscountEntry, DiscountType } from '../discount/discount-table';
 import BookingPreviewDialog from './booking-preview';
 import PaymentToggle from './payment-toggle';
 import { Customer, Sessions, Trainer } from './types';
+import moment from 'moment';
 
 // Interfaces
 export interface BookingFormDialogPropsI {
@@ -79,6 +80,10 @@ export interface WeeklyDayOptionI {
 
 interface TrainerTimeslotResponse {
   data: WeeklySlotI[];
+}
+
+interface TrainerBlockDatesResponse {
+  data: string[];
 }
 
 export type SelectedSlotsI = Record<string, SlotI[]>;
@@ -149,6 +154,7 @@ export function BookingFormDialog({
   );
   const [availableSlotsWeekly, setAvailableSlotWeeklyData] = React.useState<WeeklySlotI[]>([]);
   const [availableSlotsWeeklyByFilter, setAvailableSlotWeeklyByFilterData] = React.useState<WeeklySlotI[]>([]);
+  const [trainerBlockDatesList, setTrainerBlockDatesList] = React.useState<string[]>(['2024-10-20', '2024-10-21', '2024-10-22', '2024-10-26', '2024-10-27', '2024-10-28']);
   const [availableWeekDayOptions, setAvailableWeekDayOptions] = React.useState<WeeklyDayOptionI[]>([]);
   const [selectedDays, setSelectedDays] = React.useState<number[]>([dayjs().day()]); // Default to today's weekday
   const [selectedSlots, setSelectedSlots] = React.useState<SelectedSlotsI>({});
@@ -183,6 +189,7 @@ export function BookingFormDialog({
     return () => {};
   }, [cleared]);
 
+
   // Fetch data
   const fetchCustomers = async (): Promise<void> => {
     try {
@@ -204,7 +211,7 @@ export function BookingFormDialog({
     }
   };
 
-  const fetchTrainerSlotsData = async (trainerId: string, startDate: string, endDate: string): Promise<void> => {
+  const fetchTrainerSlotsData = async (trainerId: number, startDate: string, endDate: string): Promise<void> => {
     setSelectedSlots({});
     setSelectedSlotsForSameDays({});
     setSelectedDays([]);
@@ -249,6 +256,23 @@ export function BookingFormDialog({
     }
   };
 
+
+  const fetchTrainerBlockDatesData = async (trainerId:number): Promise<void> => {
+    try {
+      const response = await axiosInstance.get<TrainerBlockDatesResponse>(
+        '/session-booking/trainer/block-dates',
+        {
+          params: { trainerId },
+        }
+      );
+      const trainerBlockDates = response.data.data;
+      setTrainerBlockDatesList(trainerBlockDates || []);
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred';
+      toast.error(`Failed to fetch block dates data: ${errorMessage}`);
+    }
+  }
+
   const getDataSkippingIndices = (dataArray: WeekSlotI[], skip: number): WeekSlotI[] => {
     const result: WeekSlotI[] = [];
 
@@ -259,6 +283,18 @@ export function BookingFormDialog({
 
     return result;
   };
+
+
+  const isPastDatetime = (slotOption: SlotI): boolean => {
+    // Combine date and time strings to create full datetime strings
+    // console.log("slotOption:: ", slotOption)
+    const startDatetime = moment(`${slotOption.date} ${slotOption.startTime}`, 'YYYY-MM-DD HH:mm:ss');
+    // const endDatetime = moment(`${slotOption.date} ${slotOption.endTime}`, 'YYYY-MM-DD HH:mm:ss');
+    // Get the current date and time
+    const now = moment();
+    return startDatetime.isSameOrBefore(now);
+  };
+
 
   const filterAvailableTrainerSlotsByReoccurrence = (): void => {
     // Create a deep copy of the available slots
@@ -661,11 +697,13 @@ export function BookingFormDialog({
 
   React.useEffect(() => {
     if (bookingType === BOOKING_TYPE.ONE_TIME && selectedTrainer && bookingDate) {
-      void fetchTrainerSlotsData(selectedTrainer.id.toString(), bookingDate, bookingDate);
+      void fetchTrainerSlotsData(selectedTrainer.id, bookingDate, bookingDate);
+      void fetchTrainerBlockDatesData(selectedTrainer.id)
     }
 
     if (bookingType === BOOKING_TYPE.WEEKLY && selectedTrainer && bookingStartDate && bookingEndDate) {
-      void fetchTrainerSlotsData(selectedTrainer.id.toString(), bookingStartDate, bookingEndDate);
+      void fetchTrainerSlotsData(selectedTrainer.id, bookingStartDate, bookingEndDate);
+      void fetchTrainerBlockDatesData(selectedTrainer.id)
     }
   }, [selectedTrainer, bookingType, bookingDate, bookingStartDate, bookingEndDate]);
 
@@ -912,6 +950,9 @@ export function BookingFormDialog({
                           },
                           field: { clearable: true, onClear: () => setCleared(true) },
                         }}
+                        shouldDisableDate={(date) => {
+                          return trainerBlockDatesList.includes(dayjs(date).format('YYYY-MM-DD'));
+                        }}
                         value={field.value ? dayjs(field.value) : dayjs()} // Set today's date as default if no value
                       />
                     )}
@@ -952,6 +993,9 @@ export function BookingFormDialog({
                           },
                           field: { clearable: true, onClear: () => setCleared(true) },
                         }}
+                        shouldDisableDate={(date) => {
+                          return trainerBlockDatesList.includes(dayjs(date).format('YYYY-MM-DD'));
+                        }}
                         value={field.value ? dayjs(field.value) : dayjs()} // Default to today
                       />
                     )}
@@ -985,6 +1029,9 @@ export function BookingFormDialog({
                             helperText: errors.bookingEndDate?.message,
                           },
                           field: { clearable: true, onClear: () => setCleared(true) },
+                        }}
+                        shouldDisableDate={(date) => {
+                          return trainerBlockDatesList.includes(dayjs(date).format('YYYY-MM-DD'));
                         }}
                         value={bookingEndDate || field.value ? dayjs(bookingEndDate || field.value) : dayjs()} // Default to null
                       />
@@ -1088,7 +1135,7 @@ export function BookingFormDialog({
                         getOptionLabel={(option) =>
                           option.isDateLabel ? `${option.date}` : `${option.startTime} - ${option.endTime}`
                         }
-                        getOptionDisabled={(option) => !option.isAvailable}
+                        getOptionDisabled={(option) => !option.isAvailable || isPastDatetime(option) }
                         value={selectedSlotsForSameDays[weekDaySlot.weekday] || []}
                         onChange={(event, newValue) => {
                           handleSessionSlotChangeForSameDays(weekDaySlot.weekday, newValue);
@@ -1103,7 +1150,7 @@ export function BookingFormDialog({
                               'Time slots for all selected days'
                             ) : (
                               <>
-                                <Checkbox checked={selected} disabled={!option.isAvailable} />
+                                <Checkbox checked={selected} disabled={!option.isAvailable || isPastDatetime(option)} />
                                 {`${option.startTime} - ${option.endTime}`}
                               </>
                             )}
@@ -1144,7 +1191,7 @@ export function BookingFormDialog({
                           getOptionLabel={(option) =>
                             option.isDateLabel ? `${option.date}` : `${option.startTime} - ${option.endTime}`
                           }
-                          getOptionDisabled={(option) => !option.isAvailable}
+                          getOptionDisabled={(option) => !option.isAvailable || isPastDatetime(option)}
                           value={selectedSlots[weekDaySlot.weekday] || []}
                           onChange={(event, newValue) => {
                             handleSessionSlotChange(weekDaySlot.weekday, newValue);
@@ -1159,7 +1206,7 @@ export function BookingFormDialog({
                                 `${option.date}`
                               ) : (
                                 <>
-                                  <Checkbox checked={selected} disabled={!option.isAvailable} />
+                                  <Checkbox checked={selected} disabled={!option.isAvailable || isPastDatetime(option)} />
                                   {`${option.startTime} - ${option.endTime}`}
                                 </>
                               )}

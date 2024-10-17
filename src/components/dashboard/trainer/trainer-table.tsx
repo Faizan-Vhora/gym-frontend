@@ -134,10 +134,19 @@ export function TrainersTable({
                       {/* Join titles with a comma */}
                     </Typography>
                   </TableCell>
-                  <TableCell sx={[tableCss.tableCell,{                maxWidth: '55px !important',
-                      whiteSpace: 'nowrap',
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis !important',}]}>{row.address || '-'}</TableCell>
+                  <TableCell
+                    sx={[
+                      tableCss.tableCell,
+                      {
+                        maxWidth: '55px !important',
+                        whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis !important',
+                      },
+                    ]}
+                  >
+                    {row.address || '-'}
+                  </TableCell>
                   <TableCell sx={tableCss.tableCell}>{row.phoneNumber || '-'}</TableCell>
                   <TableCell sx={tableCss.tableCell}>{dayjs(row.updatedAt).format('MMM D, YYYY')}</TableCell>
                   <TableCell sx={tableCss.tableCell}>
@@ -188,6 +197,7 @@ export function TrainersTable({
               onRowsPerPageChange(inputEvent);
             }}
             rowsPerPageOptions={[5, 10, 25]}
+            labelRowsPerPage={'Records per page'}
           />
         </>
       )}
