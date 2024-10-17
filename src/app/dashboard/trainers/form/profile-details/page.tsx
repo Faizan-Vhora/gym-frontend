@@ -202,7 +202,7 @@ const TrainerAdditionalForm: React.FC = () => {
             <Grid item md={7} xs={12}>
               <Grid container spacing={2}>
                 {/* Experience Selector */}
-                <Grid item md={6} xs={12}>
+                <Grid item sm={6} xs={12}>
                   <FormControl required fullWidth error={Boolean(errors.experience)}>
                     <InputLabel htmlFor="experience">Experience (Years)</InputLabel>
                     <OutlinedInput
@@ -216,7 +216,7 @@ const TrainerAdditionalForm: React.FC = () => {
                 </Grid>
 
                 {/* Fees Field */}
-                <Grid item md={6} xs={12}>
+                <Grid item sm={6} xs={12}>
                   <FormControl required fullWidth error={Boolean(errors.fees)}>
                     <InputLabel htmlFor="fees">Fees</InputLabel>
                     <OutlinedInput

@@ -138,10 +138,11 @@ export default function Page(): React.JSX.Element {
         </Stack>
         <Button
           className="common-button"
-          style={{fontFamily:'Audiowide, sans-serif !important',}}
+          
           startIcon={<PlusIcon fontSize="var(--icon-fontSize-md)" />}
           variant="contained"
           onClick={handleAddClick}
+          style={{fontFamily:'Audiowide, sans-serif !important',}}
         >
           Add
         </Button>

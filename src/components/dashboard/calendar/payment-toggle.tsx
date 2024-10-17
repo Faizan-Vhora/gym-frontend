@@ -20,7 +20,11 @@ const PaymentToggle: React.FC<PaymentToggleProps> = ({ netTotalAmount, setPaymen
   };
 
   return (
-    <ToggleButtonGroup sx={{columnGap:'20px'}} value={paymentType} exclusive onChange={handlePaymentChange} aria-label="payment type">
+    <ToggleButtonGroup sx={{columnGap:'20px', rowGap:'20px',   flexDirection: { 
+      xs: 'column', // Sets flexDirection to 'column' on extra-small and small screens
+      md: 'row', // Sets flexDirection to 'row' on medium screens and above
+    }}}
+     value={paymentType} exclusive onChange={handlePaymentChange} aria-label="payment type">
       <ToggleButton sx={{border:'1px solid #D60227 !important',borderRadius:'0px',fontSize:'18px ',fontWeight:'400', transform: 'skewX(-10deg)', color:'#D60227 !important', background:"#fff !important",fontFamily: 'Audiowide, sans-serif !important'}} value={BOOKING_PAYMENT_TYPE.PER_SESSION} aria-label="pay per session">
         Pay per session
       </ToggleButton>

@@ -312,7 +312,7 @@ export default function WeekdayTimeSlots() {
         <Card>
           {/* <CardHeader style={{ fontFamily: '"Audiowide", sans-serif' }} title="Trainer Availability" /> */}
           {/* <Divider /> */}
-          <Grid container sx={{ padding: '5px' }} alignItems="center">
+          <Grid container sx={{ padding: '5px',paddingLeft:'15px  ' }} alignItems="center">
             <Grid item md={2}>
               <FormControlLabel
                 control={
@@ -354,7 +354,7 @@ export default function WeekdayTimeSlots() {
             {isChecked && (
               <>
                 <Grid item md={10}>
-                  <Controller
+                  <Controller 
                     name={`days.${dayIndex}.timeSlots`}
                     control={control}
                     render={({ field, fieldState: { error: fieldError } }) => (

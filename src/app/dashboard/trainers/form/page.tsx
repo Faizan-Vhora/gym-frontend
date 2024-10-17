@@ -414,7 +414,7 @@ export default function TrainerEditForm(): React.JSX.Element {
                     <Grid container spacing={10}>
                       <Grid item md={12} xs={12}>
                         <Grid container spacing={4}>
-                          <Grid item md={id ? 6 : 4} p={2}>
+                          <Grid item md={id ? 6 : 4} sm={6} xs={12} p={2}>
                             <FormControl fullWidth required error={Boolean(errors.fullName)}>
                               <InputLabel>Full Name</InputLabel>
                               <OutlinedInput
@@ -427,14 +427,14 @@ export default function TrainerEditForm(): React.JSX.Element {
                               )}
                             </FormControl>
                           </Grid>
-                          <Grid item md={id ? 6 : 4} p={2}>
+                          <Grid item md={id ? 6 : 4} sm={6} xs={12} p={2}>
                             <FormControl fullWidth required error={Boolean(errors.email)}>
                               <InputLabel>Email</InputLabel>
                               <OutlinedInput {...register('email')} label="Email" type="email" />
                               {errors.email?.message && <FormHelperText error>{errors.email.message}</FormHelperText>}
                             </FormControl>
                           </Grid>
-                          <Grid item md={id ? 6 : 4} p={2}>
+                          <Grid item md={id ? 6 : 4} sm={6} xs={12} p={2}>
                             <Controller
                               name="password"
                               control={control}
@@ -467,7 +467,7 @@ export default function TrainerEditForm(): React.JSX.Element {
                           </Grid>
                           {id && (
                             <>
-                              <Grid item md={6} p={2}>
+                              <Grid item md={6} sm={6} xs={12} p={2}>
                                 <FormControl fullWidth error={Boolean(errors.zipCode)}>
                                   <InputLabel>Zipcode</InputLabel>
                                   <OutlinedInput
@@ -480,7 +480,7 @@ export default function TrainerEditForm(): React.JSX.Element {
                                   )}
                                 </FormControl>
                               </Grid>
-                              <Grid item md={6} p={2}>
+                              <Grid item md={6} sm={6} xs={12} p={2}>
                                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                                   <FormControl fullWidth>
                                     <Controller
@@ -515,7 +515,7 @@ export default function TrainerEditForm(): React.JSX.Element {
                                   </FormControl>
                                 </LocalizationProvider>
                               </Grid>
-                              <Grid item md={6} p={2}>
+                              <Grid item md={6} sm={6} xs={12} p={2}>
                                 <FormControl fullWidth>
                                   <Controller
                                     name="gender"
@@ -533,7 +533,7 @@ export default function TrainerEditForm(): React.JSX.Element {
                                   )}
                                 </FormControl>
                               </Grid>
-                              <Grid item md={6} p={2}>
+                              <Grid item md={6} sm={6} xs={12} p={2}>
                                 <FormControl fullWidth error={Boolean(errors.phoneNumber)}>
                                   <InputLabel>Phone Number</InputLabel>
                                   <OutlinedInput
@@ -546,7 +546,7 @@ export default function TrainerEditForm(): React.JSX.Element {
                                   )}
                                 </FormControl>
                               </Grid>
-                              <Grid item md={12} p={2}>
+                              <Grid item md={12} xs={12} p={2}>
                                 <FormControl fullWidth>
                                   <TextField
                                     {...register('address')}
