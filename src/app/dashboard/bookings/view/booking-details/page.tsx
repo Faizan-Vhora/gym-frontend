@@ -74,7 +74,7 @@ export default function BookingDetailsPage(): React.JSX.Element {
               >
                 Booking
               </Typography>
-              <Card  className="bookin-card">
+              <Card className="bookin-card">
                 <Stack
                   sx={{
                     display: 'flex',
@@ -177,7 +177,7 @@ export default function BookingDetailsPage(): React.JSX.Element {
               >
                 Payment Details
               </Typography>
-              <Card  className="bookin-card">
+              <Card className="bookin-card">
                 <Stack
                   sx={{
                     display: 'flex',
@@ -272,7 +272,7 @@ export default function BookingDetailsPage(): React.JSX.Element {
               >
                 Member Details
               </Typography>
-              <Card className="bookin-card" >
+              <Card className="bookin-card">
                 <Stack
                   sx={{
                     display: 'flex',
@@ -361,7 +361,7 @@ export default function BookingDetailsPage(): React.JSX.Element {
                       <IconButton>
                         <MapPin size={25} />
                       </IconButton>
-                      <Typography color="text.secondary" style={{ fontFamily: '"Audiowide", sans-serif' }} gutterBottom>
+                      <Typography color="text.secondary" gutterBottom>
                         {bookingDetail?.customer?.address}
                       </Typography>
                     </Stack>
