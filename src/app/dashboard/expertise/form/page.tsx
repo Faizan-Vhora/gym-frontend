@@ -140,7 +140,7 @@ export default function ExpertiseForm(): React.JSX.Element {
             {/* Action Buttons */}
             <Grid item xs={12} container spacing={2} justifyContent="flex-end">
               <Grid item>
-                <Button type="submit" className="common-button" variant="contained" disabled={loading}>
+                <Button type="submit" className="common-button" variant="contained" disabled={loading} style={{fontFamily:'Audiowide, sans-serif !important',}}>
                   Save
                 </Button>
               </Grid>
@@ -154,6 +154,7 @@ export default function ExpertiseForm(): React.JSX.Element {
                   sx={{
                     borderColor: '#d0021b',
                     color: '#d0021b',
+                    fontFamily:'Audiowide, sans-serif !important',
                     fontSize:'18px',
                     fontWeight:'400',
                     transform: 'skewX(-20deg)',

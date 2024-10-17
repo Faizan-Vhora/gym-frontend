@@ -439,7 +439,7 @@ export default function CustomerEditForm(): React.JSX.Element {
                         }}
                       >
                         <CardActions>
-                          <Button component="label" fullWidth variant="text">
+                          <Button component="label" fullWidth variant="text" style={{fontFamily:'Audiowide, sans-serif !important'}}>
                             Upload picture
                             <input
                               type="file"
@@ -459,7 +459,7 @@ export default function CustomerEditForm(): React.JSX.Element {
                                   alt="Profile Preview"
                                   style={{ width: '100%', maxHeight: '200px', objectFit: 'cover', marginTop: '1rem' }}
                                 />
-                                <Button color="error" startIcon={<Trash />} onClick={handleRemoveImage}>
+                                <Button color="error" startIcon={<Trash />} onClick={handleRemoveImage} style={{fontFamily:'Audiowide, sans-serif !important',}}>
                                   Remove Image
                                 </Button>
                               </Stack>
@@ -661,6 +661,7 @@ export default function CustomerEditForm(): React.JSX.Element {
           <Stack direction="row" spacing={2} justifyContent="flex-end" p={3}>
             <Button
               className="common-button"
+              style={{fontFamily:'Audiowide, sans-serif !important',}}
               variant="contained"
               disabled={isSubmitting}
               onClick={() => {
@@ -674,6 +675,7 @@ export default function CustomerEditForm(): React.JSX.Element {
             {!id && (
               <Button
                 className="common-button"
+                style={{fontFamily:'Audiowide, sans-serif !important',}}
                 variant="contained"
                 disabled={isSubmitting}
                 type="submit"
@@ -692,6 +694,7 @@ export default function CustomerEditForm(): React.JSX.Element {
               sx={{
                 borderColor: '#d0021b',
                 color: '#d0021b',
+                fontFamily:'Audiowide, sans-serif !important',
                 transform: 'skewX(-20deg)',
                 '&:hover': {
                   borderColor: 'darkred',

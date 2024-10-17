@@ -188,7 +188,7 @@ export default function FaqForm(): React.JSX.Element {
         </CardContent>
         <Divider />
         <CardActions sx={{ justifyContent: 'flex-end' }}>
-          <Button className="common-button" variant="contained" type="submit" disabled={isSubmitting}>
+          <Button className="common-button" variant="contained" type="submit" disabled={isSubmitting} style={{fontFamily:'Audiowide, sans-serif !important',}}>
             Save
           </Button>
           <Button
@@ -199,6 +199,7 @@ export default function FaqForm(): React.JSX.Element {
             sx={{
               borderColor: '#d0021b',
               color: '#d0021b',
+              fontFamily:'Audiowide, sans-serif !important',
               transform: 'skewX(-20deg)',
               '&:hover': {
                 borderColor: 'darkred',

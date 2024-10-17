@@ -78,7 +78,9 @@ export default function EditPage(): React.JSX.Element {
       <CardActions sx={{ justifyContent: 'flex-end' }}>
         <Box sx={{ mt: 3 }}>
           <Button
+          style={{fontFamily:'Audiowide, sans-serif !important',}}
             className="common-button"
+            
             variant="contained"
             color="primary"
             onClick={async () => {
@@ -94,6 +96,7 @@ export default function EditPage(): React.JSX.Element {
             }}
             sx={{
               borderColor: '#d0021b',
+              fontFamily:'Audiowide, sans-serif !important',
               color: '#d0021b',
               marginLeft: '15px',
               transform: 'skewX(-20deg)',

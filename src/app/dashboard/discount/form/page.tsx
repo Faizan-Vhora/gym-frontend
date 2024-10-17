@@ -271,7 +271,7 @@ export default function DiscountFormPage(): React.JSX.Element {
                     ref={fileInputRef}
                     style={{ display: 'none' }}
                   />
-                  <Button component="label" fullWidth variant="text">
+                  <Button component="label" fullWidth variant="text" style={{fontFamily:'Audiowide, sans-serif !important',}}>
                     Upload picture
                     <input type="file" accept="image/*" hidden onChange={handleImageChange} />
                   </Button>
@@ -424,7 +424,7 @@ export default function DiscountFormPage(): React.JSX.Element {
 
             <Grid item xs={12}>
               <Stack direction="row" spacing={2} justifyContent="flex-end" p={3}>
-                <Button type="submit" variant="contained" className="common-button" disabled={loading}>
+                <Button type="submit" variant="contained" className="common-button" disabled={loading} style={{fontFamily:'Audiowide, sans-serif !important',}}>
                   {discountId ? 'Update Discount' : 'Save Discount'}
                 </Button>
                 <Button
@@ -435,6 +435,7 @@ export default function DiscountFormPage(): React.JSX.Element {
                   sx={{
                     borderColor: '#d0021b',
                     color: '#d0021b',
+                    fontFamily:'Audiowide, sans-serif !important',
                     transform: 'skewX(-20deg)',
                     '&:hover': {
                       borderColor: 'darkred',

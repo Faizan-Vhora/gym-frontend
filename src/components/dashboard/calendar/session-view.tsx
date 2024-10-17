@@ -104,6 +104,7 @@ const SessionPreview: React.FC<SessionNotesFormProps> = ({
                 <Card
                   sx={{
                     // height: '140px',
+                   
                     boxShadow: 5, // Normal box shadow
                     '&:hover': {
                       boxShadow: 15, // Increased box shadow on hover
@@ -160,7 +161,7 @@ const SessionPreview: React.FC<SessionNotesFormProps> = ({
                 <Card
                   sx={{
                     // height: '140px',
-                    
+                     
                     boxShadow: 5, // Normal box shadow
                     '&:hover': {
                       boxShadow: 15, // Increased box shadow on hover
