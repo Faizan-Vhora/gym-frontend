@@ -131,7 +131,7 @@ export default function FaqForm(): React.JSX.Element {
         <Divider />
         <CardContent>
           <Grid container spacing={3}>
-            <Grid item xs={12} sm={4}>
+            <Grid item xs={12} sm={8}>
               <FormControl fullWidth required error={Boolean(errors.question)}>
                 <InputLabel>Question</InputLabel>
                 <OutlinedInput {...register('question')} label="Question" error={Boolean(errors.question)} />

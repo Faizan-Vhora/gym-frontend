@@ -29,7 +29,7 @@ import {
   Typography,
 } from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers';
-import { Barbell, CurrencyCircleDollar, Envelope, Phone } from '@phosphor-icons/react';
+import { Barbell, CurrencyCircleDollar, Envelope, Phone, XCircle } from '@phosphor-icons/react';
 import { Controller, useForm } from 'react-hook-form';
 import { toast, ToastContainer } from 'react-toastify';
 import { z as zod } from 'zod';
@@ -176,6 +176,18 @@ export function BookingFormDialog({
   const [sameTimeForSelectedDays, setSameTimeForSelectedDays] = React.useState<boolean>(false);
   const [referenceSlotsForSameTime, setReferenceSlotsForSameTime] = React.useState<SlotI[]>([]);
   const [selectedSlotsForSameDays, setSelectedSlotsForSameDays] = React.useState<SelectedSlotsI>({});
+  const [cleared, setCleared] = React.useState<boolean>(false);
+
+  React.useEffect(() => {
+    if (cleared) {
+      const timeout = setTimeout(() => {
+        setCleared(false);
+      }, 1500);
+
+      return () => clearTimeout(timeout);
+    }
+    return () => {};
+  }, [cleared]);
 
 
   // Fetch data
@@ -719,10 +731,12 @@ export function BookingFormDialog({
   return (
     <Dialog fullWidth maxWidth="sm" onClose={onClose} open={open}>
       <form onSubmit={handleSubmit(onSubmit)}>
-        <Box sx={{ p: 3 }}>
+        <Box sx={{ p: 3,display:'flex', alignItems:"center",justifyContent:'space-between' }}>
           <Typography sx={{ textAlign: 'center' }} variant="h5">
             Add Booking
           </Typography>
+          <XCircle style={{cursor: 'pointer' }} size={32}  
+          onClick={onClose} />
         </Box>
 
         <Stack spacing={2} sx={{ p: 3 }}>
@@ -909,7 +923,7 @@ export function BookingFormDialog({
 
             {bookingType === BOOKING_TYPE.ONE_TIME && (
               <>
-                <Grid item xs={12} md={5.8}>
+                <Grid item  md={8}>
                   <Controller
                     control={control}
                     name="bookingDate"
@@ -934,6 +948,7 @@ export function BookingFormDialog({
                             error: Boolean(errors.bookingDate),
                             helperText: errors.bookingDate?.message,
                           },
+                          field: { clearable: true, onClear: () => setCleared(true) },
                         }}
                         shouldDisableDate={(date) => {
                           return trainerBlockDatesList.includes(dayjs(date).format('YYYY-MM-DD'));
@@ -948,12 +963,13 @@ export function BookingFormDialog({
 
             {bookingType === BOOKING_TYPE.WEEKLY && (
               <>
-                <Grid item md={6}>
+                <Grid item md={8}>
                   <Controller
                     control={control}
                     name="bookingStartDate"
                     render={({ field }) => (
                       <DatePicker
+                      sx={{ width: '100%' }}
                         disablePast
                         disabled={!selectedTrainer}
                         format="DD-MM-YYYY"
@@ -975,6 +991,7 @@ export function BookingFormDialog({
                             error: Boolean(errors.bookingStartDate),
                             helperText: errors.bookingStartDate?.message,
                           },
+                          field: { clearable: true, onClear: () => setCleared(true) },
                         }}
                         shouldDisableDate={(date) => {
                           return trainerBlockDatesList.includes(dayjs(date).format('YYYY-MM-DD'));
@@ -985,12 +1002,13 @@ export function BookingFormDialog({
                   />
                 </Grid>
 
-                <Grid item md={6}>
+                <Grid item md={8}>
                   <Controller
                     control={control}
                     name="bookingEndDate"
                     render={({ field }) => (
                       <DatePicker
+                      sx={{ width: '100%' }}
                         disablePast
                         disabled={!selectedTrainer}
                         format="DD-MM-YYYY"
@@ -1010,6 +1028,7 @@ export function BookingFormDialog({
                             error: Boolean(errors.bookingEndDate),
                             helperText: errors.bookingEndDate?.message,
                           },
+                          field: { clearable: true, onClear: () => setCleared(true) },
                         }}
                         shouldDisableDate={(date) => {
                           return trainerBlockDatesList.includes(dayjs(date).format('YYYY-MM-DD'));
@@ -1020,7 +1039,7 @@ export function BookingFormDialog({
                   />
                 </Grid>
 
-                <Grid item md={12}>
+                <Grid item md={8}>
                   <Grid item md={12}>
                     <FormControlLabel
                       control={
@@ -1061,7 +1080,7 @@ export function BookingFormDialog({
                   )}
                 </Grid>
 
-                <Grid item md={12}>
+                <Grid item md={8}>
                   <FormControl sx={{ minWidth: 200, display: 'block' }}>
                     <Autocomplete
                       multiple
@@ -1081,7 +1100,7 @@ export function BookingFormDialog({
                 </Grid>
 
                 {selectedDays.length ? (
-                  <Grid item md={12}>
+                  <Grid item md={8}>
                     <Grid item md={12}>
                       <FormControlLabel
                         control={
@@ -1216,7 +1235,7 @@ export function BookingFormDialog({
             )}
 
             {promocodeOptions.length ? (
-              <Grid item xs={12} md={5.8}>
+              <Grid item md={8} sx={{}}>
                 <Controller
                   control={control}
                   name="promocodeId"
@@ -1243,9 +1262,9 @@ export function BookingFormDialog({
                         ))}
                       </Select>
                       {errors.promocodeId && <FormHelperText>{errors.promocodeId.message}</FormHelperText>}
-
+ 
                       {/* Cancel Button */}
-                      {field.value && (
+                      {/* {field.value && (
                         <Button
                           variant="outlined"
                           color="secondary"
@@ -1257,7 +1276,7 @@ export function BookingFormDialog({
                         >
                           Remove
                         </Button>
-                      )}
+                      )} */}
                     </FormControl>
                   )}
                 />
@@ -1274,18 +1293,31 @@ export function BookingFormDialog({
                       marginTop: '10px',
                     }}
                   >
-                    <CardContent>
-                      <Grid container>
-                        <Grid item md={8} alignContent={'center'}>
-                          {/* <Typography variant="subtitle1">{selectedPromocode.codeName}</Typography> */}
-
-                          {/* <Typography variant="caption" sx={{ display: 'flex', alignItems: 'center' }}>
-                            {selectedPromocode.description ? selectedPromocode.description : ''}
-                          </Typography> */}
-
+                    <CardContent sx={{padding:'10px 10px', paddingBottom:'20px'}}>
+                      {/* <Grid container>
+                        <Grid item md={8} alignContent={'center'}> */}
+                        
+                        <Stack alignItems={'end'}>
+                          <XCircle size={32}  
+                            onClick={() => {
+                            handlePromocodeChange(null); // or any other logic you need
+                          }}
+                          />
+                        </Stack>
+                        
+                          <Stack flexDirection={'row'} justifyContent={'space-between'} alignItems={'center'} margin={'5px 0px'}>
+                          <Typography variant="subtitle1">{selectedPromocode.codeName}</Typography>
+                           
                           <Typography variant="subtitle1"> Total Discount {formatAmount(discountAmount)}</Typography>
-                        </Grid>
-                      </Grid>
+                          </Stack>
+
+                          <Typography variant="caption" sx={{ display: 'flex', alignItems: 'center', maxWidth:'420px', textOverflow:'ellipsis',overflow:'hidden',marginBottom:'10px'}}>
+                            {selectedPromocode.description ? selectedPromocode.description : ''}
+                          </Typography>
+
+                         
+                        {/* </Grid>
+                      </Grid> */}
 
                       {/* Add other fields as necessary */}
                     </CardContent>
@@ -1312,8 +1344,10 @@ export function BookingFormDialog({
             sx={{
               borderColor: '#d0021b',
               color: '#d0021b',
+              fontSize:'15px !important',
               marginLeft: '15px',
               transform: 'skewX(-20deg)',
+              fontFamily: 'Audiowide, sans-serif !important',
               '&:hover': {
                 borderColor: 'darkred',
                 backgroundColor: 'rgba(255, 0, 0, 0.1)',
@@ -1322,7 +1356,7 @@ export function BookingFormDialog({
           >
             Preview
           </Button>
-          <Button
+          {/* <Button
             color="secondary"
             variant="outlined"
             onClick={onClose}
@@ -1338,8 +1372,8 @@ export function BookingFormDialog({
             }}
           >
             Cancel
-          </Button>
-          <Button type="submit" variant="contained" className="common-button" disabled={loading}>
+          </Button> */}
+          <Button sx={{fontFamily: 'Audiowide, sans-serif !important',}} type="submit" variant="contained" className="common-button" disabled={loading}>
             Confirm
           </Button>
         </Stack>

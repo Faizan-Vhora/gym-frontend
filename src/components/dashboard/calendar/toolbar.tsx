@@ -233,9 +233,9 @@ export function Toolbar({
         </Typography>
       </Stack>
 
-      <Grid container columnGap={2} rowGap={2}>
+      <Grid container spacing={2} rowGap={2} alignItems={'center'}>
         {/* Search Field */}
-        <Grid item md={4} sm={5.5} xs={12}>
+        <Grid item md={3} sm={6} xs={12}>
           <TextField
             label="Search"
             value={searchTerm}
@@ -253,7 +253,7 @@ export function Toolbar({
             }}
           />
         </Grid>
-        <Grid item md={4} sm={5.5} xs={12}>
+        <Grid item md={3} sm={6} xs={12}>
           {/* Trainer Selection */}
           <FormControl fullWidth variant="outlined">
             <InputLabel>Trainers</InputLabel>
@@ -267,7 +267,7 @@ export function Toolbar({
             </Select>
           </FormControl>
         </Grid>
-        <Grid item md={3.6} sm={5.5} xs={12}>
+        <Grid item md={3} sm={6} xs={12}>
           {/* Member Selection */}
           <FormControl fullWidth variant="outlined">
             <InputLabel>Members</InputLabel>
@@ -282,8 +282,23 @@ export function Toolbar({
             </Select>
           </FormControl>
         </Grid>
+        <Grid item md={3} sm={6} xs={12}>
+          {/* View Selection */}
+          <Select
+            name="view"
+            onChange={handleViewChange}
+            style={{ fontFamily: '"Audiowide", sans-serif' }}
+            sx={{ minWidth: '100%', order: { xs: -1, md: 0 } }}
+            value={view}
+          >
+            <Option value="dayGridMonth">Month</Option>
+            <Option value="timeGridWeek">Week</Option>
+            <Option value="timeGridDay">Day</Option>
+            <Option value="listWeek">Agenda</Option>
+          </Select>
+        </Grid>
 
-        <Grid item md={3} sm={5.5} xs={12}>
+        <Grid item md={3} sm={6} xs={12}>
           <FormControl variant="outlined" fullWidth>
             <InputLabel>Status</InputLabel>
             <Select value={selectedStatus} onChange={handleStatusChange} label="Status">
@@ -299,7 +314,7 @@ export function Toolbar({
         </Grid>
 
         <LocalizationProvider dateAdapter={AdapterDayjs}>
-          <Grid item md={3} sm={5.5} xs={12}>
+          <Grid item md={3} sm={6} xs={12}>
             {/* Start Date Picker */}
             <DatePicker
               label="Start Date"
@@ -316,7 +331,7 @@ export function Toolbar({
               }}
             />
           </Grid>
-          <Grid item md={3} sm={5.5} xs={12}>
+          <Grid item md={3} sm={6} xs={12}>
             {/* End Date Picker */}
             <DatePicker
               label="End Date"
@@ -336,35 +351,20 @@ export function Toolbar({
           </Grid>
         </LocalizationProvider>
 
-        <Grid item md={2.5} sm={5.5} xs={12}>
-          {/* View Selection */}
-          <Select
-            name="view"
-            onChange={handleViewChange}
+        <Grid item md={2} sm={6} xs={12} sx={{ marginLeft: 'auto' }}>
+          {/* Add Booking Button */}
+          <Button
+            onClick={onAdd}
+            className="common-button"
+            startIcon={<PlusIcon />}
+            sx={{ marginLeft: 'auto' }}
+            variant="contained"
             style={{ fontFamily: '"Audiowide", sans-serif' }}
-            sx={{ minWidth: '100%', order: { xs: -1, md: 0 } }}
-            value={view}
           >
-            <Option value="dayGridMonth">Month</Option>
-            <Option value="timeGridWeek">Week</Option>
-            <Option value="timeGridDay">Day</Option>
-            <Option value="listWeek">Agenda</Option>
-          </Select>
+            New Booking
+          </Button>
         </Grid>
       </Grid>
-      {/* <Grid item md={2} sm={6} xs={12}> */}
-      {/* Add Booking Button */}
-      <Button
-        onClick={onAdd}
-        className="common-button"
-        startIcon={<PlusIcon />}
-        sx={{ marginLeft: 'auto' }}
-        variant="contained"
-        style={{ fontFamily: '"Audiowide", sans-serif' }}
-      >
-        New Booking
-      </Button>
-      {/* </Grid> */}
       {loading && <CustomLoader />}
     </Stack>
   );

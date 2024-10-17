@@ -43,32 +43,57 @@ body {
 .dashbord{
   background:#F7F5F2 ;
 }
+ button {
+  height: 40px !important;
+ }
 .common-button {
   display: inline-block;
   background-color: #d0021b !important; /* Red color */
   color: white !important;
-  font-size: 16px;
+  font-size: 15px !important;
+  font-weight: 400 !important;
   padding: 10px 20px;
   text-align: center;
   text-decoration: none;
   text-transform: uppercase;
-  font-weight: bold;
+  /* border-radius: 10px !important; */
   position: relative;
   border: none;
   cursor: pointer;
-  font-family: '"Audiowide", sans-serif' !important;
+  /* font-family: '"Audiowide", sans-serif' !important; */
   outline: none;
-  transform: skewX(-20deg); /* Skew the button to create the angled effect */
+  transform: skewX(-10deg); /* Skew the button to create the angled effect */
 }
 .btnsecondary {
-  background-color: #212636 !important; /* Red color */
+  background-color: #212636 !important; 
+  transform: skewX(-10deg);
+  border: 1px solid #212636;
 }
-
+.btnsecondary:hover {
+  border: 1px solid #212636 ;
+  background: transparent !important;
+  color: #212636;
+}
+ .mui-0 {
+  text-wrap: wrap;
+}
+.mui-17qvps1-MuiButtonBase-root-MuiCheckbox-root.Mui-checked {
+  color: #d0021b !important;
+}
 .btnsuccess {
   background-color: #15b79f!important; /* Red color */
+  transform: skewX(-20deg);
+  border: 1px solid #15b79f;
 }
 
-
+.btnsuccess:hover {
+  border: 1px solid #15b79f;
+  background: transparent !important;
+  color: #15b79f;
+}
+.mui-16rc6qb-MuiPaper-root-MuiDialog-paper {
+  max-width: 760px !important;
+}
 
 .common-button span {
   display: inline-block;

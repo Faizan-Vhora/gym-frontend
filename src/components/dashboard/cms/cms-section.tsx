@@ -25,17 +25,20 @@ const CmsSection: React.FC<CmsSectionProps> = ({ id, title, content }) => {
         marginTop: 2,
         maxHeight: '350px', // Adjust the height as needed
         overflowY: 'scroll',
+        // overflow:'hidden',
         textOverflow: 'ellipsis',
         whiteSpace: 'nowrap',
+        textWrap:'wrap',
+
       }}
     >
-      <Typography style={{ fontFamily: '"Audiowide", sans-serif' }} variant="h6">
+      <Typography style={{ fontFamily: '"Audiowide", sans-serif', }} variant="h6">
         {title}
       </Typography>
-      <IconButton sx={{ position: 'absolute', top: 8, right: 8 }} onClick={handleEditClick}>
+      <IconButton sx={{ position: 'absolute', top: 8, right: 8,   }} onClick={handleEditClick}>
         <PencilSimple />
       </IconButton>
-      <Box sx={{}} dangerouslySetInnerHTML={{ __html: content }} />
+      <Box sx={{ width: '100%',overflow:'hidden',textOverflow: 'ellipsis'}} dangerouslySetInnerHTML={{ __html: content }} />
     </Card>
   );
 };

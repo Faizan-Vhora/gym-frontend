@@ -123,6 +123,7 @@ export default function ExpertiseForm(): React.JSX.Element {
             {/* Description Field */}
             <Grid item xs={9}>
               <FormControl fullWidth>
+              <InputLabel htmlFor="description">Description</InputLabel>
                 <TextField
                   {...register('description')} // Register the description field
                   label="Description"
@@ -153,6 +154,8 @@ export default function ExpertiseForm(): React.JSX.Element {
                   sx={{
                     borderColor: '#d0021b',
                     color: '#d0021b',
+                    fontSize:'18px',
+                    fontWeight:'400',
                     transform: 'skewX(-20deg)',
                     '&:hover': {
                       borderColor: 'darkred',

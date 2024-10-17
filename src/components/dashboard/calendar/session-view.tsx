@@ -91,10 +91,11 @@ const SessionPreview: React.FC<SessionNotesFormProps> = ({
           <Stack
             sx={{
               display: 'flex',
-              flexDirection: 'row',
+              flexDirection: {
+                xs: 'column', // Applies on small screens and below
+                sm: 'row',    // Applies on small screens and above
+              },
               justifyContent: 'space-between',
-              borderBottom: '1px solid',
-              borderColor: '#dcdfe4',
               margin: '10px',
             }}
           >
@@ -102,7 +103,7 @@ const SessionPreview: React.FC<SessionNotesFormProps> = ({
               {sessionObj && (
                 <Card
                   sx={{
-                    height: '140px',
+                    // height: '140px',
                     boxShadow: 5, // Normal box shadow
                     '&:hover': {
                       boxShadow: 15, // Increased box shadow on hover
@@ -111,20 +112,23 @@ const SessionPreview: React.FC<SessionNotesFormProps> = ({
                     marginTop: '10px',
                   }}
                 >
-                  <CardContent>
+                  <CardContent sx={{padding:'10px 15px'}}>
                     <Typography variant="h6" textAlign={'center'} color="text.secondary" gutterBottom>
                       Member :
                     </Typography>
                     <Grid container>
-                      <Grid item md={4} alignContent={'center'}>
+                      <Grid item md={4} xs={12} alignContent={'center'}>
                         <Avatar
                           src={sessionObj.customer?.profileImageUrl || '/assets/User@3x-1.png'}
                           sx={{ height: '56px', width: '56px' }}
-                        ></Avatar>
+                        >
+
+                        </Avatar>
                       </Grid>
-                      <Grid item md={8} alignContent={'center'}>
+                      <Grid item md={8} xs={12} alignContent={'center'}>
                         <Typography variant="subtitle1">{sessionObj.customer?.fullName}</Typography>
-                        <Typography variant="caption" sx={{ display: 'flex', alignItems: 'center' }}>
+                        <Typography variant="caption" sx={{ display: 'flex', flexDirection:'column', alignItems: 'center', }}>
+                          
                           {sessionObj.customer?.email ? (
                             <IconButton sx={{ padding: '0px', marginRight: '5px' }}>
                               <Envelope width={18} height={18} />
@@ -134,7 +138,7 @@ const SessionPreview: React.FC<SessionNotesFormProps> = ({
                           )}
                           {sessionObj.customer?.email}
                         </Typography>
-                        <Typography variant="caption" sx={{ display: 'flex', alignItems: 'center' }}>
+                        <Typography variant="caption" sx={{ display: 'flex',flexDirection:'column', alignItems: 'center' }}>
                           {sessionObj.customer?.phoneNumber ? (
                             <IconButton sx={{ padding: '0px', marginRight: '5px' }}>
                               <Phone width={18} height={18} />
@@ -155,7 +159,8 @@ const SessionPreview: React.FC<SessionNotesFormProps> = ({
               {sessionObj && (
                 <Card
                   sx={{
-                    height: '140px',
+                    // height: '140px',
+                    
                     boxShadow: 5, // Normal box shadow
                     '&:hover': {
                       boxShadow: 15, // Increased box shadow on hover
@@ -164,20 +169,20 @@ const SessionPreview: React.FC<SessionNotesFormProps> = ({
                     marginTop: '10px',
                   }}
                 >
-                  <CardContent>
+                  <CardContent sx={{padding:'10px 15px'}}>
                     <Typography variant="h6" textAlign={'center'} color="text.secondary" gutterBottom>
                       Trainer :
                     </Typography>
-                    <Grid container>
-                      <Grid item md={4} alignContent={'center'}>
+                    <Grid container spacing={4}>
+                      <Grid item md={4} xs={12} alignContent={'center'}>
                         <Avatar
                           src={sessionObj.trainer?.profileImageUrl || '/assets/User@3x-1.png'}
                           sx={{ height: '56px', width: '56px' }}
                         ></Avatar>
                       </Grid>
-                      <Grid item md={8} alignContent={'center'}>
+                      <Grid item md={8} xs={12} alignContent={'center'}>
                         <Typography variant="subtitle1">{sessionObj.trainer?.fullName}</Typography>
-                        <Typography variant="caption" sx={{ display: 'flex', alignItems: 'center' }}>
+                        <Typography variant="caption" sx={{ display: 'flex', alignItems: 'center',flexDirection:'column', }}>
                           {sessionObj.trainer?.fees ? (
                             <IconButton sx={{ padding: '0px', marginRight: '5px' }}>
                               <CurrencyCircleDollar width={18} height={18} />
@@ -187,7 +192,7 @@ const SessionPreview: React.FC<SessionNotesFormProps> = ({
                           )}
                           {sessionObj.trainer?.fees} per Hour
                         </Typography>
-                        <Typography variant="caption" sx={{ display: 'flex', alignItems: 'center' }}>
+                        <Typography variant="caption" sx={{ display: 'flex', alignItems: 'center',flexDirection:'column', }}>
                           {sessionObj.trainer?.experience ? (
                             <IconButton sx={{ padding: '0px', marginRight: '5px' }}>
                               <Barbell width={18} height={18} />
@@ -246,13 +251,15 @@ const SessionPreview: React.FC<SessionNotesFormProps> = ({
           <Stack>Notes: {sessionObj.notes}</Stack>
         </Card>
       </DialogContent>
-      <DialogActions>
+      <DialogActions sx={{paddingBottom:'20px'}}>
         <Button
           onClick={onClose}
           color="secondary"
           sx={{
+            border:'1px solid',
             borderColor: '#d0021b',
             color: '#d0021b',
+            fontFamily:'Audiowide, sans-serif !important',
             transform: 'skewX(-20deg)',
             '&:hover': {
               borderColor: 'darkred',
@@ -262,13 +269,13 @@ const SessionPreview: React.FC<SessionNotesFormProps> = ({
         >
           Cancel
         </Button>
-        <Button onClick={openRescheduleDialog} className="common-button btnsuccess">
+        <Button onClick={openRescheduleDialog} className=" btnsuccess" sx={{color:'#fff',fontFamily:'Audiowide, sans-serif !important',}}>
           Reschedule Session
         </Button>
-        <Button onClick={openNotesDialog} className="common-button btnsuccess">
+        <Button sx={{color:'#fff',fontFamily:'Audiowide, sans-serif !important',}}  onClick={openNotesDialog} className=" btnsuccess">
           Update Notes
         </Button>
-        <Button
+        <Button sx={{fontFamily:'Audiowide, sans-serif !important',}}
           className="common-button"
           onClick={() => {
             handleStatusChange(String(sessionObj.id), BOOKING_STATUS.CANCELED);
