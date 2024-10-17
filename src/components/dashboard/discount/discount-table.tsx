@@ -11,6 +11,7 @@ import {
   IconButton,
   MenuItem,
   Select,
+  Stack,
   Table,
   TableBody,
   TableCell,
@@ -19,7 +20,7 @@ import {
   TableRow,
   Typography,
 } from '@mui/material';
-import { PencilSimple, Trash } from '@phosphor-icons/react';
+import { PencilSimple, Trash, XCircle } from '@phosphor-icons/react';
 import dayjs from 'dayjs';
 
 import tableCss from '@/styles/table-css';
@@ -217,6 +218,7 @@ export function DiscountTable({
               rowsPerPage={rowsPerPage}
               onRowsPerPageChange={handleChangeRowsPerPage}
               rowsPerPageOptions={[5, 10, 25]}
+              labelRowsPerPage={'Records per page'}
             />
           </>
         )}
@@ -224,7 +226,12 @@ export function DiscountTable({
 
       {/* Dialog for image preview */}
       <Dialog open={openDialog} onClose={handleCloseDialog} maxWidth="md" fullWidth>
-        <DialogTitle>Image Preview</DialogTitle>
+        <Stack flexDirection="row" sx={{ justifyContent: 'space-between' }}>
+          <DialogTitle>Image Preview</DialogTitle>
+          <IconButton>
+            <XCircle onClick={handleCloseDialog} />
+          </IconButton>
+        </Stack>
         <DialogContent>
           {selectedImage ? (
             <img src={selectedImage} alt="" style={{ width: '100%', height: 'auto' }} />

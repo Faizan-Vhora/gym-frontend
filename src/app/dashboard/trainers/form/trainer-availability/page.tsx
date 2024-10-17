@@ -13,8 +13,10 @@ import {
   // Divider,
   FormControl,
   FormControlLabel,
+  FormHelperText,
   Grid,
   IconButton,
+  Switch,
   Typography,
 } from '@mui/material';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -34,8 +36,12 @@ const timeSlotSchema = z
     startTime: z.date(),
     endTime: z.date(),
   })
-  .refine((data) => (data.endTime ? data.endTime > data.startTime : true), {
+  .refine((data) => data.endTime > data.startTime, {
     message: 'End time must be after start time',
+    path: ['endTime'],
+  })
+  .refine((data) => data.startTime.getTime() !== data.endTime.getTime(), {
+    message: 'Start time and end time cannot be the same',
     path: ['endTime'],
   });
 
@@ -86,7 +92,13 @@ export default function WeekdayTimeSlots() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
 
-  const { control, handleSubmit, watch, setValue } = useForm<FormData>({
+  const {
+    control,
+    handleSubmit,
+    watch,
+    setValue,
+    formState: { errors },
+  } = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       days: daysOfWeek.map(() => ({
@@ -351,7 +363,10 @@ export default function WeekdayTimeSlots() {
                           <Grid container key={slotIndex} alignItems="center">
                             <Grid item xs={12} sm={6} md={4} sx={{ padding: '10px 10px' }}>
                               <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                <FormControl fullWidth>
+                                <FormControl
+                                  fullWidth
+                                  error={Boolean(errors?.days?.[dayIndex]?.timeSlots?.[slotIndex]?.startTime)}
+                                >
                                   <TimePicker
                                     label="Start Time"
                                     value={slot.startTime ? dayjs(slot.startTime) : null}
@@ -368,18 +383,25 @@ export default function WeekdayTimeSlots() {
                                     slotProps={{
                                       textField: {
                                         fullWidth: true,
-                                        error: Boolean(fieldError),
                                         helperText: fieldError ? fieldError.message : '',
                                       },
                                     }}
                                   />
+                                  {errors?.days?.[dayIndex]?.timeSlots?.[slotIndex]?.startTime?.message && (
+                                    <FormHelperText error>
+                                      {errors?.days?.[dayIndex]?.timeSlots?.[slotIndex]?.startTime.message}
+                                    </FormHelperText>
+                                  )}
                                 </FormControl>
                               </LocalizationProvider>
                             </Grid>
 
                             <Grid item xs={12} sm={6} md={4} sx={{ padding: '10px 10px' }}>
                               <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                <FormControl fullWidth>
+                                <FormControl
+                                  fullWidth
+                                  error={Boolean(errors?.days?.[dayIndex]?.timeSlots?.[slotIndex]?.endTime)}
+                                >
                                   <TimePicker
                                     label="End Time"
                                     value={slot.endTime ? dayjs(slot.endTime) : null}
@@ -397,11 +419,15 @@ export default function WeekdayTimeSlots() {
                                     slotProps={{
                                       textField: {
                                         fullWidth: true,
-                                        error: Boolean(fieldError),
                                         helperText: fieldError ? fieldError.message : '',
                                       },
                                     }}
                                   />
+                                  {errors?.days?.[dayIndex]?.timeSlots?.[slotIndex]?.endTime?.message && (
+                                    <FormHelperText error>
+                                      {errors?.days?.[dayIndex]?.timeSlots?.[slotIndex]?.endTime.message}
+                                    </FormHelperText>
+                                  )}
                                 </FormControl>
                               </LocalizationProvider>
                             </Grid>
@@ -467,11 +493,7 @@ export default function WeekdayTimeSlots() {
             name="setSameTimeForAll"
             control={control}
             render={({ field }) => (
-              <Checkbox
-                {...field}
-                checked={field.value}
-                onChange={(e) => handleSameTimeForAllChange(e.target.checked)}
-              />
+              <Switch {...field} checked={field.value} onChange={(e) => handleSameTimeForAllChange(e.target.checked)} />
             )}
           />
         }

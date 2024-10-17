@@ -142,7 +142,7 @@ export function CustomersTable({
                   <TableCell
                     sx={{
                       ...tableCss.tableCell,
-                      maxWidth: '50px !important',
+                      maxWidth: '70px !important',
                       whiteSpace: 'nowrap',
                       overflow: 'hidden',
                       textOverflow: 'ellipsis !important',
@@ -210,6 +210,7 @@ export function CustomersTable({
             onPageChange={onPageChange}
             onRowsPerPageChange={onRowsPerPageChange}
             rowsPerPageOptions={[5, 10, 25]}
+            labelRowsPerPage={'Records per page'}
           />
         </>
       )}

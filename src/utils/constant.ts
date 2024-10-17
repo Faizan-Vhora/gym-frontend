@@ -3,7 +3,7 @@ export const REGEX_VALIDATION = {
     ZIP_CODE  : /^[0-9]+$/, // Zip code must contain only numeric digits without any letters or special characters,
     PHONE_NUMBER : /^\(?\+?1?\)?[-. ]?\(?\d{3}\)?[-. ]?\d{3}[-. ]?\d{4}$/, // Phone number must be a valid US number
     QUESTION: /^[^!^&%#]+$/,
-    PROMOCODE: /^(?=.{10}$)(?:[A-Za-z0-9]*[A-Za-z]){5}[A-Za-z0-9]*$/
+    PROMOCODE: /^[A-Za-z0-9]{5,10}$/
   }
 
 // USER

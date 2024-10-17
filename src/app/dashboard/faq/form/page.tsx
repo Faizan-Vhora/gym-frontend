@@ -40,11 +40,9 @@ const faqSchema = z.object({
   question: z
     .string()
     .min(1, 'Question is required')
+    .max(255, 'Question cannot exceed 255 characters')
     .regex(REGEX_VALIDATION.QUESTION, 'Question should not contain only numbers or special characters'),
-  answer: z
-    .string()
-    .min(1, 'Answer is required')
-    .regex(REGEX_VALIDATION.QUESTION, 'Answer should not contain only numbers or special characters'),
+  answer: z.string().min(1, 'Answer is required'),
   type: z.enum([FaqType.General, FaqType.User, FaqType.Trainer]).optional(),
   status: z.enum([FaqStatus.Active, FaqStatus.Inactive, FaqStatus.Archived]).optional(),
 });
@@ -118,7 +116,7 @@ export default function FaqForm(): React.JSX.Element {
       err instanceof Error ? err.message : 'An unexpected error occurred';
     } finally {
       setIsSubmitting(false);
-      setLoading(true);
+      setLoading(false);
     }
   };
 

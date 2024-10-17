@@ -41,10 +41,7 @@ import { DiscountStatus, DiscountType, UsageLimit } from '@/components/dashboard
 const baseDiscountSchema = z.object({
   codeName: z
     .string()
-    .regex(
-      REGEX_VALIDATION.PROMOCODE,
-      'Promo code must be 5-10 characters long, and can only contain letters, numbers, hyphens, and underscores.'
-    )
+    .regex(REGEX_VALIDATION.PROMOCODE, 'Promo code must be 5-10 characters long. Cannot contain special characters.')
     .transform((val) => val.toUpperCase()),
   expiryDate: z.string().min(1, 'Expiry Date is required'),
   discountType: z.nativeEnum(DiscountType, { errorMap: () => ({ message: 'Discount Type is required' }) }),
@@ -80,6 +77,7 @@ export default function DiscountFormPage(): React.JSX.Element {
   const [imagePreview, setImagePreview] = React.useState<string | null>(null);
   const [errors, setErrors] = React.useState<ZodFormattedError<DiscountSchema> | null>(null);
   const [loading, setLoading] = React.useState(false);
+  const [cleared, setCleared] = React.useState<boolean>(false);
   const fileInputRef = React.useRef<HTMLInputElement>(null);
 
   const router = useRouter();
@@ -236,6 +234,19 @@ export default function DiscountFormPage(): React.JSX.Element {
     }
   };
 
+  React.useEffect(() => {
+    if (cleared) {
+      const timeout = setTimeout(() => {
+        setCleared(false);
+      }, 1500);
+
+      return () => {
+        clearTimeout(timeout);
+      };
+    }
+    return;
+  }, [cleared]);
+
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <Card>
@@ -316,6 +327,12 @@ export default function DiscountFormPage(): React.JSX.Element {
                                 handleDateChange(newValue);
                               }}
                               slotProps={{
+                                field: {
+                                  clearable: true,
+                                  onClear: () => {
+                                    setCleared(true);
+                                  },
+                                },
                                 textField: {
                                   fullWidth: true,
                                   error: Boolean(fieldState.error),
@@ -329,6 +346,26 @@ export default function DiscountFormPage(): React.JSX.Element {
                       {errors?.expiryDate && <FormHelperText error>{errors.expiryDate._errors[0]}</FormHelperText>}
                     </FormControl>
                   </LocalizationProvider>
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <TextField
+                    required
+                    label="Discount Value"
+                    name="discountValue"
+                    type="number"
+                    value={discount.discountValue}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                      const value = e.target.value;
+
+                      // Ensure the value is non-negative before updating state
+                      if (Number(value) >= 0) {
+                        handleInputChange(e); // Call your existing input change handler
+                      }
+                    }}
+                    fullWidth
+                    error={Boolean(errors?.discountValue)}
+                    helperText={errors?.discountValue?._errors[0]}
+                  />
                 </Grid>
 
                 <Grid item md={6} xs={12}>
@@ -367,34 +404,17 @@ export default function DiscountFormPage(): React.JSX.Element {
                     <FormHelperText>{errors?.usageLimit?._errors[0]}</FormHelperText>
                   </FormControl>
                 </Grid>
-                <Grid item xs={12} md={6}>
-                  <TextField
-                    required
-                    label="Discount Value"
-                    name="discountValue"
-                    type="number"
-                    value={discount.discountValue}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                      const value = e.target.value;
-
-                      // Ensure the value is non-negative before updating state
-                      if (Number(value) >= 0) {
-                        handleInputChange(e); // Call your existing input change handler
-                      }
-                    }}
-                    fullWidth
-                    error={Boolean(errors?.discountValue)}
-                    helperText={errors?.discountValue?._errors[0]}
-                  />
-                </Grid>
 
                 <Grid item xs={12} md={12}>
                   <TextField
+                    required
                     label="Description"
                     name="description"
                     value={discount.description}
                     onChange={handleInputChange}
                     fullWidth
+                    multiline
+                    rows={4}
                     error={Boolean(errors?.description)}
                     helperText={errors?.description?._errors[0]}
                   />

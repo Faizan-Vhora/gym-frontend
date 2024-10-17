@@ -127,7 +127,7 @@ const UnavailableDateRanges = () => {
             {unavailableDates.map((dateRange, index) => (
               <Grid container alignItems={'center'} key={index} sx={{ marginLeft: '5px' }}>
                 <Grid item xs={12} sm={6} md={4} sx={{ padding: '15px' }}>
-                  <FormControl fullWidth>
+                  <FormControl fullWidth error={Boolean(errors?.unavailableDates?.[index]?.startDate)}>
                     <Controller
                       name={`unavailableDates.${index}.startDate`} // Correct the name
                       control={control}
@@ -144,7 +144,6 @@ const UnavailableDateRanges = () => {
                           slotProps={{
                             textField: {
                               fullWidth: true,
-                              error: Boolean(fieldError),
                               helperText: fieldError ? fieldError.message : '',
                             },
                           }}
@@ -158,7 +157,7 @@ const UnavailableDateRanges = () => {
                 </Grid>
 
                 <Grid item xs={12} sm={6} md={4} sx={{ padding: '15px' }}>
-                  <FormControl fullWidth>
+                  <FormControl fullWidth error={Boolean(errors?.unavailableDates?.[index]?.endDate)}>
                     <Controller
                       name={`unavailableDates.${index}.endDate`} // Correct the name
                       control={control}
@@ -176,7 +175,6 @@ const UnavailableDateRanges = () => {
                           slotProps={{
                             textField: {
                               fullWidth: true,
-                              error: Boolean(fieldError),
                               helperText: fieldError ? fieldError.message : '',
                             },
                           }}

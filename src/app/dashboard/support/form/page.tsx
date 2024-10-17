@@ -122,8 +122,14 @@ export default function SupportForm(): React.JSX.Element {
   useEffect(() => {
     const updatedUserOptions =
       userType === String(USER_TYPE.MEMBER)
-        ? customers.map((customer) => ({ value: customer.id.toString(), label: customer.fullName }))
-        : trainers.map((trainer) => ({ value: trainer.id.toString(), label: trainer.fullName }));
+        ? customers.map((customer) => ({
+            value: customer.id.toString(),
+            label: `${customer.memberId} | ${customer.fullName} | ${customer.email}`,
+          }))
+        : trainers.map((trainer) => ({
+            value: trainer.id.toString(),
+            label: `${trainer.memberId} | ${trainer.fullName} | ${trainer.email}`,
+          }));
 
     setUserOptions(updatedUserOptions);
     if (!id) {
@@ -204,7 +210,7 @@ export default function SupportForm(): React.JSX.Element {
         <CardContent>
           <Grid container spacing={3}>
             <Grid item xs={12} sm={4}>
-              <FormControl fullWidth variant="outlined" error={Boolean(errors.userType)}>
+              <FormControl fullWidth variant="outlined" required error={Boolean(errors.userType)}>
                 <InputLabel>User Type</InputLabel>
                 <Select
                   {...register('userType')}
@@ -229,7 +235,7 @@ export default function SupportForm(): React.JSX.Element {
             </Grid>
 
             <Grid item xs={12} sm={4}>
-              <FormControl fullWidth variant="outlined" error={Boolean(errors.user)}>
+              <FormControl fullWidth variant="outlined" required error={Boolean(errors.user)}>
                 <InputLabel>User</InputLabel>
                 <Select
                   {...register('user')}
@@ -254,7 +260,7 @@ export default function SupportForm(): React.JSX.Element {
             </Grid>
 
             <Grid item xs={12} sm={4}>
-              <FormControl fullWidth variant="outlined" error={Boolean(errors.status)}>
+              <FormControl fullWidth variant="outlined" required error={Boolean(errors.status)}>
                 <InputLabel>Status</InputLabel>
                 <Select
                   {...register('status')}
@@ -291,7 +297,7 @@ export default function SupportForm(): React.JSX.Element {
             </Grid>
 
             <Grid item xs={12}>
-              <InputLabel>Description</InputLabel>
+              <InputLabel required>Description</InputLabel>
               <FormControl fullWidth required>
                 <CustomEditor
                   data={description}
@@ -311,7 +317,7 @@ export default function SupportForm(): React.JSX.Element {
           <Button
             variant="outlined"
             onClick={() => {
-              router.push('/dashboard/support');
+              router.back();
             }}
             sx={{
               borderColor: '#d0021b',

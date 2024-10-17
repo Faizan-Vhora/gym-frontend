@@ -188,6 +188,7 @@ export function CheckInTable({
             onPageChange={onPageChange}
             onRowsPerPageChange={onRowsPerPageChange}
             rowsPerPageOptions={[5, 10, 25]}
+            labelRowsPerPage={'Records per page'}
           />
         </>
       )}

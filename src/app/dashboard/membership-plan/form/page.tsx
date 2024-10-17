@@ -50,7 +50,7 @@ export default function MembershipPlanEditForm(): React.JSX.Element {
       .min(1, 'Title is required')
       .regex(REGEX_VALIDATION.FULL_NAME, 'Title should not contain numbers or special characters'),
     cost: z.coerce.number().min(1, 'Cost is required'),
-    durationInMonths: z.coerce.number(),
+    durationInMonths: z.coerce.number().min(1, 'Duration is required, It should be atleast 1'),
     description: z.string().optional(),
     paymentFrequency: z.string(),
     status: z.string().optional(),

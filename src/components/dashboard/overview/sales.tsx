@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { useRouter } from 'next/navigation';
 import { Stack, Typography } from '@mui/material';
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
@@ -9,7 +10,6 @@ import CardContent from '@mui/material/CardContent';
 import Divider from '@mui/material/Divider';
 import { alpha, useTheme } from '@mui/material/styles';
 import type { SxProps } from '@mui/material/styles';
-import { ArrowClockwise as ArrowClockwiseIcon } from '@phosphor-icons/react/dist/ssr/ArrowClockwise';
 import { ArrowRight as ArrowRightIcon } from '@phosphor-icons/react/dist/ssr/ArrowRight';
 import type { ApexOptions } from 'apexcharts';
 
@@ -23,6 +23,7 @@ export interface SalesProps {
 
 export function Sales({ categories, chartSeries, sx }: SalesProps): React.JSX.Element {
   const chartOptions = useChartOptions(categories);
+  const router = useRouter();
 
   return (
     <Card sx={sx}>
@@ -39,14 +40,14 @@ export function Sales({ categories, chartSeries, sx }: SalesProps): React.JSX.El
           Member Registered
         </Typography>
 
-        <Button
+        {/* <Button
           color="inherit"
           size="small"
           style={{ fontFamily: '"Audiowide", sans-serif' }}
           startIcon={<ArrowClockwiseIcon fontSize="var(--icon-fontSize-md)" />}
         >
           Sync
-        </Button>
+        </Button> */}
       </Stack>
 
       <CardContent>
@@ -59,6 +60,9 @@ export function Sales({ categories, chartSeries, sx }: SalesProps): React.JSX.El
           style={{ fontFamily: '"Audiowide", sans-serif' }}
           endIcon={<ArrowRightIcon fontSize="var(--icon-fontSize-md)" />}
           size="small"
+          onClick={() => {
+            router.push('/dashboard/customers');
+          }}
         >
           Overview
         </Button>

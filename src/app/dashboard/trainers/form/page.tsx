@@ -255,7 +255,7 @@ export default function TrainerEditForm(): React.JSX.Element {
     }
   };
 
-  const handleTabChange = (_: React.SyntheticEvent, newValue: number) => {
+  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
     setTab(newValue);
   };
 

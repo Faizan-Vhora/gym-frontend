@@ -18,8 +18,6 @@ import {
 import { Clock } from '@phosphor-icons/react';
 import dayjs from 'dayjs';
 
-import tableCss from '@/styles/table-css';
-
 export interface CheckInEntry {
   id: number;
   entryDate: string;
@@ -33,11 +31,6 @@ export interface CheckInEntry {
     userType: number;
   };
 }
-
-const userTypeStatus: Record<number, { label: string; color: 'warning' | 'success' }> = {
-  2: { label: 'Trainer', color: 'warning' },
-  3: { label: 'Member', color: 'success' },
-};
 
 const checkInStatus: Record<string, { label: string; color: 'error' | 'success' }> = {
   success: { label: 'Success', color: 'success' },
@@ -67,11 +60,9 @@ export function CheckInTableView({
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell>User Details</TableCell>
               <TableCell>Entry Date</TableCell>
               <TableCell>Entry In Time</TableCell>
               <TableCell>Entry Out Time</TableCell>
-              <TableCell>User Type</TableCell>
               <TableCell>Status</TableCell>
             </TableRow>
           </TableHead>
@@ -85,14 +76,6 @@ export function CheckInTableView({
             ) : (
               entries.map((entry) => (
                 <TableRow key={entry.id}>
-                  <TableCell sx={tableCss.tableCell}>
-                    <Typography variant="subtitle2" style={{ cursor: 'pointer' }}>
-                      {entry.user.fullName}
-                    </Typography>
-                    <Typography color="textSecondary" variant="body2" style={{ cursor: 'pointer' }}>
-                      {entry.user.email}
-                    </Typography>
-                  </TableCell>
                   <TableCell>{dayjs(entry.entryDate).format('MMM D, YYYY')}</TableCell>
                   <TableCell>
                     <IconButton>
@@ -105,13 +88,6 @@ export function CheckInTableView({
                       <Clock />
                     </IconButton>
                     {entry.entryOutTime ? formatTo12HourFormat(entry.entryOutTime) : '-'}
-                  </TableCell>
-                  <TableCell>
-                    <Chip
-                      label={userTypeStatus[entry.user.userType]?.label}
-                      color={userTypeStatus[entry.user.userType]?.color}
-                      sx={{ ml: 2 }}
-                    />
                   </TableCell>
                   <TableCell>
                     <Tooltip
