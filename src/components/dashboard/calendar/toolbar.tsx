@@ -351,15 +351,15 @@ export function Toolbar({
           </Grid>
         </LocalizationProvider>
 
-        <Grid item md={2} sm={6} xs={12} sx={{ marginLeft: 'auto' }}>
+        <Grid item md={3} sm={6} xs={12} sx={{textAlign:'end'}} >
           {/* Add Booking Button */}
           <Button
             onClick={onAdd}
             className="common-button"
             startIcon={<PlusIcon />}
-            sx={{ marginLeft: 'auto' }}
+            sx={{marginLeft:'auto',}}
             variant="contained"
-            style={{ fontFamily: '"Audiowide", sans-serif' }}
+            style={{ fontFamily: '"Audiowide", sans-serif',width:'max-content' }}
           >
             New Booking
           </Button>

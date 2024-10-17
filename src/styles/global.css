@@ -60,7 +60,7 @@ body {
   position: relative;
   border: none;
   cursor: pointer;
-  font-family: '"Audiowide", sans-serif' !important;
+  font-family: '"Audiowide", sans-serif';
   outline: none;
   transform: skewX(-20deg); /* Skew the button to create the angled effect */
 }
