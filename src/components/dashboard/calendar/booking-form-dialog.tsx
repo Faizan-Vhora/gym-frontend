@@ -154,14 +154,7 @@ export function BookingFormDialog({
   );
   const [availableSlotsWeekly, setAvailableSlotWeeklyData] = React.useState<WeeklySlotI[]>([]);
   const [availableSlotsWeeklyByFilter, setAvailableSlotWeeklyByFilterData] = React.useState<WeeklySlotI[]>([]);
-  const [trainerBlockDatesList, setTrainerBlockDatesList] = React.useState<string[]>([
-    '2024-10-20',
-    '2024-10-21',
-    '2024-10-22',
-    '2024-10-26',
-    '2024-10-27',
-    '2024-10-28',
-  ]);
+  const [trainerBlockDatesList, setTrainerBlockDatesList] = React.useState<string[]>([]);
   const [availableWeekDayOptions, setAvailableWeekDayOptions] = React.useState<WeeklyDayOptionI[]>([]);
   const [selectedDays, setSelectedDays] = React.useState<number[]>([dayjs().day()]); // Default to today's weekday
   const [selectedSlots, setSelectedSlots] = React.useState<SelectedSlotsI>({});
@@ -304,9 +297,11 @@ export function BookingFormDialog({
 
   const fetchCustomerPromocode = async (): Promise<void> => {
     setPromocodeOptions([]);
-    if(selectedCustomer){
+    if (selectedCustomer) {
       try {
-        const { data } = await axiosInstance.get<{ data: DiscountEntry[] }>(`/discount/${selectedCustomer.id}/available-code-list`);
+        const { data } = await axiosInstance.get<{ data: DiscountEntry[] }>(
+          `/discount/${selectedCustomer.id}/available-code-list`
+        );
         setPromocodeOptions(data.data);
       } catch (err) {
         const errorMessage = err instanceof Error ? err.message : 'Failed to load customers.';
@@ -742,7 +737,9 @@ export function BookingFormDialog({
                   <FormControl fullWidth error={Boolean(errors.customerId)}>
                     <Autocomplete
                       options={customerOptions}
-                      getOptionLabel={(option) => `${option.memberId} | ${option.fullName}` || ''}
+                      getOptionLabel={(option) =>
+                        option.memberId && option.fullName ? `${option.memberId} | ${option.fullName}` : 'All'
+                      }
                       isOptionEqualToValue={(option, value) => option.id === value.id}
                       onChange={(e, value) => {
                         const customerId = value ? Number(value.id) : 0;
@@ -762,35 +759,6 @@ export function BookingFormDialog({
                   </FormControl>
                 )}
               />
-              {/* <Controller
-                control={control}
-                name="customerId"
-                render={({ field }) => (
-                  <FormControl fullWidth error={Boolean(errors.customerId)}>
-                    <InputLabel>Member</InputLabel>
-                    <Select
-                      {...field}
-                      value={field.value || ''}
-                      onChange={(e) => {
-                        const customerId = Number(e.target.value);
-                        field.onChange(customerId);
-                        handleCustomerChange(customerId);
-                      }}
-                      label="Customer"
-                    >
-                      <Option value="">
-                        <em>Select a Member</em>
-                      </Option>
-                      {customerOptions.map((customer) => (
-                        <Option key={customer.id} value={customer.id}>
-                          {customer.fullName}
-                        </Option>
-                      ))}
-                    </Select>
-                    {errors.customerId && <FormHelperText>{errors.customerId.message}</FormHelperText>}
-                  </FormControl>
-                )}
-              /> */}
 
               {selectedCustomer && (
                 <Card
@@ -851,7 +819,9 @@ export function BookingFormDialog({
                   <FormControl fullWidth error={Boolean(errors.trainerId)}>
                     <Autocomplete
                       options={trainerOptions}
-                      getOptionLabel={(option) => `${option.memberId} | ${option.fullName}` || ''}
+                      getOptionLabel={(option) =>
+                        option.memberId && option.fullName ? `${option.memberId} | ${option.fullName}` : 'All'
+                      }
                       isOptionEqualToValue={(option, value) => option.id === value.id}
                       onChange={(e, value) => {
                         const trainerId = value ? Number(value.id) : 0;
@@ -871,35 +841,6 @@ export function BookingFormDialog({
                   </FormControl>
                 )}
               />
-              {/* <Controller
-                control={control}
-                name="trainerId"
-                render={({ field }) => (
-                  <FormControl fullWidth error={Boolean(errors.trainerId)}>
-                    <InputLabel>Trainer</InputLabel>
-                    <Select
-                      {...field}
-                      value={field.value || ''}
-                      onChange={(e) => {
-                        const trainerId = Number(e.target.value);
-                        field.onChange(trainerId);
-                        handleTrainerChange(trainerId);
-                      }}
-                      label="Trainer"
-                    >
-                      <Option value="">
-                        <em>Select a Trainer</em>
-                      </Option>
-                      {trainerOptions.map((trainer) => (
-                        <Option key={trainer.id} value={trainer.id}>
-                          {trainer.fullName}
-                        </Option>
-                      ))}
-                    </Select>
-                    {errors.trainerId && <FormHelperText>{errors.trainerId.message}</FormHelperText>}
-                  </FormControl>
-                )}
-              /> */}
 
               {selectedTrainer && (
                 <Card

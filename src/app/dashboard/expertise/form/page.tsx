@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import dynamic from 'next/dynamic';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { REGEX_VALIDATION } from '@/utils/constant';
 import { CustomLoader } from '@/utils/loader';
@@ -16,14 +17,14 @@ import {
   Grid,
   InputLabel,
   OutlinedInput,
-  TextField,
 } from '@mui/material';
 import { Controller, useForm } from 'react-hook-form';
 import { toast, ToastContainer } from 'react-toastify';
 import { z } from 'zod';
 
 import axiosInstance from '@/lib/axios';
-import CustomEditor from '@/components/ckeditor';
+
+const CustomEditor = dynamic(() => import('@/components/ckeditor'), { ssr: false });
 
 const expertiseSchema = z.object({
   title: z
@@ -43,8 +44,7 @@ interface ExpertiseEntry extends ExpertiseFormData {
 
 export default function ExpertiseForm(): React.JSX.Element {
   const [loading, setLoading] = React.useState(false);
-  const [expertise, setExpertise] = React.useState<ExpertiseEntry>();
-  const [editorContent, setEditorContent] = React.useState<string>(''); // State for the editor content
+  const [editorContent, setEditorContent] = React.useState<string>('');
   const router = useRouter();
   const searchParams = useSearchParams();
   const expertiseId = searchParams.get('id');
@@ -54,12 +54,12 @@ export default function ExpertiseForm(): React.JSX.Element {
     handleSubmit,
     formState: { errors },
     reset,
-    setValue, // Import setValue to update form state
+    setValue,
   } = useForm<ExpertiseFormData>({
     resolver: zodResolver(expertiseSchema),
     defaultValues: {
       title: '',
-      description: '', // Default description value
+      description: '',
       status: 'active',
     },
   });
@@ -70,12 +70,12 @@ export default function ExpertiseForm(): React.JSX.Element {
       axiosInstance
         .get<{ data: ExpertiseEntry }>(`/expertise/${expertiseId}`)
         .then((response) => {
-          reset(response.data.data);
-          setExpertise(response.data.data);
-          setEditorContent(response.data.data.description || ''); // Set the editor content
+          const expertiseData = response.data.data;
+          reset(expertiseData);
+          setEditorContent(expertiseData.description || ''); // Set the editor content
         })
         .catch((error: unknown) => {
-          error instanceof Error ? error.message : 'An unexpected error occurred';
+          toast.error(error instanceof Error ? error.message : 'An unexpected error occurred');
         })
         .finally(() => {
           setLoading(false);
@@ -98,7 +98,7 @@ export default function ExpertiseForm(): React.JSX.Element {
       toast.success(`Expertise ${expertiseId ? 'updated' : 'created'} successfully`);
       router.push('/dashboard/expertise');
     } catch (error: unknown) {
-      error instanceof Error ? error.message : 'An unexpected error occurred';
+      toast.error(error instanceof Error ? error.message : 'An unexpected error occurred');
     } finally {
       setLoading(false);
     }
@@ -130,9 +130,9 @@ export default function ExpertiseForm(): React.JSX.Element {
                 <Controller
                   name="description"
                   control={control}
-                  render={({ field }) => (
+                  render={() => (
                     <CustomEditor
-                      data={editorContent}
+                      data={editorContent} // Pass the editor content to the editor
                       onChange={(data) => {
                         setEditorContent(data); // Update local editor state
                         setValue('description', data); // Update react-hook-form state
@@ -146,7 +146,7 @@ export default function ExpertiseForm(): React.JSX.Element {
             {/* Action Buttons */}
             <Grid item xs={12} container spacing={2} justifyContent="flex-end">
               <Grid item>
-                <Button type="submit" variant="contained" disabled={loading} className="common-button">
+                <Button type="submit" variant="contained" className="common-button" disabled={loading}>
                   Save
                 </Button>
               </Grid>

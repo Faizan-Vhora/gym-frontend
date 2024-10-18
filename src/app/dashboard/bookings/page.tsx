@@ -76,7 +76,7 @@ export default function Page(): React.JSX.Element {
 
     if (newStatus === BOOKING_STATUS.CANCELED) {
       swalText = `Do you want to cancel the booking?`;
-      swalConfirmButtonText = `Yes, cancel it!`;
+      swalConfirmButtonText = `Yes`;
       swalSuccessMessage = `The booking has been cancelled`;
     }
 
@@ -86,7 +86,7 @@ export default function Page(): React.JSX.Element {
       icon: 'warning',
       showCancelButton: true,
       confirmButtonText: swalConfirmButtonText,
-      cancelButtonText: 'No, cancel!',
+      cancelButtonText: 'No',
     });
 
     if (result.isConfirmed) {

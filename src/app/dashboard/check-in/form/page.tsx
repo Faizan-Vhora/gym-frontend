@@ -182,10 +182,15 @@ const CheckinForm = () => {
         toast.success('Check-in successfully updated!');
       } else {
         // Otherwise, create a new check-in
+
         await axiosInstance.post('/entry-logs', payload);
+
         toast.success('Check-in successfully recorded!');
       }
+
+      // await new Promise((resolve) => setTimeout(resolve, 1000));
       router.push('/dashboard/check-in');
+
       reset();
     } catch (error) {
       toast.error('Failed to record check-in.');

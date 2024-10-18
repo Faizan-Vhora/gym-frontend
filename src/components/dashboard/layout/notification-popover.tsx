@@ -152,7 +152,7 @@ function NotificationContent({ notification, unread }: NotificationContentProps)
       <Avatar>
         <ChatTextIcon fontSize="var(--Icon-fontSize)" />
       </Avatar>
-      <div
+      <Stack
         onClick={() => {
           router.push(notification?.redirectionPath);
           unread();
@@ -163,7 +163,7 @@ function NotificationContent({ notification, unread }: NotificationContentProps)
         <Typography color="text.secondary" variant="caption">
           {dayjs(notification.createdAt).format('MMM D, hh:mm A')}
         </Typography>
-      </div>
+      </Stack>
     </Stack>
   );
 }

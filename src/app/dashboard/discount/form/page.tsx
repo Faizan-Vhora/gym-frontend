@@ -88,7 +88,8 @@ export default function DiscountFormPage(): React.JSX.Element {
   const [imagePreview, setImagePreview] = React.useState<string | null>(null);
   const [errors, setErrors] = React.useState<ZodFormattedError<DiscountSchema> | null>(null);
   const [loading, setLoading] = React.useState(false);
-  const [cleared, setCleared] = React.useState<boolean>(false);
+  const [startDateClear, setStartDateClear] = React.useState<boolean>(false);
+  const [endDateClear, setEndDateClear] = React.useState<boolean>(false);
   const [hasUsageLimit, setHasUsageLimit] = React.useState<boolean>(false);
   const [hasMinimumAmount, setHasMinimumAmount] = React.useState<boolean>(false);
   const [plans, setPlans] = React.useState<MembershipPlans[]>([]);
@@ -148,12 +149,34 @@ export default function DiscountFormPage(): React.JSX.Element {
     }
   }, [discountId]);
 
-  const handleDateChange = (newValue: Dayjs | null): void => {
+  const handleStartDateChange = (newValue: Dayjs | null): void => {
     if (newValue) {
+      // Set the date when a valid date is selected
+      setDiscount((prevDiscount) => ({
+        ...prevDiscount,
+        startDate: newValue.format('YYYY-MM-DD'),
+      }));
+    } else {
+      // Set startDate to null when the date is cleared
+      setDiscount((prevDiscount) => ({
+        ...prevDiscount,
+        startDate: '',
+      }));
+    }
+  };
+
+  const handleExpiryChange = (newValue: Dayjs | null): void => {
+    if (newValue) {
+      // Set the date when a valid date is selected
       setDiscount((prevDiscount) => ({
         ...prevDiscount,
         expiryDate: newValue.format('YYYY-MM-DD'),
-        startDate: newValue.format('YYYY-MM-DD'),
+      }));
+    } else {
+      // Set expiryDate to null when the date is cleared
+      setDiscount((prevDiscount) => ({
+        ...prevDiscount,
+        expiryDate: '',
       }));
     }
   };
@@ -255,10 +278,25 @@ export default function DiscountFormPage(): React.JSX.Element {
   const validate = (): boolean => {
     try {
       const schema = discountId ? updateDiscountSchema : baseDiscountSchema;
+
+      // Convert values to proper types
       discount.discountValue = Number(discount.discountValue);
       discount.usageLimit = Number(discount.usageLimit);
       discount.minimumPurchaseAmount = Number(discount.minimumPurchaseAmount);
       discount.membershipType = Number(membershipTypeId);
+
+      // Check if startDate is greater than expiryDate
+      const startDate = new Date(discount.startDate);
+      const expiryDate = new Date(discount.expiryDate);
+
+      if (startDate > expiryDate) {
+        void Swal.fire({
+          icon: 'error',
+          title: 'Invalid Dates',
+          text: 'The start date cannot be later than the expiry date.',
+        });
+        return false; // Return false to stop further validation
+      }
 
       schema.parse(discount);
 
@@ -282,14 +320,14 @@ export default function DiscountFormPage(): React.JSX.Element {
       formData.append('membershipType', discount.membershipType.toString());
     }
 
-    if (discount.expiryDate) formData.append('expiryDate', discount.expiryDate);
-    if (discount.startDate) formData.append('startDate', discount.startDate);
+    formData.append('expiryDate', discount.expiryDate || '');
+    formData.append('startDate', discount.startDate || '');
     formData.append('discountType', discount.discountType as string); // Ensure proper typing
-    if (hasUsageLimit === true) {
+    if (hasUsageLimit) {
       formData.append('usageLimit', discount.usageLimit.toString()); // Ensure proper typing
       formData.append('hasUsageLimit', hasUsageLimit.toString()); // Ensure proper typing
     }
-    if (hasMinimumAmount === true) {
+    if (hasMinimumAmount) {
       formData.append('minimumPurchaseAmount', discount.minimumPurchaseAmount.toString()); // Ensure proper typing
       formData.append('hasMinimumAmount', hasMinimumAmount.toString()); // Ensure proper typing
     }
@@ -321,9 +359,9 @@ export default function DiscountFormPage(): React.JSX.Element {
   };
 
   React.useEffect(() => {
-    if (cleared) {
+    if (endDateClear) {
       const timeout = setTimeout(() => {
-        setCleared(false);
+        setEndDateClear(false);
       }, 1500);
 
       return () => {
@@ -331,7 +369,20 @@ export default function DiscountFormPage(): React.JSX.Element {
       };
     }
     return;
-  }, [cleared]);
+  }, [endDateClear]);
+
+  React.useEffect(() => {
+    if (startDateClear) {
+      const timeout = setTimeout(() => {
+        setStartDateClear(false);
+      }, 1500);
+
+      return () => {
+        clearTimeout(timeout);
+      };
+    }
+    return;
+  }, [startDateClear]);
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -398,7 +449,7 @@ export default function DiscountFormPage(): React.JSX.Element {
                       <FormControl fullWidth error={Boolean(errors?.membershipType)}>
                         <Autocomplete
                           options={plans}
-                          getOptionLabel={(option) => `${option.title}` || ''}
+                          getOptionLabel={(option) => option.title || ''}
                           isOptionEqualToValue={(option, value) => option.id === value.id}
                           value={plans.find((plan) => plan.id === membershipTypeId) || null} // Match the selected plan by comparing the ID
                           onChange={(e, value) => {
@@ -435,20 +486,21 @@ export default function DiscountFormPage(): React.JSX.Element {
                               value={discount?.startDate ? dayjs(discount.startDate) : null}
                               onChange={(newValue: Dayjs | null) => {
                                 if (newValue) {
-                                  field.onChange(newValue.format('YYYY-MM-DD')); // Update field.onChange
+                                  field.onChange(newValue.format('YYYY-MM-DD'));
+                                } else {
+                                  field.onChange(null); // Clear value when date is cleared
                                 }
-                                handleDateChange(newValue);
+                                handleStartDateChange(newValue); // Update field.onChange
                               }}
                               slotProps={{
                                 field: {
                                   clearable: true,
                                   onClear: () => {
-                                    setCleared(true);
+                                    setStartDateClear(true);
                                   },
                                 },
                                 textField: {
                                   fullWidth: true,
-                                  error: Boolean(fieldState.error),
                                   helperText: errorMessage,
                                 },
                               }}
@@ -477,17 +529,20 @@ export default function DiscountFormPage(): React.JSX.Element {
                               defaultValue={discount?.expiryDate ? dayjs(discount.expiryDate) : null}
                               label="Expiry Date"
                               value={discount?.expiryDate ? dayjs(discount.expiryDate) : null}
+                              minDate={dayjs(discount.startDate).isValid() ? dayjs(discount.startDate) : undefined} // Ensure minDate is set
                               onChange={(newValue: Dayjs | null) => {
                                 if (newValue) {
-                                  field.onChange(newValue.format('YYYY-MM-DD')); // Update field.onChange
+                                  field.onChange(newValue.format('YYYY-MM-DD'));
+                                } else {
+                                  field.onChange(null); // Clear value when date is cleared
                                 }
-                                handleDateChange(newValue);
+                                handleExpiryChange(newValue); // Update field.onChange
                               }}
                               slotProps={{
                                 field: {
                                   clearable: true,
                                   onClear: () => {
-                                    setCleared(true);
+                                    setEndDateClear(true);
                                   },
                                 },
                                 textField: {
@@ -547,7 +602,14 @@ export default function DiscountFormPage(): React.JSX.Element {
                   <Grid container>
                     <Grid item md={6}>
                       <FormControlLabel
-                        control={<Switch checked={hasUsageLimit} onChange={() => setHasUsageLimit(!hasUsageLimit)} />}
+                        control={
+                          <Switch
+                            checked={hasUsageLimit}
+                            onChange={() => {
+                              setHasUsageLimit(!hasUsageLimit);
+                            }}
+                          />
+                        }
                         label="Has Usage Limit"
                       />
                     </Grid>
@@ -575,7 +637,12 @@ export default function DiscountFormPage(): React.JSX.Element {
                     <Grid item md={6}>
                       <FormControlLabel
                         control={
-                          <Switch checked={hasMinimumAmount} onChange={() => setHasMinimumAmount(!hasMinimumAmount)} />
+                          <Switch
+                            checked={hasMinimumAmount}
+                            onChange={() => {
+                              setHasMinimumAmount(!hasMinimumAmount);
+                            }}
+                          />
                         }
                         label="Has Minimum Amount"
                       />

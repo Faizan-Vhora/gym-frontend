@@ -25,8 +25,6 @@ import dayjs from 'dayjs';
 
 import tableCss from '@/styles/table-css';
 
-import { MembershipPlans } from '../membership-plan/membership-plan-table';
-
 interface DiscountTableProps {
   discounts: DiscountEntryResponse[];
   page: number;
@@ -115,7 +113,7 @@ export function DiscountTable({
   };
 
   const handleCodeView = (codeName: string): void => {
-    router.push(`/dashboard/discount/form/code-view?codeName=${codeName}`);
+    router.push(`/dashboard/discount/view?codeName=${codeName}`);
   };
 
   const handleAvatarClick = (imageUrl: string): void => {

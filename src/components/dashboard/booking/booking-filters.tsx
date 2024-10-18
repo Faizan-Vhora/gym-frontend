@@ -133,9 +133,9 @@ export function BookingFilters({
     onBookingTypeChange(value);
   };
 
-  const handleTrainerIdChange = (trainerId: string): void => {
-    setTrainerId(trainerId);
-    onTrainerIdChange(trainerId);
+  const handleTrainerIdChange = (trainerID: string): void => {
+    setTrainerId(trainerID);
+    onTrainerIdChange(trainerID);
   };
 
   const handleCustomerIdChange = (memberId: string): void => {
@@ -257,7 +257,9 @@ export function BookingFilters({
         <FormControl fullWidth variant="outlined">
           <Autocomplete
             options={trainerOptions}
-            getOptionLabel={(option) => `${option.memberId} | ${option.fullName}` || 'All'}
+            getOptionLabel={(option) =>
+              option.memberId && option.fullName ? `${option.memberId} | ${option.fullName}` : 'All'
+            }
             isOptionEqualToValue={(option, value) => option.id === value.id}
             value={trainerOptions.find((option) => String(option.id) === trainerId) || null}
             onChange={(event, value) => {
@@ -273,7 +275,9 @@ export function BookingFilters({
         <FormControl fullWidth variant="outlined">
           <Autocomplete
             options={customerOptions}
-            getOptionLabel={(option) => `${option.memberId} | ${option.fullName}` || 'All'}
+            getOptionLabel={(option) =>
+              option.memberId && option.fullName ? `${option.memberId} | ${option.fullName}` : 'All'
+            }
             isOptionEqualToValue={(option, value) => option.id === value.id}
             value={customerOptions.find((option) => String(option.id) === customerId) || null}
             onChange={(event, value) => {

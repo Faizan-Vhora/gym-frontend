@@ -265,7 +265,9 @@ export function Toolbar({
           <FormControl fullWidth variant="outlined">
             <Autocomplete
               options={trainers}
-              getOptionLabel={(option) => `${option.memberId} | ${option.fullName}` || 'All'}
+              getOptionLabel={(option) =>
+                option.memberId && option.fullName ? `${option.memberId} | ${option.fullName}` : 'All'
+              }
               isOptionEqualToValue={(option, value) => option.id === value.id}
               value={trainers.find((option) => String(option.id) === selectedTrainer) || null}
               onChange={(event, value) => {
@@ -281,7 +283,9 @@ export function Toolbar({
           <FormControl fullWidth variant="outlined">
             <Autocomplete
               options={customers}
-              getOptionLabel={(option) => `${option.memberId} | ${option.fullName}` || 'All'}
+              getOptionLabel={(option) =>
+                option.memberId && option.fullName ? `${option.memberId} | ${option.fullName}` : 'All'
+              }
               isOptionEqualToValue={(option, value) => option.id === value.id}
               value={customers.find((option) => String(option.id) === selectedMember) || null}
               onChange={(event, value) => {

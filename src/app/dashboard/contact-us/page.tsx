@@ -82,7 +82,7 @@ export default function Page(): React.JSX.Element {
       icon: 'warning',
       showCancelButton: true,
       confirmButtonText: 'Yes, update it!',
-      cancelButtonText: 'No, cancel!',
+      cancelButtonText: 'No',
     });
 
     if (result.isConfirmed) {
@@ -111,7 +111,6 @@ export default function Page(): React.JSX.Element {
   };
 
   return (
-
     <Stack spacing={3}>
       <Stack direction="row" spacing={3}>
         <Stack spacing={1} sx={{ flex: '1 1 auto' }}>
@@ -119,52 +118,51 @@ export default function Page(): React.JSX.Element {
         </Stack>
       </Stack>
 
-
       <Card>
-      {/* Search Field */}
-      <Stack sx={{padding:'30px'}}>
-      <ContactUsFilters
-        onSearchChange={handleSearchChange}
-        onStatusChange={handleStatusChange}
-        onFromChange={handleFromChange}
-      />
-      </Stack>
-      {loading ? (
-        <CustomLoader />
-      ) : entries.length === 0 ? (
-        <TableContainer component={Paper}>
-          <Table sx={{ minWidth: '800px' }}>
-            <TableHead>
-              <TableRow>
-                <TableCell>User Details</TableCell>
-                <TableCell>From</TableCell>
-                <TableCell>Status</TableCell>
-                <TableCell>Signed Up</TableCell>
-                <TableCell>View</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              <TableRow>
-                <TableCell colSpan={6}>
-                  <Typography variant="h6" align="center">
-                    No data found
-                  </Typography>
-                </TableCell>
-              </TableRow>
-            </TableBody>
-          </Table>
-        </TableContainer>
-      ) : (
-        <ContactUsTable
-          entries={entries}
-          page={page}
-          rowsPerPage={rowsPerPage}
-          totalEntries={count}
-          onUpdateStatus={handleUpdateStatus}
-          onPageChange={handlePageChange}
-          onRowsPerPageChange={handleRowsPerPageChange}
-        />
-      )}
+        {/* Search Field */}
+        <Stack sx={{ padding: '30px' }}>
+          <ContactUsFilters
+            onSearchChange={handleSearchChange}
+            onStatusChange={handleStatusChange}
+            onFromChange={handleFromChange}
+          />
+        </Stack>
+        {loading ? (
+          <CustomLoader />
+        ) : entries.length === 0 ? (
+          <TableContainer component={Paper}>
+            <Table sx={{ minWidth: '800px' }}>
+              <TableHead>
+                <TableRow>
+                  <TableCell>User Details</TableCell>
+                  <TableCell>From</TableCell>
+                  <TableCell>Status</TableCell>
+                  <TableCell>Signed Up</TableCell>
+                  <TableCell>View</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                <TableRow>
+                  <TableCell colSpan={6}>
+                    <Typography variant="h6" align="center">
+                      No data found
+                    </Typography>
+                  </TableCell>
+                </TableRow>
+              </TableBody>
+            </Table>
+          </TableContainer>
+        ) : (
+          <ContactUsTable
+            entries={entries}
+            page={page}
+            rowsPerPage={rowsPerPage}
+            totalEntries={count}
+            onUpdateStatus={handleUpdateStatus}
+            onPageChange={handlePageChange}
+            onRowsPerPageChange={handleRowsPerPageChange}
+          />
+        )}
       </Card>
     </Stack>
   );

@@ -115,7 +115,7 @@ export default function FaqManagementPage(): React.JSX.Element {
         confirmButtonColor: '#3085d6',
         cancelButtonColor: '#d33',
         confirmButtonText: 'Yes, delete it!',
-        cancelButtonText: 'No, cancel!',
+        cancelButtonText: 'No',
       });
 
       // If confirmed, proceed with deletion

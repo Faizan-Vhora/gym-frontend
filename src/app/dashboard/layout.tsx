@@ -2,6 +2,7 @@ import * as React from 'react';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import GlobalStyles from '@mui/material/GlobalStyles';
+import { ToastContainer } from 'react-toastify';
 
 // import { AuthGuard } from '@/components/auth/auth-guard';
 import { MainNav } from '@/components/dashboard/layout/main-nav';
@@ -36,11 +37,15 @@ export default function Layout({ children }: LayoutProps): React.JSX.Element {
         }}
       >
         <SideNav />
-        <Box className='dashbord' sx={{ display: 'flex', flex: '1 1 auto', flexDirection: 'column', pl: { lg: 'var(--SideNav-width)' } }}>
+        <Box
+          className="dashbord"
+          sx={{ display: 'flex', flex: '1 1 auto', flexDirection: 'column', pl: { lg: 'var(--SideNav-width)' } }}
+        >
           <MainNav />
-          <main >
+          <main>
             <Container maxWidth="xl" sx={{ py: '64px' }}>
               {children}
+              <ToastContainer />
             </Container>
           </main>
         </Box>

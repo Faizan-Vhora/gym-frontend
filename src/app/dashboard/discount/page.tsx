@@ -12,7 +12,7 @@ import Swal from 'sweetalert2';
 import axiosInstance from '@/lib/axios';
 import { DiscountFilter } from '@/components/dashboard/discount/discount-filters';
 import { DiscountStatus, DiscountTable } from '@/components/dashboard/discount/discount-table';
-import type { DiscountEntry, DiscountEntryResponse } from '@/components/dashboard/discount/discount-table';
+import type { DiscountEntryResponse } from '@/components/dashboard/discount/discount-table';
 
 export default function DiscountManagementPage(): React.JSX.Element {
   const [discounts, setDiscounts] = React.useState<DiscountEntryResponse[]>([]);
