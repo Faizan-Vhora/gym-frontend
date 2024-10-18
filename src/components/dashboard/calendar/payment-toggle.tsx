@@ -23,7 +23,7 @@ const PaymentToggle: React.FC<PaymentToggleProps> = ({ netTotalAmount, setPaymen
     <ToggleButtonGroup sx={{columnGap:'20px'}} value={paymentType} exclusive onChange={handlePaymentChange} aria-label="payment type">
       <ToggleButton
           sx={
-            paymentType == BOOKING_PAYMENT_TYPE.PER_SESSION ?
+            paymentType === BOOKING_PAYMENT_TYPE.PER_SESSION ?
             {background:'#D60227 !important', borderRadius:'0px',fontSize:'18px ',fontWeight:'400',  transform: 'skewX(-10deg)', color:'#fff !important', fontFamily: 'Audiowide, sans-serif !important'}
             :
             {border:'1px solid #D60227 !important',borderRadius:'0px',fontSize:'18px ',fontWeight:'400', transform: 'skewX(-10deg)', color:'#D60227 !important', background:"#fff !important",fontFamily: 'Audiowide, sans-serif !important'}
@@ -34,7 +34,7 @@ const PaymentToggle: React.FC<PaymentToggleProps> = ({ netTotalAmount, setPaymen
       </ToggleButton>
       <ToggleButton
           sx={
-            paymentType == BOOKING_PAYMENT_TYPE.FULL ?
+            paymentType === BOOKING_PAYMENT_TYPE.FULL ?
             {background:'#D60227 !important', borderRadius:'0px',fontSize:'18px ',fontWeight:'400',  transform: 'skewX(-10deg)', color:'#fff !important', fontFamily: 'Audiowide, sans-serif !important'}
             :
             {border:'1px solid #D60227 !important',borderRadius:'0px',fontSize:'18px ',fontWeight:'400', transform: 'skewX(-10deg)', color:'#D60227 !important', background:"#fff !important",fontFamily: 'Audiowide, sans-serif !important'}
