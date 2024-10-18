@@ -302,13 +302,16 @@ export function BookingFormDialog({
     setAvailableSlotWeeklyByFilterData(availableSlotsFilter);
   };
 
-  const fetchPromocode = async (): Promise<void> => {
-    try {
-      const { data } = await axiosInstance.get<{ data: DiscountEntry[] }>('/discount/dropdown');
-      setPromocodeOptions(data.data);
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to load customers.';
-      toast.error(`Error fetching customers: ${errorMessage}`);
+  const fetchCustomerPromocode = async (): Promise<void> => {
+    setPromocodeOptions([]);
+    if(selectedCustomer){
+      try {
+        const { data } = await axiosInstance.get<{ data: DiscountEntry[] }>(`/discount/${selectedCustomer.id}/available-code-list`);
+        setPromocodeOptions(data.data);
+      } catch (err) {
+        const errorMessage = err instanceof Error ? err.message : 'Failed to load customers.';
+        toast.error(`Error fetching customers promocodes: ${errorMessage}`);
+      }
     }
   };
 
@@ -643,7 +646,6 @@ export function BookingFormDialog({
   React.useEffect(() => {
     void fetchTrainers();
     void fetchCustomers();
-    void fetchPromocode();
   }, []);
 
   // React.useEffect(() => {
@@ -653,6 +655,10 @@ export function BookingFormDialog({
   // React.useEffect(() => {
   //   console.log('Update : bookingDetails:: ', bookingDetails);
   // }, [bookingDetails]);
+
+  React.useEffect(() => {
+    void fetchCustomerPromocode();
+  }, [selectedCustomer]);
 
   React.useEffect(() => {
     // console.log('Update : availableSlotsWeeklyByFilter:: ', availableSlotsWeeklyByFilter);
@@ -1381,7 +1387,7 @@ export function BookingFormDialog({
                 )}
               </Grid>
             ) : (
-              <Typography>No available promocodes</Typography>
+              <Typography></Typography>
             )}
           </Grid>
         </Stack>
