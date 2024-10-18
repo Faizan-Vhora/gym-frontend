@@ -58,12 +58,12 @@ export const paths = {
 
   bookings: {
     bookingsList: '/dashboard/bookings',
-    bookingsView: (id?: number) => `/dashboard/bookings/view/${id}`
+    bookingsView: (id?: number) => `/dashboard/bookings/view/${id}`,
   },
 
   notification: {
     notificationList: '/dashboard/notification',
-    
+
   },
 
   dashboard: {
