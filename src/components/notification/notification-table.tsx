@@ -3,7 +3,7 @@ import {
   Box,
   Card,
   Divider,
-  Stack,
+  IconButton,
   Table,
   TableBody,
   TableCell,
@@ -16,6 +16,7 @@ import { ToastContainer } from 'react-toastify'; // Import toast and ToastContai
 
 import 'react-toastify/dist/ReactToastify.css'; // Import toast styles
 
+import { Trash } from '@phosphor-icons/react';
 import dayjs from 'dayjs';
 
 import tableCss from '@/styles/table-css';
@@ -26,6 +27,8 @@ export interface NotificationEntry {
   title: string;
   message: string;
   notificationType: number;
+  noOfNotifications: number;
+  redirectionPath: string;
   isRead: boolean;
   data: string;
   createdAt: Date | string | null;
@@ -40,6 +43,7 @@ interface NotificationTableProps {
   totalEntries: number;
   onPageChange: (newPage: number) => void;
   onRowsPerPageChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  onDelete: (id: number) => void;
 }
 
 export function NotificationTable({
@@ -49,6 +53,7 @@ export function NotificationTable({
   totalEntries,
   onPageChange,
   onRowsPerPageChange,
+  onDelete,
 }: NotificationTableProps): React.JSX.Element {
   return (
     <>
@@ -57,10 +62,11 @@ export function NotificationTable({
           <Table sx={{ minWidth: '800px' }}>
             <TableHead>
               <TableRow sx={tableCss.tableRow}>
-                <TableCell sx={tableCss.tableHeaderCell}>User Details</TableCell>
                 <TableCell sx={tableCss.tableHeaderCell}>Title</TableCell>
                 <TableCell sx={tableCss.tableHeaderCell}>Message</TableCell>
+                <TableCell sx={tableCss.tableHeaderCell}>Users Count</TableCell>
                 <TableCell sx={tableCss.tableHeaderCell}>Created At</TableCell>
+                <TableCell sx={tableCss.tableHeaderCell}>Action</TableCell>
               </TableRow>
             </TableHead>
 
@@ -74,20 +80,19 @@ export function NotificationTable({
               ) : (
                 entries.map((entry) => (
                   <TableRow hover key={entry.id} sx={tableCss.tableRow}>
-                    <TableCell sx={tableCss.tableCell}>
-                      <Stack direction="row" spacing={2}>
-                        <Box>
-                          <Typography variant="subtitle2">{entry?.user?.fullName}</Typography>
-                          <Typography color="textSecondary" variant="body2">
-                            {entry?.user?.email}
-                          </Typography>
-                        </Box>
-                      </Stack>
-                    </TableCell>
                     <TableCell sx={tableCss.tableCell}>{entry?.title}</TableCell>
-                    <TableCell sx={tableCss.tableCell}>{entry?.message}</TableCell>
-
+                    <TableCell sx={tableCss.tableCell} dangerouslySetInnerHTML={{ __html: entry?.message }} />
+                    <TableCell sx={tableCss.tableCell}>{entry?.noOfNotifications}</TableCell>
                     <TableCell sx={tableCss.tableCell}>{dayjs(entry.createdAt).format('MMM D, YYYY')}</TableCell>
+                    <TableCell sx={tableCss.tableCell}>
+                      <IconButton
+                        onClick={() => {
+                          onDelete(entry.id);
+                        }}
+                      >
+                        <Trash />
+                      </IconButton>
+                    </TableCell>
                   </TableRow>
                 ))
               )}

@@ -1,7 +1,7 @@
 import React from 'react';
 import { BOOKING_PAYMENT_TYPE, BOOKING_TYPE, WEEKDAY_NAME, WEEKDAY_OPTIONS, WeekDayOptionsI } from '@/utils/constant';
 import { formatAmount } from '@/utils/converter';
-import { calculateWeeksBetweenDates, formatDate } from '@/utils/date-utils';
+import { calculateWeeksBetweenDates, formatDate, formatTo12HourFormat } from '@/utils/date-utils';
 import { CustomLoader } from '@/utils/loader';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
@@ -183,20 +183,6 @@ export function BookingFormDialog({
   const [sameTimeForSelectedDays, setSameTimeForSelectedDays] = React.useState<boolean>(false);
   const [referenceSlotsForSameTime, setReferenceSlotsForSameTime] = React.useState<SlotI[]>([]);
   const [selectedSlotsForSameDays, setSelectedSlotsForSameDays] = React.useState<SelectedSlotsI>({});
-  const [cleared, setCleared] = React.useState<boolean>(false);
-
-  React.useEffect(() => {
-    if (cleared) {
-      const timeout = setTimeout(() => {
-        setCleared(false);
-      }, 1500);
-
-      return () => {
-        clearTimeout(timeout);
-      };
-    }
-    return;
-  }, [cleared]);
 
   // Fetch data
   const fetchCustomers = async (): Promise<void> => {
@@ -748,6 +734,33 @@ export function BookingFormDialog({
                 name="customerId"
                 render={({ field }) => (
                   <FormControl fullWidth error={Boolean(errors.customerId)}>
+                    <Autocomplete
+                      options={customerOptions}
+                      getOptionLabel={(option) => `${option.memberId} | ${option.fullName}` || ''}
+                      isOptionEqualToValue={(option, value) => option.id === value.id}
+                      onChange={(e, value) => {
+                        const customerId = value ? Number(value.id) : 0;
+                        field.onChange(customerId);
+                        handleCustomerChange(customerId);
+                      }}
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          label="Member"
+                          error={Boolean(errors.customerId)}
+                          helperText={errors.customerId ? errors.customerId.message : null}
+                        />
+                      )}
+                    />
+                    {errors.customerId && <FormHelperText>{errors.customerId.message}</FormHelperText>}
+                  </FormControl>
+                )}
+              />
+              {/* <Controller
+                control={control}
+                name="customerId"
+                render={({ field }) => (
+                  <FormControl fullWidth error={Boolean(errors.customerId)}>
                     <InputLabel>Member</InputLabel>
                     <Select
                       {...field}
@@ -771,7 +784,7 @@ export function BookingFormDialog({
                     {errors.customerId && <FormHelperText>{errors.customerId.message}</FormHelperText>}
                   </FormControl>
                 )}
-              />
+              /> */}
 
               {selectedCustomer && (
                 <Card
@@ -830,6 +843,33 @@ export function BookingFormDialog({
                 name="trainerId"
                 render={({ field }) => (
                   <FormControl fullWidth error={Boolean(errors.trainerId)}>
+                    <Autocomplete
+                      options={trainerOptions}
+                      getOptionLabel={(option) => `${option.memberId} | ${option.fullName}` || ''}
+                      isOptionEqualToValue={(option, value) => option.id === value.id}
+                      onChange={(e, value) => {
+                        const trainerId = value ? Number(value.id) : 0;
+                        field.onChange(trainerId);
+                        handleTrainerChange(trainerId);
+                      }}
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          label="Trainer"
+                          error={Boolean(errors.trainerId)}
+                          helperText={errors.trainerId ? errors.trainerId.message : null}
+                        />
+                      )}
+                    />
+                    {errors.trainerId && <FormHelperText>{errors.trainerId.message}</FormHelperText>}
+                  </FormControl>
+                )}
+              />
+              {/* <Controller
+                control={control}
+                name="trainerId"
+                render={({ field }) => (
+                  <FormControl fullWidth error={Boolean(errors.trainerId)}>
                     <InputLabel>Trainer</InputLabel>
                     <Select
                       {...field}
@@ -853,7 +893,7 @@ export function BookingFormDialog({
                     {errors.trainerId && <FormHelperText>{errors.trainerId.message}</FormHelperText>}
                   </FormControl>
                 )}
-              />
+              /> */}
 
               {selectedTrainer && (
                 <Card
@@ -949,12 +989,6 @@ export function BookingFormDialog({
                             error: Boolean(errors.bookingDate),
                             helperText: errors.bookingDate?.message,
                           },
-                          field: {
-                            clearable: true,
-                            onClear: () => {
-                              setCleared(true);
-                            },
-                          },
                         }}
                         shouldDisableDate={(date) => {
                           return trainerBlockDatesList.includes(dayjs(date).format('YYYY-MM-DD'));
@@ -997,12 +1031,6 @@ export function BookingFormDialog({
                             error: Boolean(errors.bookingStartDate),
                             helperText: errors.bookingStartDate?.message,
                           },
-                          field: {
-                            clearable: true,
-                            onClear: () => {
-                              setCleared(true);
-                            },
-                          },
                         }}
                         shouldDisableDate={(date) => {
                           return trainerBlockDatesList.includes(dayjs(date).format('YYYY-MM-DD'));
@@ -1038,12 +1066,6 @@ export function BookingFormDialog({
                           textField: {
                             error: Boolean(errors.bookingEndDate),
                             helperText: errors.bookingEndDate?.message,
-                          },
-                          field: {
-                            clearable: true,
-                            onClear: () => {
-                              setCleared(true);
-                            },
                           },
                         }}
                         shouldDisableDate={(date) => {
@@ -1167,7 +1189,7 @@ export function BookingFormDialog({
                             ) : (
                               <>
                                 <Checkbox checked={selected} disabled={!option.isAvailable || isPastDatetime(option)} />
-                                {`${option.startTime} - ${option.endTime}`}
+                                {`${option.startTime && formatTo12HourFormat(option.startTime)} - ${option.endTime && formatTo12HourFormat(option.endTime)}`}
                               </>
                             )}
                           </li>
@@ -1226,7 +1248,7 @@ export function BookingFormDialog({
                                     checked={selected}
                                     disabled={!option.isAvailable || isPastDatetime(option)}
                                   />
-                                  {`${option.startTime} - ${option.endTime}`}
+                                  {`${option.startTime && formatTo12HourFormat(option.startTime)} - ${option.endTime && formatTo12HourFormat(option.endTime)}`}
                                 </>
                               )}
                             </li>

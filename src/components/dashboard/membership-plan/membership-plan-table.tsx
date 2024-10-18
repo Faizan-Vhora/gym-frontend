@@ -127,7 +127,14 @@ export function MembershipPlanTable({
 
                     <TableCell sx={tableCss.tableCell}>{row.durationInMonths} months</TableCell>
                     <TableCell sx={tableCss.tableCell}>{formatPaymentFrequency(row.paymentFrequency)}</TableCell>
-                    <TableCell sx={[tableCss.tableCell,{ textOverflow: 'ellipsis !important',maxWidth: '120px !important',overflow:'hidden'}]}>{row.description}</TableCell>
+                    <TableCell
+                      sx={[
+                        tableCss.tableCell,
+                        { textOverflow: 'ellipsis !important', maxWidth: '120px !important', overflow: 'hidden' },
+                      ]}
+                    >
+                      {row.description}
+                    </TableCell>
 
                     <TableCell sx={tableCss.tableCell}>
                       <FormControlLabel

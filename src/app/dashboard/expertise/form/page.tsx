@@ -23,6 +23,7 @@ import { toast, ToastContainer } from 'react-toastify';
 import { z } from 'zod';
 
 import axiosInstance from '@/lib/axios';
+import CustomEditor from '@/components/ckeditor';
 
 const expertiseSchema = z.object({
   title: z
@@ -42,6 +43,8 @@ interface ExpertiseEntry extends ExpertiseFormData {
 
 export default function ExpertiseForm(): React.JSX.Element {
   const [loading, setLoading] = React.useState(false);
+  const [expertise, setExpertise] = React.useState<ExpertiseEntry>();
+  const [editorContent, setEditorContent] = React.useState<string>(''); // State for the editor content
   const router = useRouter();
   const searchParams = useSearchParams();
   const expertiseId = searchParams.get('id');
@@ -51,11 +54,12 @@ export default function ExpertiseForm(): React.JSX.Element {
     handleSubmit,
     formState: { errors },
     reset,
-    register, // Add register function from useForm
+    setValue, // Import setValue to update form state
   } = useForm<ExpertiseFormData>({
     resolver: zodResolver(expertiseSchema),
     defaultValues: {
       title: '',
+      description: '', // Default description value
       status: 'active',
     },
   });
@@ -67,6 +71,8 @@ export default function ExpertiseForm(): React.JSX.Element {
         .get<{ data: ExpertiseEntry }>(`/expertise/${expertiseId}`)
         .then((response) => {
           reset(response.data.data);
+          setExpertise(response.data.data);
+          setEditorContent(response.data.data.description || ''); // Set the editor content
         })
         .catch((error: unknown) => {
           error instanceof Error ? error.message : 'An unexpected error occurred';
@@ -86,7 +92,7 @@ export default function ExpertiseForm(): React.JSX.Element {
       await axiosInstance({
         method,
         url,
-        data,
+        data: { ...data, description: editorContent }, // Include the editor content
       });
 
       toast.success(`Expertise ${expertiseId ? 'updated' : 'created'} successfully`);
@@ -100,10 +106,7 @@ export default function ExpertiseForm(): React.JSX.Element {
 
   return (
     <Card>
-      <CardHeader
-        style={{ fontFamily: '"Audiowide", sans-serif' }}
-        title={expertiseId ? 'Edit Expertise' : 'Create Expertise'}
-      />
+      <CardHeader title={expertiseId ? 'Edit Expertise' : 'Create Expertise'} />
       <Divider />
       <CardContent>
         <form onSubmit={handleSubmit(onSubmit)}>
@@ -122,25 +125,28 @@ export default function ExpertiseForm(): React.JSX.Element {
             </Grid>
             {/* Description Field */}
             <Grid item xs={9}>
-              <FormControl fullWidth>
-              <InputLabel htmlFor="description">Description</InputLabel>
-                <TextField
-                  {...register('description')} // Register the description field
-                  label="Description"
-                  error={Boolean(errors.description)}
-                  helperText={errors.description?.message}
-                  multiline
-                  rows={4} // Increase the number of rows here
-                  variant="outlined"
-                  fullWidth
+              <InputLabel>Description</InputLabel>
+              <FormControl fullWidth error={Boolean(errors.description)}>
+                <Controller
+                  name="description"
+                  control={control}
+                  render={({ field }) => (
+                    <CustomEditor
+                      data={editorContent}
+                      onChange={(data) => {
+                        setEditorContent(data); // Update local editor state
+                        setValue('description', data); // Update react-hook-form state
+                      }}
+                    />
+                  )}
                 />
-                {errors.description && <FormHelperText error>{errors.description.message}</FormHelperText>}
+                {errors.description && <FormHelperText>{errors.description.message}</FormHelperText>}
               </FormControl>
             </Grid>
             {/* Action Buttons */}
             <Grid item xs={12} container spacing={2} justifyContent="flex-end">
               <Grid item>
-                <Button type="submit" className="common-button" variant="contained" disabled={loading}>
+                <Button type="submit" variant="contained" disabled={loading} className="common-button">
                   Save
                 </Button>
               </Grid>
@@ -150,12 +156,9 @@ export default function ExpertiseForm(): React.JSX.Element {
                   onClick={() => {
                     router.push('/dashboard/expertise');
                   }}
-                  disabled={loading}
                   sx={{
                     borderColor: '#d0021b',
                     color: '#d0021b',
-                    fontSize:'18px',
-                    fontWeight:'400',
                     transform: 'skewX(-20deg)',
                     '&:hover': {
                       borderColor: 'darkred',
@@ -167,7 +170,6 @@ export default function ExpertiseForm(): React.JSX.Element {
                 </Button>
               </Grid>
             </Grid>
-
             {/* Loader */}
             {loading && (
               <Grid item xs={12}>

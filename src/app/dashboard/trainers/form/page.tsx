@@ -174,45 +174,33 @@ export default function TrainerEditForm(): React.JSX.Element {
     setPage(0);
   };
 
-  useEffect(() => {
-    const fetchEntries: () => Promise<void> = async () => {
-      setLoading(true);
-      try {
-        const params = {
-          page: checkInPage + 1,
-          limit: checkInRowsPerPage,
-          userId: id,
-          userType: 2,
-        };
-        const response = await axiosInstance.get<CheckinResponse>('/entry-logs', { params });
+  const fetchEntries: () => Promise<void> = async () => {
+    setLoading(true);
+    try {
+      const params = {
+        page: checkInPage + 1,
+        limit: checkInRowsPerPage,
+        userId: id,
+        userType: 2,
+      };
+      const response = await axiosInstance.get<CheckinResponse>('/entry-logs', { params });
 
-        const { items, meta } = response.data.data;
-        if (Array.isArray(items)) {
-          setCheckInEntries(items);
-          setTotalCheckInEntries(meta.totalItems);
-        } else {
-          toast.error(
-            `Unexpected response data format: ${response.data.errors ? JSON.stringify(response.data.errors) : 'No errors available'}`
-          );
-          setError('Unexpected data format.');
-        }
-      } catch (err) {
-        err instanceof Error ? err.message : 'An unexpected error occurred';
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchEntries().catch((err: unknown) => {
-      let errorMessage: string;
-      if (err instanceof Error) {
-        errorMessage = err.message;
+      const { items, meta } = response.data.data;
+      if (Array.isArray(items)) {
+        setCheckInEntries(items);
+        setTotalCheckInEntries(meta.totalItems);
       } else {
-        errorMessage = 'An unexpected error occurred';
+        toast.error(
+          `Unexpected response data format: ${response.data.errors ? JSON.stringify(response.data.errors) : 'No errors available'}`
+        );
+        setError('Unexpected data format.');
       }
-      toast.error(errorMessage);
-    });
-  }, [checkInPage, checkInRowsPerPage]);
+    } catch (err) {
+      err instanceof Error ? err.message : 'An unexpected error occurred';
+    } finally {
+      setLoading(false);
+    }
+  };
 
   interface TrainerData {
     data: Trainer;
@@ -257,6 +245,9 @@ export default function TrainerEditForm(): React.JSX.Element {
 
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
     setTab(newValue);
+    if (newValue === 3) {
+      void fetchEntries();
+    }
   };
 
   const handleRemoveImage = (): void => {

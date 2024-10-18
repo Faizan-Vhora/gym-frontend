@@ -42,7 +42,7 @@ export function NotificationFilters({ onSearchChange }: NotificationFiltersProps
       <Grid item md={6} xs={12}>
         <TextField
           fullWidth
-          label="Search by title, Name or Email"
+          label="Search by title"
           variant="outlined"
           value={searchTerm}
           onChange={handleSearchChange}

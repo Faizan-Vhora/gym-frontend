@@ -213,20 +213,17 @@ export default function CustomerEditForm(): React.JSX.Element {
     paymentFrequency: string;
   }
 
-  useEffect(() => {
-    const fetchPlans = async () => {
-      try {
-        const response = await axiosInstance.get<MembershipPlanResponse>('/membership-types/dropdown');
-        setPlans(response.data.data);
-        setLoading(true);
-      } catch (err: unknown) {
-        err instanceof Error ? err.message : 'An unexpected error occurred';
-      } finally {
-        setLoading(false);
-      }
-    };
-    void fetchPlans();
-  }, []);
+  const fetchPlans = async () => {
+    try {
+      const response = await axiosInstance.get<MembershipPlanResponse>('/membership-types/dropdown');
+      setPlans(response.data.data);
+      setLoading(true);
+    } catch (err: unknown) {
+      err instanceof Error ? err.message : 'An unexpected error occurred';
+    } finally {
+      setLoading(false);
+    }
+  };
 
   interface ErrorDetail {
     code?: string;
@@ -252,45 +249,33 @@ export default function CustomerEditForm(): React.JSX.Element {
     setPage(0);
   };
 
-  useEffect(() => {
-    const fetchEntries: () => Promise<void> = async () => {
-      setLoading(true);
-      try {
-        const params = {
-          page: checkInPage + 1,
-          limit: checkInRowsPerPage,
-          userId: id,
-          userType: 3,
-        };
-        const response = await axiosInstance.get<CheckinResponse>('/entry-logs', { params });
+  const fetchEntries: () => Promise<void> = async () => {
+    setLoading(true);
+    try {
+      const params = {
+        page: checkInPage + 1,
+        limit: checkInRowsPerPage,
+        userId: id,
+        userType: 3,
+      };
+      const response = await axiosInstance.get<CheckinResponse>('/entry-logs', { params });
 
-        const { items, meta } = response.data.data;
-        if (Array.isArray(items)) {
-          setCheckInEntries(items);
-          setTotalCheckInEntries(meta.totalItems);
-        } else {
-          toast.error(
-            `Unexpected response data format: ${response.data.errors ? JSON.stringify(response.data.errors) : 'No errors available'}`
-          );
-          setError('Unexpected data format.');
-        }
-      } catch (err: unknown) {
-        err instanceof Error ? err.message : 'An unexpected error occurred';
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchEntries().catch((err: unknown) => {
-      let errorMessage: string;
-      if (err instanceof Error) {
-        errorMessage = err.message;
+      const { items, meta } = response.data.data;
+      if (Array.isArray(items)) {
+        setCheckInEntries(items);
+        setTotalCheckInEntries(meta.totalItems);
       } else {
-        errorMessage = 'An unexpected error occurred';
+        toast.error(
+          `Unexpected response data format: ${response.data.errors ? JSON.stringify(response.data.errors) : 'No errors available'}`
+        );
+        setError('Unexpected data format.');
       }
-      toast.error(errorMessage);
-    });
-  }, [checkInPage, checkInRowsPerPage]);
+    } catch (err: unknown) {
+      err instanceof Error ? err.message : 'An unexpected error occurred';
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
     const file = event.target.files?.[0];
@@ -322,6 +307,12 @@ export default function CustomerEditForm(): React.JSX.Element {
 
   const handleTabChange = (_: React.SyntheticEvent, newValue: number) => {
     setTab(newValue);
+    if (newValue === 2) {
+      void fetchEntries();
+    }
+    if (newValue === 1) {
+      void fetchPlans();
+    }
   };
 
   const onSubmit = async (data: CustomerFormInputs, destination: string): Promise<void> => {

@@ -117,13 +117,36 @@ const UnavailableDateRanges = () => {
 
   return (
     <Card>
-      <CardHeader style={{ fontFamily: '"Audiowide", sans-serif' }} title="Block Days" />
+      <Grid container>
+        <Grid item md={9}>
+          <CardHeader style={{ fontFamily: '"Audiowide", sans-serif' }} title="Block Days" />
+        </Grid>
+        <Grid item xs={12} sm={6} md={2} sx={{ padding: '15px', display: 'flex', justifyContent: 'end' }}>
+          <Button
+            variant="outlined"
+            onClick={addDateRange}
+            style={{ marginTop: '16px' }}
+            sx={{
+              borderColor: '#d0021b',
+              color: '#d0021b',
+              marginLeft: '15px',
+              transform: 'skewX(-20deg)',
+              '&:hover': {
+                borderColor: 'darkred',
+                backgroundColor: 'rgba(255, 0, 0, 0.1)',
+              },
+            }}
+          >
+            +
+          </Button>
+        </Grid>
+      </Grid>
       <Divider />
       <LocalizationProvider dateAdapter={AdapterDayjs}>
         {isLoading ? (
           <CustomLoader /> // Show loading state
         ) : (
-          <form style={{ marginTop: '40px' }} onSubmit={handleSubmit(onSubmit)}>
+          <form onSubmit={handleSubmit(onSubmit)}>
             {unavailableDates.map((dateRange, index) => (
               <Grid container alignItems={'center'} key={index} sx={{ marginLeft: '5px' }}>
                 <Grid item xs={12} sm={6} md={4} sx={{ padding: '15px' }}>
@@ -200,24 +223,6 @@ const UnavailableDateRanges = () => {
               </Grid>
             ))}
             <Stack className="trainerbtn" alignItems={'end'} flexDirection={'row'} justifyContent={'end'} padding={5}>
-              <Button
-                variant="outlined"
-                onClick={addDateRange}
-                style={{ marginTop: '16px' }}
-                sx={{
-                  borderColor: '#d0021b',
-                  color: '#d0021b',
-                  marginLeft: '15px',
-                  transform: 'skewX(-20deg)',
-                  '&:hover': {
-                    borderColor: 'darkred',
-                    backgroundColor: 'rgba(255, 0, 0, 0.1)',
-                  },
-                }}
-              >
-                + Add Another Date Range
-              </Button>
-
               <Button
                 type="submit"
                 className="common-button"

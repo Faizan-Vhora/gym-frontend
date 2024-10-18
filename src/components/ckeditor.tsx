@@ -15,7 +15,6 @@ function CustomEditor({ data, customePlaceholder, onChange }: CustomEditorProps)
     shouldNotGroupWhenFull: true,
     toolbar: ['undo', 'redo', '|', 'bold', 'italic', 'link', 'bulletedList', 'numberedList', 'blockQuote'],
     placeholder: customePlaceholder || 'Type your content here...', // Use placeholder if provided, fallback otherwise
-    removePlugins: ['CKEditor5Watermark'],
   };
 
   return (

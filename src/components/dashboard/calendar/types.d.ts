@@ -231,7 +231,7 @@ export interface DiscountEntryI {
   codeName: string;
   expiryDate: string; // Updated from Date to string for API data handling
   discountType: DiscountType;
-  usageLimit: UsageLimit;
+  usageLimit: number;
   discountValue: number;
   description: string;
   status: DiscountStatus;
