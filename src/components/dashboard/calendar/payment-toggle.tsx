@@ -21,10 +21,26 @@ const PaymentToggle: React.FC<PaymentToggleProps> = ({ netTotalAmount, setPaymen
 
   return (
     <ToggleButtonGroup sx={{columnGap:'20px'}} value={paymentType} exclusive onChange={handlePaymentChange} aria-label="payment type">
-      <ToggleButton sx={{border:'1px solid #D60227 !important',borderRadius:'0px',fontSize:'18px ',fontWeight:'400', transform: 'skewX(-10deg)', color:'#D60227 !important', background:"#fff !important",fontFamily: 'Audiowide, sans-serif !important'}} value={BOOKING_PAYMENT_TYPE.PER_SESSION} aria-label="pay per session">
+      <ToggleButton
+          sx={
+            paymentType == BOOKING_PAYMENT_TYPE.PER_SESSION ?
+            {background:'#D60227 !important', borderRadius:'0px',fontSize:'18px ',fontWeight:'400',  transform: 'skewX(-10deg)', color:'#fff !important', fontFamily: 'Audiowide, sans-serif !important'}
+            :
+            {border:'1px solid #D60227 !important',borderRadius:'0px',fontSize:'18px ',fontWeight:'400', transform: 'skewX(-10deg)', color:'#D60227 !important', background:"#fff !important",fontFamily: 'Audiowide, sans-serif !important'}
+          }
+          value={BOOKING_PAYMENT_TYPE.PER_SESSION}
+          aria-label="pay per session">
         Pay per session
       </ToggleButton>
-      <ToggleButton sx={{background:'#D60227 !important', borderRadius:'0px',fontSize:'18px ',fontWeight:'400',  transform: 'skewX(-10deg)', color:'#fff !important', fontFamily: 'Audiowide, sans-serif !important'}}  value={BOOKING_PAYMENT_TYPE.FULL} aria-label="pay in full">
+      <ToggleButton
+          sx={
+            paymentType == BOOKING_PAYMENT_TYPE.FULL ?
+            {background:'#D60227 !important', borderRadius:'0px',fontSize:'18px ',fontWeight:'400',  transform: 'skewX(-10deg)', color:'#fff !important', fontFamily: 'Audiowide, sans-serif !important'}
+            :
+            {border:'1px solid #D60227 !important',borderRadius:'0px',fontSize:'18px ',fontWeight:'400', transform: 'skewX(-10deg)', color:'#D60227 !important', background:"#fff !important",fontFamily: 'Audiowide, sans-serif !important'}
+          }
+        value={BOOKING_PAYMENT_TYPE.FULL}
+        aria-label="pay in full">
         Pay in Full {formatAmount(netTotalAmount)}
       </ToggleButton>
     </ToggleButtonGroup>
