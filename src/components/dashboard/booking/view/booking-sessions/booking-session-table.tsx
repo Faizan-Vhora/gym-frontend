@@ -18,7 +18,10 @@ import { ToastContainer } from 'react-toastify'; // Import toast and ToastContai
 
 import 'react-toastify/dist/ReactToastify.css'; // Import toast styles
 
-import { BOOKING_SESSION_STATUS, BOOKING_SESSION_STATUS_DETAILS } from '@/utils/constant';
+import {
+  BOOKING_SESSION_STATUS,
+  BOOKING_SESSION_STATUS_DETAILS,
+} from '@/utils/constant';
 import { formatAmount } from '@/utils/converter';
 import { formatDate, formatTo12HourFormat } from '@/utils/date-utils';
 import { ArrowsClockwise, Eye, Note, XCircle } from '@phosphor-icons/react';
@@ -218,15 +221,13 @@ export function BookingSessionTable({
 
                     <TableCell sx={tableCss.tableCell}>
                       <Stack direction="row" spacing={1} alignItems="center">
-
-                      <IconButton
+                        <IconButton
                           onClick={() => {
                             handleSessionPreview(entry);
                           }}
                         >
                           <Eye />
                         </IconButton>
-
 
                         <IconButton
                           onClick={() => {
@@ -244,17 +245,16 @@ export function BookingSessionTable({
                           <ArrowsClockwise />
                         </IconButton>
 
-                        {entry.status !== BOOKING_SESSION_STATUS.CANCELLED ? (
-                          <IconButton
-                            onClick={() => {
-                              handleStatusChange(entry.id, BOOKING_SESSION_STATUS.CANCELLED);
-                            }}
-                          >
-                            <XCircle />
-                          </IconButton>
-                        ) : (
-                          <></>
-                        )}
+                        <IconButton
+                          disabled={[BOOKING_SESSION_STATUS.COMPLETED, BOOKING_SESSION_STATUS.CANCELLED].includes(
+                            entry.status
+                          )}
+                          onClick={() => {
+                            handleStatusChange(entry.id, BOOKING_SESSION_STATUS.CANCELLED);
+                          }}
+                        >
+                          <XCircle />
+                        </IconButton>
                       </Stack>
                     </TableCell>
                   </TableRow>
