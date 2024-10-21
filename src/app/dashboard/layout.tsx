@@ -45,7 +45,18 @@ export default function Layout({ children }: LayoutProps): React.JSX.Element {
           <main>
             <Container maxWidth="xl" sx={{ py: '64px' }}>
               {children}
-              <ToastContainer />
+              <ToastContainer
+                position="top-right"
+                autoClose={5000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="light"
+              />
             </Container>
           </main>
         </Box>
