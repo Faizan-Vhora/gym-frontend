@@ -163,7 +163,7 @@ export default function WeekdayTimeSlots() {
     };
 
     void fetchTrainerAvailabilitySlots();
-  }, [id, setValue, setSameTimeForAllDay]);
+  }, [id]);
 
   const applySameTimeToAll = () => {
     const currentDays = watch('days');
@@ -209,8 +209,11 @@ export default function WeekdayTimeSlots() {
 
           const updatedDays = currentDays.map((day) => ({
             ...day,
-            timeSlots: day.isChecked ? [...firstDayTimeSlots] : [],
+            isChecked : true,
+            timeSlots: [...firstDayTimeSlots],
           }));
+
+          console.log("updatedDays:: ", updatedDays)
 
           setValue('days', updatedDays);
         }
