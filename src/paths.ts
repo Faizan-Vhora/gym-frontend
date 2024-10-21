@@ -66,6 +66,10 @@ export const paths = {
 
   },
 
+  trainerReport: {
+    list: '/dashboard/reports/trainer'
+  },
+
   dashboard: {
     dashboard: '/dashboard',
     account: '/dashboard/account',

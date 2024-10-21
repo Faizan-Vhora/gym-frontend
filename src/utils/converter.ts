@@ -1,11 +1,11 @@
 export const CURRENCY_SYMBOLE = '$';
 
-export const formatAmount = (amount: number | undefined | null) => {
+export const formatAmount = (amount: number | undefined | null | string) => {
   try {
     if (amount === null || amount === undefined) {
       return `${CURRENCY_SYMBOLE}0.00`; // Fallback in case of error
     }
-    return `${CURRENCY_SYMBOLE}${amount.toFixed(2)}`;
+    return `${CURRENCY_SYMBOLE}${Number(amount).toFixed(2)}`;
   } catch (error) {
     return `${CURRENCY_SYMBOLE}0.00`; // Fallback in case of error
   }
