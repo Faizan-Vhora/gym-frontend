@@ -17,29 +17,33 @@ const CmsSection: React.FC<CmsSectionProps> = ({ id, title, content }) => {
   };
 
   return (
-    <Card
-      sx={{
-        marginBottom: 2,
-        padding: 10,
-        position: 'relative',
-        marginTop: 2,
-        maxHeight: '350px', // Adjust the height as needed
-        overflowY: 'scroll',
-        // overflow:'hidden',
-        textOverflow: 'ellipsis',
-        whiteSpace: 'nowrap',
-        textWrap:'wrap',
-
-      }}
-    >
-      <Typography style={{ fontFamily: '"Audiowide", sans-serif', }} variant="h6">
+    <>
+      <Typography style={{ fontFamily: '"Audiowide", sans-serif' }} variant="h5">
         {title}
       </Typography>
-      <IconButton sx={{ position: 'absolute', top: 8, right: 8,   }} onClick={handleEditClick}>
-        <PencilSimple />
-      </IconButton>
-      <Box sx={{ width: '100%',overflow:'hidden',textOverflow: 'ellipsis'}} dangerouslySetInnerHTML={{ __html: content }} />
-    </Card>
+      <Card
+        sx={{
+          marginBottom: 5,
+          padding: 10,
+          position: 'relative',
+          marginTop: 2,
+          maxHeight: '300px', // Adjust the height as needed
+          overflowY: 'scroll',
+          // overflow:'hidden',
+          textOverflow: 'ellipsis',
+          whiteSpace: 'nowrap',
+          textWrap: 'wrap',
+        }}
+      >
+        <IconButton sx={{ position: 'absolute', top: 8, right: 8 }} onClick={handleEditClick}>
+          <PencilSimple />
+        </IconButton>
+        <Box
+          sx={{ width: '100%', overflow: 'hidden', textOverflow: 'ellipsis' }}
+          dangerouslySetInnerHTML={{ __html: content }}
+        />
+      </Card>
+    </>
   );
 };
 
