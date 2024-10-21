@@ -12,7 +12,7 @@ import Swal from 'sweetalert2';
 
 import axiosInstance from '@/lib/axios';
 import { usePopover } from '@/hooks/use-popover';
-import { NotificationEntry } from '@/components/notification/notification-table';
+import { NotificationEntry } from '@/components/dashboard/notification/notification-table';
 
 import { MobileNav } from './mobile-nav';
 import { NotificationsPopover } from './notification-popover';

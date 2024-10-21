@@ -10,8 +10,8 @@ import { toast, ToastContainer } from 'react-toastify';
 import Swal from 'sweetalert2';
 
 import axiosInstance from '@/lib/axios';
-import { NotificationFilters } from '@/components/notification/notification-filter';
-import { NotificationEntry, NotificationTable } from '@/components/notification/notification-table';
+import { NotificationFilters } from '@/components/dashboard/notification/notification-filter';
+import { NotificationEntry, NotificationTable } from '@/components/dashboard/notification/notification-table';
 
 export default function Page(): React.JSX.Element {
   const router = useRouter();
