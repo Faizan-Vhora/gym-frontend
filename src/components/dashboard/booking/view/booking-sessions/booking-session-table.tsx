@@ -21,7 +21,7 @@ import 'react-toastify/dist/ReactToastify.css'; // Import toast styles
 import { BOOKING_SESSION_STATUS, BOOKING_SESSION_STATUS_DETAILS } from '@/utils/constant';
 import { formatAmount } from '@/utils/converter';
 import { formatDate, formatTo12HourFormat } from '@/utils/date-utils';
-import { ArrowsClockwise, Note, XCircle } from '@phosphor-icons/react';
+import { ArrowsClockwise, Eye, Note, XCircle } from '@phosphor-icons/react';
 
 import tableCss from '@/styles/table-css';
 
@@ -83,6 +83,7 @@ interface BookingTableProps {
   totalEntries: number;
   onUpdateStatus: (id: number, newStatus: BookingSessionEntry['status']) => void;
   onUpdateNotes: (session: BookingSessionEntry) => void;
+  onPreviewSession: (session: BookingSessionEntry) => void;
   onRescheduleSession: (session: BookingSessionEntry) => void;
   onPageChange: (newPage: number) => void;
   onRowsPerPageChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
@@ -95,6 +96,7 @@ export function BookingSessionTable({
   totalEntries,
   onUpdateStatus,
   onUpdateNotes,
+  onPreviewSession,
   onRescheduleSession,
   onPageChange,
   onRowsPerPageChange,
@@ -105,6 +107,10 @@ export function BookingSessionTable({
 
   const handleNotesChange = (session: BookingSessionEntry): void => {
     onUpdateNotes(session);
+  };
+
+  const handleSessionPreview = (session: BookingSessionEntry): void => {
+    onPreviewSession(session);
   };
 
   const handleRescheduleSession = (session: BookingSessionEntry): void => {
@@ -212,6 +218,16 @@ export function BookingSessionTable({
 
                     <TableCell sx={tableCss.tableCell}>
                       <Stack direction="row" spacing={1} alignItems="center">
+
+                      <IconButton
+                          onClick={() => {
+                            handleSessionPreview(entry);
+                          }}
+                        >
+                          <Eye />
+                        </IconButton>
+
+
                         <IconButton
                           onClick={() => {
                             handleNotesChange(entry);

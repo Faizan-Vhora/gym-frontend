@@ -28,8 +28,7 @@ const pathToPageTitle = (currentPath: string): string => {
 export default function Layout({ children }: LayoutProps): React.JSX.Element {
   const currentPath : string = usePathname();
   const pageTitle = pathToPageTitle(currentPath) || null;
-  const title =  pageTitle ? `${toTitleCase(pageTitle)} | ${config.site.name}` : `${config.site.name}`;
-
+  const title = pageTitle ? `${toTitleCase(pageTitle)} | ${config.site.name}` : config.site.name;
   const metadata = { title } satisfies Metadata;
 
   React.useEffect(() => {

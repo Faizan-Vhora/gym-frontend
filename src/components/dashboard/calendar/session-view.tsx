@@ -28,9 +28,9 @@ interface SessionNotesFormProps {
   sessionObj: BookingSessionEntry;
   open: boolean;
   onClose: () => void;
-  openRescheduleDialog: () => void;
-  openNotesDialog: () => void;
-  onUpdateStatus: (id: string, newStatus: BookingSessionEntry['status']) => void;
+  openRescheduleDialog?: () => void;
+  openNotesDialog?: () => void;
+  onUpdateStatus?: (id: string, newStatus: BookingSessionEntry['status']) => void;
 }
 
 const SessionPreview: React.FC<SessionNotesFormProps> = ({
@@ -46,7 +46,9 @@ const SessionPreview: React.FC<SessionNotesFormProps> = ({
   const PaymentStatus = BOOKING_SESSION_PAYMENT_STATUS_DETAILS[sessionObj.paymentStatus];
 
   const handleStatusChange = (id: string, newStatus: BookingSessionEntry['status']): void => {
-    onUpdateStatus(id, newStatus);
+    if (onUpdateStatus) {
+      onUpdateStatus(id, newStatus);
+    }
   };
 
   const sessionDurationInHours =
@@ -281,29 +283,37 @@ const SessionPreview: React.FC<SessionNotesFormProps> = ({
         >
           Cancel
         </Button>
-        <Button
-          onClick={openRescheduleDialog}
-          className=" btnsuccess"
-          sx={{ color: '#fff', fontFamily: 'Audiowide, sans-serif !important' }}
-        >
-          Reschedule Session
-        </Button>
-        <Button
-          sx={{ color: '#fff', fontFamily: 'Audiowide, sans-serif !important' }}
-          onClick={openNotesDialog}
-          className=" btnsuccess"
-        >
-          Update Notes
-        </Button>
-        <Button
-          sx={{ fontFamily: 'Audiowide, sans-serif !important' }}
-          className="common-button"
-          onClick={() => {
-            handleStatusChange(String(sessionObj.id), BOOKING_STATUS.CANCELED);
-          }}
-        >
-          Cancel Session
-        </Button>
+        {openRescheduleDialog && (
+          <Button
+            onClick={openRescheduleDialog}
+            className=" btnsuccess"
+            sx={{ color: '#fff', fontFamily: 'Audiowide, sans-serif !important' }}
+          >
+            Reschedule Session
+          </Button>
+        )}
+
+        {openNotesDialog && (
+          <Button
+            sx={{ color: '#fff', fontFamily: 'Audiowide, sans-serif !important' }}
+            onClick={openNotesDialog}
+            className=" btnsuccess"
+          >
+            Update Notes
+          </Button>
+        )}
+
+        {onUpdateStatus && (
+          <Button
+            sx={{ fontFamily: 'Audiowide, sans-serif !important' }}
+            className="common-button"
+            onClick={() => {
+              handleStatusChange(String(sessionObj.id), BOOKING_STATUS.CANCELED);
+            }}
+          >
+            Cancel Session
+          </Button>
+        )}
       </DialogActions>
     </Dialog>
   );
