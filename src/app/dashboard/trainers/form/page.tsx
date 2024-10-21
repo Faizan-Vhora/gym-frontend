@@ -65,7 +65,7 @@ export default function TrainerEditForm(): React.JSX.Element {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [imageFile, setImageFile] = React.useState<File | null>(null);
   const [redirectTo, setRedirectTo] = useState<'trainers' | 'additional-details'>('trainers');
-  const [tab, setTab] = useState(0); // State to control the active tab
+  const [tab, setTab] = useState(1); // State to control the active tab
   const [changeProfileImage, setChangeProfileImage] = React.useState(false);
   const [checkInPage, setPage] = useState(0);
   const [checkInRowsPerPage, setRowsPerPage] = useState(5);
@@ -222,13 +222,15 @@ export default function TrainerEditForm(): React.JSX.Element {
   }, [trainer, setValue]);
 
   React.useEffect(() => {
-    if (searchParams.get('tab') && ['0', '1', '2', '3', '4', '5'].includes(searchParams.get('tab') || '')) {
+    if (searchParams.get('tab') && ['1', '2', '3', '4', '5', '6'].includes(searchParams.get('tab') || '')) {
       setTab(Number(searchParams.get('tab')));
     }
   }, []);
 
   React.useEffect(() => {
-    router.push(`/dashboard/trainers/form?id=${id}&tab=${tab}`);
+    if (id && tab) {
+      router.push(`/dashboard/trainers/form?id=${id}&tab=${tab}`);
+    }
   }, [tab]);
 
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
@@ -255,7 +257,7 @@ export default function TrainerEditForm(): React.JSX.Element {
 
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
     setTab(newValue);
-    if (newValue === 3) {
+    if (newValue === 4) {
       void fetchEntries();
     }
   };
@@ -333,16 +335,16 @@ export default function TrainerEditForm(): React.JSX.Element {
           <Stack sx={{ marginLeft: '20px' }}>
             <Divider />
             <Tabs value={tab} onChange={handleTabChange} aria-label="Addiitional datials form tabs">
-              <Tab label="Basic Info" style={{ fontFamily: '"Audiowide", sans-serif' }} />
-              <Tab label="Profile Details" style={{ fontFamily: '"Audiowide", sans-serif' }} />
-              <Tab label="Banner Images" style={{ fontFamily: '"Audiowide", sans-serif' }} />
-              <Tab label="Check In History" style={{ fontFamily: '"Audiowide", sans-serif' }} />
-              <Tab label="Trainer Availability" style={{ fontFamily: '"Audiowide", sans-serif' }} />
-              <Tab label="Trainer Block Days" style={{ fontFamily: '"Audiowide", sans-serif' }} />
+              <Tab value={1} label="Basic Info" style={{ fontFamily: '"Audiowide", sans-serif' }} />
+              <Tab value={2} label="Profile Details" style={{ fontFamily: '"Audiowide", sans-serif' }} />
+              <Tab value={3} label="Banner Images" style={{ fontFamily: '"Audiowide", sans-serif' }} />
+              <Tab value={4} label="Check In History" style={{ fontFamily: '"Audiowide", sans-serif' }} />
+              <Tab value={5} label="Trainer Availability" style={{ fontFamily: '"Audiowide", sans-serif' }} />
+              <Tab value={6} label="Trainer Block Days" style={{ fontFamily: '"Audiowide", sans-serif' }} />
             </Tabs>
           </Stack>
         )}
-        {tab === 0 && (
+        {tab === 1 && (
           <Box component="form" onSubmit={handleSubmit((data) => onSubmit(data, redirectTo))}>
             <CardContent>
               <Stack spacing={3}>
@@ -620,9 +622,9 @@ export default function TrainerEditForm(): React.JSX.Element {
             </Stack>
           </Box>
         )}
-        {tab === 1 && <TrainerAdditionalForm />}
-        {tab === 2 && <ImageUploadCards />}
-        {tab === 3 && (
+        {tab === 2 && <TrainerAdditionalForm />}
+        {tab === 3 && <ImageUploadCards />}
+        {tab === 4 && (
           <CheckInTableView
             entries={checkInEntries}
             count={totalCheckInEntries}
@@ -632,8 +634,8 @@ export default function TrainerEditForm(): React.JSX.Element {
             onRowsPerPageChange={handleRowsPerPageChange}
           />
         )}
-        {tab === 4 && <WeekdayTimeSlots />}
-        {tab === 5 && <UnavailableDateRanges />}
+        {tab === 5 && <WeekdayTimeSlots />}
+        {tab === 6 && <UnavailableDateRanges />}
         {loading && <CustomLoader />}
         {error ? <Alert color="error">{error}</Alert> : null}
       </Card>

@@ -68,7 +68,7 @@ export default function CustomerEditForm(): React.JSX.Element {
   const [imageFile, setImageFile] = React.useState<File | null>(null);
   const [redirectTo, setRedirectTo] = useState<'customers' | 'additional-details'>('customers');
   const [plans, setPlans] = useState<PlanI[]>([]);
-  const [tab, setTab] = useState(0); // State to control the active tab
+  const [tab, setTab] = useState(1); // State to control the active tab
   const [checkInPage, setPage] = useState(0);
   const [checkInRowsPerPage, setRowsPerPage] = useState(5);
   const [checkInEntries, setCheckInEntries] = useState<CheckInEntry[]>([]);
@@ -201,13 +201,15 @@ export default function CustomerEditForm(): React.JSX.Element {
   }, [customer, setValue]);
 
   React.useEffect(() => {
-    if (searchParams.get('tab') && ['0', '1', '2'].includes(searchParams.get('tab') || '')) {
+    if (searchParams.get('tab') && ['1', '2', '3'].includes(searchParams.get('tab') || '')) {
       setTab(Number(searchParams.get('tab')));
     }
   }, []);
 
   React.useEffect(() => {
-    router.push(`/dashboard/customers/form?id=${id}&tab=${tab}`);
+    if (id && tab) {
+      router.push(`/dashboard/customers/form?id=${id}&tab=${tab}`);
+    }
   }, [tab]);
 
   interface MembershipPlanResponse {
@@ -420,15 +422,15 @@ export default function CustomerEditForm(): React.JSX.Element {
           <Stack sx={{ marginLeft: '20px' }}>
             <Divider />
             <Tabs value={tab} onChange={handleTabChange} aria-label="member form tabs">
-              <Tab label="Basic Info" style={{ fontFamily: '"Audiowide", sans-serif' }} />
-              <Tab label="Membership" style={{ fontFamily: '"Audiowide", sans-serif' }} />
-              <Tab label="Check In History" style={{ fontFamily: '"Audiowide", sans-serif' }} />
+              <Tab value={1} label="Basic Info" style={{ fontFamily: '"Audiowide", sans-serif' }} />
+              <Tab value={2} label="Membership" style={{ fontFamily: '"Audiowide", sans-serif' }} />
+              <Tab value={3} label="Check In History" style={{ fontFamily: '"Audiowide", sans-serif' }} />
             </Tabs>
           </Stack>
         )}
         <Divider />
         <CardContent>
-          {tab === 0 && (
+          {tab === 1 && (
             <Stack spacing={3}>
               <Grid container spacing={10}>
                 {id && (
@@ -658,7 +660,7 @@ export default function CustomerEditForm(): React.JSX.Element {
         </CardContent>
 
         <Divider />
-        {tab === 0 && (
+        {tab === 1 && (
           <Stack direction="row" spacing={2} justifyContent="flex-end" p={3}>
             <Button
               className="common-button"
@@ -704,7 +706,7 @@ export default function CustomerEditForm(): React.JSX.Element {
             </Button>
           </Stack>
         )}
-        {tab === 1 && (
+        {tab === 2 && (
           <>
             <Box p={2}>
               {customerS?.membership?.membershipType && (
@@ -764,7 +766,7 @@ export default function CustomerEditForm(): React.JSX.Element {
             <Divider />
           </>
         )}
-        {tab === 2 && (
+        {tab === 3 && (
           <CheckInTableView
             entries={checkInEntries}
             count={totalCheckInEntries}
