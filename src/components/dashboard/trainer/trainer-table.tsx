@@ -36,6 +36,21 @@ export interface TrainerExpertise {
   };
 }
 
+export interface TrainerAttendanceDetail {
+  available: number;
+  unAvailable: number;
+}
+
+export interface TrainerSessionDetail {
+  totalSession: number;
+  incomingSession: number;
+  startedSession: number;
+  completedSession: number;
+  cancelledSession: number;
+  sessionTotalRevenue: number;
+  sessionTotalHours: number;
+}
+
 export interface Trainer {
   id: string | number;
   fullName: string;
@@ -52,13 +67,8 @@ export interface Trainer {
   fees: number;
   profileImageUrl?: string;
   setSameTimeForAllDay: boolean;
-  availableDays?: number;
-  onLeave?: number;
-  totalSessions?: number;
-  completedSessions?: number;
-  cancelledSessions?: number;
-  sessionHours?: number;
-  sessionRevenue?: number;
+  attendanceDetail?: TrainerAttendanceDetail; // Attendance data
+  sessionDetail?: TrainerSessionDetail; // Session counts
 }
 
 interface TrainerTableProps {
