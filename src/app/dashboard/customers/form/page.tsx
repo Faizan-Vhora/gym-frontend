@@ -200,6 +200,16 @@ export default function CustomerEditForm(): React.JSX.Element {
     }
   }, [customer, setValue]);
 
+  React.useEffect(() => {
+    if (searchParams.get('tab') && ['0', '1', '2'].includes(searchParams.get('tab') || '')) {
+      setTab(Number(searchParams.get('tab')));
+    }
+  }, []);
+
+  React.useEffect(() => {
+    router.push(`/dashboard/customers/form?id=${id}&tab=${tab}`);
+  }, [tab]);
+
   interface MembershipPlanResponse {
     data: MembershipPlans[];
   }

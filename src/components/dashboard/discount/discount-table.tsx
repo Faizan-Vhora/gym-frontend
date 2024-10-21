@@ -20,7 +20,7 @@ import {
   TableRow,
   Typography,
 } from '@mui/material';
-import { EyeSlash, PencilSimple, Trash, XCircle } from '@phosphor-icons/react';
+import { Note, PencilSimple, Trash, XCircle } from '@phosphor-icons/react';
 import dayjs from 'dayjs';
 
 import tableCss from '@/styles/table-css';
@@ -190,8 +190,10 @@ export function DiscountTable({
                     <TableCell sx={tableCss.tableCell}>
                       {discount.discountType === DiscountType.Percentage ? 'Percentage' : 'Fixed'}
                     </TableCell>
-                    <TableCell sx={tableCss.tableCell}>{discount.usageLimit || '-'}</TableCell>
-                    <TableCell sx={tableCss.tableCell}>{discount.minimumPurchaseAmount || '-'}</TableCell>
+                    <TableCell sx={tableCss.tableCell}>{discount.hasUsageLimit ? discount.usageLimit : '-'}</TableCell>
+                    <TableCell sx={tableCss.tableCell}>
+                      {discount.hasMinimumAmount ? discount.minimumPurchaseAmount : '-'}
+                    </TableCell>
                     <TableCell sx={tableCss.tableCell}>{discount.membershipType?.title || '-'}</TableCell>
                     <TableCell sx={tableCss.tableCell}>
                       {discount.discountType === DiscountType.Percentage
@@ -233,7 +235,7 @@ export function DiscountTable({
                           handleCodeView(discount.codeName);
                         }}
                       >
-                        <EyeSlash />
+                        <Note />
                       </IconButton>
                     </TableCell>
                   </TableRow>

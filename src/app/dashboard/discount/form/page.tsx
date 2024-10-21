@@ -448,6 +448,30 @@ export default function DiscountFormPage(): React.JSX.Element {
                     render={({ field }) => (
                       <FormControl fullWidth error={Boolean(errors?.membershipType)}>
                         <Autocomplete
+                          options={[{ id: null, title: 'ALL' }, ...plans]} // Add the "ALL" option at the beginning
+                          getOptionLabel={(option) => option.title || ''}
+                          isOptionEqualToValue={(option, value) => option?.id === value?.id}
+                          value={plans.find((plan) => plan.id === membershipTypeId) || { id: null, title: 'ALL' }} // Default "ALL" selection
+                          onChange={(e, value) => {
+                            const membershipType = value ? Number(value.id) : null; // Get the selected option's idcted
+                            field.onChange(membershipType);
+                            handleMembershipTypeChange(membershipType);
+                          }}
+                          renderInput={(params) => (
+                            <TextField {...params} label="Membership Plan" error={Boolean(errors?.membershipType)} />
+                          )}
+                        />
+                        {errors?.membershipType && <FormHelperText>{errors.membershipType?._errors[0]}</FormHelperText>}
+                      </FormControl>
+                    )}
+                  />
+                  {/* <Controller
+                    control={control}
+                    name="membershipType"
+                    defaultValue={membershipTypeId}
+                    render={({ field }) => (
+                      <FormControl fullWidth error={Boolean(errors?.membershipType)}>
+                        <Autocomplete
                           options={plans}
                           getOptionLabel={(option) => option.title || ''}
                           isOptionEqualToValue={(option, value) => option.id === value.id}
@@ -464,7 +488,7 @@ export default function DiscountFormPage(): React.JSX.Element {
                         {errors?.membershipType && <FormHelperText>{errors.membershipType?._errors[0]}</FormHelperText>}
                       </FormControl>
                     )}
-                  />
+                  /> */}
                 </Grid>
 
                 <Grid item md={6} xs={12}>
@@ -610,7 +634,7 @@ export default function DiscountFormPage(): React.JSX.Element {
                             }}
                           />
                         }
-                        label="Has Usage Limit"
+                        label="Usage Limit ?"
                       />
                     </Grid>
                     <Grid item md={6}>
@@ -644,7 +668,7 @@ export default function DiscountFormPage(): React.JSX.Element {
                             }}
                           />
                         }
-                        label="Has Minimum Amount"
+                        label="Minimum Purchase Amount ?"
                       />
                     </Grid>
                     <Grid item md={6}>

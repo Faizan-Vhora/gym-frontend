@@ -51,6 +51,7 @@ export interface Trainer {
   experience: number;
   fees: number;
   profileImageUrl?: string;
+  setSameTimeForAllDay: boolean;
 }
 
 interface TrainerTableProps {

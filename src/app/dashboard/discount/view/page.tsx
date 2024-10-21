@@ -1,9 +1,16 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { formatAmount } from '@/utils/converter';
 import { CustomLoader } from '@/utils/loader';
 import {
+  Box,
+  Button,
+  Card,
+  CardHeader,
+  Divider,
+  Grid,
   Paper,
   Table,
   TableBody,
@@ -12,7 +19,6 @@ import {
   TableHead,
   TablePagination,
   TableRow,
-  Typography,
 } from '@mui/material';
 
 import axiosInstance from '@/lib/axios';
@@ -21,10 +27,11 @@ import tableCss from '@/styles/table-css';
 const CodeNameTable = () => {
   const searchParams = useSearchParams();
   const codeName = searchParams.get('codeName');
+  const router = useRouter();
   const [data, setData] = useState<UserData[]>([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(0); // Current page
-  const [rowsPerPage, setRowsPerPage] = useState(10); // Rows per page
+  const [rowsPerPage, setRowsPerPage] = useState(5); // Rows per page
   const [totalItems, setTotalItems] = useState(0); // Total number of items (from API)
 
   interface UserData {
@@ -33,7 +40,8 @@ const CodeNameTable = () => {
     email: string;
     memberId: number;
     phoneNumber: string;
-    usageCount: number;
+    promoCodeUsageCount: number;
+    totalDiscount: number;
   }
 
   useEffect(() => {
@@ -76,38 +84,71 @@ const CodeNameTable = () => {
 
   return (
     <>
-      <Typography variant="h5" sx={{ padding: '20px' }} style={{ fontFamily: '"Audiowide", sans-serif' }}>
-        PromoCode Claimed Users{' '}
-      </Typography>
-      <TableContainer component={Paper}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell sx={tableCss.tableHeaderCell}>Id</TableCell>
-              <TableCell sx={tableCss.tableHeaderCell}>Name</TableCell>
-              <TableCell sx={tableCss.tableHeaderCell}>Email</TableCell>
-              {/* Add more table headers as needed */}
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {!loading && data.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={3} align="center">
-                  No data found
-                </TableCell>
-              </TableRow>
-            ) : (
-              data.map((item) => (
-                <TableRow key={item.id}>
-                  <TableCell sx={tableCss.tableCell}>{item.memberId}</TableCell>
-                  <TableCell sx={tableCss.tableCell}>{item.fullName}</TableCell>
-                  <TableCell sx={tableCss.tableCell}>{item.email}</TableCell>
-                  {/* Add more table cells as needed */}
+      <Card>
+        <Box sx={{ overflowX: 'auto' }}>
+          <Grid container>
+            <Grid item md={10}>
+              <CardHeader style={{ fontFamily: '"Audiowide", sans-serif' }} title="PromoCode Claimed Users" />
+            </Grid>
+            <Grid item xs={12} sm={6} md={2} sx={{ padding: '15px', display: 'flex', justifyContent: 'end' }}>
+              <Button
+                variant="outlined"
+                onClick={() => {
+                  router.push('/dashboard/discount');
+                }}
+                sx={{
+                  borderColor: '#d0021b',
+                  color: '#d0021b',
+                  transform: 'skewX(-20deg)',
+                  '&:hover': {
+                    borderColor: 'darkred',
+                    backgroundColor: 'rgba(255, 0, 0, 0.1)',
+                  },
+                }}
+              >
+                Back
+              </Button>
+            </Grid>
+          </Grid>
+
+          <TableContainer component={Paper}>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell sx={tableCss.tableHeaderCell}>Id</TableCell>
+                  <TableCell sx={tableCss.tableHeaderCell}>Name</TableCell>
+                  <TableCell sx={tableCss.tableHeaderCell}>Email</TableCell>
+                  <TableCell sx={tableCss.tableHeaderCell}>Phone Number</TableCell>
+                  <TableCell sx={tableCss.tableHeaderCell}>Prmocode Used Count</TableCell>
+                  <TableCell sx={tableCss.tableHeaderCell}>Total Claimed Discount</TableCell>
+                  {/* Add more table headers as needed */}
                 </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
+              </TableHead>
+              <TableBody>
+                {!loading && data.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={3} align="center">
+                      No data found
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  data.map((item) => (
+                    <TableRow sx={tableCss.tableRow} key={item.id}>
+                      <TableCell sx={tableCss.tableCell}>{item.memberId}</TableCell>
+                      <TableCell sx={tableCss.tableCell}>{item.fullName}</TableCell>
+                      <TableCell sx={tableCss.tableCell}>{item.email}</TableCell>
+                      <TableCell sx={tableCss.tableCell}>{item.phoneNumber}</TableCell>
+                      <TableCell sx={tableCss.tableCell}>{item.promoCodeUsageCount}</TableCell>
+                      <TableCell sx={tableCss.tableCell}>{formatAmount(item.totalDiscount)}</TableCell>
+                      {/* Add more table cells as needed */}
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </Box>
+        <Divider />
         {loading && <CustomLoader />}
         {data.length > 0 && (
           <TablePagination
@@ -117,10 +158,11 @@ const CodeNameTable = () => {
             onPageChange={handleChangePage}
             rowsPerPage={rowsPerPage}
             onRowsPerPageChange={handleChangeRowsPerPage}
+            rowsPerPageOptions={[5, 10, 25]}
             labelRowsPerPage={'Records per page'}
           />
         )}
-      </TableContainer>
+      </Card>
     </>
   );
 };

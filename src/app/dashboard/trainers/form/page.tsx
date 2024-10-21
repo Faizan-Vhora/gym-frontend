@@ -221,6 +221,16 @@ export default function TrainerEditForm(): React.JSX.Element {
     }
   }, [trainer, setValue]);
 
+  React.useEffect(() => {
+    if (searchParams.get('tab') && ['0', '1', '2', '3', '4', '5'].includes(searchParams.get('tab') || '')) {
+      setTab(Number(searchParams.get('tab')));
+    }
+  }, []);
+
+  React.useEffect(() => {
+    router.push(`/dashboard/trainers/form?id=${id}&tab=${tab}`);
+  }, [tab]);
+
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
     const file = event.target.files?.[0];
     if (file) {
