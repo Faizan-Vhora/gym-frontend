@@ -213,8 +213,6 @@ export default function WeekdayTimeSlots() {
             timeSlots: [...firstDayTimeSlots],
           }));
 
-          console.log("updatedDays:: ", updatedDays)
-
           setValue('days', updatedDays);
         }
 
