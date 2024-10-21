@@ -21,10 +21,14 @@ const toTitleCase = (str: string): string => {
     .join(' ');
 };
 
+const pathToPageTitle = (currentPath: string): string => {
+  return currentPath.split('/dashboard')[1].replaceAll('/', ' ').toUpperCase()
+}
+
 export default function Layout({ children }: LayoutProps): React.JSX.Element {
   const currentPath : string = usePathname();
-  const pageTitle = currentPath.split('/dashboard')[1].replaceAll('/', ' ').toUpperCase() || 'Page Title';
-  const title = `${toTitleCase(pageTitle)} | ${config.site.name}`;
+  const pageTitle = pathToPageTitle(currentPath) || null;
+  const title =  pageTitle ? `${toTitleCase(pageTitle)} | ${config.site.name}` : `${config.site.name}`;
 
   const metadata = { title } satisfies Metadata;
 
