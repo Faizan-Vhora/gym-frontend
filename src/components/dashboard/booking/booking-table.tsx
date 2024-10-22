@@ -200,17 +200,14 @@ export function BookingTable({
 
                     <TableCell sx={tableCss.tableCell}>
                       <Stack direction="row" spacing={1} alignItems="center">
-                        {entry.status !== BOOKING_STATUS.CANCELED ? (
-                          <IconButton
-                            onClick={() => {
-                              handleStatusChange(entry.id, BOOKING_STATUS.CANCELED);
-                            }}
-                          >
-                            <XCircle />
-                          </IconButton>
-                        ) : (
-                          <></>
-                        )}
+                        <IconButton
+                          disabled={[BOOKING_STATUS.CANCELED, BOOKING_STATUS.COMPLETED].includes(entry.status)}
+                          onClick={() => {
+                            handleStatusChange(entry.id, BOOKING_STATUS.CANCELED);
+                          }}
+                        >
+                          <XCircle />
+                        </IconButton>
                       </Stack>
                     </TableCell>
                   </TableRow>

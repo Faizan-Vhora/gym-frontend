@@ -106,70 +106,68 @@ export function MembershipPlanTable({
               </TableRow>
             ) : (
               rows.map((row) => (
-                <>
-                  <TableRow hover key={row.id} sx={tableCss.tableRow}>
-                    <TableCell sx={tableCss.tableCell}>
-                      <Typography
-                        variant="subtitle2"
-                        onClick={() => {
-                          handleRowClick(row.id);
-                        }}
-                        style={{ cursor: 'pointer' }}
-                      >
-                        {row.title}
-                      </Typography>
-                    </TableCell>
-
-                    <TableCell sx={tableCss.tableCell}>
-                      <CurrencyDollar />
-                      {row.cost}
-                    </TableCell>
-
-                    <TableCell sx={tableCss.tableCell}>{row.durationInMonths} months</TableCell>
-                    <TableCell sx={tableCss.tableCell}>{formatPaymentFrequency(row.paymentFrequency)}</TableCell>
-                    <TableCell
-                      sx={[
-                        tableCss.tableCell,
-                        { textOverflow: 'ellipsis !important', maxWidth: '120px !important', overflow: 'hidden' },
-                      ]}
+                <TableRow hover key={row.id} sx={tableCss.tableRow}>
+                  <TableCell sx={tableCss.tableCell}>
+                    <Typography
+                      variant="subtitle2"
+                      onClick={() => {
+                        handleRowClick(row.id);
+                      }}
+                      style={{ cursor: 'pointer' }}
                     >
-                      {row.description}
-                    </TableCell>
+                      {row.title}
+                    </Typography>
+                  </TableCell>
 
-                    <TableCell sx={tableCss.tableCell}>
-                      <FormControlLabel
-                        control={
-                          <Switch
-                            checked={row.status === 'active'}
-                            onChange={(event) => {
-                              event.stopPropagation();
-                              updatePlanStatus(row.id, row.status);
-                            }}
-                            color={row.status === 'active' ? 'success' : 'error'}
-                          />
-                        }
-                        label={getStatusStringText(row.status as UserStatusString)}
-                      />
-                    </TableCell>
-                    <TableCell sx={tableCss.tableCell}>{dayjs(row.updatedAt).format('MMM D, YYYY')}</TableCell>
-                    <TableCell sx={tableCss.tableCell}>
-                      <IconButton
-                        onClick={() => {
-                          onEdit(row.id);
-                        }}
-                      >
-                        <PencilSimple />
-                      </IconButton>
-                      <IconButton
-                        onClick={() => {
-                          onDelete(row.id);
-                        }}
-                      >
-                        <Trash />
-                      </IconButton>
-                    </TableCell>
-                  </TableRow>
-                </>
+                  <TableCell sx={tableCss.tableCell}>
+                    <CurrencyDollar />
+                    {row.cost}
+                  </TableCell>
+
+                  <TableCell sx={tableCss.tableCell}>{row.durationInMonths} months</TableCell>
+                  <TableCell sx={tableCss.tableCell}>{formatPaymentFrequency(row.paymentFrequency)}</TableCell>
+                  <TableCell
+                    sx={[
+                      tableCss.tableCell,
+                      { textOverflow: 'ellipsis !important', maxWidth: '120px !important', overflow: 'hidden' },
+                    ]}
+                  >
+                    {row.description}
+                  </TableCell>
+
+                  <TableCell sx={tableCss.tableCell}>
+                    <FormControlLabel
+                      control={
+                        <Switch
+                          checked={row.status === 'active'}
+                          onChange={(event) => {
+                            event.stopPropagation();
+                            updatePlanStatus(row.id, row.status);
+                          }}
+                          color={row.status === 'active' ? 'success' : 'error'}
+                        />
+                      }
+                      label={getStatusStringText(row.status as UserStatusString)}
+                    />
+                  </TableCell>
+                  <TableCell sx={tableCss.tableCell}>{dayjs(row.updatedAt).format('MMM D, YYYY')}</TableCell>
+                  <TableCell sx={tableCss.tableCell}>
+                    <IconButton
+                      onClick={() => {
+                        onEdit(row.id);
+                      }}
+                    >
+                      <PencilSimple />
+                    </IconButton>
+                    <IconButton
+                      onClick={() => {
+                        onDelete(row.id);
+                      }}
+                    >
+                      <Trash />
+                    </IconButton>
+                  </TableCell>
+                </TableRow>
               ))
             )}
           </TableBody>

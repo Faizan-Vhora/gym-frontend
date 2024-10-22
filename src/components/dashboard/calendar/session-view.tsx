@@ -28,9 +28,9 @@ interface SessionNotesFormProps {
   sessionObj: BookingSessionEntry;
   open: boolean;
   onClose: () => void;
-  openRescheduleDialog: () => void;
-  openNotesDialog: () => void;
-  onUpdateStatus: (id: string, newStatus: BookingSessionEntry['status']) => void;
+  openRescheduleDialog?: () => void;
+  openNotesDialog?: () => void;
+  onUpdateStatus?: (id: string, newStatus: BookingSessionEntry['status']) => void;
 }
 
 const SessionPreview: React.FC<SessionNotesFormProps> = ({
@@ -46,7 +46,9 @@ const SessionPreview: React.FC<SessionNotesFormProps> = ({
   const PaymentStatus = BOOKING_SESSION_PAYMENT_STATUS_DETAILS[sessionObj.paymentStatus];
 
   const handleStatusChange = (id: string, newStatus: BookingSessionEntry['status']): void => {
-    onUpdateStatus(id, newStatus);
+    if (onUpdateStatus) {
+      onUpdateStatus(id, newStatus);
+    }
   };
 
   const sessionDurationInHours =
@@ -93,7 +95,7 @@ const SessionPreview: React.FC<SessionNotesFormProps> = ({
               display: 'flex',
               flexDirection: {
                 xs: 'column', // Applies on small screens and below
-                sm: 'row',    // Applies on small screens and above
+                sm: 'row', // Applies on small screens and above
               },
               justifyContent: 'space-between',
               margin: '10px',
@@ -112,7 +114,7 @@ const SessionPreview: React.FC<SessionNotesFormProps> = ({
                     marginTop: '10px',
                   }}
                 >
-                  <CardContent sx={{padding:'10px 15px'}}>
+                  <CardContent sx={{ padding: '10px 15px' }}>
                     <Typography variant="h6" textAlign={'center'} color="text.secondary" gutterBottom>
                       Member :
                     </Typography>
@@ -121,14 +123,14 @@ const SessionPreview: React.FC<SessionNotesFormProps> = ({
                         <Avatar
                           src={sessionObj.customer?.profileImageUrl || '/assets/User@3x-1.png'}
                           sx={{ height: '56px', width: '56px' }}
-                        >
-
-                        </Avatar>
+                        ></Avatar>
                       </Grid>
                       <Grid item md={8} xs={12} alignContent={'center'}>
                         <Typography variant="subtitle1">{sessionObj.customer?.fullName}</Typography>
-                        <Typography variant="caption" sx={{ display: 'flex', flexDirection:'column', alignItems: 'center', }}>
-                          
+                        <Typography
+                          variant="caption"
+                          sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}
+                        >
                           {sessionObj.customer?.email ? (
                             <IconButton sx={{ padding: '0px', marginRight: '5px' }}>
                               <Envelope width={18} height={18} />
@@ -138,7 +140,10 @@ const SessionPreview: React.FC<SessionNotesFormProps> = ({
                           )}
                           {sessionObj.customer?.email}
                         </Typography>
-                        <Typography variant="caption" sx={{ display: 'flex',flexDirection:'column', alignItems: 'center' }}>
+                        <Typography
+                          variant="caption"
+                          sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}
+                        >
                           {sessionObj.customer?.phoneNumber ? (
                             <IconButton sx={{ padding: '0px', marginRight: '5px' }}>
                               <Phone width={18} height={18} />
@@ -160,7 +165,7 @@ const SessionPreview: React.FC<SessionNotesFormProps> = ({
                 <Card
                   sx={{
                     // height: '140px',
-                    
+
                     boxShadow: 5, // Normal box shadow
                     '&:hover': {
                       boxShadow: 15, // Increased box shadow on hover
@@ -169,7 +174,7 @@ const SessionPreview: React.FC<SessionNotesFormProps> = ({
                     marginTop: '10px',
                   }}
                 >
-                  <CardContent sx={{padding:'10px 15px'}}>
+                  <CardContent sx={{ padding: '10px 15px' }}>
                     <Typography variant="h6" textAlign={'center'} color="text.secondary" gutterBottom>
                       Trainer :
                     </Typography>
@@ -182,7 +187,10 @@ const SessionPreview: React.FC<SessionNotesFormProps> = ({
                       </Grid>
                       <Grid item md={8} xs={12} alignContent={'center'}>
                         <Typography variant="subtitle1">{sessionObj.trainer?.fullName}</Typography>
-                        <Typography variant="caption" sx={{ display: 'flex', alignItems: 'center',flexDirection:'column', }}>
+                        <Typography
+                          variant="caption"
+                          sx={{ display: 'flex', alignItems: 'center', flexDirection: 'column' }}
+                        >
                           {sessionObj.trainer?.fees ? (
                             <IconButton sx={{ padding: '0px', marginRight: '5px' }}>
                               <CurrencyCircleDollar width={18} height={18} />
@@ -192,7 +200,10 @@ const SessionPreview: React.FC<SessionNotesFormProps> = ({
                           )}
                           {sessionObj.trainer?.fees} per Hour
                         </Typography>
-                        <Typography variant="caption" sx={{ display: 'flex', alignItems: 'center',flexDirection:'column', }}>
+                        <Typography
+                          variant="caption"
+                          sx={{ display: 'flex', alignItems: 'center', flexDirection: 'column' }}
+                        >
                           {sessionObj.trainer?.experience ? (
                             <IconButton sx={{ padding: '0px', marginRight: '5px' }}>
                               <Barbell width={18} height={18} />
@@ -211,55 +222,58 @@ const SessionPreview: React.FC<SessionNotesFormProps> = ({
               )}
             </>
           </Stack>
+
           <Stack sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', marginTop: '30px' }}>
+            <Typography color="text.secondary" textAlign={'center'}>
+              {formatDate(sessionObj?.sessionDate)} <br />
+              <Typography variant="body2" component="span" fontSize={'12px'}>
+                Session Date
+              </Typography>
+            </Typography>
+
             <Typography color="text.secondary" gutterBottom>
-              Start <br />
+              {formatAmount(sessionObj?.netTotalAmount)} <br />
               <Typography variant="body2" component="span" fontSize={'12px'}>
-                {formatTo12HourFormat(sessionObj?.sessionStartTime)}
-              </Typography>
-            </Typography>
-            <Typography color="text.secondary" textAlign={'center'}>
-              Hours <br />
-              <Typography variant="body2" component="span" fontSize={'12px'}>
-                ({formatHours(sessionDurationInHours)})
-              </Typography>
-            </Typography>
-            <Typography color="text.secondary" textAlign={'center'}>
-              End <br />
-              <Typography variant="body2" component="span" fontSize={'12px'}>
-                {formatTo12HourFormat(sessionObj?.sessionEndTime)}
+                Session Amount
               </Typography>
             </Typography>
           </Stack>
 
           <Stack sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', marginTop: '30px' }}>
             <Typography color="text.secondary" gutterBottom>
-              Session Amount <br />
+              {formatTo12HourFormat(sessionObj?.sessionStartTime)} <br />
               <Typography variant="body2" component="span" fontSize={'12px'}>
-                {formatAmount(sessionObj?.netTotalAmount)}
+                Start
               </Typography>
             </Typography>
-
             <Typography color="text.secondary" textAlign={'center'}>
-              Booking at <br />
+              {formatHours(sessionDurationInHours)} <br />
               <Typography variant="body2" component="span" fontSize={'12px'}>
-                {formatDate(sessionObj?.sessionDate)}
+                (Hours)
+              </Typography>
+            </Typography>
+            <Typography color="text.secondary" textAlign={'center'}>
+              {formatTo12HourFormat(sessionObj?.sessionEndTime)} <br />
+              <Typography variant="body2" component="span" fontSize={'12px'}>
+                End
               </Typography>
             </Typography>
           </Stack>
+
           <br />
-          <Stack>Notes: {sessionObj.notes}</Stack>
+
+          {sessionObj.notes && <Stack>Notes: {sessionObj.notes}</Stack>}
         </Card>
       </DialogContent>
-      <DialogActions sx={{paddingBottom:'20px'}}>
+      <DialogActions sx={{ paddingBottom: '20px' }}>
         <Button
           onClick={onClose}
           color="secondary"
           sx={{
-            border:'1px solid',
+            border: '1px solid',
             borderColor: '#d0021b',
             color: '#d0021b',
-            fontFamily:'Audiowide, sans-serif !important',
+            fontFamily: 'Audiowide, sans-serif !important',
             transform: 'skewX(-20deg)',
             '&:hover': {
               borderColor: 'darkred',
@@ -269,20 +283,37 @@ const SessionPreview: React.FC<SessionNotesFormProps> = ({
         >
           Cancel
         </Button>
-        <Button onClick={openRescheduleDialog} className=" btnsuccess" sx={{color:'#fff',fontFamily:'Audiowide, sans-serif !important',}}>
-          Reschedule Session
-        </Button>
-        <Button sx={{color:'#fff',fontFamily:'Audiowide, sans-serif !important',}}  onClick={openNotesDialog} className=" btnsuccess">
-          Update Notes
-        </Button>
-        <Button sx={{fontFamily:'Audiowide, sans-serif !important',}}
-          className="common-button"
-          onClick={() => {
-            handleStatusChange(String(sessionObj.id), BOOKING_STATUS.CANCELED);
-          }}
-        >
-          Cancel Session
-        </Button>
+        {openRescheduleDialog && (
+          <Button
+            onClick={openRescheduleDialog}
+            className=" btnsuccess"
+            sx={{ color: '#fff', fontFamily: 'Audiowide, sans-serif !important' }}
+          >
+            Reschedule Session
+          </Button>
+        )}
+
+        {openNotesDialog && (
+          <Button
+            sx={{ color: '#fff', fontFamily: 'Audiowide, sans-serif !important' }}
+            onClick={openNotesDialog}
+            className=" btnsuccess"
+          >
+            Update Notes
+          </Button>
+        )}
+
+        {onUpdateStatus && (
+          <Button
+            sx={{ fontFamily: 'Audiowide, sans-serif !important' }}
+            className="common-button"
+            onClick={() => {
+              handleStatusChange(String(sessionObj.id), BOOKING_STATUS.CANCELED);
+            }}
+          >
+            Cancel Session
+          </Button>
+        )}
       </DialogActions>
     </Dialog>
   );

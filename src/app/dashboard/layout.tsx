@@ -1,18 +1,40 @@
+"use client"
 import * as React from 'react';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import GlobalStyles from '@mui/material/GlobalStyles';
 import { ToastContainer } from 'react-toastify';
-
-// import { AuthGuard } from '@/components/auth/auth-guard';
+import { usePathname } from 'next/navigation'
 import { MainNav } from '@/components/dashboard/layout/main-nav';
 import { SideNav } from '@/components/dashboard/layout/side-nav';
+import { config } from '@/config';
+import { Metadata } from 'next';
 
 interface LayoutProps {
   children: React.ReactNode;
 }
 
+const toTitleCase = (str: string): string => {
+  return str
+    .split(' ')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join(' ');
+};
+
+const pathToPageTitle = (currentPath: string): string => {
+  return currentPath.split('/dashboard')[1].replaceAll('/', ' ').toUpperCase()
+}
+
 export default function Layout({ children }: LayoutProps): React.JSX.Element {
+  const currentPath : string = usePathname();
+  const pageTitle = pathToPageTitle(currentPath) || null;
+  const title = pageTitle ? `${toTitleCase(pageTitle)} | ${config.site.name}` : config.site.name;
+  const metadata = { title } satisfies Metadata;
+
+  React.useEffect(() => {
+    document.title = metadata.title; // Update document title
+  }, [metadata.title]);
+
   return (
     <>
       <GlobalStyles
@@ -38,7 +60,7 @@ export default function Layout({ children }: LayoutProps): React.JSX.Element {
       >
         <SideNav />
         <Box
-          className="dashbord"
+          className="dashboard"
           sx={{ display: 'flex', flex: '1 1 auto', flexDirection: 'column', pl: { lg: 'var(--SideNav-width)' } }}
         >
           <MainNav />

@@ -121,6 +121,9 @@ export default function WeekdayTimeSlots() {
         })
         .then((response) => {
           setSetSameTimeForAllDay(response.data.data.setSameTimeForAllDay);
+          if(response?.data?.data?.setSameTimeForAllDay){
+            setValue('setSameTimeForAll', true);
+          }
         })
         .catch((err: unknown) => {
           err instanceof Error ? err.message : 'An unexpected error occurred';

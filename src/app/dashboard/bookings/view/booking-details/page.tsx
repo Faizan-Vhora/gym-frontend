@@ -4,6 +4,7 @@ import * as React from 'react';
 import { useSearchParams } from 'next/navigation';
 import {
   BOOKING_PAYMENT_STATUS_DETAILS,
+  BOOKING_PAYMENT_TYPE,
   BOOKING_PAYMENT_TYPE_DETAILS,
   BOOKING_STATUS_DETAILS,
   BOOKING_TYPE_DETAILS,
@@ -103,13 +104,14 @@ export default function BookingDetailsPage(): React.JSX.Element {
                     {BOOKING_STATUS_DETAILS[bookingDetail.status]?.label}
                   </Typography>
                 </Stack>
+
                 <Stack
                   sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', marginTop: '30px' }}
                 >
                   <Typography color="text.secondary" style={{ fontFamily: '"Audiowide", sans-serif' }} gutterBottom>
-                    Start <br />
+                    {formatDate(bookingDetail?.startDate)} <br />
                     <Typography variant="body2" component="span" fontSize={'12px'}>
-                      {formatDate(bookingDetail?.startDate)}
+                      Start
                     </Typography>
                   </Typography>
                   <Typography
@@ -117,9 +119,9 @@ export default function BookingDetailsPage(): React.JSX.Element {
                     style={{ fontFamily: '"Audiowide", sans-serif' }}
                     textAlign={'center'}
                   >
-                    Hours <br />
+                    {formatHours(bookingDetail?.bookingHours)} <br />
                     <Typography variant="body2" component="span" fontSize={'12px'}>
-                      ({formatHours(bookingDetail?.bookingHours)})
+                      (Hours)
                     </Typography>
                   </Typography>
                   <Typography
@@ -127,41 +129,42 @@ export default function BookingDetailsPage(): React.JSX.Element {
                     style={{ fontFamily: '"Audiowide", sans-serif' }}
                     textAlign={'center'}
                   >
-                    End <br />
+                    {formatDate(bookingDetail?.endDate)} <br />
                     <Typography variant="body2" component="span" fontSize={'12px'}>
-                      {formatDate(bookingDetail?.endDate)}
+                      End
                     </Typography>
                   </Typography>
                 </Stack>
 
-                <Stack>
-                  <Stack
-                    rowGap={2}
-                    sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', marginTop: '30px' }}
+                <Stack
+                  sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', marginTop: '30px' }}
+                >
+                  <Typography color="text.secondary" style={{ fontFamily: '"Audiowide", sans-serif' }} gutterBottom>
+                    {bookingDetail.createdBy.fullName} <br />
+                    <Typography variant="body2" component="span" fontSize={'12px'}>
+                      Booking By
+                    </Typography>
+                  </Typography>
+                  <Typography
+                    color="text.secondary"
+                    style={{ fontFamily: '"Audiowide", sans-serif' }}
+                    textAlign={'center'}
                   >
-                    <Typography color="text.secondary" style={{ fontFamily: '"Audiowide", sans-serif' }}>
-                      Booking By <br />{' '}
-                      <Typography fontSize={'12px'} component="span">
-                        {bookingDetail.createdBy.fullName}
-                      </Typography>
+                    {bookingDetail?.recurrenceWeeks} <br />
+                    <Typography variant="body2" component="span" fontSize={'12px'}>
+                      (Recurrence Weeks)
                     </Typography>
-
-                    <Typography color="text.secondary" style={{ fontFamily: '"Audiowide", sans-serif' }}>
-                      Booking at: <br />{' '}
-                      <Typography fontSize={'12px'} component="span">
-                        {dayjs(bookingDetail.createdAt).format('DD/MM/YYYY')}
-                      </Typography>
+                  </Typography>
+                  <Typography
+                    color="text.secondary"
+                    style={{ fontFamily: '"Audiowide", sans-serif' }}
+                    textAlign={'center'}
+                  >
+                    {dayjs(bookingDetail.createdAt).format('DD/MM/YYYY')} <br />
+                    <Typography variant="body2" component="span" fontSize={'12px'}>
+                      Booking at
                     </Typography>
-                  </Stack>
-                </Stack>
-                <Stack>
-                  {bookingDetail?.recurrenceWeeks ? (
-                    <Typography color="text.secondary" gutterBottom style={{ fontFamily: '"Audiowide", sans-serif' }}>
-                      Recurrence Weeks: {bookingDetail?.recurrenceWeeks}
-                    </Typography>
-                  ) : (
-                    <></>
-                  )}
+                  </Typography>
                 </Stack>
               </Card>
             </Grid>
@@ -198,14 +201,17 @@ export default function BookingDetailsPage(): React.JSX.Element {
                       {BOOKING_PAYMENT_TYPE_DETAILS[bookingDetail.paymentType]?.label}
                     </Typography>
                   </Typography>
-                  <Typography
-                    textAlign={'end'}
-                    color="text.secondary"
-                    style={{ fontFamily: '"Audiowide", sans-serif' }}
-                    gutterBottom
-                  >
-                    {BOOKING_PAYMENT_STATUS_DETAILS[bookingDetail.paymentStatus]?.label}
-                  </Typography>
+
+                  {bookingDetail?.paymentType === BOOKING_PAYMENT_TYPE.FULL && (
+                    <Typography
+                      textAlign={'end'}
+                      color="text.secondary"
+                      style={{ fontFamily: '"Audiowide", sans-serif' }}
+                      gutterBottom
+                    >
+                      {BOOKING_PAYMENT_STATUS_DETAILS[bookingDetail.paymentStatus]?.label}
+                    </Typography>
+                  )}
                 </Stack>
                 <Stack
                   sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', marginTop: '20px' }}
