@@ -92,7 +92,7 @@ export function SignInForm(): React.JSX.Element {
         toast.success('Logged in successfully!');
 
         // Redirect to the dashboard
-        router.push('/dashboard');
+        router.push('/dashboard/dashboard');
       } catch (err: unknown) {
         // Check if the error is an Axios error
         if (err instanceof Error) {

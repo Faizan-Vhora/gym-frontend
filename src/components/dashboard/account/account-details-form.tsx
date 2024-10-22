@@ -161,7 +161,7 @@ export function AccountDetailsForm(): React.JSX.Element {
       setUser(updatedUser);
 
       toast.success('Profile updated successfully');
-      router.push('/dashboard');
+      router.push('/dashboard/dashboard');
     } catch (err: unknown) {
       err instanceof Error ? err.message : 'An unexpected error occurred';
     } finally {

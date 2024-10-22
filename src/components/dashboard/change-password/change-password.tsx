@@ -219,7 +219,7 @@ export function ChangePasswordForm(): React.JSX.Element {
           <Button
             variant="outlined"
             onClick={() => {
-              router.push('/dashboard');
+              router.push('/dashboard/dashboard');
             }}
             sx={{
               borderColor: '#d0021b',
