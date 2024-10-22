@@ -30,6 +30,7 @@ import Swal from 'sweetalert2';
 import { z } from 'zod';
 
 import axiosInstance from '@/lib/axios';
+import { Trainer } from '@/components/dashboard/trainer/trainer-table';
 
 const timeSlotSchema = z
   .object({
@@ -91,6 +92,7 @@ export default function WeekdayTimeSlots() {
   const id = searchParams.get('id');
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
+  const [setSameTimeForAllDay, setSetSameTimeForAllDay] = React.useState<boolean>(false);
 
   const {
     control,
@@ -110,6 +112,24 @@ export default function WeekdayTimeSlots() {
   });
 
   const { fields } = useFieldArray({ control, name: 'days' });
+
+  useEffect(() => {
+    if (id) {
+      axiosInstance
+        .get<{ data: Trainer }>(`/users/${id}`, {
+          params: { userType: 2 },
+        })
+        .then((response) => {
+          setSetSameTimeForAllDay(response.data.data.setSameTimeForAllDay);
+          if(response?.data?.data?.setSameTimeForAllDay){
+            setValue('setSameTimeForAll', true);
+          }
+        })
+        .catch((err: unknown) => {
+          err instanceof Error ? err.message : 'An unexpected error occurred';
+        });
+    }
+  }, [id]);
 
   useEffect(() => {
     const fetchTrainerAvailabilitySlots = async () => {
@@ -146,7 +166,7 @@ export default function WeekdayTimeSlots() {
     };
 
     void fetchTrainerAvailabilitySlots();
-  }, [id, setValue]);
+  }, [id]);
 
   const applySameTimeToAll = () => {
     const currentDays = watch('days');
@@ -180,6 +200,7 @@ export default function WeekdayTimeSlots() {
 
       if (result.isConfirmed) {
         setValue('setSameTimeForAll', true);
+        setSetSameTimeForAllDay(true);
 
         // applySameTimeToAll();
 
@@ -191,7 +212,8 @@ export default function WeekdayTimeSlots() {
 
           const updatedDays = currentDays.map((day) => ({
             ...day,
-            timeSlots: day.isChecked ? [...firstDayTimeSlots] : [],
+            isChecked : true,
+            timeSlots: [...firstDayTimeSlots],
           }));
 
           setValue('days', updatedDays);
@@ -200,9 +222,11 @@ export default function WeekdayTimeSlots() {
         toast.success('Time slots have been applied to all checked days.');
       } else {
         setValue('setSameTimeForAll', false);
+        setSetSameTimeForAllDay(false);
       }
     } else {
       setValue('setSameTimeForAll', false);
+      setSetSameTimeForAllDay(false);
     }
   };
 
@@ -294,7 +318,10 @@ export default function WeekdayTimeSlots() {
     try {
       if (!id) throw new Error('Trainer ID is missing');
 
-      await axiosInstance.put(`/trainer/${id}/trainer-availability-slots`, { trainerAvailabilitySlot });
+      await axiosInstance.put(`/trainer/${id}/trainer-availability-slots`, {
+        trainerAvailabilitySlot,
+        setSameTimeForAllDay: setSameTimeForAllDay,
+      });
       toast.success('Time slots saved successfully!');
       router.push('/dashboard/trainers');
     } catch (error) {
@@ -487,13 +514,21 @@ export default function WeekdayTimeSlots() {
       <Typography variant="h5" gutterBottom>
         Manage Weekly Time Slots
       </Typography>
+
       <FormControlLabel
         control={
           <Controller
             name="setSameTimeForAll"
             control={control}
             render={({ field }) => (
-              <Switch {...field} checked={field.value} onChange={(e) => handleSameTimeForAllChange(e.target.checked)} />
+              <Switch
+                {...field}
+                checked={setSameTimeForAllDay} // Use the field value for the checked prop
+                onChange={async (e) => {
+                  field.onChange(e.target.checked); // Update the form state
+                  await handleSameTimeForAllChange(e.target.checked); // Await the handler
+                }}
+              />
             )}
           />
         }

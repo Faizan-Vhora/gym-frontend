@@ -18,10 +18,13 @@ import { ToastContainer } from 'react-toastify'; // Import toast and ToastContai
 
 import 'react-toastify/dist/ReactToastify.css'; // Import toast styles
 
-import { BOOKING_SESSION_STATUS, BOOKING_SESSION_STATUS_DETAILS } from '@/utils/constant';
+import {
+  BOOKING_SESSION_STATUS,
+  BOOKING_SESSION_STATUS_DETAILS,
+} from '@/utils/constant';
 import { formatAmount } from '@/utils/converter';
 import { formatDate, formatTo12HourFormat } from '@/utils/date-utils';
-import { ArrowsClockwise, Note, XCircle } from '@phosphor-icons/react';
+import { ArrowsClockwise, Eye, Note, XCircle } from '@phosphor-icons/react';
 
 import tableCss from '@/styles/table-css';
 
@@ -83,6 +86,7 @@ interface BookingTableProps {
   totalEntries: number;
   onUpdateStatus: (id: number, newStatus: BookingSessionEntry['status']) => void;
   onUpdateNotes: (session: BookingSessionEntry) => void;
+  onPreviewSession: (session: BookingSessionEntry) => void;
   onRescheduleSession: (session: BookingSessionEntry) => void;
   onPageChange: (newPage: number) => void;
   onRowsPerPageChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
@@ -95,6 +99,7 @@ export function BookingSessionTable({
   totalEntries,
   onUpdateStatus,
   onUpdateNotes,
+  onPreviewSession,
   onRescheduleSession,
   onPageChange,
   onRowsPerPageChange,
@@ -105,6 +110,10 @@ export function BookingSessionTable({
 
   const handleNotesChange = (session: BookingSessionEntry): void => {
     onUpdateNotes(session);
+  };
+
+  const handleSessionPreview = (session: BookingSessionEntry): void => {
+    onPreviewSession(session);
   };
 
   const handleRescheduleSession = (session: BookingSessionEntry): void => {
@@ -214,6 +223,14 @@ export function BookingSessionTable({
                       <Stack direction="row" spacing={1} alignItems="center">
                         <IconButton
                           onClick={() => {
+                            handleSessionPreview(entry);
+                          }}
+                        >
+                          <Eye />
+                        </IconButton>
+
+                        <IconButton
+                          onClick={() => {
                             handleNotesChange(entry);
                           }}
                         >
@@ -228,17 +245,16 @@ export function BookingSessionTable({
                           <ArrowsClockwise />
                         </IconButton>
 
-                        {entry.status !== BOOKING_SESSION_STATUS.CANCELLED ? (
-                          <IconButton
-                            onClick={() => {
-                              handleStatusChange(entry.id, BOOKING_SESSION_STATUS.CANCELLED);
-                            }}
-                          >
-                            <XCircle />
-                          </IconButton>
-                        ) : (
-                          <></>
-                        )}
+                        <IconButton
+                          disabled={[BOOKING_SESSION_STATUS.COMPLETED, BOOKING_SESSION_STATUS.CANCELLED].includes(
+                            entry.status
+                          )}
+                          onClick={() => {
+                            handleStatusChange(entry.id, BOOKING_SESSION_STATUS.CANCELLED);
+                          }}
+                        >
+                          <XCircle />
+                        </IconButton>
                       </Stack>
                     </TableCell>
                   </TableRow>

@@ -3,6 +3,7 @@
 import * as React from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import {
+  Autocomplete,
   Button,
   Card,
   CardActions,
@@ -10,12 +11,14 @@ import {
   CardHeader,
   Divider,
   FormControl,
+  FormControlLabel,
   FormHelperText,
   Grid,
   InputLabel,
   MenuItem,
   Select,
   Stack,
+  Switch,
   TextField,
 } from '@mui/material';
 import type { SelectChangeEvent } from '@mui/material';
@@ -34,8 +37,8 @@ import { z, ZodError } from 'zod';
 import type { ZodFormattedError } from 'zod';
 
 import axiosInstance from '@/lib/axios';
-import type { DiscountEntry } from '@/components/dashboard/discount/discount-table';
-import { DiscountStatus, DiscountType, UsageLimit } from '@/components/dashboard/discount/discount-table';
+import type { DiscountEntry, DiscountEntryResponse } from '@/components/dashboard/discount/discount-table';
+import { DiscountStatus, DiscountType } from '@/components/dashboard/discount/discount-table';
 
 // Validation schemas
 const baseDiscountSchema = z.object({
@@ -43,14 +46,17 @@ const baseDiscountSchema = z.object({
     .string()
     .regex(REGEX_VALIDATION.PROMOCODE, 'Promo code must be 5-10 characters long. Cannot contain special characters.')
     .transform((val) => val.toUpperCase()),
-  expiryDate: z.string().min(1, 'Expiry Date is required'),
+  startDate: z.string().optional().nullable(),
+  expiryDate: z.string().optional().nullable(),
   discountType: z.nativeEnum(DiscountType, { errorMap: () => ({ message: 'Discount Type is required' }) }),
-  usageLimit: z.nativeEnum(UsageLimit, { errorMap: () => ({ message: 'Usage Limit is required' }) }),
+  usageLimit: z.number(),
+  minimumPurchaseAmount: z.number(),
   discountValue: z.number().min(1, 'Discount Value must be at least 1'),
   description: z.string().min(1, 'Description is required'),
   discountImage: z.string().min(1, 'Discount Image is required'),
   status: z.nativeEnum(DiscountStatus).optional(),
   isNewUser: z.boolean().optional(),
+  membershipType: z.number().nullable().optional(),
 });
 
 const updateDiscountSchema = baseDiscountSchema.partial().extend({
@@ -63,9 +69,14 @@ export default function DiscountFormPage(): React.JSX.Element {
   const [discount, setDiscount] = React.useState<DiscountEntry>({
     id: 0,
     codeName: '',
+    startDate: '',
     expiryDate: '',
     discountType: DiscountType.Percentage,
-    usageLimit: UsageLimit.Once,
+    membershipType: 0,
+    hasUsageLimit: false,
+    usageLimit: 0,
+    hasMinimumAmount: false,
+    minimumPurchaseAmount: 0,
     discountValue: 0,
     description: '',
     status: DiscountStatus.Active,
@@ -77,7 +88,12 @@ export default function DiscountFormPage(): React.JSX.Element {
   const [imagePreview, setImagePreview] = React.useState<string | null>(null);
   const [errors, setErrors] = React.useState<ZodFormattedError<DiscountSchema> | null>(null);
   const [loading, setLoading] = React.useState(false);
-  const [cleared, setCleared] = React.useState<boolean>(false);
+  const [startDateClear, setStartDateClear] = React.useState<boolean>(false);
+  const [endDateClear, setEndDateClear] = React.useState<boolean>(false);
+  const [hasUsageLimit, setHasUsageLimit] = React.useState<boolean>(false);
+  const [hasMinimumAmount, setHasMinimumAmount] = React.useState<boolean>(false);
+  const [plans, setPlans] = React.useState<MembershipPlans[]>([]);
+  const [membershipTypeId, setMembershipTypeId] = React.useState<number | null>(null);
   const fileInputRef = React.useRef<HTMLInputElement>(null);
 
   const router = useRouter();
@@ -86,30 +102,45 @@ export default function DiscountFormPage(): React.JSX.Element {
 
   const { control, handleSubmit } = useForm<DiscountSchema>();
 
-  // const handleRemoveImage = () => {
-  //   setImagePreview(null);
-  //   setImageFile(null);
-  //   setDiscount((prevDiscount) => ({
-  //     ...prevDiscount,
-  //     discountImage: '', // Or null if you prefer
-  //   }));
-  // };
-
   React.useEffect(() => {
     if (discountId) {
       axiosInstance
-        .get<{ data: DiscountEntry }>(`/discount/${discountId}`)
+        .get<{ data: DiscountEntryResponse }>(`/discount/${discountId}`)
         .then((response) => {
-          const data: DiscountEntry = response.data.data;
+          const data: DiscountEntryResponse = response.data.data;
           if (typeof data.discountValue === 'string') {
             data.discountValue = parseFloat(data.discountValue);
           }
+
           setDiscount({
-            ...data,
-            discountImage: data.discountImageUrl || '',
+            id: data.id,
+            codeName: data.codeName,
+            startDate: data.startDate,
+            expiryDate: data.expiryDate,
+            discountType: data.discountType,
+            membershipType: data.membershipType.id,
+            hasUsageLimit: data.hasUsageLimit,
+            usageLimit: data.usageLimit,
+            hasMinimumAmount: data.hasMinimumAmount,
+            minimumPurchaseAmount: data.minimumPurchaseAmount,
+            discountValue: data.discountValue,
+            description: data.description,
+            status: data.status,
+            isNewUser: data.isNewUser,
+            discountImageUrl: data.discountImageUrl || '',
           });
+
           if (data.discountImageUrl) {
             setImagePreview(data.discountImageUrl);
+          }
+          if (data.hasUsageLimit) {
+            setHasUsageLimit(data.hasUsageLimit);
+          }
+          if (data.hasMinimumAmount) {
+            setHasMinimumAmount(data.hasMinimumAmount);
+          }
+          if (data.membershipType) {
+            setMembershipTypeId(data.membershipType.id);
           }
         })
         .catch((error: unknown) => {
@@ -118,14 +149,69 @@ export default function DiscountFormPage(): React.JSX.Element {
     }
   }, [discountId]);
 
-  const handleDateChange = (newValue: Dayjs | null): void => {
+  const handleStartDateChange = (newValue: Dayjs | null): void => {
     if (newValue) {
+      // Set the date when a valid date is selected
+      setDiscount((prevDiscount) => ({
+        ...prevDiscount,
+        startDate: newValue.format('YYYY-MM-DD'),
+      }));
+    } else {
+      // Set startDate to null when the date is cleared
+      setDiscount((prevDiscount) => ({
+        ...prevDiscount,
+        startDate: '',
+      }));
+    }
+  };
+
+  const handleExpiryChange = (newValue: Dayjs | null): void => {
+    if (newValue) {
+      // Set the date when a valid date is selected
       setDiscount((prevDiscount) => ({
         ...prevDiscount,
         expiryDate: newValue.format('YYYY-MM-DD'),
       }));
+    } else {
+      // Set expiryDate to null when the date is cleared
+      setDiscount((prevDiscount) => ({
+        ...prevDiscount,
+        expiryDate: '',
+      }));
     }
   };
+
+  interface MembershipPlans {
+    id: number;
+    title: string;
+    cost: number;
+    durationInMonths: number;
+    expiryDate: Date;
+    paymentFrequency: string;
+    createdAt: string;
+    updatedAt: string;
+    description: string;
+    status: string;
+  }
+
+  interface MembershipPlanResponse {
+    data: MembershipPlans[];
+  }
+
+  React.useEffect(() => {
+    const fetchPlans = async () => {
+      try {
+        const response = await axiosInstance.get<MembershipPlanResponse>('/membership-types/dropdown');
+        setPlans(response.data.data);
+        setLoading(true);
+      } catch (err: unknown) {
+        err instanceof Error ? err.message : 'An unexpected error occurred';
+      } finally {
+        setLoading(false);
+      }
+    };
+    void fetchPlans();
+  }, []);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     const { name, value } = e.target;
@@ -185,11 +271,35 @@ export default function DiscountFormPage(): React.JSX.Element {
     }
   };
 
+  const handleMembershipTypeChange = (membershipId: number | null): void => {
+    setMembershipTypeId(membershipId);
+  };
+
   const validate = (): boolean => {
     try {
       const schema = discountId ? updateDiscountSchema : baseDiscountSchema;
+
+      // Convert values to proper types
       discount.discountValue = Number(discount.discountValue);
+      discount.usageLimit = Number(discount.usageLimit);
+      discount.minimumPurchaseAmount = Number(discount.minimumPurchaseAmount);
+      discount.membershipType = Number(membershipTypeId);
+
+      // Check if startDate is greater than expiryDate
+      const startDate = new Date(discount.startDate);
+      const expiryDate = new Date(discount.expiryDate);
+
+      if (startDate > expiryDate) {
+        void Swal.fire({
+          icon: 'error',
+          title: 'Invalid Dates',
+          text: 'The start date cannot be later than the expiry date.',
+        });
+        return false; // Return false to stop further validation
+      }
+
       schema.parse(discount);
+
       setErrors(null); // Clear errors if validation passes
       return true;
     } catch (e) {
@@ -205,13 +315,27 @@ export default function DiscountFormPage(): React.JSX.Element {
 
     const formData = new FormData();
     formData.append('codeName', discount.codeName);
-    formData.append('expiryDate', discount.expiryDate);
+
+    if (discount.membershipType > 0) {
+      formData.append('membershipType', discount.membershipType.toString());
+    }
+
+    formData.append('expiryDate', discount.expiryDate || '');
+    formData.append('startDate', discount.startDate || '');
     formData.append('discountType', discount.discountType as string); // Ensure proper typing
-    formData.append('usageLimit', discount.usageLimit as string); // Ensure proper typing
+    if (hasUsageLimit) {
+      formData.append('usageLimit', discount.usageLimit.toString()); // Ensure proper typing
+      formData.append('hasUsageLimit', hasUsageLimit.toString()); // Ensure proper typing
+    }
+    if (hasMinimumAmount) {
+      formData.append('minimumPurchaseAmount', discount.minimumPurchaseAmount.toString()); // Ensure proper typing
+      formData.append('hasMinimumAmount', hasMinimumAmount.toString()); // Ensure proper typing
+    }
     formData.append('discountValue', discount.discountValue.toString());
     formData.append('description', discount.description);
     formData.append('status', discount.status as string); // Ensure proper typing
     if (imageFile) formData.append('discountImage', imageFile);
+
     setLoading(true); // Start loading state
     try {
       const method = discount.id ? 'put' : 'post';
@@ -235,9 +359,9 @@ export default function DiscountFormPage(): React.JSX.Element {
   };
 
   React.useEffect(() => {
-    if (cleared) {
+    if (endDateClear) {
       const timeout = setTimeout(() => {
-        setCleared(false);
+        setEndDateClear(false);
       }, 1500);
 
       return () => {
@@ -245,7 +369,20 @@ export default function DiscountFormPage(): React.JSX.Element {
       };
     }
     return;
-  }, [cleared]);
+  }, [endDateClear]);
+
+  React.useEffect(() => {
+    if (startDateClear) {
+      const timeout = setTimeout(() => {
+        setStartDateClear(false);
+      }, 1500);
+
+      return () => {
+        clearTimeout(timeout);
+      };
+    }
+    return;
+  }, [startDateClear]);
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -271,7 +408,12 @@ export default function DiscountFormPage(): React.JSX.Element {
                     ref={fileInputRef}
                     style={{ display: 'none' }}
                   />
-                  <Button component="label" fullWidth variant="text" style={{fontFamily:'Audiowide, sans-serif !important',}}>
+                  <Button
+                    component="label"
+                    fullWidth
+                    variant="text"
+                    style={{ fontFamily: 'Audiowide, sans-serif !important' }}
+                  >
                     Upload picture
                     <input type="file" accept="image/*" hidden onChange={handleImageChange} />
                   </Button>
@@ -303,9 +445,105 @@ export default function DiscountFormPage(): React.JSX.Element {
                     helperText={errors?.codeName?._errors[0]}
                   />
                 </Grid>
-                <Grid item sm={6} xs={12}>
+                <Grid item md={6} xs={12}>
+                  <Controller
+                    control={control}
+                    name="membershipType"
+                    defaultValue={membershipTypeId}
+                    render={({ field }) => (
+                      <FormControl fullWidth error={Boolean(errors?.membershipType)}>
+                        <Autocomplete
+                          options={[{ id: null, title: 'ALL' }, ...plans]} // Add the "ALL" option at the beginning
+                          getOptionLabel={(option) => option.title || ''}
+                          isOptionEqualToValue={(option, value) => option?.id === value?.id}
+                          value={plans.find((plan) => plan.id === membershipTypeId) || { id: null, title: 'ALL' }} // Default "ALL" selection
+                          onChange={(e, value) => {
+                            const membershipType = value ? Number(value.id) : null; // Get the selected option's idcted
+                            field.onChange(membershipType);
+                            handleMembershipTypeChange(membershipType);
+                          }}
+                          renderInput={(params) => (
+                            <TextField {...params} label="Membership Plan" error={Boolean(errors?.membershipType)} />
+                          )}
+                        />
+                        {errors?.membershipType && <FormHelperText>{errors.membershipType?._errors[0]}</FormHelperText>}
+                      </FormControl>
+                    )}
+                  />
+                  {/* <Controller
+                    control={control}
+                    name="membershipType"
+                    defaultValue={membershipTypeId}
+                    render={({ field }) => (
+                      <FormControl fullWidth error={Boolean(errors?.membershipType)}>
+                        <Autocomplete
+                          options={plans}
+                          getOptionLabel={(option) => option.title || ''}
+                          isOptionEqualToValue={(option, value) => option.id === value.id}
+                          value={plans.find((plan) => plan.id === membershipTypeId) || null} // Match the selected plan by comparing the ID
+                          onChange={(e, value) => {
+                            const membershipType = value ? Number(value.id) : null; // Get the selected option's id
+                            field.onChange(membershipType);
+                            handleMembershipTypeChange(membershipType);
+                          }}
+                          renderInput={(params) => (
+                            <TextField {...params} label="Membership Plan" error={Boolean(errors?.membershipType)} />
+                          )}
+                        />
+                        {errors?.membershipType && <FormHelperText>{errors.membershipType?._errors[0]}</FormHelperText>}
+                      </FormControl>
+                    )}
+                  /> */}
+                </Grid>
+
+                <Grid item md={6} xs={12}>
                   <LocalizationProvider dateAdapter={AdapterDayjs}>
-                    <FormControl fullWidth required error={Boolean(errors?.expiryDate)}>
+                    <FormControl fullWidth error={Boolean(errors?.startDate)}>
+                      <Controller
+                        name="startDate"
+                        control={control}
+                        render={({ field, fieldState }) => {
+                          const errorMessage = fieldState.error ? fieldState.error.message : '';
+
+                          return (
+                            <DatePicker
+                              disablePast
+                              format="MM-DD-YYYY"
+                              views={['year', 'month', 'day']}
+                              defaultValue={discount?.startDate ? dayjs(discount.startDate) : null}
+                              label="Start Date"
+                              value={discount?.startDate ? dayjs(discount.startDate) : null}
+                              onChange={(newValue: Dayjs | null) => {
+                                if (newValue) {
+                                  field.onChange(newValue.format('YYYY-MM-DD'));
+                                } else {
+                                  field.onChange(null); // Clear value when date is cleared
+                                }
+                                handleStartDateChange(newValue); // Update field.onChange
+                              }}
+                              slotProps={{
+                                field: {
+                                  clearable: true,
+                                  onClear: () => {
+                                    setStartDateClear(true);
+                                  },
+                                },
+                                textField: {
+                                  fullWidth: true,
+                                  helperText: errorMessage,
+                                },
+                              }}
+                            />
+                          );
+                        }}
+                      />
+                      {errors?.startDate && <FormHelperText error>{errors.startDate._errors[0]}</FormHelperText>}
+                    </FormControl>
+                  </LocalizationProvider>
+                </Grid>
+                <Grid item md={6} xs={12}>
+                  <LocalizationProvider dateAdapter={AdapterDayjs}>
+                    <FormControl fullWidth error={Boolean(errors?.expiryDate)}>
                       <Controller
                         name="expiryDate"
                         control={control}
@@ -320,17 +558,20 @@ export default function DiscountFormPage(): React.JSX.Element {
                               defaultValue={discount?.expiryDate ? dayjs(discount.expiryDate) : null}
                               label="Expiry Date"
                               value={discount?.expiryDate ? dayjs(discount.expiryDate) : null}
+                              minDate={dayjs(discount.startDate).isValid() ? dayjs(discount.startDate) : undefined} // Ensure minDate is set
                               onChange={(newValue: Dayjs | null) => {
                                 if (newValue) {
-                                  field.onChange(newValue.format('YYYY-MM-DD')); // Update field.onChange
+                                  field.onChange(newValue.format('YYYY-MM-DD'));
+                                } else {
+                                  field.onChange(null); // Clear value when date is cleared
                                 }
-                                handleDateChange(newValue);
+                                handleExpiryChange(newValue); // Update field.onChange
                               }}
                               slotProps={{
                                 field: {
                                   clearable: true,
                                   onClear: () => {
-                                    setCleared(true);
+                                    setEndDateClear(true);
                                   },
                                 },
                                 textField: {
@@ -386,23 +627,77 @@ export default function DiscountFormPage(): React.JSX.Element {
                   </FormControl>
                 </Grid>
 
-                <Grid item xs={12} sm={6}>
-                  <FormControl variant="outlined" fullWidth required error={Boolean(errors?.usageLimit)}>
-                    <InputLabel>Usage Limit</InputLabel>
-                    <Select
-                      label="Usage Limit"
-                      name="usageLimit"
-                      value={discount.usageLimit}
-                      onChange={handleSelectChange}
-                      fullWidth
-                      error={Boolean(errors?.usageLimit)}
-                    >
-                      <MenuItem value={UsageLimit.Once}>Once</MenuItem>
-                      <MenuItem value={UsageLimit.Twice}>Twice</MenuItem>
-                      <MenuItem value={UsageLimit.NoLimit}>No Limit</MenuItem>
-                    </Select>
-                    <FormHelperText>{errors?.usageLimit?._errors[0]}</FormHelperText>
-                  </FormControl>
+                <Grid item xs={12} md={12}>
+                  <Grid container>
+                    <Grid item md={6}>
+                      <FormControlLabel
+                        control={
+                          <Switch
+                            checked={hasUsageLimit}
+                            onChange={() => {
+                              setHasUsageLimit(!hasUsageLimit);
+                            }}
+                          />
+                        }
+                        label="Usage Limit ?"
+                      />
+                    </Grid>
+                    <Grid item md={6}>
+                      {hasUsageLimit && (
+                        <FormControl variant="outlined" fullWidth required error={Boolean(errors?.usageLimit)}>
+                          <TextField
+                            required
+                            label="Usage Limit"
+                            name="usageLimit"
+                            value={discount.usageLimit}
+                            onChange={handleInputChange}
+                            fullWidth
+                            error={Boolean(errors?.usageLimit)}
+                          />
+                          <FormHelperText>{errors?.usageLimit?._errors[0]}</FormHelperText>
+                        </FormControl>
+                      )}
+                    </Grid>
+                  </Grid>
+                </Grid>
+
+                <Grid item xs={12} md={12}>
+                  <Grid container>
+                    <Grid item md={6}>
+                      <FormControlLabel
+                        control={
+                          <Switch
+                            checked={hasMinimumAmount}
+                            onChange={() => {
+                              setHasMinimumAmount(!hasMinimumAmount);
+                            }}
+                          />
+                        }
+                        label="Minimum Purchase Amount ?"
+                      />
+                    </Grid>
+                    <Grid item md={6}>
+                      {hasMinimumAmount && (
+                        <FormControl
+                          variant="outlined"
+                          fullWidth
+                          required
+                          error={Boolean(errors?.minimumPurchaseAmount)}
+                        >
+                          <TextField
+                            required
+                            label="Minimum Amount"
+                            name="minimumPurchaseAmount"
+                            value={discount.minimumPurchaseAmount}
+                            onChange={handleInputChange}
+                            fullWidth
+                            error={Boolean(errors?.minimumPurchaseAmount)}
+                          />
+                          <FormHelperText>{errors?.minimumPurchaseAmount?._errors[0]}</FormHelperText>
+                        </FormControl>
+                      )}
+                    </Grid>
+                  </Grid>
                 </Grid>
 
                 <Grid item xs={12} md={12}>
@@ -424,7 +719,13 @@ export default function DiscountFormPage(): React.JSX.Element {
 
             <Grid item xs={12}>
               <Stack direction="row" spacing={2} justifyContent="flex-end" p={3}>
-                <Button type="submit" variant="contained" className="common-button" disabled={loading} style={{fontFamily:'Audiowide, sans-serif !important',}}>
+                <Button
+                  type="submit"
+                  variant="contained"
+                  className="common-button"
+                  disabled={loading}
+                  style={{ fontFamily: 'Audiowide, sans-serif !important' }}
+                >
                   {discountId ? 'Update Discount' : 'Save Discount'}
                 </Button>
                 <Button
@@ -435,7 +736,7 @@ export default function DiscountFormPage(): React.JSX.Element {
                   sx={{
                     borderColor: '#d0021b',
                     color: '#d0021b',
-                    fontFamily:'Audiowide, sans-serif !important',
+                    fontFamily: 'Audiowide, sans-serif !important',
                     transform: 'skewX(-20deg)',
                     '&:hover': {
                       borderColor: 'darkred',

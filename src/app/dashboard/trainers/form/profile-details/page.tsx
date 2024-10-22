@@ -261,7 +261,7 @@ const TrainerAdditionalForm: React.FC = () => {
           >
             Save
           </Button>
-          <Button
+          {/* <Button
             className="common-button"
             variant="contained"
             type="submit"
@@ -271,7 +271,7 @@ const TrainerAdditionalForm: React.FC = () => {
             disabled={isSubmitting}
           >
             Save and next
-          </Button>
+          </Button> */}
           <Button
             className="common-button"
             variant="outlined"

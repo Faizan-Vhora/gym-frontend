@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { BOOKING_STATUS_OPTIONS, BOOKING_TYPE_OPTIONS } from '@/utils/constant';
 import { DATE_FORMAT } from '@/utils/date-utils';
 import {
+  Autocomplete,
   Box,
   FormControl,
   Grid,
@@ -132,16 +133,14 @@ export function BookingFilters({
     onBookingTypeChange(value);
   };
 
-  const handleTrainerIdChange = (e: SelectChangeEvent): void => {
-    const value = e.target.value;
-    setTrainerId(value);
-    onTrainerIdChange(value);
+  const handleTrainerIdChange = (trainerID: string): void => {
+    setTrainerId(trainerID);
+    onTrainerIdChange(trainerID);
   };
 
-  const handleCustomerIdChange = (e: SelectChangeEvent): void => {
-    const value = e.target.value;
-    setCustomerId(value);
-    onCustomerIdChange(value);
+  const handleCustomerIdChange = (memberId: string): void => {
+    setCustomerId(memberId);
+    onCustomerIdChange(memberId);
   };
 
   const handleStartDateChange = (date: Dayjs | null): void => {
@@ -256,29 +255,37 @@ export function BookingFilters({
 
       <Grid item md={3} xs={12}>
         <FormControl fullWidth variant="outlined">
-          <InputLabel>Trainer</InputLabel>
-          <Select value={trainerId} onChange={handleTrainerIdChange} label="trainerId">
-            <MenuItem value="All">All</MenuItem>
-            {trainerOptions.map((option) => (
-              <MenuItem key={option.id} value={String(option.id)}>
-                {option.fullName}
-              </MenuItem>
-            ))}
-          </Select>
+          <Autocomplete
+            options={trainerOptions}
+            getOptionLabel={(option) =>
+              option.memberId && option.fullName ? `${option.memberId} | ${option.fullName}` : 'All'
+            }
+            isOptionEqualToValue={(option, value) => option.id === value.id}
+            value={trainerOptions.find((option) => String(option.id) === trainerId) || null}
+            onChange={(event, value) => {
+              const selectedTrainerId = value ? String(value.id) : 'All';
+              handleTrainerIdChange(selectedTrainerId);
+            }}
+            renderInput={(params) => <TextField {...params} label="Trainer" variant="outlined" />}
+          />
         </FormControl>
       </Grid>
 
       <Grid item md={3} xs={12}>
         <FormControl fullWidth variant="outlined">
-          <InputLabel>Member</InputLabel>
-          <Select value={customerId} onChange={handleCustomerIdChange} label="customerId">
-            <MenuItem value="All">All</MenuItem>
-            {customerOptions.map((option) => (
-              <MenuItem key={option.id} value={String(option.id)}>
-                {option.fullName}
-              </MenuItem>
-            ))}
-          </Select>
+          <Autocomplete
+            options={customerOptions}
+            getOptionLabel={(option) =>
+              option.memberId && option.fullName ? `${option.memberId} | ${option.fullName}` : 'All'
+            }
+            isOptionEqualToValue={(option, value) => option.id === value.id}
+            value={customerOptions.find((option) => String(option.id) === customerId) || null}
+            onChange={(event, value) => {
+              const selectedMemberId = value ? String(value.id) : 'All';
+              handleCustomerIdChange(selectedMemberId);
+            }}
+            renderInput={(params) => <TextField {...params} label="Member" variant="outlined" />}
+          />
         </FormControl>
       </Grid>
     </Grid>

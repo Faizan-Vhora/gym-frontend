@@ -20,13 +20,13 @@ import {
   TableRow,
   Typography,
 } from '@mui/material';
-import { PencilSimple, Trash, XCircle } from '@phosphor-icons/react';
+import { Note, PencilSimple, Trash, XCircle } from '@phosphor-icons/react';
 import dayjs from 'dayjs';
 
 import tableCss from '@/styles/table-css';
 
 interface DiscountTableProps {
-  discounts: DiscountEntry[];
+  discounts: DiscountEntryResponse[];
   page: number;
   rowsPerPage: number;
   totalEntries: number;
@@ -37,12 +37,39 @@ interface DiscountTableProps {
   onRowsPerPageChange: (newRowsPerPage: number) => void;
 }
 
+export interface DiscountEntryResponse {
+  id: number;
+  codeName: string;
+  startDate: string;
+  expiryDate: string; // Updated from Date to string for API data handling
+  membershipType: {
+    id: number;
+    title: string;
+  };
+  discountType: DiscountType;
+  hasUsageLimit: boolean;
+  usageLimit: number;
+  hasMinimumAmount: boolean;
+  minimumPurchaseAmount: number;
+  discountValue: number;
+  description: string;
+  status: DiscountStatus;
+  isNewUser: boolean;
+  discountImageUrl?: string;
+  discountImage?: string;
+}
+
 export interface DiscountEntry {
   id: number;
   codeName: string;
+  startDate: string;
   expiryDate: string; // Updated from Date to string for API data handling
+  membershipType: number;
   discountType: DiscountType;
-  usageLimit: UsageLimit;
+  hasUsageLimit: boolean;
+  usageLimit: number;
+  hasMinimumAmount: boolean;
+  minimumPurchaseAmount: number;
   discountValue: number;
   description: string;
   status: DiscountStatus;
@@ -54,12 +81,6 @@ export interface DiscountEntry {
 export enum DiscountType {
   Percentage = 'percentage',
   Fix = 'fixed',
-}
-
-export enum UsageLimit {
-  Once = 'once',
-  Twice = 'twice',
-  NoLimit = 'no_limit',
 }
 
 export enum DiscountStatus {
@@ -91,6 +112,10 @@ export function DiscountTable({
     onRowsPerPageChange(parseInt(event.target.value, 10));
   };
 
+  const handleCodeView = (codeName: string): void => {
+    router.push(`/dashboard/discount/view?codeName=${codeName}`);
+  };
+
   const handleAvatarClick = (imageUrl: string): void => {
     setSelectedImage(imageUrl);
     setOpenDialog(true);
@@ -105,12 +130,6 @@ export function DiscountTable({
     router.push(`/dashboard/discount/form?id=${id}`); // Replace with the actual path to your form page
   };
 
-  const usageLimitDisplay: Record<UsageLimit, string> = {
-    [UsageLimit.Once]: 'Once',
-    [UsageLimit.Twice]: 'Twice',
-    [UsageLimit.NoLimit]: 'No Limit',
-  };
-
   return (
     <>
       <Card>
@@ -120,9 +139,12 @@ export function DiscountTable({
               <TableRow sx={tableCss.tableRow}>
                 <TableCell sx={tableCss.tableHeaderCell}>Discount Image</TableCell>
                 <TableCell sx={tableCss.tableHeaderCell}>Code Name</TableCell>
+                <TableCell sx={tableCss.tableHeaderCell}>Start Date</TableCell>
                 <TableCell sx={tableCss.tableHeaderCell}>Expiry Date</TableCell>
                 <TableCell sx={tableCss.tableHeaderCell}>Discount Type</TableCell>
                 <TableCell sx={tableCss.tableHeaderCell}>Usage Limit</TableCell>
+                <TableCell sx={tableCss.tableHeaderCell}>Minimum Amount</TableCell>
+                <TableCell sx={tableCss.tableHeaderCell}>Membership Plan</TableCell>
                 <TableCell sx={tableCss.tableHeaderCell}>Discount Value</TableCell>
                 <TableCell sx={tableCss.tableHeaderCell}>Status</TableCell>
                 <TableCell sx={tableCss.tableHeaderCell}>Actions</TableCell>
@@ -160,12 +182,19 @@ export function DiscountTable({
                       {discount.codeName}
                     </TableCell>
                     <TableCell sx={[tableCss.tableCell, { whiteSpace: 'nowrap' }]}>
-                      {dayjs(discount.expiryDate).format('MMM D, YYYY')}
+                      {discount.startDate ? dayjs(discount.startDate).format('MMM D, YYYY') : '-'}
+                    </TableCell>
+                    <TableCell sx={[tableCss.tableCell, { whiteSpace: 'nowrap' }]}>
+                      {discount.expiryDate ? dayjs(discount.expiryDate).format('MMM D, YYYY') : '-'}
                     </TableCell>
                     <TableCell sx={tableCss.tableCell}>
                       {discount.discountType === DiscountType.Percentage ? 'Percentage' : 'Fixed'}
                     </TableCell>
-                    <TableCell sx={tableCss.tableCell}>{usageLimitDisplay[discount.usageLimit]}</TableCell>
+                    <TableCell sx={tableCss.tableCell}>{discount.hasUsageLimit ? discount.usageLimit : '-'}</TableCell>
+                    <TableCell sx={tableCss.tableCell}>
+                      {discount.hasMinimumAmount ? discount.minimumPurchaseAmount : '-'}
+                    </TableCell>
+                    <TableCell sx={tableCss.tableCell}>{discount.membershipType?.title || '-'}</TableCell>
                     <TableCell sx={tableCss.tableCell}>
                       {discount.discountType === DiscountType.Percentage
                         ? `${Math.floor(discount.discountValue)}%` // Remove decimal points and display percentage
@@ -199,6 +228,14 @@ export function DiscountTable({
                         }}
                       >
                         <Trash />
+                      </IconButton>
+
+                      <IconButton
+                        onClick={() => {
+                          handleCodeView(discount.codeName);
+                        }}
+                      >
+                        <Note />
                       </IconButton>
                     </TableCell>
                   </TableRow>

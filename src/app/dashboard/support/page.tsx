@@ -64,7 +64,7 @@ export default function Page(): React.JSX.Element {
       icon: 'warning',
       showCancelButton: true,
       confirmButtonText: 'Yes, update it!',
-      cancelButtonText: 'No, cancel!',
+      cancelButtonText: 'No',
     });
 
     if (result.isConfirmed) {

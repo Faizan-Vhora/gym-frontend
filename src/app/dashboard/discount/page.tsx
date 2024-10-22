@@ -12,10 +12,10 @@ import Swal from 'sweetalert2';
 import axiosInstance from '@/lib/axios';
 import { DiscountFilter } from '@/components/dashboard/discount/discount-filters';
 import { DiscountStatus, DiscountTable } from '@/components/dashboard/discount/discount-table';
-import type { DiscountEntry } from '@/components/dashboard/discount/discount-table';
+import type { DiscountEntryResponse } from '@/components/dashboard/discount/discount-table';
 
 export default function DiscountManagementPage(): React.JSX.Element {
-  const [discounts, setDiscounts] = React.useState<DiscountEntry[]>([]);
+  const [discounts, setDiscounts] = React.useState<DiscountEntryResponse[]>([]);
   const [page, setPage] = React.useState<number>(0);
   const [rowsPerPage, setRowsPerPage] = React.useState<number>(5);
   const [totalItems, setTotalItems] = React.useState<number>(0);
@@ -24,7 +24,7 @@ export default function DiscountManagementPage(): React.JSX.Element {
   const [loading, setLoading] = React.useState(true);
   const router = useRouter();
 
-  interface DiscountItem extends DiscountEntry {
+  interface DiscountItem extends DiscountEntryResponse {
     // If DiscountItem should extend DiscountEntry, you can use inheritance
   }
 

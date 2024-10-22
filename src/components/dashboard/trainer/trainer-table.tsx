@@ -22,7 +22,7 @@ import dayjs from 'dayjs';
 
 import tableCss from '@/styles/table-css';
 
-interface TrainerExpertise {
+export interface TrainerExpertise {
   id: number;
   createdAt: string;
   updatedAt: string;
@@ -34,6 +34,21 @@ interface TrainerExpertise {
     createdAt: string;
     updatedAt: string;
   };
+}
+
+export interface TrainerAttendanceDetail {
+  available: number;
+  unAvailable: number;
+}
+
+export interface TrainerSessionDetail {
+  totalSession: number;
+  incomingSession: number;
+  startedSession: number;
+  completedSession: number;
+  cancelledSession: number;
+  sessionTotalRevenue: number;
+  sessionTotalHours: number;
 }
 
 export interface Trainer {
@@ -51,6 +66,9 @@ export interface Trainer {
   experience: number;
   fees: number;
   profileImageUrl?: string;
+  setSameTimeForAllDay: boolean;
+  attendanceDetail?: TrainerAttendanceDetail; // Attendance data
+  sessionDetail?: TrainerSessionDetail; // Session counts
 }
 
 interface TrainerTableProps {

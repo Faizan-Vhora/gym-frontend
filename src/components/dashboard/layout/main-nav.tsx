@@ -8,8 +8,11 @@ import IconButton from '@mui/material/IconButton';
 import Stack from '@mui/material/Stack';
 import { Bell } from '@phosphor-icons/react';
 import { List as ListIcon } from '@phosphor-icons/react/dist/ssr/List';
+import Swal from 'sweetalert2';
 
+import axiosInstance from '@/lib/axios';
 import { usePopover } from '@/hooks/use-popover';
+import { NotificationEntry } from '@/components/dashboard/notification/notification-table';
 
 import { MobileNav } from './mobile-nav';
 import { NotificationsPopover } from './notification-popover';
@@ -24,17 +27,29 @@ interface User {
 export function MainNav(): React.JSX.Element {
   const [openNav, setOpenNav] = React.useState<boolean>(false);
   const [user, setUser] = React.useState<User | null>(null);
+  const [unreadCount, setUnreadCount] = React.useState<number>(0);
 
   const userPopover = usePopover<HTMLDivElement>();
 
   const notificationPopover = usePopover<HTMLDivElement>();
+
+  const getNotificationListData = React.useCallback(async (): Promise<void> => {
+    try {
+      const response = await axiosInstance.get<{ data: NotificationEntry[] }>('/notification/my/unread');
+      const unreadCountForNotification = response.data.data.length;
+      setUnreadCount(unreadCountForNotification);
+    } catch (error) {
+      await Swal.fire('Error!', 'Something went wrong.', 'error');
+    }
+  }, []);
 
   React.useEffect(() => {
     // Retrieve user data from localStorage
     const storedUser = localStorage.getItem('user');
     const parsedUser = storedUser ? (JSON.parse(storedUser) as User) : null;
     setUser(parsedUser);
-  }, []);
+    void getNotificationListData();
+  }, [unreadCount]);
 
   return (
     <React.Fragment>
@@ -64,12 +79,18 @@ export function MainNav(): React.JSX.Element {
             </IconButton>
           </Stack>
           <Stack sx={{ alignItems: 'center' }} direction="row" spacing={2}>
-            <Tooltip title="Notifications">
-              <Badge badgeContent={4} color="success" variant="dot">
+            <Tooltip title={'Notification'}>
+              {unreadCount > 0 ? (
+                <Badge badgeContent={unreadCount} color="error">
+                  <IconButton onClick={notificationPopover.handleOpen}>
+                    <Bell />
+                  </IconButton>
+                </Badge>
+              ) : (
                 <IconButton onClick={notificationPopover.handleOpen}>
                   <Bell />
                 </IconButton>
-              </Badge>
+              )}
             </Tooltip>
 
             <Avatar

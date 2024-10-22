@@ -123,9 +123,8 @@ export function ExpertiseTable({
                       maxWidth: '100px',
                       overflow: 'hidden',
                     }}
-                  >
-                    {entry.description || '-'}
-                  </TableCell>
+                    dangerouslySetInnerHTML={{ __html: entry?.description || '-' }}
+                  />
                   <TableCell sx={tableCss.tableCell}>{dayjs(entry.updatedAt).format('MMM D, YYYY')}</TableCell>
 
                   <TableCell sx={tableCss.tableCell}>

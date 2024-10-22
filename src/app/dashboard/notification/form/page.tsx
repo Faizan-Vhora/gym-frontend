@@ -129,7 +129,7 @@ export default function NotificationForm() {
       payload[tabValue === 'member' ? 'memberIds' : 'trainerIds'] = data.userIds;
     }
     try {
-      await axiosInstance.post('/notification', payload);
+      await axiosInstance.post('/admin-notification', payload);
       toast.success('Notification sent successfully!');
       router.push('/dashboard/notification');
     } catch (error: unknown) {
@@ -187,7 +187,7 @@ export default function NotificationForm() {
                         >
                           {(tabValue === 'member' ? customers : trainers).map((user) => (
                             <MenuItem key={user.id} value={user.id}>
-                              {user.fullName}
+                              {`${user.memberId} | ${user.fullName}`}
                             </MenuItem>
                           ))}
                         </Select>

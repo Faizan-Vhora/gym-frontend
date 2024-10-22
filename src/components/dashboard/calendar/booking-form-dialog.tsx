@@ -1,7 +1,7 @@
 import React from 'react';
 import { BOOKING_PAYMENT_TYPE, BOOKING_TYPE, WEEKDAY_NAME, WEEKDAY_OPTIONS, WeekDayOptionsI } from '@/utils/constant';
 import { formatAmount } from '@/utils/converter';
-import { calculateWeeksBetweenDates, formatDate } from '@/utils/date-utils';
+import { calculateWeeksBetweenDates, formatDate, formatTo12HourFormat } from '@/utils/date-utils';
 import { CustomLoader } from '@/utils/loader';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
@@ -154,14 +154,7 @@ export function BookingFormDialog({
   );
   const [availableSlotsWeekly, setAvailableSlotWeeklyData] = React.useState<WeeklySlotI[]>([]);
   const [availableSlotsWeeklyByFilter, setAvailableSlotWeeklyByFilterData] = React.useState<WeeklySlotI[]>([]);
-  const [trainerBlockDatesList, setTrainerBlockDatesList] = React.useState<string[]>([
-    '2024-10-20',
-    '2024-10-21',
-    '2024-10-22',
-    '2024-10-26',
-    '2024-10-27',
-    '2024-10-28',
-  ]);
+  const [trainerBlockDatesList, setTrainerBlockDatesList] = React.useState<string[]>([]);
   const [availableWeekDayOptions, setAvailableWeekDayOptions] = React.useState<WeeklyDayOptionI[]>([]);
   const [selectedDays, setSelectedDays] = React.useState<number[]>([dayjs().day()]); // Default to today's weekday
   const [selectedSlots, setSelectedSlots] = React.useState<SelectedSlotsI>({});
@@ -183,20 +176,6 @@ export function BookingFormDialog({
   const [sameTimeForSelectedDays, setSameTimeForSelectedDays] = React.useState<boolean>(false);
   const [referenceSlotsForSameTime, setReferenceSlotsForSameTime] = React.useState<SlotI[]>([]);
   const [selectedSlotsForSameDays, setSelectedSlotsForSameDays] = React.useState<SelectedSlotsI>({});
-  const [cleared, setCleared] = React.useState<boolean>(false);
-
-  React.useEffect(() => {
-    if (cleared) {
-      const timeout = setTimeout(() => {
-        setCleared(false);
-      }, 1500);
-
-      return () => {
-        clearTimeout(timeout);
-      };
-    }
-    return;
-  }, [cleared]);
 
   // Fetch data
   const fetchCustomers = async (): Promise<void> => {
@@ -316,13 +295,18 @@ export function BookingFormDialog({
     setAvailableSlotWeeklyByFilterData(availableSlotsFilter);
   };
 
-  const fetchPromocode = async (): Promise<void> => {
-    try {
-      const { data } = await axiosInstance.get<{ data: DiscountEntry[] }>('/discount/dropdown');
-      setPromocodeOptions(data.data);
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to load customers.';
-      toast.error(`Error fetching customers: ${errorMessage}`);
+  const fetchCustomerPromocode = async (): Promise<void> => {
+    setPromocodeOptions([]);
+    if (selectedCustomer) {
+      try {
+        const { data } = await axiosInstance.get<{ data: DiscountEntry[] }>(
+          `/discount/${selectedCustomer.id}/available-code-list`
+        );
+        setPromocodeOptions(data.data);
+      } catch (err) {
+        const errorMessage = err instanceof Error ? err.message : 'Failed to load customers.';
+        toast.error(`Error fetching customers promocodes: ${errorMessage}`);
+      }
     }
   };
 
@@ -657,7 +641,6 @@ export function BookingFormDialog({
   React.useEffect(() => {
     void fetchTrainers();
     void fetchCustomers();
-    void fetchPromocode();
   }, []);
 
   // React.useEffect(() => {
@@ -667,6 +650,10 @@ export function BookingFormDialog({
   // React.useEffect(() => {
   //   console.log('Update : bookingDetails:: ', bookingDetails);
   // }, [bookingDetails]);
+
+  React.useEffect(() => {
+    void fetchCustomerPromocode();
+  }, [selectedCustomer]);
 
   React.useEffect(() => {
     // console.log('Update : availableSlotsWeeklyByFilter:: ', availableSlotsWeeklyByFilter);
@@ -748,26 +735,26 @@ export function BookingFormDialog({
                 name="customerId"
                 render={({ field }) => (
                   <FormControl fullWidth error={Boolean(errors.customerId)}>
-                    <InputLabel>Member</InputLabel>
-                    <Select
-                      {...field}
-                      value={field.value || ''}
-                      onChange={(e) => {
-                        const customerId = Number(e.target.value);
+                    <Autocomplete
+                      options={customerOptions}
+                      getOptionLabel={(option) =>
+                        option.memberId && option.fullName ? `${option.memberId} | ${option.fullName}` : 'All'
+                      }
+                      isOptionEqualToValue={(option, value) => option.id === value.id}
+                      onChange={(e, value) => {
+                        const customerId = value ? Number(value.id) : 0;
                         field.onChange(customerId);
                         handleCustomerChange(customerId);
                       }}
-                      label="Customer"
-                    >
-                      <Option value="">
-                        <em>Select a Member</em>
-                      </Option>
-                      {customerOptions.map((customer) => (
-                        <Option key={customer.id} value={customer.id}>
-                          {customer.fullName}
-                        </Option>
-                      ))}
-                    </Select>
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          label="Member"
+                          error={Boolean(errors.customerId)}
+                          helperText={errors.customerId ? errors.customerId.message : null}
+                        />
+                      )}
+                    />
                     {errors.customerId && <FormHelperText>{errors.customerId.message}</FormHelperText>}
                   </FormControl>
                 )}
@@ -830,26 +817,26 @@ export function BookingFormDialog({
                 name="trainerId"
                 render={({ field }) => (
                   <FormControl fullWidth error={Boolean(errors.trainerId)}>
-                    <InputLabel>Trainer</InputLabel>
-                    <Select
-                      {...field}
-                      value={field.value || ''}
-                      onChange={(e) => {
-                        const trainerId = Number(e.target.value);
+                    <Autocomplete
+                      options={trainerOptions}
+                      getOptionLabel={(option) =>
+                        option.memberId && option.fullName ? `${option.memberId} | ${option.fullName}` : 'All'
+                      }
+                      isOptionEqualToValue={(option, value) => option.id === value.id}
+                      onChange={(e, value) => {
+                        const trainerId = value ? Number(value.id) : 0;
                         field.onChange(trainerId);
                         handleTrainerChange(trainerId);
                       }}
-                      label="Trainer"
-                    >
-                      <Option value="">
-                        <em>Select a Trainer</em>
-                      </Option>
-                      {trainerOptions.map((trainer) => (
-                        <Option key={trainer.id} value={trainer.id}>
-                          {trainer.fullName}
-                        </Option>
-                      ))}
-                    </Select>
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          label="Trainer"
+                          error={Boolean(errors.trainerId)}
+                          helperText={errors.trainerId ? errors.trainerId.message : null}
+                        />
+                      )}
+                    />
                     {errors.trainerId && <FormHelperText>{errors.trainerId.message}</FormHelperText>}
                   </FormControl>
                 )}
@@ -949,12 +936,6 @@ export function BookingFormDialog({
                             error: Boolean(errors.bookingDate),
                             helperText: errors.bookingDate?.message,
                           },
-                          field: {
-                            clearable: true,
-                            onClear: () => {
-                              setCleared(true);
-                            },
-                          },
                         }}
                         shouldDisableDate={(date) => {
                           return trainerBlockDatesList.includes(dayjs(date).format('YYYY-MM-DD'));
@@ -997,12 +978,6 @@ export function BookingFormDialog({
                             error: Boolean(errors.bookingStartDate),
                             helperText: errors.bookingStartDate?.message,
                           },
-                          field: {
-                            clearable: true,
-                            onClear: () => {
-                              setCleared(true);
-                            },
-                          },
                         }}
                         shouldDisableDate={(date) => {
                           return trainerBlockDatesList.includes(dayjs(date).format('YYYY-MM-DD'));
@@ -1038,12 +1013,6 @@ export function BookingFormDialog({
                           textField: {
                             error: Boolean(errors.bookingEndDate),
                             helperText: errors.bookingEndDate?.message,
-                          },
-                          field: {
-                            clearable: true,
-                            onClear: () => {
-                              setCleared(true);
-                            },
                           },
                         }}
                         shouldDisableDate={(date) => {
@@ -1167,7 +1136,7 @@ export function BookingFormDialog({
                             ) : (
                               <>
                                 <Checkbox checked={selected} disabled={!option.isAvailable || isPastDatetime(option)} />
-                                {`${option.startTime} - ${option.endTime}`}
+                                {`${option.startTime && formatTo12HourFormat(option.startTime)} - ${option.endTime && formatTo12HourFormat(option.endTime)}`}
                               </>
                             )}
                           </li>
@@ -1226,7 +1195,7 @@ export function BookingFormDialog({
                                     checked={selected}
                                     disabled={!option.isAvailable || isPastDatetime(option)}
                                   />
-                                  {`${option.startTime} - ${option.endTime}`}
+                                  {`${option.startTime && formatTo12HourFormat(option.startTime)} - ${option.endTime && formatTo12HourFormat(option.endTime)}`}
                                 </>
                               )}
                             </li>
@@ -1359,7 +1328,7 @@ export function BookingFormDialog({
                 )}
               </Grid>
             ) : (
-              <Typography>No available promocodes</Typography>
+              <Typography></Typography>
             )}
           </Grid>
         </Stack>

@@ -106,7 +106,9 @@ body {
   margin-left: 10px;
   transform: skewX(20deg); /* Correct skew for the arrow */
 }
-
+.Notification:hover {
+  background-color: #f0f8ff !important;
+}
 .common-button:hover {
   background-color: #a50015 !important; /* Slightly darker red for hover effect */
 }
@@ -221,3 +223,6 @@ body {
     /* column-gap: 20px; */
    }
    
+   .ck-powered-by {
+    display: none;
+  }

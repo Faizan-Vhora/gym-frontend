@@ -33,6 +33,18 @@ export const navItems = [
 
       { key: 'notification', title: 'Notification', href: paths.notification.notificationList, icon: 'bell', items:[] },
 
+
+      {
+        key: 'reports',
+        title: 'Reports',
+        icon: 'gear',
+        items: [
+          { key: 'reports:trainer-report', title: 'Trainer', href: paths.trainerReport.list, icon: 'user-check' },
+          // { key: 'customers:discount', title: 'Discount', href: paths.discount.discount, icon: 'tag' },
+          // { key: 'settings:faq', title: 'FAQ', href: paths.faq.faq, icon: 'chat-centered-dots' },
+          // { key: 'cms', title: 'CMS', href: paths.cms.cms, icon: 'user-circle-gear', items:[] },
+        ],
+      },
       // { key: 'integrations', title: 'Integrations', href: paths.dashboard.integrations, icon: 'plugs-connected' },
       // { key: 'settings', title: 'Settings', href: paths.dashboard.settings, icon: 'gear-six' },
       // { key: 'account', title: 'Account', href: paths.dashboard.account, icon: 'user' },

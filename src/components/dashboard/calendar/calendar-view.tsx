@@ -268,7 +268,7 @@ export function CalendarView({ view = 'dayGridMonth' }: CalendarViewProps): Reac
 
     if (newStatus === BOOKING_STATUS.CANCELED) {
       swalText = `Do you want to cancel the booking?`;
-      swalConfirmButtonText = `Yes, cancel it!`;
+      swalConfirmButtonText = `Yes`;
       swalSuccessMessage = `The booking has been cancelled`;
     }
 
@@ -278,7 +278,7 @@ export function CalendarView({ view = 'dayGridMonth' }: CalendarViewProps): Reac
       icon: 'warning',
       showCancelButton: true,
       confirmButtonText: swalConfirmButtonText,
-      cancelButtonText: 'No, cancel!',
+      cancelButtonText: 'No',
     });
 
     if (result.isConfirmed) {

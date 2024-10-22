@@ -3,7 +3,16 @@
 import * as React from 'react';
 import { BOOKING_SESSION_STATUS_OPTIONS } from '@/utils/constant';
 import { CustomLoader } from '@/utils/loader';
-import { FormControl, Grid, IconButton, InputAdornment, InputLabel, MenuItem, TextField } from '@mui/material';
+import {
+  Autocomplete,
+  FormControl,
+  Grid,
+  IconButton,
+  InputAdornment,
+  InputLabel,
+  MenuItem,
+  TextField,
+} from '@mui/material';
 import Button from '@mui/material/Button';
 import type { SelectChangeEvent } from '@mui/material/Select';
 import Select from '@mui/material/Select';
@@ -181,16 +190,14 @@ export function Toolbar({
     onSearchChange('');
   };
 
-  const handleTrainerSelect = (event: SelectChangeEvent): void => {
-    const trainerId = Number(event.target.value);
-    setSelectedTrainer(event.target.value);
-    handleTrainerChange(trainerId);
+  const handleTrainerSelect = (trainerId: string): void => {
+    setSelectedTrainer(trainerId);
+    handleTrainerChange(Number(trainerId));
   };
 
-  const handleMemberSelect = (event: SelectChangeEvent): void => {
-    const memberId = Number(event.target.value);
-    setSelectedMember(event.target.value);
-    handleMemberChange(memberId);
+  const handleMemberSelect = (memberId: string): void => {
+    setSelectedMember(memberId);
+    handleMemberChange(Number(memberId));
   };
 
   const handleStatusChange = (event: SelectChangeEvent): void => {
@@ -256,30 +263,37 @@ export function Toolbar({
         <Grid item md={3} sm={6} xs={12}>
           {/* Trainer Selection */}
           <FormControl fullWidth variant="outlined">
-            <InputLabel>Trainers</InputLabel>
-            <Select value={selectedTrainer} onChange={handleTrainerSelect} fullWidth label="Trainers">
-              <MenuItem value="All">All</MenuItem>
-              {trainers.map((trainer) => (
-                <Option key={trainer.id} value={trainer.id}>
-                  {trainer.fullName}
-                </Option>
-              ))}
-            </Select>
+            <Autocomplete
+              options={trainers}
+              getOptionLabel={(option) =>
+                option.memberId && option.fullName ? `${option.memberId} | ${option.fullName}` : 'All'
+              }
+              isOptionEqualToValue={(option, value) => option.id === value.id}
+              value={trainers.find((option) => String(option.id) === selectedTrainer) || null}
+              onChange={(event, value) => {
+                const selectedTrainerId = value ? String(value.id) : 'All';
+                handleTrainerSelect(selectedTrainerId);
+              }}
+              renderInput={(params) => <TextField {...params} label="Trainer" variant="outlined" />}
+            />
           </FormControl>
         </Grid>
         <Grid item md={3} sm={6} xs={12}>
           {/* Member Selection */}
           <FormControl fullWidth variant="outlined">
-            <InputLabel>Members</InputLabel>
-            <Select value={selectedMember} onChange={handleMemberSelect} fullWidth label="Members">
-              <MenuItem value="All">All</MenuItem>
-
-              {customers.map((member) => (
-                <Option key={member.id} value={member.id}>
-                  {member.fullName}
-                </Option>
-              ))}
-            </Select>
+            <Autocomplete
+              options={customers}
+              getOptionLabel={(option) =>
+                option.memberId && option.fullName ? `${option.memberId} | ${option.fullName}` : 'All'
+              }
+              isOptionEqualToValue={(option, value) => option.id === value.id}
+              value={customers.find((option) => String(option.id) === selectedMember) || null}
+              onChange={(event, value) => {
+                const selectedMemberId = value ? String(value.id) : 'All';
+                handleMemberSelect(selectedMemberId);
+              }}
+              renderInput={(params) => <TextField {...params} label="Member" variant="outlined" />}
+            />
           </FormControl>
         </Grid>
         <Grid item md={3} sm={6} xs={12}>

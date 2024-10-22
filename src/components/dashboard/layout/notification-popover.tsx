@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { useRouter } from 'next/navigation';
 import { CustomLoader } from '@/utils/loader';
 import Avatar from '@mui/material/Avatar';
 import Box from '@mui/material/Box';
@@ -18,21 +19,18 @@ import Swal from 'sweetalert2';
 
 import axiosInstance from '@/lib/axios';
 import { dayjs } from '@/lib/dayjs';
-import { NotificationEntry } from '@/components/notification/notification-table';
+import { NotificationEntry } from '@/components/dashboard/notification/notification-table';
 
 export interface NotificationsPopoverProps {
   anchorEl: null | Element;
   onClose?: () => void;
-  onMarkAllAsRead?: () => void;
-  onRemoveOne?: (id: string) => void;
   open?: boolean;
 }
 
 export function NotificationsPopover({
   anchorEl,
   onClose,
-  onMarkAllAsRead,
-  onRemoveOne,
+
   open = false,
 }: NotificationsPopoverProps): React.JSX.Element {
   const [notifications, setNotifications] = React.useState<NotificationEntry[]>([]);
@@ -50,6 +48,17 @@ export function NotificationsPopover({
       setLoading(false);
     }
   }, []);
+
+  const markAllAsRead = async () => {
+    try {
+      // Call your API endpoint to mark all notifications as read
+      await axiosInstance.patch('/notification/mark-all-read'); // Adjust the endpoint as needed
+      await getNotificationListData(); // Refresh notifications after marking all as read
+    } catch (error: unknown) {
+      error instanceof Error ? error.message : 'An unexpected error occurred';
+      await Swal.fire('Error!', 'Failed to mark all notifications as read.', 'error'); // Error handling
+    }
+  };
 
   React.useEffect(() => {
     if (open) {
@@ -69,7 +78,7 @@ export function NotificationsPopover({
       <Stack direction="row" spacing={2} sx={{ alignItems: 'center', justifyContent: 'space-between', px: 3, py: 2 }}>
         <Typography variant="h6">Notifications</Typography>
         <Tooltip title="Mark all as read">
-          <IconButton edge="end" onClick={onMarkAllAsRead}>
+          <IconButton edge="end" onClick={markAllAsRead}>
             <EnvelopeSimpleIcon />
           </IconButton>
         </Tooltip>
@@ -86,9 +95,7 @@ export function NotificationsPopover({
                 divider={index < notifications.length - 1}
                 key={notification.id}
                 notification={notification}
-                onRemove={() => {
-                  onRemoveOne?.(String(notification.id));
-                }}
+                onRemove={getNotificationListData}
               />
             ))}
           </List>
@@ -102,15 +109,30 @@ export function NotificationsPopover({
 interface NotificationItemProps {
   divider?: boolean;
   notification: NotificationEntry;
-  onRemove?: () => void;
+  onRemove: () => void;
 }
 
 function NotificationItem({ divider, notification, onRemove }: NotificationItemProps): React.JSX.Element {
+  const handleRemove = async () => {
+    const payload = {
+      isRead: true,
+    };
+
+    try {
+      // Call your API endpoint to mark the notification as read
+      await axiosInstance.patch(`/notification/${notification.id}`, payload); // Adjust the endpoint as needed
+      // Call onRemove to remove the notification from the UI if API call is successful
+      onRemove();
+    } catch (error: unknown) {
+      error instanceof Error ? error.message : 'An unexpected error occurred';
+      await Swal.fire('Error!', 'Failed to mark notification as read.', 'error'); // Error handling
+    }
+  };
   return (
     <ListItem divider={divider} sx={{ alignItems: 'flex-start', justifyContent: 'space-between' }}>
-      <NotificationContent notification={notification} />
+      <NotificationContent notification={notification} unread={handleRemove} />
       <Tooltip title="Remove">
-        <IconButton edge="end" onClick={onRemove} size="small">
+        <IconButton edge="end" onClick={handleRemove} size="small">
           <XIcon />
         </IconButton>
       </Tooltip>
@@ -120,24 +142,28 @@ function NotificationItem({ divider, notification, onRemove }: NotificationItemP
 
 interface NotificationContentProps {
   notification: NotificationEntry;
+  unread: () => void;
 }
 
-function NotificationContent({ notification }: NotificationContentProps): React.JSX.Element {
+function NotificationContent({ notification, unread }: NotificationContentProps): React.JSX.Element {
+  const router = useRouter();
   return (
-    <Stack direction="row" spacing={2} sx={{ alignItems: 'flex-start' }}>
+    <Stack className="Notification" direction="row" spacing={2} sx={{ alignItems: 'flex-start' }}>
       <Avatar>
         <ChatTextIcon fontSize="var(--Icon-fontSize)" />
       </Avatar>
-      <div>
+      <Stack
+        onClick={() => {
+          router.push(notification?.redirectionPath);
+          unread();
+        }}
+      >
         <Typography variant="subtitle2">{notification?.title}</Typography>
         <Typography variant="body2">{notification?.message}</Typography>
         <Typography color="text.secondary" variant="caption">
           {dayjs(notification.createdAt).format('MMM D, hh:mm A')}
         </Typography>
-      </div>
+      </Stack>
     </Stack>
   );
 }
-
-//   return <div />;
-// }

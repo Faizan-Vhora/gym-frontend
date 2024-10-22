@@ -68,7 +68,7 @@ export default function CustomerEditForm(): React.JSX.Element {
   const [imageFile, setImageFile] = React.useState<File | null>(null);
   const [redirectTo, setRedirectTo] = useState<'customers' | 'additional-details'>('customers');
   const [plans, setPlans] = useState<PlanI[]>([]);
-  const [tab, setTab] = useState(0); // State to control the active tab
+  const [tab, setTab] = useState(1); // State to control the active tab
   const [checkInPage, setPage] = useState(0);
   const [checkInRowsPerPage, setRowsPerPage] = useState(5);
   const [checkInEntries, setCheckInEntries] = useState<CheckInEntry[]>([]);
@@ -200,6 +200,18 @@ export default function CustomerEditForm(): React.JSX.Element {
     }
   }, [customer, setValue]);
 
+  React.useEffect(() => {
+    if (searchParams.get('tab') && ['1', '2', '3'].includes(searchParams.get('tab') || '')) {
+      setTab(Number(searchParams.get('tab')));
+    }
+  }, []);
+
+  React.useEffect(() => {
+    if (id && tab) {
+      router.push(`/dashboard/customers/form?id=${id}&tab=${tab}`);
+    }
+  }, [tab]);
+
   interface MembershipPlanResponse {
     data: MembershipPlans[];
   }
@@ -213,20 +225,17 @@ export default function CustomerEditForm(): React.JSX.Element {
     paymentFrequency: string;
   }
 
-  useEffect(() => {
-    const fetchPlans = async () => {
-      try {
-        const response = await axiosInstance.get<MembershipPlanResponse>('/membership-types/dropdown');
-        setPlans(response.data.data);
-        setLoading(true);
-      } catch (err: unknown) {
-        err instanceof Error ? err.message : 'An unexpected error occurred';
-      } finally {
-        setLoading(false);
-      }
-    };
-    void fetchPlans();
-  }, []);
+  const fetchPlans = async () => {
+    try {
+      const response = await axiosInstance.get<MembershipPlanResponse>('/membership-types/dropdown');
+      setPlans(response.data.data);
+      setLoading(true);
+    } catch (err: unknown) {
+      err instanceof Error ? err.message : 'An unexpected error occurred';
+    } finally {
+      setLoading(false);
+    }
+  };
 
   interface ErrorDetail {
     code?: string;
@@ -252,45 +261,33 @@ export default function CustomerEditForm(): React.JSX.Element {
     setPage(0);
   };
 
-  useEffect(() => {
-    const fetchEntries: () => Promise<void> = async () => {
-      setLoading(true);
-      try {
-        const params = {
-          page: checkInPage + 1,
-          limit: checkInRowsPerPage,
-          userId: id,
-          userType: 3,
-        };
-        const response = await axiosInstance.get<CheckinResponse>('/entry-logs', { params });
+  const fetchEntries: () => Promise<void> = async () => {
+    setLoading(true);
+    try {
+      const params = {
+        page: checkInPage + 1,
+        limit: checkInRowsPerPage,
+        userId: id,
+        userType: 3,
+      };
+      const response = await axiosInstance.get<CheckinResponse>('/entry-logs', { params });
 
-        const { items, meta } = response.data.data;
-        if (Array.isArray(items)) {
-          setCheckInEntries(items);
-          setTotalCheckInEntries(meta.totalItems);
-        } else {
-          toast.error(
-            `Unexpected response data format: ${response.data.errors ? JSON.stringify(response.data.errors) : 'No errors available'}`
-          );
-          setError('Unexpected data format.');
-        }
-      } catch (err: unknown) {
-        err instanceof Error ? err.message : 'An unexpected error occurred';
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchEntries().catch((err: unknown) => {
-      let errorMessage: string;
-      if (err instanceof Error) {
-        errorMessage = err.message;
+      const { items, meta } = response.data.data;
+      if (Array.isArray(items)) {
+        setCheckInEntries(items);
+        setTotalCheckInEntries(meta.totalItems);
       } else {
-        errorMessage = 'An unexpected error occurred';
+        toast.error(
+          `Unexpected response data format: ${response.data.errors ? JSON.stringify(response.data.errors) : 'No errors available'}`
+        );
+        setError('Unexpected data format.');
       }
-      toast.error(errorMessage);
-    });
-  }, [checkInPage, checkInRowsPerPage]);
+    } catch (err: unknown) {
+      err instanceof Error ? err.message : 'An unexpected error occurred';
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
     const file = event.target.files?.[0];
@@ -322,6 +319,12 @@ export default function CustomerEditForm(): React.JSX.Element {
 
   const handleTabChange = (_: React.SyntheticEvent, newValue: number) => {
     setTab(newValue);
+    if (newValue === 2) {
+      void fetchEntries();
+    }
+    if (newValue === 1) {
+      void fetchPlans();
+    }
   };
 
   const onSubmit = async (data: CustomerFormInputs, destination: string): Promise<void> => {
@@ -419,15 +422,15 @@ export default function CustomerEditForm(): React.JSX.Element {
           <Stack sx={{ marginLeft: '20px' }}>
             <Divider />
             <Tabs value={tab} onChange={handleTabChange} aria-label="member form tabs">
-              <Tab label="Basic Info" style={{ fontFamily: '"Audiowide", sans-serif' }} />
-              <Tab label="Membership" style={{ fontFamily: '"Audiowide", sans-serif' }} />
-              <Tab label="Check In History" style={{ fontFamily: '"Audiowide", sans-serif' }} />
+              <Tab value={1} label="Basic Info" style={{ fontFamily: '"Audiowide", sans-serif' }} />
+              <Tab value={2} label="Membership" style={{ fontFamily: '"Audiowide", sans-serif' }} />
+              <Tab value={3} label="Check In History" style={{ fontFamily: '"Audiowide", sans-serif' }} />
             </Tabs>
           </Stack>
         )}
         <Divider />
         <CardContent>
-          {tab === 0 && (
+          {tab === 1 && (
             <Stack spacing={3}>
               <Grid container spacing={10}>
                 {id && (
@@ -657,7 +660,7 @@ export default function CustomerEditForm(): React.JSX.Element {
         </CardContent>
 
         <Divider />
-        {tab === 0 && (
+        {tab === 1 && (
           <Stack direction="row" spacing={2} justifyContent="flex-end" p={3}>
             <Button
               className="common-button"
@@ -706,7 +709,7 @@ export default function CustomerEditForm(): React.JSX.Element {
             </Button>
           </Stack>
         )}
-        {tab === 1 && (
+        {tab === 2 && (
           <>
             <Box p={2}>
               {customerS?.membership?.membershipType && (
@@ -766,7 +769,7 @@ export default function CustomerEditForm(): React.JSX.Element {
             <Divider />
           </>
         )}
-        {tab === 2 && (
+        {tab === 3 && (
           <CheckInTableView
             entries={checkInEntries}
             count={totalCheckInEntries}

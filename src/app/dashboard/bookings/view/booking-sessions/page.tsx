@@ -16,6 +16,7 @@ import {
 } from '@/components/dashboard/booking/view/booking-sessions/booking-session-table';
 import SlotRescheduleForm from '@/components/dashboard/calendar/reschedule-session-dialog';
 import SessionNotesForm from '@/components/dashboard/calendar/session-notes';
+import SessionPreview from '@/components/dashboard/calendar/session-view';
 
 export default function BookingSessionsPage(): React.JSX.Element {
   const searchParams = useSearchParams();
@@ -29,6 +30,7 @@ export default function BookingSessionsPage(): React.JSX.Element {
   const [selectedSession, setSelectedSession] = React.useState<BookingSessionEntry | null>(null);
   const [isDialogOpen, setIsDialogOpen] = React.useState(false);
   const [isDialogOpenForNotes, setIsDialogOpenForNotes] = React.useState(false);
+  const [isDialogOpenForPreview, setIsDialogOpenForPreview] = React.useState(false);
 
   const getSessionBookingSessionListData = useCallback(async (): Promise<void> => {
     setLoading(true);
@@ -63,8 +65,8 @@ export default function BookingSessionsPage(): React.JSX.Element {
     let swalSuccessMessage = `The status has been updated`;
 
     if (newStatus === BOOKING_STATUS.CANCELED) {
-      swalText = `Do you want to cancel the booking?`;
-      swalConfirmButtonText = `Yes, cancel it!`;
+      swalText = `Do you want to cancel the session booking?`;
+      swalConfirmButtonText = `Yes`;
       swalSuccessMessage = `The booking has been cancelled`;
     }
 
@@ -74,7 +76,7 @@ export default function BookingSessionsPage(): React.JSX.Element {
       icon: 'warning',
       showCancelButton: true,
       confirmButtonText: swalConfirmButtonText,
-      cancelButtonText: 'No, cancel!',
+      cancelButtonText: 'No',
     });
 
     if (result.isConfirmed) {
@@ -94,6 +96,12 @@ export default function BookingSessionsPage(): React.JSX.Element {
     setSelectedSession(session);
     setIsDialogOpenForNotes(true);
   };
+
+  const handleSessionPreview = (session: BookingSessionEntry) => {
+    setSelectedSession(session);
+    setIsDialogOpenForPreview(true);
+  };
+
 
   const handleRescheduleSession = (session: BookingSessionEntry) => {
     setSelectedSession(session);
@@ -153,6 +161,12 @@ export default function BookingSessionsPage(): React.JSX.Element {
     setSelectedSession(null);
   };
 
+  const handlePreviewDialogClose = () => {
+    setIsDialogOpenForPreview(false);
+    setSelectedSession(null);
+  };
+
+
   useEffect(() => {
     void getSessionBookingSessionListData();
   }, [getSessionBookingSessionListData]);
@@ -171,6 +185,7 @@ export default function BookingSessionsPage(): React.JSX.Element {
             totalEntries={count}
             onUpdateStatus={handleUpdateStatus}
             onUpdateNotes={handleUpdateNotes}
+            onPreviewSession={handleSessionPreview}
             onRescheduleSession={handleRescheduleSession}
             onPageChange={handlePageChange}
             onRowsPerPageChange={handleRowsPerPageChange}
@@ -192,6 +207,14 @@ export default function BookingSessionsPage(): React.JSX.Element {
           open={isDialogOpenForNotes}
           onClose={handleDialogCloseForNotes}
           onSubmit={handleNotesChange}
+          sessionObj={selectedSession}
+        />
+      )}
+
+      {selectedSession && (
+        <SessionPreview
+          open={isDialogOpenForPreview}
+          onClose={handlePreviewDialogClose}
           sessionObj={selectedSession}
         />
       )}

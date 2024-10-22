@@ -6,12 +6,12 @@ import { useRouter } from 'next/navigation';
 import { CustomLoader } from '@/utils/loader';
 import { Button, Card, Stack, Typography } from '@mui/material';
 import { Plus as PlusIcon } from '@phosphor-icons/react';
-import { ToastContainer } from 'react-toastify';
+import { toast, ToastContainer } from 'react-toastify';
 import Swal from 'sweetalert2';
 
 import axiosInstance from '@/lib/axios';
-import { NotificationFilters } from '@/components/notification/notification-filter';
-import { NotificationEntry, NotificationTable } from '@/components/notification/notification-table';
+import { NotificationFilters } from '@/components/dashboard/notification/notification-filter';
+import { NotificationEntry, NotificationTable } from '@/components/dashboard/notification/notification-table';
 
 export default function Page(): React.JSX.Element {
   const router = useRouter();
@@ -35,7 +35,7 @@ export default function Page(): React.JSX.Element {
       };
 
       const response = await axiosInstance.get<{ data: { items: NotificationEntry[]; meta: { totalItems: number } } }>(
-        '/notification',
+        '/admin-notification',
         { params: qParams }
       );
 
@@ -65,6 +65,32 @@ export default function Page(): React.JSX.Element {
   const handleSearchChange = (search: string): void => {
     setSearchTerm(search);
     setPage(0);
+  };
+
+  const handleDelete: (id: number) => Promise<void> = async (id) => {
+    // Prompt user with SweetAlert2 confirmation dialog
+    const result = await Swal.fire({
+      title: 'Are you sure?',
+      text: 'This action cannot be undone.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, delete it!',
+      cancelButtonText: 'Cancel',
+    });
+
+    if (result.isConfirmed) {
+      try {
+        await axiosInstance.delete(`/admin-notification/${id}`);
+        // Trigger a refetch to refresh data
+        toast.success('Notification deleted successfully');
+        void getNotificationListData();
+        setPage(0); // Reset or update the page state if necessary
+      } catch (err) {
+        await Swal.fire('Failed to delete Notification');
+      }
+    }
   };
 
   // Lifecycle hooks
@@ -104,6 +130,7 @@ export default function Page(): React.JSX.Element {
             totalEntries={count}
             onPageChange={handlePageChange}
             onRowsPerPageChange={handleRowsPerPageChange}
+            onDelete={handleDelete}
           />
         )}
       </Card>
