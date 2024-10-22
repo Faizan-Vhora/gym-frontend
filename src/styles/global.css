@@ -65,7 +65,7 @@ body {
   transform: skewX(-20deg); /* Skew the button to create the angled effect */
 }
 .btnsecondary {
-  background-color: #212636 !important; 
+  background-color: #212636 !important;
   transform: skewX(-20deg);
   border: 1px solid #212636;
 }
@@ -136,7 +136,6 @@ body {
   font-family: "Audiowide", sans-serif;
 }
 .logo-img{
-  background: #fff;
   margin: auto;
 }
 
@@ -193,7 +192,7 @@ body {
     }
     .bookin-card {
       height: auto;
-  
+
      }
    }
    @media only screen and (max-width:440px) {
@@ -209,7 +208,7 @@ body {
 
 
    .session-card {
-    
+
     padding: 20px 10px;
 
    }
@@ -222,7 +221,7 @@ body {
     flex-wrap: wrap;
     /* column-gap: 20px; */
    }
-   
+
    .ck-powered-by {
     display: none;
   }
