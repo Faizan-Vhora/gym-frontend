@@ -39,6 +39,7 @@
     "@mui/system": "5.15.20",
     "@mui/utils": "5.15.20",
     "@mui/x-date-pickers": "^7.7.1",
+    "@mui/x-date-pickers-pro": "^7.21.0",
     "@phosphor-icons/react": "^2.1.6",
     "@reduxjs/toolkit": "^2.2.7",
     "@types/axios": "^0.14.0",

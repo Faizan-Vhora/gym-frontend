@@ -75,6 +75,10 @@ export const paths = {
 
   },
 
+  trainerReport: {
+    list: '/admin/reports/trainer-report'
+  },
+
   errors: {
     notFound: '/errors/not-found',
   },

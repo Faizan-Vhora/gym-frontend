@@ -22,7 +22,7 @@ const toTitleCase = (str: string): string => {
 };
 
 const pathToPageTitle = (currentPath: string): string => {
-  return currentPath.split('/admin')[1].replaceAll('/', ' ').toUpperCase()
+  return currentPath.split('/admin')[1].replaceAll('/', '|').toUpperCase()
 }
 
 export default function Layout({ children }: LayoutProps): React.JSX.Element {
