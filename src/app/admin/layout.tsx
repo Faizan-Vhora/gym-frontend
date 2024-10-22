@@ -14,21 +14,27 @@ interface LayoutProps {
   children: React.ReactNode;
 }
 
-const toTitleCase = (str: string): string => {
-  return str
-    .split(' ')
-    .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-    .join(' ');
-};
 
 const pathToPageTitle = (currentPath: string): string => {
-  return currentPath.split('/admin')[1].replaceAll('/', '|').toUpperCase()
-}
+  const segments = currentPath.split('/admin')[1]?.split('/').filter(Boolean) || [];
+
+  const capitalizeWords = (str: string): string => {
+    return str
+      .split(' ')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
+  };
+
+  return segments
+    .map(segment => capitalizeWords(segment.replace(/-/g, ' ')))
+    .join(' | ');
+};
+
 
 export default function Layout({ children }: LayoutProps): React.JSX.Element {
   const currentPath : string = usePathname();
   const pageTitle = pathToPageTitle(currentPath) || null;
-  const title = pageTitle ? `${toTitleCase(pageTitle)} | ${config.site.name}` : config.site.name;
+  const title = pageTitle ? `${pageTitle} | ${config.site.name}` : config.site.name;
   const metadata = { title } satisfies Metadata;
 
   React.useEffect(() => {
