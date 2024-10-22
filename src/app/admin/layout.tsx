@@ -4,7 +4,7 @@ import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import GlobalStyles from '@mui/material/GlobalStyles';
 import { ToastContainer } from 'react-toastify';
-import { usePathname } from 'next/navigation'
+import { usePathname, useSearchParams } from 'next/navigation'
 import { MainNav } from '@/components/admin/layout/main-nav';
 import { SideNav } from '@/components/admin/layout/side-nav';
 import { config } from '@/config';
@@ -16,6 +16,7 @@ interface LayoutProps {
 
 
 const pathToPageTitle = (currentPath: string): string => {
+  console.log("*currentPath:: ", currentPath)
   const segments = currentPath.split('/admin')[1]?.split('/').filter(Boolean) || [];
 
   const capitalizeWords = (str: string): string => {
@@ -32,8 +33,12 @@ const pathToPageTitle = (currentPath: string): string => {
 
 
 export default function Layout({ children }: LayoutProps): React.JSX.Element {
-  const currentPath : string = usePathname();
-  const pageTitle = pathToPageTitle(currentPath) || null;
+  const searchParams = useSearchParams();
+  const currentPath: string = usePathname();
+
+  const updatedPath = currentPath.replace('form', searchParams.get('id') ? `edit` : 'add');
+
+  const pageTitle = pathToPageTitle(updatedPath) || null;
   const title = pageTitle ? `${pageTitle} | ${config.site.name}` : config.site.name;
   const metadata = { title } satisfies Metadata;
 
