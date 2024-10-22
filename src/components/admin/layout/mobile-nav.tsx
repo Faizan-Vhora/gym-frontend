@@ -8,6 +8,7 @@ import Divider from '@mui/material/Divider';
 import Drawer from '@mui/material/Drawer';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
+import { useColorScheme } from '@mui/material/styles';
 
 import type { NavItemConfig } from '@/types/nav';
 import { paths } from '@/paths';
@@ -17,6 +18,7 @@ import { CaretRight as CaretRightIcon } from '@phosphor-icons/react/dist/ssr/Car
 
 import { navItems } from './config';
 import { navIcons } from './nav-icons';
+import { Logo } from '@/components/core/logo';
 
 export interface MobileNavProps {
   onClose?: () => void;
@@ -26,6 +28,9 @@ export interface MobileNavProps {
 
 export function MobileNav({ open, onClose }: MobileNavProps): React.JSX.Element {
   const pathname = usePathname();
+
+  const { colorScheme } = useColorScheme();
+  const color = colorScheme === 'dark' ? 'dark' : 'light';
 
   return (
     <Drawer
@@ -56,7 +61,10 @@ export function MobileNav({ open, onClose }: MobileNavProps): React.JSX.Element 
       open={open}
     >
       <Stack spacing={2} sx={{ p: 3 }}>
-        <Box component={RouterLink} href={paths.home} sx={{ display: 'inline-flex' }} />
+        <Box component={RouterLink} href={paths.home} sx={{ display: 'inline-flex' }}>
+          <Logo color={color} height={32} width={122} />
+        </Box>
+
         {/* <Box
           sx={{
             alignItems: 'center',

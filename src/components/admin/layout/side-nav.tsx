@@ -7,6 +7,7 @@ import Box from '@mui/material/Box';
 import Divider from '@mui/material/Divider';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
+import { useColorScheme } from '@mui/material/styles';
 
 import type { NavItemConfig } from '@/types/nav';
 import { paths } from '@/paths';
@@ -21,7 +22,8 @@ import { CaretRight as CaretRightIcon } from '@phosphor-icons/react/dist/ssr/Car
 
 export function SideNav(): React.JSX.Element {
   const pathname = usePathname();
-
+  const { colorScheme } = useColorScheme();
+  const color = colorScheme === 'dark' ? 'dark' : 'light';
   return (
     <Box
       sx={{
@@ -52,7 +54,7 @@ export function SideNav(): React.JSX.Element {
     >
       <Stack spacing={2} sx={{ p: 3 }}>
         <Box component={RouterLink} href={paths.home} sx={{ display: 'inline-flex' }}>
-          <Logo color="light" height={32} width={122} />
+          <Logo color={color} height={32} width={122} />
         </Box>
         {/* <Box
           sx={{
