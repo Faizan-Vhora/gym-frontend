@@ -140,7 +140,7 @@ export default function BookingDetailsPage(): React.JSX.Element {
                   sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', marginTop: '30px' }}
                 >
                   <Typography color="text.secondary" style={{ fontFamily: '"Audiowide", sans-serif' }} gutterBottom>
-                    {bookingDetail.createdBy.fullName} <br />
+                    {bookingDetail?.createdBy?.fullName} <br />
                     <Typography variant="body2" component="span" fontSize={'12px'}>
                       Booking By
                     </Typography>
@@ -160,7 +160,7 @@ export default function BookingDetailsPage(): React.JSX.Element {
                     style={{ fontFamily: '"Audiowide", sans-serif' }}
                     textAlign={'center'}
                   >
-                    {dayjs(bookingDetail.createdAt).format('DD/MM/YYYY')} <br />
+                    {dayjs(bookingDetail?.createdAt).format('DD/MM/YYYY')} <br />
                     <Typography variant="body2" component="span" fontSize={'12px'}>
                       Booking at
                     </Typography>
