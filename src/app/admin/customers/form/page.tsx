@@ -227,9 +227,9 @@ export default function CustomerEditForm(): React.JSX.Element {
 
   const fetchPlans = async () => {
     try {
+      setLoading(true);
       const response = await axiosInstance.get<MembershipPlanResponse>('/membership-types/dropdown');
       setPlans(response.data.data);
-      setLoading(true);
     } catch (err: unknown) {
       err instanceof Error ? err.message : 'An unexpected error occurred';
     } finally {
@@ -319,10 +319,10 @@ export default function CustomerEditForm(): React.JSX.Element {
 
   const handleTabChange = (_: React.SyntheticEvent, newValue: number) => {
     setTab(newValue);
-    if (newValue === 2) {
+    if (newValue === 3) {
       void fetchEntries();
     }
-    if (newValue === 1) {
+    if (newValue === 2) {
       void fetchPlans();
     }
   };
@@ -442,7 +442,12 @@ export default function CustomerEditForm(): React.JSX.Element {
                         }}
                       >
                         <CardActions>
-                          <Button component="label" fullWidth variant="text" style={{fontFamily:'Audiowide, sans-serif !important'}}>
+                          <Button
+                            component="label"
+                            fullWidth
+                            variant="text"
+                            style={{ fontFamily: 'Audiowide, sans-serif !important' }}
+                          >
                             Upload picture
                             <input
                               type="file"
@@ -462,7 +467,12 @@ export default function CustomerEditForm(): React.JSX.Element {
                                   alt="Profile Preview"
                                   style={{ width: '100%', maxHeight: '200px', objectFit: 'cover', marginTop: '1rem' }}
                                 />
-                                <Button color="error" startIcon={<Trash />} onClick={handleRemoveImage} style={{fontFamily:'Audiowide, sans-serif !important',}}>
+                                <Button
+                                  color="error"
+                                  startIcon={<Trash />}
+                                  onClick={handleRemoveImage}
+                                  style={{ fontFamily: 'Audiowide, sans-serif !important' }}
+                                >
                                   Remove Image
                                 </Button>
                               </Stack>
@@ -527,14 +537,15 @@ export default function CustomerEditForm(): React.JSX.Element {
                             control={control}
                             rules={{ required: !id ? 'Password is required' : false }}
                             render={({ field }) => (
-                              <FormControl  fullWidth required={!id} error={Boolean(errors.password)}>
+                              <FormControl fullWidth required={!id} error={Boolean(errors.password)}>
                                 <InputLabel>Password</InputLabel>
-                                <OutlinedInput sx={{background:'#e8f0fe'}}
+                                <OutlinedInput
+                                  sx={{ background: '#e8f0fe' }}
                                   {...field}
                                   label="Password"
                                   type={showPassword ? 'text' : 'password'}
                                   endAdornment={
-                                    <Box 
+                                    <Box
                                       component="span"
                                       onClick={() => {
                                         setShowPassword(!showPassword);
@@ -664,7 +675,7 @@ export default function CustomerEditForm(): React.JSX.Element {
           <Stack direction="row" spacing={2} justifyContent="flex-end" p={3}>
             <Button
               className="common-button"
-              style={{fontFamily:'Audiowide, sans-serif !important',}}
+              style={{ fontFamily: 'Audiowide, sans-serif !important' }}
               variant="contained"
               disabled={isSubmitting}
               onClick={() => {
@@ -678,7 +689,7 @@ export default function CustomerEditForm(): React.JSX.Element {
             {!id && (
               <Button
                 className="common-button"
-                style={{fontFamily:'Audiowide, sans-serif !important',}}
+                style={{ fontFamily: 'Audiowide, sans-serif !important' }}
                 variant="contained"
                 disabled={isSubmitting}
                 type="submit"
@@ -697,7 +708,7 @@ export default function CustomerEditForm(): React.JSX.Element {
               sx={{
                 borderColor: '#d0021b',
                 color: '#d0021b',
-                fontFamily:'Audiowide, sans-serif !important',
+                fontFamily: 'Audiowide, sans-serif !important',
                 transform: 'skewX(-20deg)',
                 '&:hover': {
                   borderColor: 'darkred',

@@ -91,21 +91,20 @@ export function CalendarView({ view = 'dayGridMonth' }: CalendarViewProps): Reac
 
       const formattedEvents: Event[] = data.map((item: SessionItem) => ({
         id: item.id.toString(), // Ensure id is a string if your Event type requires it
-        title: `Trainer: ${item.trainer.fullName} | Member: ${item.customer.fullName}`,
-        start: `${item.sessionDate}T${item.sessionStartTime}`, // Combine date and time
-        end: `${item.sessionDate}T${item.sessionEndTime}`,
-        trainer: item.trainer?.id, // Assuming item.trainer has an id property
-        customer: item.customer.id, // Assuming item.customer has an id property
-        selectDate: new Date(item.sessionDate), // Set to the session date
-        startDate: new Date(`${item.sessionDate}T${item.sessionStartTime}`), // Convert to Date object
-        endDate: new Date(`${item.sessionDate}T${item.sessionEndTime}`), // Convert to Date object
-        bookingType: item.bookingType,
-        trainerRatePerHour: item.trainerRatePerHour, // Assuming item has this property
+        title: `Trainer: ${item?.trainer?.fullName} | Member: ${item?.customer?.fullName}`,
+        start: `${item?.sessionDate}T${item?.sessionStartTime}`, // Combine date and time
+        end: `${item?.sessionDate}T${item?.sessionEndTime}`,
+        trainer: item?.trainer?.id, // Assuming item?.trainer has an id property
+        customer: item?.customer?.id, // Assuming item?.customer has an id property
+        selectDate: new Date(item?.sessionDate), // Set to the session date
+        startDate: new Date(`${item?.sessionDate}T${item?.sessionStartTime}`), // Convert to Date object
+        endDate: new Date(`${item?.sessionDate}T${item?.sessionEndTime}`), // Convert to Date object
+        bookingType: item?.bookingType,
+        trainerRatePerHour: item?.trainerRatePerHour, // Assuming item has this property
         extendedProps: {
           sessionObj: item,
         },
       }));
-
       setEvents(formattedEvents);
     } catch (error: unknown) {
       error instanceof Error ? error.message : 'An unexpected error occurred';
@@ -338,7 +337,7 @@ export function CalendarView({ view = 'dayGridMonth' }: CalendarViewProps): Reac
               allDayMaintainDuration
               dayMaxEventRows={3}
               droppable
-              editable={false}
+              editable={true}
               eventClick={handleEventSelect}
               eventContent={EventContent}
               eventDisplay="block"
@@ -348,7 +347,7 @@ export function CalendarView({ view = 'dayGridMonth' }: CalendarViewProps): Reac
               // eventResize={handleEventResize}
               events={Array.from(events.values())}
               headerToolbar={false}
-              height={600}
+              height={800}
               initialDate={date}
               initialView={view}
               plugins={plugins}
