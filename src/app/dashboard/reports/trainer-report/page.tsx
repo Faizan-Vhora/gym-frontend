@@ -17,7 +17,7 @@ import {
   Typography,
 } from '@mui/material';
 import { DateRange } from '@mui/x-date-pickers-pro';
-import { Barbell } from '@phosphor-icons/react';
+import { Barbell, Equals, Flag, XCircle } from '@phosphor-icons/react';
 import { Dayjs } from 'dayjs';
 import { toast } from 'react-toastify';
 
@@ -26,10 +26,13 @@ import DateRangeFilter from '@/components/dashboard/reports/date-range-filter';
 import CommonTablePagination from '@/components/dashboard/reports/pagination'; // Adjust the import path as necessary
 
 import { SearchFilter } from '@/components/dashboard/reports/seach-filter';
-import { Trainer, TrainerExpertise } from '@/components/dashboard/trainer/trainer-table';
+import { Trainer } from '@/components/dashboard/trainer/trainer-table';
 import tableCss from '@/styles/table-css';
 
 // Define Trainer interface to specify the structure of trainer data
+interface ErrorResponse {
+  message: string;
+}
 
 // Define ApiResponse interface for the expected API response structure
 interface ApiResponse {
@@ -45,7 +48,7 @@ interface ApiResponse {
       currentPage: number;
     };
   };
-  errors: {};
+  errors: ErrorResponse;
 }
 
 const TrainerReport: React.FC = () => {
@@ -98,7 +101,6 @@ const TrainerReport: React.FC = () => {
         }
       } catch (err: unknown) {
         toast.error(err instanceof Error ? err.message : 'An unexpected error occurred');
-      } finally {
       }
     };
 
@@ -110,9 +112,9 @@ const TrainerReport: React.FC = () => {
     setCurrentPage(0);
   };
 
-  const handleDateChange = (dateRange: DateRange<Dayjs>) => {
-    setDateRange(dateRange);
-    const [start, end] = dateRange;
+  const handleDateChange = (dateRangeS: DateRange<Dayjs>) => {
+    setDateRange(dateRangeS);
+    const [start, end] = dateRangeS;
     setStartDate(start?.format('YYYY-MM-DD') || null);
     setEndDate(end?.format('YYYY-MM-DD') || null);
   };
@@ -196,20 +198,33 @@ const TrainerReport: React.FC = () => {
                         </TableCell>
                         <TableCell sx={tableCss.tableCell}>
                           <Typography variant="body2">
-                            {trainer.sessionDetail ? `Total : ${trainer.sessionDetail?.totalSession}` : ''}
+                            {trainer.sessionDetail ? (
+                              <>
+                                <Equals /> {trainer.sessionDetail.totalSession}
+                              </>
+                            ) : null}
                           </Typography>
                           <Typography color="textSecondary" variant="body2">
-                            {trainer.sessionDetail ? `Completed : ${trainer.sessionDetail?.completedSession}` : ''}
+                            {trainer.sessionDetail ? (
+                              <>
+                                <Flag /> {trainer.sessionDetail.completedSession}
+                              </>
+                            ) : null}
                           </Typography>
                           <Typography color="textSecondary" variant="body2">
-                            {trainer.sessionDetail ? `Cancelled : ${trainer.sessionDetail.cancelledSession}` : ''}
+                            {trainer.sessionDetail ? (
+                              <>
+                                <XCircle /> {trainer.sessionDetail.cancelledSession}
+                              </>
+                            ) : null}
+                            {/* {trainer.sessionDetail ? `Cancelled : ${trainer.sessionDetail.cancelledSession}` : ''} */}
                           </Typography>
                         </TableCell>
                         <TableCell sx={tableCss.tableCell}>
-                          {trainer.sessionDetail ? `${formatHours(trainer.sessionDetail?.sessionTotalHours)}` : ''}
+                          {trainer.sessionDetail ? formatHours(trainer.sessionDetail.sessionTotalHours) : ''}
                         </TableCell>
                         <TableCell sx={tableCss.tableCell}>
-                          {trainer.sessionDetail ? `${formatAmount(trainer.sessionDetail?.sessionTotalRevenue)}` : ''}
+                          {trainer.sessionDetail ? formatAmount(trainer.sessionDetail?.sessionTotalRevenue) : ''}
                         </TableCell>
                       </TableRow>
                     )
@@ -225,8 +240,12 @@ const TrainerReport: React.FC = () => {
                 totalItems={totalItems}
                 itemsPerPage={itemsPerPage}
                 currentPage={currentPage}
-                onPageChange={(event, newPage) => setCurrentPage(newPage)}
-                onRowsPerPageChange={(event) => setItemsPerPage(parseInt(event.target.value, 10))}
+                onPageChange={(event, newPage) => {
+                  setCurrentPage(newPage);
+                }}
+                onRowsPerPageChange={(event) => {
+                  setItemsPerPage(parseInt(event.target.value, 10));
+                }}
               />
             </>
           )}

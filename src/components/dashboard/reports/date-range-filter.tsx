@@ -12,10 +12,7 @@ interface DateRangeFilterProps {
 }
 
 const DateRangeFilter: React.FC<DateRangeFilterProps> = ({ dateRange, onDateChange }) => {
-  // const [dateRange, setDateRange] = useState<DateRange<Dayjs>>([null, null]);
-
   const handleDateChange = (newValue: DateRange<Dayjs>) => {
-    // setDateRange(newValue);
     if (onDateChange) {
       onDateChange(newValue);
     }
@@ -61,11 +58,6 @@ const DateRangeFilter: React.FC<DateRangeFilterProps> = ({ dateRange, onDateChan
     },
     { label: 'Reset', getValue: () => [null, null] },
   ];
-
-  React.useEffect(() => {
-    console.log(' *** INIT DATERANGE COMPONENT ');
-    console.log('dateRange:: ', dateRange);
-  }, []);
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
