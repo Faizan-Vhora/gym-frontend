@@ -9,69 +9,69 @@ export const paths = {
   },
 
   dashboard: {
-    dashboard: '/dashboard/dashboard',
-    account: '/dashboard/account',
-    calendar: '/dashboard/calendar',
-    changePassword: '/dashboard/change-password',
-    integrations: '/dashboard/integrations',
-    settings: '/dashboard/settings'
+    dashboard: '/admin/dashboard',
+    account: '/admin/account',
+    calendar: '/admin/calendar',
+    changePassword: '/admin/change-password',
+    integrations: '/admin/integrations',
+    settings: '/admin/settings'
   },
 
   faq: {
-    faq: '/dashboard/faq',
-    faqForm: (id?: number) => id ? `/dashboard/faq/form?id=${id}` : '/dashboard/faq/form',
+    faq: '/admin/faq',
+    faqForm: (id?: number) => id ? `/admin/faq/form?id=${id}` : '/admin/faq/form',
   },
 
   discount:{
-    discount: '/dashboard/discount',
-    discountForm: (id?: number) => id ? `/dashboard/discount/form?id=${id}` : '/dashboard/discount/form',
+    discount: '/admin/discount',
+    discountForm: (id?: number) => id ? `/admin/discount/form?id=${id}` : '/admin/discount/form',
   },
   cms: {
-    cms: '/dashboard/cms',
-    cmsForm: (id?: number) => `/dashboard/cms/form?id=${id}`,
+    cms: '/admin/cms',
+    cmsForm: (id?: number) => `/admin/cms/form?id=${id}`,
   },
   experties: {
-    experties: '/dashboard/expertise',
-    expertiesForm: (id?: number) => id ? `/dashboard/expertise/form/${id}` : '/dashboard/expertise/form',
+    experties: '/admin/expertise',
+    expertiesForm: (id?: number) => id ? `/admin/expertise/form/${id}` : '/admin/expertise/form',
   },
 
   customers: {
-    customers: '/dashboard/customers',
-    customersForm: (id?: number) => `/dashboard/customers/form/${id}`,
+    customers: '/admin/customers',
+    customersForm: (id?: number) => `/admin/customers/form/${id}`,
   },
 
 
   trainers: {
-    trainers: '/dashboard/trainers',
-    trainersForm: (id?: number) => `/dashboard/trainers/form/${id}`
+    trainers: '/admin/trainers',
+    trainersForm: (id?: number) => `/admin/trainers/form/${id}`
   },
 
   membershipPlan: {
-    membershipPlan: '/dashboard/membership-plan',
-    PlanForm: (id?: number) => `/dashboard/membership-plan/form/${id}`
+    membershipPlan: '/admin/membership-plan',
+    PlanForm: (id?: number) => `/admin/membership-plan/form/${id}`
   },
 
 
   support: {
-    supportList: '/dashboard/support',
+    supportList: '/admin/support',
   },
 
   checkIn: {
-    checkIn: '/dashboard/check-in',
-    CheckInForm: (id?: number) => `/dashboard/check-in/form/${id}`
+    checkIn: '/admin/check-in',
+    CheckInForm: (id?: number) => `/admin/check-in/form/${id}`
   },
   // services: {
-  //   services: '/dashboard/services',
-  //   ServicesForm: (id?: number) => `/dashboard/services/form/${id}`
+  //   services: '/admin/services',
+  //   ServicesForm: (id?: number) => `/admin/services/form/${id}`
   // },
 
   bookings: {
-    bookingsList: '/dashboard/bookings',
-    bookingsView: (id?: number) => `/dashboard/bookings/view/${id}`,
+    bookingsList: '/admin/bookings',
+    bookingsView: (id?: number) => `/admin/bookings/view/${id}`,
   },
 
   notification: {
-    notificationList: '/dashboard/notification',
+    notificationList: '/admin/notification',
 
   },
 

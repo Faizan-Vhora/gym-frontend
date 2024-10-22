@@ -19,7 +19,7 @@ import { Controller, useForm } from 'react-hook-form';
 import { toast, ToastContainer } from 'react-toastify';
 import { z as zod } from 'zod';
 
-import type { Customer } from '@/components/dashboard/customer/customers-table';
+import type { Customer } from '@/components/admin/customer/customers-table';
 
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -92,7 +92,7 @@ export function SignInForm(): React.JSX.Element {
         toast.success('Logged in successfully!');
 
         // Redirect to the dashboard
-        router.push('/dashboard/dashboard');
+        router.push('/admin/dashboard');
       } catch (err: unknown) {
         // Check if the error is an Axios error
         if (err instanceof Error) {
