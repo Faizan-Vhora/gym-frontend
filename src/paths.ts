@@ -79,6 +79,14 @@ export const paths = {
     list: '/admin/reports/trainer-report'
   },
 
+  membershipReport: {
+    list: '/admin/reports/membership-report'
+  },
+
+  subscriptionReport: {
+    list: '/admin/reports/subscription-report'
+  },
+
   errors: {
     notFound: '/errors/not-found',
   },

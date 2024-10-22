@@ -2,9 +2,12 @@
 
 import React, { useEffect, useState } from 'react';
 import { formatAmount, formatHours } from '@/utils/converter';
+import { getStatusText, UserStatus } from '@/utils/userstatus';
 import {
   Card,
+  Chip,
   Divider,
+  FormControlLabel,
   Grid,
   Paper,
   Stack,
@@ -22,10 +25,11 @@ import { Dayjs } from 'dayjs';
 import { toast } from 'react-toastify';
 
 import axiosInstance from '@/lib/axios';
-import DateRangeFilter from '@/components/admin/reports/date-range-filter';
-import CommonTablePagination from '@/components/admin/reports/pagination'; // Adjust the import path as necessary
+import DateRangeFilter from '@/components/admin/reports/common-filters/date-range-filter';
+import CommonTablePagination from '@/components/admin/reports/common-filters/pagination'; // Adjust the import path as necessary
 
-import { SearchFilter } from '@/components/admin/reports/seach-filter';
+import { SearchFilter } from '@/components/admin/reports/common-filters/seach-filter';
+import { TrainerStatusFilters } from '@/components/admin/reports/trainer-report/trainer-status-filter';
 import { Trainer } from '@/components/admin/trainer/trainer-table';
 import tableCss from '@/styles/table-css';
 
@@ -61,6 +65,7 @@ const TrainerReport: React.FC = () => {
   const [dateRange, setDateRange] = useState<DateRange<Dayjs>>([null, null]);
   const [startDate, setStartDate] = useState<string | null>(null);
   const [endDate, setEndDate] = useState<string | null>(null);
+  const [statusFilter, setStatusFilter] = useState('ALL');
 
   // Function to fetch data
 
@@ -73,6 +78,7 @@ const TrainerReport: React.FC = () => {
           search?: string | null;
           startDate?: string | null;
           endDate?: string | null;
+          status?: string | null;
         }
 
         const params: TrainerReportQueryI = {
@@ -81,6 +87,7 @@ const TrainerReport: React.FC = () => {
           search: search,
           startDate: null,
           endDate: null,
+          status: statusFilter !== 'ALL' ? statusFilter : undefined,
         };
 
         if (startDate && endDate) {
@@ -105,7 +112,7 @@ const TrainerReport: React.FC = () => {
     };
 
     void fetchTrainerReports();
-  }, [currentPage, itemsPerPage, search, startDate, endDate]);
+  }, [currentPage, itemsPerPage, search, startDate, endDate, statusFilter]);
 
   const handleSearchChange = (value: string) => {
     setSearch(value);
@@ -119,6 +126,10 @@ const TrainerReport: React.FC = () => {
     setEndDate(end?.format('YYYY-MM-DD') || null);
   };
 
+  const handleStatusChange: (status: string) => void = (status) => {
+    setStatusFilter(status);
+  };
+
   return (
     <>
       <Card>
@@ -127,11 +138,14 @@ const TrainerReport: React.FC = () => {
             Trainer Report
           </Typography>
           <Grid container spacing={2}>
-            <Grid item md={6} xs={12}>
+            <Grid item md={4} xs={12}>
               <SearchFilter onSearchChange={handleSearchChange} />
             </Grid>
-            <Grid item md={6} xs={12}>
+            <Grid item md={4} xs={12}>
               <DateRangeFilter dateRange={dateRange} onDateChange={handleDateChange} />
+            </Grid>
+            <Grid item md={4} xs={12}>
+              <TrainerStatusFilters onStatusChange={handleStatusChange} />
             </Grid>
           </Grid>
         </Stack>
@@ -148,6 +162,7 @@ const TrainerReport: React.FC = () => {
                   <TableCell sx={tableCss.tableHeaderCell}>Session Counts</TableCell>
                   <TableCell sx={tableCss.tableHeaderCell}>Session Hours</TableCell>
                   <TableCell sx={tableCss.tableHeaderCell}>Session Revenue</TableCell>
+                  <TableCell sx={tableCss.tableHeaderCell}>Status</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -187,7 +202,7 @@ const TrainerReport: React.FC = () => {
                             {trainer.phoneNumber}
                           </Typography>
                         </TableCell>
-                        <TableCell sx={tableCss.tableCell}>{formatAmount(trainer.fees)}</TableCell>
+                        <TableCell sx={tableCss.tableCell}>{formatAmount(trainer.fees)} Per Hour</TableCell>
                         <TableCell sx={tableCss.tableCell}>
                           <Typography variant="body2">
                             {trainer.attendanceDetail ? `Available Days : ${trainer.attendanceDetail?.available}` : ''}
@@ -198,25 +213,13 @@ const TrainerReport: React.FC = () => {
                         </TableCell>
                         <TableCell sx={tableCss.tableCell}>
                           <Typography variant="body2">
-                            {trainer.sessionDetail ? (
-                              <>
-                                <Equals /> {trainer.sessionDetail.totalSession}
-                              </>
-                            ) : null}
+                            {trainer.sessionDetail ? `Total: ${trainer.sessionDetail.totalSession}` : null}
                           </Typography>
                           <Typography color="textSecondary" variant="body2">
-                            {trainer.sessionDetail ? (
-                              <>
-                                <Flag /> {trainer.sessionDetail.completedSession}
-                              </>
-                            ) : null}
+                            {trainer.sessionDetail ? `Completed: ${trainer.sessionDetail.completedSession}` : null}
                           </Typography>
                           <Typography color="textSecondary" variant="body2">
-                            {trainer.sessionDetail ? (
-                              <>
-                                <XCircle /> {trainer.sessionDetail.cancelledSession}
-                              </>
-                            ) : null}
+                            {trainer.sessionDetail ? `Cancelled: ${trainer.sessionDetail.cancelledSession}` : null}
                             {/* {trainer.sessionDetail ? `Cancelled : ${trainer.sessionDetail.cancelledSession}` : ''} */}
                           </Typography>
                         </TableCell>
@@ -225,6 +228,18 @@ const TrainerReport: React.FC = () => {
                         </TableCell>
                         <TableCell sx={tableCss.tableCell}>
                           {trainer.sessionDetail ? formatAmount(trainer.sessionDetail?.sessionTotalRevenue) : ''}
+                        </TableCell>
+                        <TableCell sx={tableCss.tableCell}>
+                          <FormControlLabel
+                            control={
+                              <Chip
+                                label={getStatusText(trainer.status === UserStatus.Active ? 1 : 2)}
+                                color={trainer.status === UserStatus.Active ? 'success' : 'error'}
+                                variant="filled"
+                              />
+                            }
+                            label=""
+                          />
                         </TableCell>
                       </TableRow>
                     )
