@@ -16,7 +16,6 @@ interface LayoutProps {
 
 
 const pathToPageTitle = (currentPath: string): string => {
-  console.log("*currentPath:: ", currentPath)
   const segments = currentPath.split('/admin')[1]?.split('/').filter(Boolean) || [];
 
   const capitalizeWords = (str: string): string => {
