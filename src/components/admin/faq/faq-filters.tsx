@@ -68,7 +68,7 @@ export function FaqFilters({ onSearchChange, onTypeChange, onStatusChange }: Faq
 
   return (
     <Grid container spacing={2}>
-      <Grid item md={4} xs={12}>
+      <Grid item sm={6} md={4} xs={12}>
         <TextField
           fullWidth
           label="Search by Questions"
@@ -86,7 +86,7 @@ export function FaqFilters({ onSearchChange, onTypeChange, onStatusChange }: Faq
           }}
         />
       </Grid>
-      <Grid item md={4} xs={12}>
+      <Grid item sm={6} md={4} xs={12}>
         <FormControl fullWidth variant="outlined">
           <InputLabel>Type</InputLabel>
           <Select value={type} onChange={handleTypeChange} label="Type">
@@ -98,7 +98,7 @@ export function FaqFilters({ onSearchChange, onTypeChange, onStatusChange }: Faq
           </Select>
         </FormControl>
       </Grid>
-      <Grid item md={4} xs={12}>
+      <Grid item sm={6} md={4} xs={12}>
         <FormControl fullWidth variant="outlined">
           <InputLabel>Status</InputLabel>
           <Select value={status} onChange={handleStatusChange} label="Status">

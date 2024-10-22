@@ -178,6 +178,7 @@ export default function ExpertisePage(): React.JSX.Element {
         </Stack>
         <Button
           className="common-button"
+          style={{fontFamily:'Audiowide, sans-serif !important',}}
           startIcon={<PlusIcon fontSize="var(--icon-fontSize-md)" />}
           variant="contained"
           onClick={handleAddClick}

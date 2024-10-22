@@ -61,7 +61,7 @@ export function SupportFilters({
 
   return (
     <Grid container spacing={2}>
-      <Grid item md={4} xs={12}>
+      <Grid item sm={6} md={4} xs={12}>
         <TextField
           fullWidth
           label="Search by Subject, Name or Email"
@@ -79,7 +79,7 @@ export function SupportFilters({
           }}
         />
       </Grid>
-      <Grid item md={4} xs={12}>
+      <Grid item sm={6} md={4} xs={12}>
         <FormControl fullWidth variant="outlined">
           <InputLabel>From</InputLabel>
           <Select value={from} onChange={handleFromChange} label="From">
@@ -92,7 +92,7 @@ export function SupportFilters({
           </Select>
         </FormControl>
       </Grid>
-      <Grid item md={4} xs={12}>
+      <Grid item sm={6} md={4} xs={12}>
         <FormControl fullWidth variant="outlined">
           <InputLabel>Status</InputLabel>
           <Select value={status} onChange={handleStatusChange} label="Status">

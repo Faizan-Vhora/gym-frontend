@@ -325,7 +325,7 @@ const CheckinForm = () => {
               </Grid>
 
               <Grid item xs={12}>
-                <Button type="submit" variant="contained" className="common-button">
+                <Button type="submit" variant="contained" className="common-button" style={{fontFamily:'Audiowide, sans-serif !important',}}>
                   {checkInId ? 'Update Check-in' : 'Add Check-in'}
                 </Button>
                 <Button
@@ -337,6 +337,7 @@ const CheckinForm = () => {
                     borderColor: '#d0021b',
                     color: '#d0021b',
                     marginLeft: '15px',
+                    fontFamily:'Audiowide, sans-serif !important',
                     transform: 'skewX(-20deg)',
                     '&:hover': {
                       borderColor: 'darkred',

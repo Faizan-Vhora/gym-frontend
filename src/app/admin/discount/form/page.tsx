@@ -408,7 +408,12 @@ export default function DiscountFormPage(): React.JSX.Element {
                     ref={fileInputRef}
                     style={{ display: 'none' }}
                   />
-                  <Button component="label" fullWidth variant="text">
+                  <Button
+                    component="label"
+                    fullWidth
+                    variant="text"
+                    style={{ fontFamily: 'Audiowide, sans-serif !important' }}
+                  >
                     Upload picture
                     <input type="file" accept="image/*" hidden onChange={handleImageChange} />
                   </Button>
@@ -428,7 +433,7 @@ export default function DiscountFormPage(): React.JSX.Element {
 
             <Grid item md={8} xs={12}>
               <Grid container spacing={3}>
-                <Grid item md={6} xs={12}>
+                <Grid item sm={6} xs={12}>
                   <TextField
                     required
                     label="Code Name"
@@ -583,7 +588,7 @@ export default function DiscountFormPage(): React.JSX.Element {
                     </FormControl>
                   </LocalizationProvider>
                 </Grid>
-                <Grid item xs={12} md={6}>
+                <Grid item xs={12} sm={6}>
                   <TextField
                     required
                     label="Discount Value"
@@ -604,7 +609,7 @@ export default function DiscountFormPage(): React.JSX.Element {
                   />
                 </Grid>
 
-                <Grid item md={6} xs={12}>
+                <Grid item sm={6} xs={12}>
                   <FormControl variant="outlined" fullWidth required error={Boolean(errors?.discountType)}>
                     <InputLabel>Discount Type</InputLabel>
                     <Select
@@ -714,7 +719,13 @@ export default function DiscountFormPage(): React.JSX.Element {
 
             <Grid item xs={12}>
               <Stack direction="row" spacing={2} justifyContent="flex-end" p={3}>
-                <Button type="submit" variant="contained" className="common-button" disabled={loading}>
+                <Button
+                  type="submit"
+                  variant="contained"
+                  className="common-button"
+                  disabled={loading}
+                  style={{ fontFamily: 'Audiowide, sans-serif !important' }}
+                >
                   {discountId ? 'Update Discount' : 'Save Discount'}
                 </Button>
                 <Button
@@ -725,6 +736,7 @@ export default function DiscountFormPage(): React.JSX.Element {
                   sx={{
                     borderColor: '#d0021b',
                     color: '#d0021b',
+                    fontFamily: 'Audiowide, sans-serif !important',
                     transform: 'skewX(-20deg)',
                     '&:hover': {
                       borderColor: 'darkred',

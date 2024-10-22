@@ -83,7 +83,7 @@ export function CustomersFilters({
   }, []);
   return (
     <Grid container spacing={2}>
-      <Grid item md={4} xs={12}>
+      <Grid item sm={4} xs={12}>
         <TextField
           label="Search"
           value={searchTerm}
@@ -101,7 +101,7 @@ export function CustomersFilters({
           }}
         />
       </Grid>
-      <Grid item md={4} xs={12}>
+      <Grid item sm={4} xs={12}>
         <FormControl variant="outlined" fullWidth>
           <InputLabel>Status</InputLabel>
           <Select value={status} onChange={handleStatusChange} label="Status">
@@ -111,7 +111,7 @@ export function CustomersFilters({
           </Select>
         </FormControl>
       </Grid>
-      <Grid item md={4} xs={12}>
+      <Grid item sm={4} xs={12}>
         <FormControl variant="outlined" fullWidth>
           <InputLabel>Membership Plan</InputLabel>
           <Select value={membershipType} onChange={handleMembershipTypeChange} label="Membership Type">

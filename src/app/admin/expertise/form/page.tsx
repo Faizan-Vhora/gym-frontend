@@ -112,7 +112,7 @@ export default function ExpertiseForm(): React.JSX.Element {
         <form onSubmit={handleSubmit(onSubmit)}>
           <Grid container spacing={3}>
             {/* Title Field */}
-            <Grid item xs={4}>
+            <Grid item xs={12} sm={9}>
               <FormControl fullWidth required error={Boolean(errors.title)}>
                 <InputLabel htmlFor="title">Title</InputLabel>
                 <Controller
@@ -159,6 +159,9 @@ export default function ExpertiseForm(): React.JSX.Element {
                   sx={{
                     borderColor: '#d0021b',
                     color: '#d0021b',
+                    fontFamily: 'Audiowide, sans-serif !important',
+                    fontSize: '18px',
+                    fontWeight: '400',
                     transform: 'skewX(-20deg)',
                     '&:hover': {
                       borderColor: 'darkred',

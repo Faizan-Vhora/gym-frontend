@@ -59,7 +59,7 @@ export default function CheckinFilters({
 
   return (
     <Grid container spacing={2}>
-      <Grid item md={4} xs={12}>
+      <Grid item md={4} sm={6}  xs={12}>
         <TextField
           label="Search"
           value={searchTerm}
@@ -77,7 +77,7 @@ export default function CheckinFilters({
           }}
         />
       </Grid>
-      <Grid item md={4} xs={12}>
+      <Grid item md={4} sm={6}  xs={12}>
         <FormControl fullWidth variant="outlined">
           <InputLabel>User Type</InputLabel>
           <Select label="User Type" value={userType} onChange={handleUserTypeChange} variant="outlined" fullWidth>
@@ -87,7 +87,7 @@ export default function CheckinFilters({
           </Select>
         </FormControl>
       </Grid>
-      <Grid item md={4} xs={12}>
+      <Grid item md={4} sm={6}  xs={12}>
         <FormControl fullWidth variant="outlined">
           <InputLabel>Status</InputLabel>
           <Select label="Status" value={status} onChange={handleStatusChange} variant="outlined" fullWidth>

@@ -60,13 +60,13 @@ body {
   position: relative;
   border: none;
   cursor: pointer;
-  /* font-family: '"Audiowide", sans-serif' !important; */
+  font-family: '"Audiowide", sans-serif';
   outline: none;
-  transform: skewX(-10deg); /* Skew the button to create the angled effect */
+  transform: skewX(-20deg); /* Skew the button to create the angled effect */
 }
 .btnsecondary {
   background-color: #212636 !important; 
-  transform: skewX(-10deg);
+  transform: skewX(-20deg);
   border: 1px solid #212636;
 }
 .btnsecondary:hover {

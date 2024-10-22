@@ -136,6 +136,7 @@ const MembershipPlansForm: React.FC = () => {
               width: '10%',
               marginLeft: 'auto',
               borderColor: '#d0021b',
+              fontFamily:'Audiowide, sans-serif !important',
               color: '#d0021b',
               transform: 'skewX(-20deg)',
               '&:hover': {

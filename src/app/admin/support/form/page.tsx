@@ -209,7 +209,7 @@ export default function SupportForm(): React.JSX.Element {
         <Divider />
         <CardContent>
           <Grid container spacing={3}>
-            <Grid item xs={12} sm={4}>
+            <Grid item xs={12} md={4} sm={6}>
               <FormControl fullWidth variant="outlined" required error={Boolean(errors.userType)}>
                 <InputLabel>User Type</InputLabel>
                 <Select
@@ -234,32 +234,7 @@ export default function SupportForm(): React.JSX.Element {
               </FormControl>
             </Grid>
 
-            <Grid item xs={12} sm={4}>
-              <FormControl fullWidth variant="outlined" required error={Boolean(errors.user)}>
-                <InputLabel>User</InputLabel>
-                <Select
-                  {...register('user')}
-                  value={user}
-                  onChange={(e) => {
-                    setValue('user', e.target.value);
-                  }}
-                  label="User"
-                >
-                  {userOptions.map((option) => (
-                    <MenuItem key={option.value} value={option.value}>
-                      {option.label}
-                    </MenuItem>
-                  ))}
-                </Select>
-                {errors.user && (
-                  <Typography color="error" variant="caption">
-                    {errors.user.message}
-                  </Typography>
-                )}
-              </FormControl>
-            </Grid>
-
-            <Grid item xs={12} sm={4}>
+            <Grid item xs={12} md={4} sm={6}>
               <FormControl fullWidth variant="outlined" required error={Boolean(errors.status)}>
                 <InputLabel>Status</InputLabel>
                 <Select
@@ -279,6 +254,31 @@ export default function SupportForm(): React.JSX.Element {
                 {errors.status && (
                   <Typography color="error" variant="caption">
                     {errors.status.message}
+                  </Typography>
+                )}
+              </FormControl>
+            </Grid>
+
+            <Grid item xs={12} md={4} sm={12}>
+              <FormControl fullWidth variant="outlined" required error={Boolean(errors.user)}>
+                <InputLabel>User</InputLabel>
+                <Select
+                  {...register('user')}
+                  value={user}
+                  onChange={(e) => {
+                    setValue('user', e.target.value);
+                  }}
+                  label="User"
+                >
+                  {userOptions.map((option) => (
+                    <MenuItem key={option.value} value={option.value}>
+                      {option.label}
+                    </MenuItem>
+                  ))}
+                </Select>
+                {errors.user && (
+                  <Typography color="error" variant="caption">
+                    {errors.user.message}
                   </Typography>
                 )}
               </FormControl>

@@ -76,16 +76,16 @@ export default function Page(): React.JSX.Element {
         <Stack spacing={1} sx={{ flex: '1 1 auto' }}>
           <Typography variant="h4">Integrations</Typography>
           <Stack sx={{ alignItems: 'center' }} direction="row" spacing={1}>
-            <Button color="inherit" startIcon={<UploadIcon fontSize="var(--icon-fontSize-md)" />}>
+            <Button color="inherit" startIcon={<UploadIcon fontSize="var(--icon-fontSize-md)" />} style={{fontFamily:'Audiowide, sans-serif !important',}}>
               Import
             </Button>
-            <Button color="inherit" startIcon={<DownloadIcon fontSize="var(--icon-fontSize-md)" />}>
+            <Button color="inherit" startIcon={<DownloadIcon fontSize="var(--icon-fontSize-md)" />} style={{fontFamily:'Audiowide, sans-serif !important',}}>
               Export
             </Button>
           </Stack>
         </Stack>
         <div>
-          <Button startIcon={<PlusIcon fontSize="var(--icon-fontSize-md)" />} variant="contained">
+          <Button startIcon={<PlusIcon fontSize="var(--icon-fontSize-md)" />} variant="contained" style={{fontFamily:'Audiowide, sans-serif !important'}}>
             Add
           </Button>
         </div>

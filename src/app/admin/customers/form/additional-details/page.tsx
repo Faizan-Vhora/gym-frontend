@@ -246,7 +246,7 @@ export default function CustomerEditForm(): React.JSX.Element {
                       </Stack>
                     </CardContent>
                     <CardActions>
-                      <Button component="label" fullWidth variant="text">
+                      <Button component="label" fullWidth variant="text" style={{fontFamily:'Audiowide, sans-serif !important',}}>
                         Upload picture
                         <input type="file" accept="image/*" hidden onChange={handleImageChange} />
                       </Button>
@@ -355,6 +355,7 @@ export default function CustomerEditForm(): React.JSX.Element {
         <Stack direction="row" spacing={2} justifyContent="flex-end" p={3}>
           <Button
             className="common-button"
+            style={{fontFamily:'Audiowide, sans-serif !important',}}
             type="submit"
             variant="contained"
             onClick={() => {
@@ -365,6 +366,7 @@ export default function CustomerEditForm(): React.JSX.Element {
           </Button>
           <Button
             className="common-button"
+            style={{fontFamily:'Audiowide, sans-serif !important',}}
             type="submit"
             variant="contained"
             onClick={() => {
@@ -381,6 +383,7 @@ export default function CustomerEditForm(): React.JSX.Element {
             }}
             sx={{
               borderColor: '#d0021b',
+              fontFamily:'Audiowide, sans-serif !important',
               color: '#d0021b',
               transform: 'skewX(-20deg)',
               '&:hover': {

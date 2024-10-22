@@ -165,12 +165,18 @@ const ImageUploadCards = () => {
 
   return (
     <div>
-      <Card>
+      <Card >
         <CardHeader style={{ fontFamily: '"Audiowide", sans-serif' }} title="Banner Images" />
         <Divider />
         <Stack className="banner-image">
           {images.map((imagePreview, index) => (
-            <Card key={index} sx={{ margin: '30px 20px', width: '45%' }}>
+            <Card key={index} sx={{ margin: '30px 20px',     width: {
+              xs: '100%', // Full width on extra-small screens (mobile)
+              sm: '42%',  // 80% width on small screens
+              md: '45%',  // 60% width on medium screens
+              lg: '45%',  // 45% width on large screens and above
+            },
+            height:'340px' }}>
               <CardActions>
                 <Button component="label" fullWidth variant="text">
                   Upload picture

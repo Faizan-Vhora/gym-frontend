@@ -729,7 +729,7 @@ export function BookingFormDialog({
 
         <Stack spacing={2} sx={{ p: 3 }}>
           <Grid container spacing={3}>
-            <Grid item xs={12} md={5.8}>
+            <Grid item xs={12} sm={5.8}>
               <Controller
                 control={control}
                 name="customerId"
@@ -811,7 +811,7 @@ export function BookingFormDialog({
               )}
             </Grid>
 
-            <Grid item xs={12} md={5.8}>
+            <Grid item xs={12} sm={5.8}>
               <Controller
                 control={control}
                 name="trainerId"
@@ -911,7 +911,7 @@ export function BookingFormDialog({
 
             {bookingType === BOOKING_TYPE.ONE_TIME && (
               <>
-                <Grid item md={8}>
+                <Grid item sm={8} xs={12}>
                   <Controller
                     control={control}
                     name="bookingDate"
@@ -950,7 +950,7 @@ export function BookingFormDialog({
 
             {bookingType === BOOKING_TYPE.WEEKLY && (
               <>
-                <Grid item md={8}>
+                <Grid item sm={8}  xs={12}>
                   <Controller
                     control={control}
                     name="bookingStartDate"
@@ -988,7 +988,7 @@ export function BookingFormDialog({
                   />
                 </Grid>
 
-                <Grid item md={8}>
+                <Grid item sm={8} xs={12}>
                   <Controller
                     control={control}
                     name="bookingEndDate"
@@ -1024,8 +1024,8 @@ export function BookingFormDialog({
                   />
                 </Grid>
 
-                <Grid item md={8}>
-                  <Grid item md={12}>
+                <Grid item sm={8} xs={12}>
+                  <Grid item sm={12} xs={12}>
                     <FormControlLabel
                       control={
                         <Switch
@@ -1041,7 +1041,7 @@ export function BookingFormDialog({
                   </Grid>
 
                   {reOccuranceEnabled && (
-                    <Grid item md={12}>
+                    <Grid item sm={12} xs={12}>
                       <Grid container alignItems="center" spacing={1}>
                         <Grid item>
                           <Button variant="outlined" onClick={decreaseReoccurrence} sx={{ minWidth: '40px' }}>
@@ -1065,7 +1065,7 @@ export function BookingFormDialog({
                   )}
                 </Grid>
 
-                <Grid item md={8}>
+                <Grid item sm={8} xs={12}>
                   <FormControl sx={{ minWidth: 200, display: 'block' }}>
                     <Autocomplete
                       multiple
@@ -1085,7 +1085,7 @@ export function BookingFormDialog({
                 </Grid>
 
                 {selectedDays.length ? (
-                  <Grid item md={8}>
+                  <Grid item sm={8} xs={12}>
                     <Grid item md={12}>
                       <FormControlLabel
                         control={
@@ -1108,7 +1108,7 @@ export function BookingFormDialog({
             )}
 
             {sameTimeForSelectedDays ? (
-              <Grid item md={8} sx={{ paddingTop: '0px' }}>
+              <Grid item sm={8} xs={12} sx={{ paddingTop: '0px' }}>
                 {availableSlotsWeeklyByFilter.length > 0 ? (
                   [availableSlotsWeeklyByFilter[0]].map((weekDaySlot: WeeklySlotI, dateIndex: number) => (
                     <div key={dateIndex}>
@@ -1162,7 +1162,7 @@ export function BookingFormDialog({
                 )}
               </Grid>
             ) : (
-              <Grid item md={8} sx={{ paddingTop: '0px' }}>
+              <Grid item sm={8} xs={12} sx={{ paddingTop: '0px' }}>
                 {availableSlotsWeeklyByFilter.length > 0 ? (
                   availableSlotsWeeklyByFilter
                     .filter((ele) => selectedDays.includes(ele.weekday))
@@ -1223,7 +1223,7 @@ export function BookingFormDialog({
             )}
 
             {promocodeOptions.length ? (
-              <Grid item md={8} sx={{}}>
+              <Grid item sm={8} xs={12} sx={{}}>
                 <Controller
                   control={control}
                   name="promocodeId"

@@ -45,7 +45,7 @@ export function DiscountFilter({ onSearchChange, onStatusChange }: DiscountFilte
 
   return (
     <Grid container spacing={2}>
-      <Grid item md={6} xs={12}>
+      <Grid item md={6} sm={6} xs={12}>
         {/* <Stack direction="row" spacing={5} sx={{ marginBottom: 3 }}> */}
         <TextField
           label="Search"
@@ -64,7 +64,7 @@ export function DiscountFilter({ onSearchChange, onStatusChange }: DiscountFilte
           }}
         />
       </Grid>
-      <Grid item md={6} xs={12}>
+      <Grid item md={6} sm={6} xs={12}>
         <FormControl variant="outlined" fullWidth>
           <InputLabel>Status</InputLabel>
           <Select value={status} onChange={handleStatusChange} label="Status">
