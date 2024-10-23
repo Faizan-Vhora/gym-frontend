@@ -39,7 +39,11 @@ export const navItems = [
         title: 'Reports',
         icon: 'gear',
         items: [
-          { key: 'reports:trainer-report', title: 'Trainer', href: paths.trainerReport.list, icon: 'user-check' },
+          { key: 'reports:trainer-report', title: 'Trainer Report', href: paths.trainerReport.list, icon: 'user-check' },
+          { key: 'reports:membership-report', title: 'Membership Report', href: paths.membershipReport.list, icon: 'user-check' },
+          { key: 'reports:subscription-report', title: 'Subscription Report', href: paths.subscriptionReport.list, icon: 'user-check' },
+          { key: 'reports:checkin-report', title: 'Check In Report', href: paths.CheckInReport.list, icon: 'user-check' },
+          { key: 'reports:discount-report', title: 'Discount Report', href: paths.DiscountReport.list, icon: 'tag' },
           // { key: 'customers:discount', title: 'Discount', href: paths.discount.discount, icon: 'tag' },
           // { key: 'settings:faq', title: 'FAQ', href: paths.faq.faq, icon: 'chat-centered-dots' },
           // { key: 'cms', title: 'CMS', href: paths.cms.cms, icon: 'user-circle-gear', items:[] },

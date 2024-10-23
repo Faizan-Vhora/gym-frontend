@@ -1,0 +1,37 @@
+import * as React from 'react';
+import { FormControl, InputLabel, MenuItem, Select } from '@mui/material';
+import type { SelectChangeEvent } from '@mui/material';
+
+interface StatusFiltersProps {
+  onStatusChange: (status: string) => void;
+}
+
+const statusOptions = [
+  { value: 'ALL', label: 'All' },
+  { value: 'Active', label: 'Active' },
+  { value: 'Inactive', label: 'Inactive' },
+];
+
+export function StatusFilters({ onStatusChange }: StatusFiltersProps): React.JSX.Element {
+  const [status, setStatus] = React.useState('ALL');
+
+  // Handle status change
+  const handleStatusChange = (e: SelectChangeEvent): void => {
+    const value = e.target.value;
+    setStatus(value);
+    onStatusChange(value);
+  };
+
+  return (
+    <FormControl fullWidth variant="outlined">
+      <InputLabel>Status</InputLabel>
+      <Select value={status} onChange={handleStatusChange} label="Status">
+        {statusOptions.map((option) => (
+          <MenuItem key={option.value} value={option.value}>
+            {option.label}
+          </MenuItem>
+        ))}
+      </Select>
+    </FormControl>
+  );
+}

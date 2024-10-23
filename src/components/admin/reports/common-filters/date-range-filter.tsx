@@ -45,15 +45,34 @@ const DateRangeFilter: React.FC<DateRangeFilterProps> = ({ dateRange, onDateChan
       label: 'Current Month',
       getValue: () => {
         const today = dayjs();
-        return [today.startOf('month'), today.endOf('month')];
+        return [today.startOf('month'), today];
       },
     },
     {
-      label: 'Next Month',
+      label: 'Last Month',
       getValue: () => {
         const today = dayjs();
-        const startOfNextMonth = today.endOf('month').add(1, 'day');
-        return [startOfNextMonth, startOfNextMonth.endOf('month')];
+        const startOfLastMonth = today.subtract(1, 'month').startOf('month');
+        const endOfLastMonth = today.subtract(1, 'month').endOf('month');
+        return [startOfLastMonth, endOfLastMonth];
+      },
+    },
+    {
+      label: 'Current Year',
+      getValue: () => {
+        const today = dayjs();
+        const startOfYear = today.startOf('year');
+        const endOfYear = today;
+        return [startOfYear, endOfYear];
+      },
+    },
+    {
+      label: 'Last Year',
+      getValue: () => {
+        const today = dayjs();
+        const startOfLastYear = today.subtract(1, 'year').startOf('year');
+        const endOfLastYear = today.subtract(1, 'year').endOf('year');
+        return [startOfLastYear, endOfLastYear];
       },
     },
     { label: 'Reset', getValue: () => [null, null] },

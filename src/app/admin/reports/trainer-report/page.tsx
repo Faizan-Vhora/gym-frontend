@@ -1,33 +1,20 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { formatAmount, formatHours } from '@/utils/converter';
-import {
-  Card,
-  Divider,
-  Grid,
-  Paper,
-  Stack,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Typography,
-} from '@mui/material';
+import { CustomLoader } from '@/utils/loader';
+import { Card, Divider, Grid, Paper, Stack, TableContainer, Typography } from '@mui/material';
 import { DateRange } from '@mui/x-date-pickers-pro';
-import { Barbell, Equals, Flag, XCircle } from '@phosphor-icons/react';
 import { Dayjs } from 'dayjs';
 import { toast } from 'react-toastify';
 
 import axiosInstance from '@/lib/axios';
-import DateRangeFilter from '@/components/admin/reports/date-range-filter';
-import CommonTablePagination from '@/components/admin/reports/pagination'; // Adjust the import path as necessary
+import DateRangeFilter from '@/components/admin/reports/common-filters/date-range-filter';
+import CommonTablePagination from '@/components/admin/reports/common-filters/pagination'; // Adjust the import path as necessary
 
-import { SearchFilter } from '@/components/admin/reports/seach-filter';
+import { SearchFilter } from '@/components/admin/reports/common-filters/seach-filter';
+import { TrainerReportTable } from '@/components/admin/reports/trainer-report/trainer-report-table';
+import { TrainerStatusFilters } from '@/components/admin/reports/trainer-report/trainer-status-filter';
 import { Trainer } from '@/components/admin/trainer/trainer-table';
-import tableCss from '@/styles/table-css';
 
 // Define Trainer interface to specify the structure of trainer data
 interface ErrorResponse {
@@ -61,6 +48,8 @@ const TrainerReport: React.FC = () => {
   const [dateRange, setDateRange] = useState<DateRange<Dayjs>>([null, null]);
   const [startDate, setStartDate] = useState<string | null>(null);
   const [endDate, setEndDate] = useState<string | null>(null);
+  const [statusFilter, setStatusFilter] = useState('ALL');
+  const [loading, setLoading] = React.useState(false);
 
   // Function to fetch data
 
@@ -73,6 +62,7 @@ const TrainerReport: React.FC = () => {
           search?: string | null;
           startDate?: string | null;
           endDate?: string | null;
+          status?: string | null;
         }
 
         const params: TrainerReportQueryI = {
@@ -81,13 +71,14 @@ const TrainerReport: React.FC = () => {
           search: search,
           startDate: null,
           endDate: null,
+          status: statusFilter !== 'ALL' ? statusFilter : undefined,
         };
 
         if (startDate && endDate) {
           params.startDate = startDate;
           params.endDate = endDate;
         }
-
+        setLoading(true);
         const response = await axiosInstance.get<ApiResponse>('/report/trainer-report', { params });
         const { items, meta } = response.data.data;
 
@@ -101,11 +92,13 @@ const TrainerReport: React.FC = () => {
         }
       } catch (err: unknown) {
         toast.error(err instanceof Error ? err.message : 'An unexpected error occurred');
+      } finally {
+        setLoading(false);
       }
     };
 
     void fetchTrainerReports();
-  }, [currentPage, itemsPerPage, search, startDate, endDate]);
+  }, [currentPage, itemsPerPage, search, startDate, endDate, statusFilter]);
 
   const handleSearchChange = (value: string) => {
     setSearch(value);
@@ -119,6 +112,10 @@ const TrainerReport: React.FC = () => {
     setEndDate(end?.format('YYYY-MM-DD') || null);
   };
 
+  const handleStatusChange: (status: string) => void = (status) => {
+    setStatusFilter(status);
+  };
+
   return (
     <>
       <Card>
@@ -127,112 +124,20 @@ const TrainerReport: React.FC = () => {
             Trainer Report
           </Typography>
           <Grid container spacing={2}>
-            <Grid item md={6} xs={12}>
+            <Grid item md={4} xs={12}>
               <SearchFilter onSearchChange={handleSearchChange} />
             </Grid>
-            <Grid item md={6} xs={12}>
+            <Grid item md={4} xs={12}>
               <DateRangeFilter dateRange={dateRange} onDateChange={handleDateChange} />
+            </Grid>
+            <Grid item md={4} xs={12}>
+              <TrainerStatusFilters onStatusChange={handleStatusChange} />
             </Grid>
           </Grid>
         </Stack>
 
         <Paper>
-          <TableContainer>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell sx={tableCss.tableHeaderCell}>Trainer</TableCell>
-                  <TableCell sx={tableCss.tableHeaderCell}>Contact Details</TableCell>
-                  <TableCell sx={tableCss.tableHeaderCell}>Fees</TableCell>
-                  <TableCell sx={tableCss.tableHeaderCell}>Attendance</TableCell>
-                  <TableCell sx={tableCss.tableHeaderCell}>Session Counts</TableCell>
-                  <TableCell sx={tableCss.tableHeaderCell}>Session Hours</TableCell>
-                  <TableCell sx={tableCss.tableHeaderCell}>Session Revenue</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {data.length === 0 ? (
-                  <TableRow sx={tableCss.tableRow}>
-                    <TableCell colSpan={7} align="center">
-                      {' '}
-                      {/* Corrected colSpan to 7 to match the number of columns */}
-                      <Typography variant="body1">No data found</Typography>
-                    </TableCell>
-                  </TableRow>
-                ) : (
-                  data.map(
-                    (
-                      trainer // Removed curly braces around the map
-                    ) => (
-                      <TableRow key={trainer.id} sx={tableCss.tableRow}>
-                        <TableCell sx={tableCss.tableCell}>
-                          <Typography variant="subtitle2">{trainer.fullName}</Typography>
-                          <Typography color="textSecondary" variant="body2">
-                            {trainer?.trainerExpertise
-                              ?.map((expertiseItem) => expertiseItem.expertise?.title)
-                              .filter((title) => title && title !== '')
-                              .join(', ')}
-                          </Typography>
-                          <Typography color="textSecondary" variant="body2">
-                            {trainer.experience ? (
-                              <>
-                                <Barbell /> {trainer.experience} years
-                              </>
-                            ) : null}
-                          </Typography>
-                        </TableCell>
-                        <TableCell>
-                          <Typography variant="subtitle2">{trainer.email}</Typography>
-                          <Typography color="textSecondary" variant="body2">
-                            {trainer.phoneNumber}
-                          </Typography>
-                        </TableCell>
-                        <TableCell sx={tableCss.tableCell}>{formatAmount(trainer.fees)}</TableCell>
-                        <TableCell sx={tableCss.tableCell}>
-                          <Typography variant="body2">
-                            {trainer.attendanceDetail ? `Available Days : ${trainer.attendanceDetail?.available}` : ''}
-                          </Typography>
-                          <Typography color="textSecondary" variant="body2">
-                            {trainer.attendanceDetail ? `On Leave : ${trainer.attendanceDetail?.unAvailable}` : ''}
-                          </Typography>
-                        </TableCell>
-                        <TableCell sx={tableCss.tableCell}>
-                          <Typography variant="body2">
-                            {trainer.sessionDetail ? (
-                              <>
-                                <Equals /> {trainer.sessionDetail.totalSession}
-                              </>
-                            ) : null}
-                          </Typography>
-                          <Typography color="textSecondary" variant="body2">
-                            {trainer.sessionDetail ? (
-                              <>
-                                <Flag /> {trainer.sessionDetail.completedSession}
-                              </>
-                            ) : null}
-                          </Typography>
-                          <Typography color="textSecondary" variant="body2">
-                            {trainer.sessionDetail ? (
-                              <>
-                                <XCircle /> {trainer.sessionDetail.cancelledSession}
-                              </>
-                            ) : null}
-                            {/* {trainer.sessionDetail ? `Cancelled : ${trainer.sessionDetail.cancelledSession}` : ''} */}
-                          </Typography>
-                        </TableCell>
-                        <TableCell sx={tableCss.tableCell}>
-                          {trainer.sessionDetail ? formatHours(trainer.sessionDetail.sessionTotalHours) : ''}
-                        </TableCell>
-                        <TableCell sx={tableCss.tableCell}>
-                          {trainer.sessionDetail ? formatAmount(trainer.sessionDetail?.sessionTotalRevenue) : ''}
-                        </TableCell>
-                      </TableRow>
-                    )
-                  )
-                )}
-              </TableBody>
-            </Table>
-          </TableContainer>
+          <TableContainer>{loading ? <CustomLoader /> : <TrainerReportTable rows={data} />}</TableContainer>
           {data.length > 0 && (
             <>
               <Divider />
