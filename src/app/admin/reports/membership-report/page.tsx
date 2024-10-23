@@ -15,6 +15,9 @@ import { SearchFilter } from '@/components/admin/reports/common-filters/seach-fi
 import { StatusFilters } from '@/components/admin/reports/common-filters/status-filter';
 import { MembershipPlanReportTable } from '@/components/admin/reports/membership-report/membership-report-table';
 
+interface ErrorResponse {
+  message: string;
+}
 // Define ApiResponse interface for the expected API response structure
 interface ApiResponse {
   success: boolean;
@@ -29,7 +32,7 @@ interface ApiResponse {
       currentPage: number;
     };
   };
-  errors: {};
+  errors: ErrorResponse;
 }
 
 const MembershipReport: React.FC = () => {

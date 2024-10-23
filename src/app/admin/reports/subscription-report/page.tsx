@@ -18,6 +18,9 @@ import {
   SubscriptionReportTable,
 } from '@/components/admin/reports/subscription-report/subscription-report-table';
 
+interface ErrorResponse {
+  message: string;
+}
 // Define ApiResponse interface for the expected API response structure
 interface ApiResponse {
   success: boolean;
@@ -32,7 +35,7 @@ interface ApiResponse {
       currentPage: number;
     };
   };
-  errors: {};
+  errors: ErrorResponse;
 }
 
 const SubscriptionReport: React.FC = () => {

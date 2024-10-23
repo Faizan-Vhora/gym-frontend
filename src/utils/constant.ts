@@ -225,22 +225,6 @@ export const BOOKING_SESSION_PAYMENT_STATUS_DETAILS: Record<string, { value: str
   [BOOKING_SESSION_PAYMENT_STATUS.PAID] : { value: BOOKING_SESSION_PAYMENT_STATUS.PAID, label: "Paid" , color: 'success'},
 }
 
-export const NOTIFICATION_TYPES = {
- 
-  NONE : 0,
-   
-  EMAIL : 1,
-  PUSH_NOTIFICATION: 2,
-   
-  ADMIN_ALERT_NOTIFICATION:3,
-  USER_ALERT_NOTIFICATION:4,
-   
-  ADMIN_PUSH_NOTIFICATION: 5,
-  USER_PUSH_NOTIFICATION: 6
-   
-  }
-
-
 
 export  const ExperienceOptions = [
     { value: 0, label: "None" }, // Option for no selection
@@ -257,3 +241,17 @@ export const DateFormat = {
   dateFormat: 'YYYY-MM-DD'
 }
 
+export const TRAINER_STATUS = {
+  ACTIVE: '1',
+  INACTIVE: '2',
+};
+
+export const TRAINER_STATUS_OPTIONS = [
+  { value: TRAINER_STATUS.ACTIVE, label: "Active" },
+  { value: TRAINER_STATUS.INACTIVE, label: "Inactive" },
+];
+
+export const TRAINER_STATUS_DETAILS: Record<string, { value: string; label: string; color: 'error' | 'success' }> = {
+  [TRAINER_STATUS.ACTIVE]: { value: TRAINER_STATUS.ACTIVE, label: "Active", color: 'success' },
+  [TRAINER_STATUS.INACTIVE]: { value: TRAINER_STATUS.INACTIVE, label: "Inactive", color: 'error' },
+};

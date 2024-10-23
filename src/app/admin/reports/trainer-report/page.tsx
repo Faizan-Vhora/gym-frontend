@@ -1,26 +1,9 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { formatAmount, formatHours } from '@/utils/converter';
-import { getStatusText, UserStatus } from '@/utils/userstatus';
-import {
-  Card,
-  Chip,
-  Divider,
-  FormControlLabel,
-  Grid,
-  Paper,
-  Stack,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Typography,
-} from '@mui/material';
+import { CustomLoader } from '@/utils/loader';
+import { Card, Divider, Grid, Paper, Stack, TableContainer, Typography } from '@mui/material';
 import { DateRange } from '@mui/x-date-pickers-pro';
-import { Barbell, Equals, Flag, XCircle } from '@phosphor-icons/react';
 import { Dayjs } from 'dayjs';
 import { toast } from 'react-toastify';
 
@@ -29,9 +12,9 @@ import DateRangeFilter from '@/components/admin/reports/common-filters/date-rang
 import CommonTablePagination from '@/components/admin/reports/common-filters/pagination'; // Adjust the import path as necessary
 
 import { SearchFilter } from '@/components/admin/reports/common-filters/seach-filter';
+import { TrainerReportTable } from '@/components/admin/reports/trainer-report/trainer-report-table';
 import { TrainerStatusFilters } from '@/components/admin/reports/trainer-report/trainer-status-filter';
 import { Trainer } from '@/components/admin/trainer/trainer-table';
-import tableCss from '@/styles/table-css';
 
 // Define Trainer interface to specify the structure of trainer data
 interface ErrorResponse {
@@ -66,6 +49,7 @@ const TrainerReport: React.FC = () => {
   const [startDate, setStartDate] = useState<string | null>(null);
   const [endDate, setEndDate] = useState<string | null>(null);
   const [statusFilter, setStatusFilter] = useState('ALL');
+  const [loading, setLoading] = React.useState(false);
 
   // Function to fetch data
 
@@ -94,7 +78,7 @@ const TrainerReport: React.FC = () => {
           params.startDate = startDate;
           params.endDate = endDate;
         }
-
+        setLoading(true);
         const response = await axiosInstance.get<ApiResponse>('/report/trainer-report', { params });
         const { items, meta } = response.data.data;
 
@@ -108,6 +92,8 @@ const TrainerReport: React.FC = () => {
         }
       } catch (err: unknown) {
         toast.error(err instanceof Error ? err.message : 'An unexpected error occurred');
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -151,103 +137,7 @@ const TrainerReport: React.FC = () => {
         </Stack>
 
         <Paper>
-          <TableContainer>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell sx={tableCss.tableHeaderCell}>Trainer</TableCell>
-                  <TableCell sx={tableCss.tableHeaderCell}>Contact Details</TableCell>
-                  <TableCell sx={tableCss.tableHeaderCell}>Fees</TableCell>
-                  <TableCell sx={tableCss.tableHeaderCell}>Attendance</TableCell>
-                  <TableCell sx={tableCss.tableHeaderCell}>Session Counts</TableCell>
-                  <TableCell sx={tableCss.tableHeaderCell}>Session Hours</TableCell>
-                  <TableCell sx={tableCss.tableHeaderCell}>Session Revenue</TableCell>
-                  <TableCell sx={tableCss.tableHeaderCell}>Status</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {data.length === 0 ? (
-                  <TableRow sx={tableCss.tableRow}>
-                    <TableCell colSpan={7} align="center">
-                      {' '}
-                      {/* Corrected colSpan to 7 to match the number of columns */}
-                      <Typography variant="body1">No data found</Typography>
-                    </TableCell>
-                  </TableRow>
-                ) : (
-                  data.map(
-                    (
-                      trainer // Removed curly braces around the map
-                    ) => (
-                      <TableRow key={trainer.id} sx={tableCss.tableRow}>
-                        <TableCell sx={tableCss.tableCell}>
-                          <Typography variant="subtitle2">{trainer.fullName}</Typography>
-                          <Typography color="textSecondary" variant="body2">
-                            {trainer?.trainerExpertise
-                              ?.map((expertiseItem) => expertiseItem.expertise?.title)
-                              .filter((title) => title && title !== '')
-                              .join(', ')}
-                          </Typography>
-                          <Typography color="textSecondary" variant="body2">
-                            {trainer.experience ? (
-                              <>
-                                <Barbell /> {trainer.experience} years
-                              </>
-                            ) : null}
-                          </Typography>
-                        </TableCell>
-                        <TableCell>
-                          <Typography variant="subtitle2">{trainer.email}</Typography>
-                          <Typography color="textSecondary" variant="body2">
-                            {trainer.phoneNumber}
-                          </Typography>
-                        </TableCell>
-                        <TableCell sx={tableCss.tableCell}>{formatAmount(trainer.fees)} Per Hour</TableCell>
-                        <TableCell sx={tableCss.tableCell}>
-                          <Typography variant="body2">
-                            {trainer.attendanceDetail ? `Available Days : ${trainer.attendanceDetail?.available}` : ''}
-                          </Typography>
-                          <Typography color="textSecondary" variant="body2">
-                            {trainer.attendanceDetail ? `On Leave : ${trainer.attendanceDetail?.unAvailable}` : ''}
-                          </Typography>
-                        </TableCell>
-                        <TableCell sx={tableCss.tableCell}>
-                          <Typography variant="body2">
-                            {trainer.sessionDetail ? `Total: ${trainer.sessionDetail.totalSession}` : null}
-                          </Typography>
-                          <Typography color="textSecondary" variant="body2">
-                            {trainer.sessionDetail ? `Completed: ${trainer.sessionDetail.completedSession}` : null}
-                          </Typography>
-                          <Typography color="textSecondary" variant="body2">
-                            {trainer.sessionDetail ? `Cancelled: ${trainer.sessionDetail.cancelledSession}` : null}
-                            {/* {trainer.sessionDetail ? `Cancelled : ${trainer.sessionDetail.cancelledSession}` : ''} */}
-                          </Typography>
-                        </TableCell>
-                        <TableCell sx={tableCss.tableCell}>
-                          {trainer.sessionDetail ? formatHours(trainer.sessionDetail.sessionTotalHours) : ''}
-                        </TableCell>
-                        <TableCell sx={tableCss.tableCell}>
-                          {trainer.sessionDetail ? formatAmount(trainer.sessionDetail?.sessionTotalRevenue) : ''}
-                        </TableCell>
-                        <TableCell sx={tableCss.tableCell}>
-                          <FormControlLabel
-                            control={
-                              <Chip
-                                label={getStatusText(trainer.status === UserStatus.Active ? 1 : 2)}
-                                color={trainer.status === UserStatus.Active ? 'success' : 'error'}
-                                variant="filled"
-                              />
-                            }
-                            label=""
-                          />
-                        </TableCell>
-                      </TableRow>
-                    )
-                  )
-                )}
-              </TableBody>
-            </Table>
-          </TableContainer>
+          <TableContainer>{loading ? <CustomLoader /> : <TrainerReportTable rows={data} />}</TableContainer>
           {data.length > 0 && (
             <>
               <Divider />
