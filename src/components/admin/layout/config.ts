@@ -33,7 +33,7 @@ export const navItems = [
 
       { key: 'notification', title: 'Notification', href: paths.notification.notificationList, icon: 'bell', items:[] },
 
-
+      { key: 'subscription-management', title: 'Subscription Management', href: paths.SubscriptionManagement.list, icon: 'bell', items:[] },
       {
         key: 'reports',
         title: 'Reports',

@@ -170,11 +170,11 @@ const BookingPreviewDialog: React.FC<BookingPreviewDialogProps> = ({ isOpen, han
                 <Card
                   sx={{
                     height: '140px',
-                    boxShadow: 5,
+                    boxShadow: 5, // Normal box shadow
                     '&:hover': {
-                      boxShadow: 15,
+                      boxShadow: 15, // Increased box shadow on hover
                     },
-                    transition: 'box-shadow 0.3s ease-in-out',
+                    transition: 'box-shadow 0.3s ease-in-out', // Smooth transition effect
                     marginTop: '10px',
                   }}
                 >

@@ -111,6 +111,20 @@ export interface Customer {
   qrCodeImageUrl: string | null;
 }
 
+export interface TrainerExpertise {
+  id: number;
+  createdAt: string;
+  updatedAt: string;
+  expertise: {
+    id: number;
+    title: string;
+    description: string;
+    status: string;
+    createdAt: string;
+    updatedAt: string;
+  };
+}
+
 export interface Trainer {
   id: number;
   memberId: string;
@@ -137,6 +151,7 @@ export interface Trainer {
   updatedAt: string;
   profileImageUrl: string | null;
   qrCodeImageUrl: string | null;
+  trainerExpertise?: TrainerExpertise[];
 }
 
 export interface Booking {

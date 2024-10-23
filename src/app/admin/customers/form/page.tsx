@@ -50,6 +50,7 @@ import Swal from 'sweetalert2';
 import type { Customer } from '@/components/admin/customer/customers-table';
 import MembershipPlanCard from '@/components/admin/membership-plan/membership-card';
 import { MembershipPlans } from '@/components/admin/membership-plan/membership-plan-table';
+import { ChooseMembershipDialog } from '@/components/admin/membership-plan/membership-popover';
 
 import { CheckInTableView, type CheckInEntry } from './check-in-view';
 
@@ -73,6 +74,8 @@ export default function CustomerEditForm(): React.JSX.Element {
   const [checkInRowsPerPage, setRowsPerPage] = useState(5);
   const [checkInEntries, setCheckInEntries] = useState<CheckInEntry[]>([]);
   const [totalCheckInEntries, setTotalCheckInEntries] = useState<number>(0);
+  const [openMembershipDialog, setOpenMembershipDialog] = useState(false);
+  const [selectedPlanId, setSelectedPlanId] = useState<string | null>(null);
 
   interface CustomerS {
     id: string;
@@ -86,6 +89,7 @@ export default function CustomerEditForm(): React.JSX.Element {
     status: number; // Ensure this is part of the interface
     qrCodeImageUrl: string;
     membership: {
+      id: number;
       startDate: Date;
       expiryDate: Date;
       status: string;
@@ -209,6 +213,12 @@ export default function CustomerEditForm(): React.JSX.Element {
   React.useEffect(() => {
     if (id && tab) {
       router.push(`/admin/customers/form?id=${id}&tab=${tab}`);
+    }
+    if (searchParams.get('tab') === '2') {
+      void fetchPlans();
+    }
+    if (searchParams.get('tab') === '3') {
+      void fetchEntries();
     }
   }, [tab]);
 
@@ -386,9 +396,10 @@ export default function CustomerEditForm(): React.JSX.Element {
     return <div>Loading...</div>;
   }
 
-  const handleButtonClick = async (planId: string) => {
+  const handleButtonClick = async (planId: string | null, membershipStartDate: string | null) => {
+    if (!planId) return;
     try {
-      const startDate = new Date().toISOString().slice(0, 10);
+      const startDate = membershipStartDate || new Date().toISOString().slice(0, 10);
       // Call the API to update the membership plan
       await axiosInstance.post(`/users/assign-membership`, {
         user: Number(id),
@@ -396,12 +407,10 @@ export default function CustomerEditForm(): React.JSX.Element {
         startDate: startDate,
       });
       toast.success('Plan updated successfully');
-
       // Fetch the updated user data after the plan update
       const response = await axiosInstance.get<{ data: CustomerS }>(`/users/${id}`, {
         params: { userType: 3 },
       });
-
       // Update the customerS state with the new data
       setCustomer(response.data.data);
       setCustomerS(response.data.data);
@@ -409,6 +418,20 @@ export default function CustomerEditForm(): React.JSX.Element {
     } catch (err: unknown) {
       err instanceof Error ? err.message : 'An unexpected error occurred';
     }
+  };
+
+  const openMembershipDialogHandler = (planId: string) => {
+    setSelectedPlanId(planId); // Set the selected plan ID
+    setOpenMembershipDialog(true); // Open the dialog
+  };
+
+  const closeMembershipDialogHandler = () => {
+    setOpenMembershipDialog(false); // Close the dialog
+  };
+
+  const handleMembershipDialogSubmit = (data: { startDate: string | null }) => {
+    void handleButtonClick(selectedPlanId, data.startDate); // Proceed with the button click using the selected plan
+    closeMembershipDialogHandler(); // Close the dialog
   };
 
   return (
@@ -734,6 +757,9 @@ export default function CustomerEditForm(): React.JSX.Element {
                         expiryDate={customerS?.membership?.expiryDate}
                         description={customerS?.membership?.membershipType?.description}
                         cost={customerS?.membership?.membershipType?.cost}
+                        paymentStatus={customerS?.membership?.paymentStatus}
+                        membershipId={customerS?.membership?.id}
+                        membershipStatus={customerS?.membership?.status}
                         onlyShow={false}
                         onButtonClick={(): void => {
                           undefined;
@@ -763,7 +789,7 @@ export default function CustomerEditForm(): React.JSX.Element {
                               cost={plan.cost}
                               onlyShow={true}
                               onButtonClick={() => {
-                                void handleButtonClick(plan.id);
+                                openMembershipDialogHandler(plan.id);
                               }}
                             />
                           </Grid>
@@ -775,6 +801,11 @@ export default function CustomerEditForm(): React.JSX.Element {
                     )}
                   </Grid>
                 </Grid>
+                <ChooseMembershipDialog
+                  open={openMembershipDialog}
+                  onClose={closeMembershipDialogHandler}
+                  onSubmit={handleMembershipDialogSubmit}
+                />
               </Card>
             </Box>
             <Divider />

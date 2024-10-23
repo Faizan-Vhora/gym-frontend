@@ -2,20 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
-import {
-  Box,
-  Button,
-  Card,
-  FormControl,
-  FormHelperText,
-  Grid,
-  InputLabel,
-  MenuItem,
-  Select,
-  Stack,
-  Tab,
-  Tabs,
-} from '@mui/material';
+import { Autocomplete, Box, Button, Card, FormControl, Grid, Stack, Tab, Tabs, TextField } from '@mui/material';
 import { DatePicker, LocalizationProvider, TimePicker } from '@mui/x-date-pickers';
 import { Controller, useForm } from 'react-hook-form';
 import { toast, ToastContainer } from 'react-toastify';
@@ -32,8 +19,6 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import dayjs, { Dayjs } from 'dayjs';
 
 import { CheckInEntry } from '@/components/admin/check-in/check-in-table';
-import { Customer } from '@/components/admin/customer/customers-table';
-import { Trainer } from '@/components/admin/trainer/trainer-table';
 
 // Define the form schema using zod
 const checkinSchema = z
@@ -66,6 +51,7 @@ const CheckinForm = () => {
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [fetchedCheckIn, setFetchedCheckIn] = useState<CheckInEntry>();
   const [loadingUsers, setLoadingUsers] = useState(false);
+
   const router = useRouter();
   const searchParams = useSearchParams();
   const checkInId = searchParams.get('id'); // Get check-in ID from URL
@@ -86,6 +72,15 @@ const CheckinForm = () => {
     },
   });
 
+  interface Trainer {
+    id: string;
+    fullName: string;
+  }
+
+  interface Customer {
+    id: string;
+    fullName: string;
+  }
   interface ApiResponse<T> {
     data: T;
   }
@@ -197,6 +192,8 @@ const CheckinForm = () => {
     }
   };
 
+  const options = tabValue === 'member' ? customers : trainers;
+
   return (
     <Box sx={{ width: '100%' }}>
       <Card>
@@ -214,21 +211,29 @@ const CheckinForm = () => {
                 <Controller
                   name="userId"
                   control={control}
-                  render={({ field }) => (
+                  render={({ field: { onChange, value, ref } }) => (
                     <FormControl fullWidth variant="outlined">
-                      <InputLabel>User</InputLabel>
-                      <Select {...field} label="User" disabled={Boolean(fetchedCheckIn?.user)}>
-                        {loadingUsers ? (
-                          <MenuItem disabled>Loading users...</MenuItem>
-                        ) : (
-                          (tabValue === 'member' ? customers : trainers).map((user) => (
-                            <MenuItem key={user.id} value={user.id}>
-                              {user.fullName}
-                            </MenuItem>
-                          ))
+                      <Autocomplete
+                        options={options}
+                        getOptionLabel={(option) => option.fullName} // Display the fullName of the user
+                        onChange={(event, newValue) => {
+                          onChange(newValue ? newValue.id : null); // Set userId to the selected user's id
+                        }}
+                        value={options.find((user) => user.id === value) || null} // Find the user object based on the selected userId
+                        renderInput={(params) => (
+                          <TextField
+                            {...params}
+                            label="User"
+                            variant="outlined"
+                            error={Boolean(errors.userId)}
+                            helperText={errors.userId ? errors.userId.message : ''}
+                            inputRef={ref} // Attach the ref for react-hook-form
+                            disabled={Boolean(fetchedCheckIn?.user) || loadingUsers}
+                          />
                         )}
-                      </Select>
-                      {errors.userId && <FormHelperText error>{errors.userId.message}</FormHelperText>}
+                        loading={loadingUsers} // Show loading spinner
+                        noOptionsText="No users found" // Text when no options match
+                      />
                     </FormControl>
                   )}
                 />
@@ -325,7 +330,12 @@ const CheckinForm = () => {
               </Grid>
 
               <Grid item xs={12}>
-                <Button type="submit" variant="contained" className="common-button" style={{fontFamily:'Audiowide, sans-serif !important',}}>
+                <Button
+                  type="submit"
+                  variant="contained"
+                  className="common-button"
+                  style={{ fontFamily: 'Audiowide, sans-serif !important' }}
+                >
                   {checkInId ? 'Update Check-in' : 'Add Check-in'}
                 </Button>
                 <Button
@@ -337,7 +347,7 @@ const CheckinForm = () => {
                     borderColor: '#d0021b',
                     color: '#d0021b',
                     marginLeft: '15px',
-                    fontFamily:'Audiowide, sans-serif !important',
+                    fontFamily: 'Audiowide, sans-serif !important',
                     transform: 'skewX(-20deg)',
                     '&:hover': {
                       borderColor: 'darkred',

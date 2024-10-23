@@ -29,7 +29,7 @@ import {
   Typography,
 } from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers';
-import { Barbell, CurrencyCircleDollar, Envelope, Phone, XCircle } from '@phosphor-icons/react';
+import { Barbell, Envelope, Phone, XCircle } from '@phosphor-icons/react';
 import moment from 'moment';
 import { Controller, useForm } from 'react-hook-form';
 import { toast, ToastContainer } from 'react-toastify';
@@ -40,6 +40,7 @@ import { dayjs } from '@/lib/dayjs';
 import { Option } from '@/components/core/option';
 
 import { DiscountEntry, DiscountType } from '../discount/discount-table';
+import { TrainerExpertise } from '../trainer/trainer-table';
 import BookingPreviewDialog from './booking-preview';
 import PaymentToggle from './payment-toggle';
 import { Customer, Sessions, Trainer } from './types';
@@ -189,8 +190,13 @@ export function BookingFormDialog({
   };
 
   const fetchTrainers = async (): Promise<void> => {
+    const params = {
+      isJoinExpertise: true,
+    };
     try {
-      const { data } = await axiosInstance.get<{ data: Trainer[] }>('/users/trainer/dropdown');
+      const { data } = await axiosInstance.get<{ data: Trainer[] }>('/users/trainer/dropdown', {
+        params: params,
+      });
       setTrainerOptions(data.data);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to load trainers.';
@@ -865,14 +871,13 @@ export function BookingFormDialog({
                       <Grid item md={8} alignContent={'center'}>
                         <Typography variant="subtitle1">{selectedTrainer.fullName}</Typography>
                         <Typography variant="caption" sx={{ display: 'flex', alignItems: 'center' }}>
-                          {selectedTrainer.fees ? (
-                            <IconButton sx={{ padding: '0px', marginRight: '5px' }}>
-                              <CurrencyCircleDollar width={18} height={18} />
-                            </IconButton>
-                          ) : (
-                            ''
-                          )}
-                          {selectedTrainer.fees} per Hour
+                          {selectedTrainer.trainerExpertise
+                            ?.map((expertiseItem: TrainerExpertise) => expertiseItem.expertise?.title) // Extract the title
+                            .filter((title) => title && title !== '') // Filter out empty or undefined titles
+                            .join(', ')}{' '}
+                        </Typography>
+                        <Typography variant="caption" sx={{ display: 'flex', alignItems: 'center' }}>
+                          {selectedTrainer.fees ? `${formatAmount(selectedTrainer.fees)} per Hour` : ''}
                         </Typography>
                         <Typography variant="caption" sx={{ display: 'flex', alignItems: 'center' }}>
                           {selectedTrainer.experience ? (
@@ -950,7 +955,7 @@ export function BookingFormDialog({
 
             {bookingType === BOOKING_TYPE.WEEKLY && (
               <>
-                <Grid item sm={8}  xs={12}>
+                <Grid item sm={8} xs={12}>
                   <Controller
                     control={control}
                     name="bookingStartDate"

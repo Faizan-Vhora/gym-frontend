@@ -95,6 +95,10 @@ export const paths = {
     list: '/admin/reports/discount-report'
   },
 
+  SubscriptionManagement: {
+    list: '/admin/subscription-management/'
+  },
+  
   errors: {
     notFound: '/errors/not-found',
   },

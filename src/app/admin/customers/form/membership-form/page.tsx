@@ -10,6 +10,7 @@ import { toast, ToastContainer } from 'react-toastify';
 import axiosInstance from '@/lib/axios';
 import MembershipPlanCard from '@/components/admin/membership-plan/membership-card'; // Import the new component
 import type { MembershipPlans } from '@/components/admin/membership-plan/membership-plan-table';
+import { ChooseMembershipDialog } from '@/components/admin/membership-plan/membership-popover';
 
 interface PlanI {
   id: string;
@@ -54,6 +55,9 @@ const MembershipPlansForm: React.FC = () => {
   const [plans, setPlans] = useState<PlanI[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [openMembershipDialog, setOpenMembershipDialog] = useState(false);
+  const [selectedPlanId, setSelectedPlanId] = useState<string | null>(null);
+  const [customer, setCustomer] = useState<CustomerS | null>(null);
   const router = useRouter();
   interface MembershipPlanResponse {
     data: MembershipPlans[];
@@ -82,9 +86,10 @@ const MembershipPlansForm: React.FC = () => {
     void fetchPlans();
   }, []);
 
-  const handleButtonClick = async (planId: string) => {
+  const handleButtonClick = async (planId: string | null, membershipStartDate: string | null) => {
+    if (!planId) return;
     try {
-      const startDate = new Date().toISOString().slice(0, 10);
+      const startDate = membershipStartDate || new Date().toISOString().slice(0, 10);
       // Call the API to update the membership plan
       await axiosInstance.post(`/users/assign-membership`, {
         user: Number(id),
@@ -94,15 +99,29 @@ const MembershipPlansForm: React.FC = () => {
       toast.success('Plan updated successfully');
 
       // Fetch the updated user data after the plan update
-      await axiosInstance.get<{ data: CustomerS }>(`/users/${id}`, {
+      const response = await axiosInstance.get<{ data: CustomerS }>(`/users/${id}`, {
         params: { userType: 3 },
       });
-
+      setCustomer(response.data.data);
       router.push('/admin/customers');
       // Update the customerS state with the new data
     } catch (err: unknown) {
       err instanceof Error ? err.message : 'An unexpected error occurred';
     }
+  };
+
+  const openMembershipDialogHandler = (planId: string) => {
+    setSelectedPlanId(planId); // Set the selected plan ID
+    setOpenMembershipDialog(true); // Open the dialog
+  };
+
+  const closeMembershipDialogHandler = () => {
+    setOpenMembershipDialog(false); // Close the dialog
+  };
+
+  const handleMembershipDialogSubmit = (data: { startDate: string | null }) => {
+    void handleButtonClick(selectedPlanId, data.startDate); // Proceed with the button click using the selected plan
+    closeMembershipDialogHandler(); // Close the dialog
   };
 
   if (loading) {
@@ -136,7 +155,7 @@ const MembershipPlansForm: React.FC = () => {
               width: '10%',
               marginLeft: 'auto',
               borderColor: '#d0021b',
-              fontFamily:'Audiowide, sans-serif !important',
+              fontFamily: 'Audiowide, sans-serif !important',
               color: '#d0021b',
               transform: 'skewX(-20deg)',
               '&:hover': {
@@ -158,9 +177,10 @@ const MembershipPlansForm: React.FC = () => {
                   expiryDate={plan.expiryDate}
                   description={plan.description}
                   cost={plan.cost}
+                  paymentStatus={customer?.membership?.paymentStatus}
                   onlyShow={true}
                   onButtonClick={() => {
-                    void handleButtonClick(plan.id);
+                    openMembershipDialogHandler(plan.id);
                   }}
                 />
               </Grid>
@@ -172,6 +192,11 @@ const MembershipPlansForm: React.FC = () => {
           )}
 
           <ToastContainer />
+          <ChooseMembershipDialog
+            open={openMembershipDialog}
+            onClose={closeMembershipDialogHandler}
+            onSubmit={handleMembershipDialogSubmit}
+          />
         </Grid>
       </Card>
     </Grid>

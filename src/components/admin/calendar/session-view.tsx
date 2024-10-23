@@ -303,17 +303,19 @@ const SessionPreview: React.FC<SessionNotesFormProps> = ({
           </Button>
         )}
 
-        {onUpdateStatus && (
-          <Button
-            sx={{ fontFamily: 'Audiowide, sans-serif !important' }}
-            className="common-button"
-            onClick={() => {
-              handleStatusChange(String(sessionObj.id), BOOKING_STATUS.CANCELED);
-            }}
-          >
-            Cancel Session
-          </Button>
-        )}
+        {onUpdateStatus &&
+          sessionObj.status !== BOOKING_STATUS.CANCELED &&
+          sessionObj.status !== BOOKING_STATUS.COMPLETED && (
+            <Button
+              sx={{ fontFamily: 'Audiowide, sans-serif !important' }}
+              className="common-button"
+              onClick={() => {
+                handleStatusChange(String(sessionObj.id), BOOKING_STATUS.CANCELED);
+              }}
+            >
+              Cancel Session
+            </Button>
+          )}
       </DialogActions>
     </Dialog>
   );

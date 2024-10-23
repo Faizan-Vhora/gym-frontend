@@ -219,7 +219,7 @@ export function CalendarView({ view = 'dayGridMonth' }: CalendarViewProps): Reac
       });
       toast.success('Slot rescheduled successfully!');
       setIsDialogOpenForNotes(false); // Close the dialog
-      setSelectedSession(null);
+
       await fetchEvents(); // Refresh events
     } catch (error) {
       toast.error('Failed to reschedule slot');
@@ -283,10 +283,9 @@ export function CalendarView({ view = 'dayGridMonth' }: CalendarViewProps): Reac
     if (result.isConfirmed) {
       try {
         await axiosInstance.patch(`/session-booking/session/${id}/update-status/`, { status: newStatus });
-        setEvents((prevEntries) =>
-          prevEntries.map((entry) => (entry.id === id ? { ...entry, status: newStatus } : entry))
-        );
+        await fetchEvents();
         await Swal.fire('Updated!', swalSuccessMessage, 'success');
+        handleDialogClose();
       } catch (error) {
         await Swal.fire('Error!', 'Failed to update.', 'error');
         if (process.env.NODE_ENV !== 'production') {

@@ -226,6 +226,50 @@ export const BOOKING_SESSION_PAYMENT_STATUS_DETAILS: Record<string, { value: str
 }
 
 
+export const MEMBERSHIP_PAYMENT_STATUS = {
+  PENDING : 'pending',
+  FAILED: 'failed',
+  PAID : 'paid',
+}
+
+export const MEMBERSHIP_PAYMENT_STATUS_OPTIONS = [
+  { value: MEMBERSHIP_PAYMENT_STATUS.PENDING, label: "Pending" },
+  { value: MEMBERSHIP_PAYMENT_STATUS.FAILED, label: "Failed" },
+  { value: MEMBERSHIP_PAYMENT_STATUS.PAID, label: "Paid" },
+]
+
+export const MEMBERSHIP_PAYMENT_STATUS_DETAILS: Record<string, { value: string; label: string; color: 'warning' | 'error' | 'success' }>  = {
+  [MEMBERSHIP_PAYMENT_STATUS.PENDING] : { value: MEMBERSHIP_PAYMENT_STATUS.PENDING, label: "Pending" , color: 'warning'},
+  [MEMBERSHIP_PAYMENT_STATUS.FAILED] : { value: MEMBERSHIP_PAYMENT_STATUS.FAILED, label: "Failed" , color: 'error'},
+  [MEMBERSHIP_PAYMENT_STATUS.PAID] : { value: MEMBERSHIP_PAYMENT_STATUS.PAID, label: "Paid" , color: 'success'},
+}
+
+
+
+export const MEMBERSHIP_PLAN_STATUS = {
+  PENDING : 'pending',
+  ACTIVE: 'active',
+  EXPIRED : 'expired',
+  CANCEL: 'cancel'
+}
+
+export const MEMBERSHIP_PLAN_STATUS_OPTIONS = [
+  { value: MEMBERSHIP_PLAN_STATUS.PENDING, label: "Pending" },
+  { value: MEMBERSHIP_PLAN_STATUS.ACTIVE, label: "Active" },
+  { value: MEMBERSHIP_PLAN_STATUS.EXPIRED, label: "Expired" },
+  { value: MEMBERSHIP_PLAN_STATUS.CANCEL, label: "Cancel" },
+]
+
+export const MEMBERSHIP_PLAN_STATUS_DETAILS: Record<string, { value: string; label: string; color: 'warning' | 'error' | 'success' }>  = {
+  [MEMBERSHIP_PLAN_STATUS.PENDING] : { value: MEMBERSHIP_PLAN_STATUS.PENDING, label: "Pending" , color: 'warning'},
+  [MEMBERSHIP_PLAN_STATUS.ACTIVE] : { value: MEMBERSHIP_PLAN_STATUS.ACTIVE, label: "Active" , color: 'success'},
+  [MEMBERSHIP_PLAN_STATUS.EXPIRED] : { value: MEMBERSHIP_PLAN_STATUS.EXPIRED, label: "Expired" , color: 'error'},
+  [MEMBERSHIP_PLAN_STATUS.CANCEL] : { value: MEMBERSHIP_PLAN_STATUS.CANCEL, label: "Cancel" , color: 'warning'},
+
+}
+
+
+
 export  const ExperienceOptions = [
     { value: 0, label: "None" }, // Option for no selection
     { value: 1, label: "0-1 Years" },
