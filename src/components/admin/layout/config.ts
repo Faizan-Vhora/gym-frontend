@@ -14,9 +14,15 @@ export const navItems = [
       // { key: 'faq', title: 'FAQ', href: paths.faq.faq, icon: 'chat-centered-dots', items:[] },
       // { key: 'experties', title: 'Experties', href: paths.experties.experties, icon: 'user-check', items:[] },
       // { key: 'discount', title: 'Discount', href: paths.discount.discount, icon: 'tag', items:[] },
-      // { key: 'contact-us', title: 'Contact Us', href: paths.contactus.contact_us, icon: 'headset', items:[] },
       { key: 'membership-plan', title: 'Membership Plan', href: paths.membershipPlan.membershipPlan, icon: 'users', items:[] },
       { key: 'check-in', title: 'CheckIn', href: paths.checkIn.checkIn, icon: 'clock-user', items:[] },
+     
+
+      { key: 'support', title: 'Support', href: paths.support.supportList, icon: 'headset', items:[] },
+
+      { key: 'notification', title: 'Notification', href: paths.notification.notificationList, icon: 'bell', items:[] },
+
+      { key: 'subscriptions', title: 'Subscriptions', href: paths.Subscriptions.list, icon: 'crown-simple', items:[] },
       {
         key: 'settings',
         title: 'Settings',
@@ -28,12 +34,6 @@ export const navItems = [
           { key: 'cms', title: 'CMS', href: paths.cms.cms, icon: 'user-circle-gear', items:[] },
         ],
       },
-
-      { key: 'support', title: 'Support', href: paths.support.supportList, icon: 'headset', items:[] },
-
-      { key: 'notification', title: 'Notification', href: paths.notification.notificationList, icon: 'bell', items:[] },
-
-      { key: 'subscription-management', title: 'Subscription Management', href: paths.SubscriptionManagement.list, icon: 'bell', items:[] },
       {
         key: 'reports',
         title: 'Reports',

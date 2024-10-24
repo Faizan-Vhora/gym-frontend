@@ -47,7 +47,7 @@ export default function Page(): React.JSX.Element {
           limit: rowsPerPage,
           search: filter,
           status: statusFilter !== 'ALL' ? statusFilter : undefined,
-          memberShipTypeId: membershipFilter !== 'ALL' ? Number(membershipFilter) : undefined,
+          membershipTypeId: membershipFilter !== 'ALL' ? Number(membershipFilter) : undefined,
         },
       });
       setCustomers(response.data.data.items);
@@ -138,11 +138,10 @@ export default function Page(): React.JSX.Element {
         </Stack>
         <Button
           className="common-button"
-          
           startIcon={<PlusIcon fontSize="var(--icon-fontSize-md)" />}
           variant="contained"
           onClick={handleAddClick}
-          style={{fontFamily:'Audiowide, sans-serif !important',}}
+          style={{ fontFamily: 'Audiowide, sans-serif !important' }}
         >
           Add
         </Button>

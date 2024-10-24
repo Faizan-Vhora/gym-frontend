@@ -16,16 +16,16 @@ import { Controller, useForm } from 'react-hook-form';
 
 interface UpdateMembershipStatusDialogProps {
   open: boolean;
+  currentStatus?: string | null;
   onClose: () => void;
   onSubmit: (data: { status: string }) => void; // Adjusted to pass status value
-  //   defaultStatus: string | null;
 }
 
 export function UpdateMembershipStatusDialog({
   open = false,
+  currentStatus,
   onClose,
   onSubmit,
-  //   defaultStatus,
 }: UpdateMembershipStatusDialogProps): React.JSX.Element {
   const { control, handleSubmit } = useForm({
     defaultValues: {
@@ -42,7 +42,7 @@ export function UpdateMembershipStatusDialog({
 
   return (
     <Dialog open={open} onClose={onClose}>
-      <DialogTitle>Choose Booking Status</DialogTitle>
+      <DialogTitle>Choose Payment Status</DialogTitle>
       <DialogContent>
         <Stack spacing={5} margin={3}>
           <Controller
@@ -57,7 +57,11 @@ export function UpdateMembershipStatusDialog({
                   onChange={field.onChange} // Handle selection change
                 >
                   {Object.keys(MEMBERSHIP_PAYMENT_STATUS_DETAILS).map((statusKey) => (
-                    <MenuItem key={statusKey} value={MEMBERSHIP_PAYMENT_STATUS_DETAILS[statusKey].value}>
+                    <MenuItem
+                      disabled={MEMBERSHIP_PAYMENT_STATUS_DETAILS[statusKey].value === currentStatus}
+                      key={statusKey}
+                      value={MEMBERSHIP_PAYMENT_STATUS_DETAILS[statusKey].value}
+                    >
                       {MEMBERSHIP_PAYMENT_STATUS_DETAILS[statusKey].label}
                     </MenuItem>
                   ))}

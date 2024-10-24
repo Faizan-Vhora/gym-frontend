@@ -8,6 +8,7 @@ import { ChatCenteredDots as ChatCenteredDotsIcon } from '@phosphor-icons/react/
 import { ChatsCircle as ChatsCircleIcon } from '@phosphor-icons/react/dist/ssr/ChatsCircle';
 import { ClockUser as ClockUserIcon } from '@phosphor-icons/react/dist/ssr/ClockUser';
 import { CreditCard as CreditCardIcon } from '@phosphor-icons/react/dist/ssr/CreditCard';
+import { CrownSimple as CrownSimpleIcon } from '@phosphor-icons/react/dist/ssr/CrownSimple';
 import { Cube as CubeIcon } from '@phosphor-icons/react/dist/ssr/Cube';
 import { CurrencyEth as CurrencyEthIcon } from '@phosphor-icons/react/dist/ssr/CurrencyEth';
 import { EnvelopeSimple as EnvelopeSimpleIcon } from '@phosphor-icons/react/dist/ssr/EnvelopeSimple';
@@ -61,6 +62,7 @@ export const navIcons = {
   'money-wavy': MoneyWavyIcon,
   'clock-user': ClockUserIcon,
   'chat-centered-dots': ChatCenteredDotsIcon,
+  'crown-simple': CrownSimpleIcon,
   tag: TagIcon,
   bell: BellIcon,
   'user-check': UserCheckIcon,

@@ -31,7 +31,17 @@ export default function Page(): React.JSX.Element {
     { id: number; name: string; image: string; createdAt: string; userType: number }[]
   >([]);
   const [latestBookings, setLatestBookings] = React.useState<
-    { id: number; name: string; createdAt: string; status: string }[]
+    {
+      id: number;
+      customerEmail: string;
+      customerPhoneNumber: string;
+      name: string;
+      trainerName: string;
+      trainerEmail: string;
+      trainerPhoneNumber: string;
+      createdAt: string;
+      status: string;
+    }[]
   >([]);
   const [sessionAttendedPercentage, setSessionAttendedPercentage] = React.useState<number | null>(null);
   const [loading, setLoading] = React.useState(false);
@@ -146,10 +156,10 @@ export default function Page(): React.JSX.Element {
         // Map the response to match the structure required by LatestProducts
         const mappedMembers = totalIncompleteMembersData.map((member) => ({
           id: member.id,
-          name: member.fullName,
-          image: member.profileImageUrl || '/assets/User@3x-1.png', // Provide default image if none exists
-          createdAt: dayjs(member.createdAt).format('MMM D, YYYY'), // Convert string to Date object
-          userType: member.userType,
+          name: member?.fullName,
+          image: member?.profileImageUrl || '/assets/User@3x-1.png', // Provide default image if none exists
+          createdAt: dayjs(member?.createdAt).format('MMM D, YYYY'), // Convert string to Date object
+          userType: member?.userType,
         }));
 
         // Set the mapped data into products state
@@ -166,11 +176,20 @@ export default function Page(): React.JSX.Element {
 
   interface Customer {
     fullName: string;
+    email: string;
+    phoneNumber: string;
+  }
+
+  interface Trainer {
+    fullName: string;
+    email: string;
+    phoneNumber: string;
   }
 
   interface Booking {
     id: number;
     customer: Customer;
+    trainer: Trainer;
     createdAt: string;
     status: string;
   }
@@ -192,7 +211,12 @@ export default function Page(): React.JSX.Element {
         // Safely map the response to match the structure required by LatestProducts
         const mappedBookings = latestBooking.items.map((booking: Booking) => ({
           id: booking.id,
-          name: booking.customer.fullName, // Safe access to the customer name
+          name: booking.customer?.fullName, // Safe access to the customer name
+          customerEmail: booking.customer?.email,
+          customerPhoneNumber: booking.customer?.phoneNumber,
+          trainerName: booking.trainer?.fullName,
+          trainerEmail: booking.trainer?.email,
+          trainerPhoneNumber: booking.trainer?.phoneNumber,
           createdAt: booking.createdAt,
           status: booking.status,
         }));

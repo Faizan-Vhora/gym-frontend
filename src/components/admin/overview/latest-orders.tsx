@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import { BOOKING_STATUS_DETAILS } from '@/utils/constant';
+import { Typography } from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
@@ -18,7 +19,12 @@ import dayjs from 'dayjs';
 
 export interface Order {
   id: number;
+  customerEmail: string;
+  customerPhoneNumber: string;
   name: string;
+  trainerName: string;
+  trainerPhoneNumber: string;
+  trainerEmail: string;
   status: string;
   createdAt: string;
 }
@@ -45,6 +51,7 @@ export function LatestOrders({ orders = [] }: LatestOrdersProps): React.JSX.Elem
             <TableRow>
               <TableCell>Booking</TableCell>
               <TableCell>Customer</TableCell>
+              <TableCell>Trainer</TableCell>
               <TableCell sortDirection="desc">Date</TableCell>
               <TableCell>Status</TableCell>
             </TableRow>
@@ -63,7 +70,24 @@ export function LatestOrders({ orders = [] }: LatestOrdersProps): React.JSX.Elem
                   sx={{ cursor: 'pointer' }}
                 >
                   <TableCell>#{order.id}</TableCell>
-                  <TableCell>{order.name}</TableCell>
+                  <TableCell>
+                    <Typography variant="subtitle2">{order?.name}</Typography>
+                    <Typography color="textSecondary" variant="body2">
+                      {order?.customerEmail}
+                    </Typography>
+                    <Typography color="textSecondary" variant="body2">
+                      {order?.customerPhoneNumber}
+                    </Typography>
+                  </TableCell>
+                  <TableCell>
+                    <Typography variant="subtitle2">{order?.trainerName}</Typography>
+                    <Typography color="textSecondary" variant="body2">
+                      {order?.trainerEmail}
+                    </Typography>
+                    <Typography color="textSecondary" variant="body2">
+                      {order?.trainerPhoneNumber}
+                    </Typography>
+                  </TableCell>
                   <TableCell>{dayjs(order.createdAt).format('MMM D, YYYY')}</TableCell>
                   <TableCell>
                     <Chip color={color} label={label} size="small" />

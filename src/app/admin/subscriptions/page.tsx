@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import React, { useCallback, useEffect, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { MEMBERSHIP_PLAN_STATUS } from '@/utils/constant';
 import { CustomLoader } from '@/utils/loader';
 import { Card, Divider, Grid, Stack, Typography } from '@mui/material';
@@ -14,10 +14,7 @@ import CommonTablePagination from '@/components/admin/reports/common-filters/pag
 import { SearchFilter } from '@/components/admin/reports/common-filters/seach-filter';
 import { SubscriptionFilters } from '@/components/admin/reports/subscription-report/subscription-filter';
 import { Subscription } from '@/components/admin/reports/subscription-report/subscription-report-table';
-import {
-  MembershipType,
-  SubscriptionManagementTable,
-} from '@/components/admin/subscription-management/subscription-table';
+import { MembershipType, SubscriptionManagementTable } from '@/components/admin/subscriptions/subscription-table';
 
 interface ErrorResponse {
   message: string;
@@ -39,39 +36,36 @@ interface ApiResponse {
   errors: ErrorResponse;
 }
 
-const SubscriptionReport: React.FC = () => {
+const initialSubscription: Subscription[] = [];
+
+export default function SubscriptionManagementPage(): React.JSX.Element {
   const searchParams = useSearchParams();
-  const router = useRouter();
   const SubscriptionId = searchParams.get('membershipTypeId');
 
-  const [data, setData] = useState<Subscription[]>([]);
+  const [data, setData] = useState<Subscription[]>(initialSubscription);
 
-  const [search, setSearch] = React.useState<string>('');
+  const [search, setSearch] = useState<string>('');
   const [currentPage, setCurrentPage] = useState<number>(0);
   const [itemsPerPage, setItemsPerPage] = useState<number>(5);
   const [totalItems, setTotalItems] = useState<number>(0);
-  const [loading, setLoading] = React.useState(false);
+  const [loading, setLoading] = useState(false);
   const [membershipFilter, setMembershipFilter] = useState<string>('ALL'); // Membership type filter
 
   // Function to fetch data
-  const fetchSubscriptionPlans = async (): Promise<void> => {
+  const fetchSubscriptionPlans = useCallback(async (): Promise<void> => {
     setLoading(true);
     try {
-      interface SunscriptionReportQueryI {
+      interface SubscriptionReportQueryI {
         page: number;
         limit: number;
         search?: string | null;
-        //   startDate?: string | null;
-        //   endDate?: string | null;
         membershipTypeId?: string | null;
       }
 
-      const params: SunscriptionReportQueryI = {
+      const params: SubscriptionReportQueryI = {
         page: currentPage + 1, // Adjust for API pagination
         limit: itemsPerPage,
         search: search,
-        //   startDate: null,
-        //   endDate: null,
         membershipTypeId: null,
       };
 
@@ -95,11 +89,11 @@ const SubscriptionReport: React.FC = () => {
         );
       }
     } catch (err: unknown) {
-      err instanceof Error ? err.message : 'An unexpected error occurred';
+      toast.error(err instanceof Error ? err.message : 'An unexpected error occurred');
     } finally {
       setLoading(false);
     }
-  };
+  }, [currentPage, itemsPerPage, search, membershipFilter, SubscriptionId]); // Add dependencies here
 
   useEffect(() => {
     void fetchSubscriptionPlans();
@@ -110,15 +104,20 @@ const SubscriptionReport: React.FC = () => {
     setCurrentPage(0);
   };
 
+  const handleMembershipTypeChange = (membershipType: string): void => {
+    setMembershipFilter(membershipType);
+    setCurrentPage(0);
+  };
+
   const handleUpdateStatus = async (id: number, newStatus: MembershipType['status']): Promise<void> => {
     let swalText = `Do you want to change the status?`;
     let swalConfirmButtonText = `Yes, update it!`;
     let swalSuccessMessage = `The status has been updated`;
 
     if (newStatus === MEMBERSHIP_PLAN_STATUS.CANCEL) {
-      swalText = `Do you want to cancel the booking?`;
+      swalText = `Do you want to cancel the subscription?`;
       swalConfirmButtonText = `Yes`;
-      swalSuccessMessage = `The booking has been cancelled`;
+      swalSuccessMessage = `The subscription has been cancelled`;
     }
 
     const result = await Swal.fire({
@@ -134,17 +133,19 @@ const SubscriptionReport: React.FC = () => {
       try {
         await axiosInstance.patch(`/users/membership/update-status/${id}`, { status: newStatus });
         void fetchSubscriptionPlans();
-        await Swal.fire('Updated!', swalSuccessMessage, 'success');
+        setData((prevData) => {
+          return prevData.map((item) => {
+            if (item.id === id) {
+              return { ...item, status: newStatus }; // Update the specific item's status
+            }
+            return item; // Return the item as is if it's not the one being updated
+          });
+        });
+        toast.success(swalSuccessMessage);
       } catch (error) {
         await Swal.fire('Error!', 'Failed to update.', 'error');
       }
     }
-  };
-
-  const handleMembershipTypeChange = (membershipType: string): void => {
-    setMembershipFilter(membershipType);
-    setCurrentPage(0);
-    router.push(`/admin/reports/subscription-report/?membershipTypeId`);
   };
 
   return (
@@ -152,7 +153,7 @@ const SubscriptionReport: React.FC = () => {
       <Card>
         <Stack spacing={1} sx={{ flex: '1 1 auto' }} padding={3}>
           <Typography variant="h5" style={{ fontFamily: '"Audiowide", sans-serif' }} sx={{ marginBottom: '10px' }}>
-            Subscription Management
+            Subscriptions
           </Typography>
           <Grid container spacing={2}>
             <Grid item md={4} xs={12}>
@@ -189,6 +190,4 @@ const SubscriptionReport: React.FC = () => {
       </Card>
     </>
   );
-};
-
-export default SubscriptionReport;
+}

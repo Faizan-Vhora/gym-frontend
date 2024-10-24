@@ -1237,7 +1237,8 @@ export function BookingFormDialog({
                       <InputLabel>Promocode</InputLabel>
                       <Select
                         {...field}
-                        value={field.value || ''}
+                        // value={field.value || ''}
+                        value={selectedPromocode ? selectedPromocode.id : null}
                         onChange={(e) => {
                           const promocodeId = Number(e.target.value);
                           field.onChange(promocodeId);
@@ -1296,6 +1297,7 @@ export function BookingFormDialog({
                           onClick={() => {
                             handlePromocodeChange(null); // or any other logic you need
                           }}
+                          style={{ cursor: 'pointer' }}
                         />
                       </Stack>
 

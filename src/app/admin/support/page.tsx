@@ -74,7 +74,7 @@ export default function Page(): React.JSX.Element {
           prevEntries.map((entry) => (entry.id === id ? { ...entry, status: newStatus } : entry))
         );
         await Swal.fire('Updated!', 'The status has been updated.', 'success');
-        router.back();
+        router.push('/admin/support');
       } catch (error) {
         await Swal.fire('Error!', 'Failed to update status.', 'error');
       }
@@ -120,7 +120,7 @@ export default function Page(): React.JSX.Element {
         </Stack>
         <Button
           className="common-button"
-          style={{fontFamily:'"Audiowide", sans-serif'}}
+          style={{ fontFamily: '"Audiowide", sans-serif' }}
           startIcon={<PlusIcon fontSize="var(--icon-fontSize-md)" />}
           variant="contained"
           onClick={handleAddClick}

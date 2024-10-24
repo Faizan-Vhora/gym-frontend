@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { MEMBERSHIP_PAYMENT_STATUS_DETAILS, MEMBERSHIP_PLAN_STATUS_DETAILS } from '@/utils/constant';
 import { formatAmount } from '@/utils/converter';
 import { Button, Card, CardContent, CardProps, Chip, Stack, Typography } from '@mui/material';
@@ -9,6 +10,7 @@ import { toast } from 'react-toastify';
 
 import axiosInstance from '@/lib/axios';
 
+import { ChooseMembershipDialog } from './membership-popover';
 import { UpdateMembershipStatusDialog } from './membership-status-popover';
 
 interface MembershipPlanCardProps extends CardProps {
@@ -19,9 +21,26 @@ interface MembershipPlanCardProps extends CardProps {
   cost: number;
   paymentStatus?: string | null;
   membershipId?: number | null;
+  membershipTypeId?: string | null;
   membershipStatus?: string | null;
-  onlyShow: boolean;
+  showSelectPlanButton?: boolean;
+  showMembershipStatus?: boolean;
+  showMembershipPaymentStatus?: boolean;
+  showRenewButton?: boolean;
   onButtonClick: () => void;
+}
+
+interface Membership {
+  id: number;
+  startDate: string;
+  expiryDate: string;
+  status: string;
+  paymentStatus: string;
+  totalPaymentAmount: number;
+  createdAt: string;
+  updatedAt: string;
+  membershipType: number;
+  updatedBy: number;
 }
 
 const MembershipPlanCard: React.FC<MembershipPlanCardProps> = ({
@@ -32,19 +51,68 @@ const MembershipPlanCard: React.FC<MembershipPlanCardProps> = ({
   cost,
   paymentStatus,
   membershipId,
+  membershipTypeId,
   membershipStatus,
-  onlyShow,
+  showSelectPlanButton,
+  showMembershipStatus,
+  showMembershipPaymentStatus,
+  showRenewButton,
   onButtonClick,
   ...cardProps
 }) => {
   // Check if expiryDate is a valid Date object and format it
-  const isExpiryDateValid = expiryDate && !isNaN(new Date(expiryDate).getTime());
-  const formattedExpiryDate = isExpiryDateValid ? dayjs(expiryDate).format('MMM D, YYYY') : '';
+
   const [openDialog, setOpenDialog] = useState(false);
   const [newPaymentStatus, setNewPaymentStatus] = useState<string | null>(null);
+  const [openMembershipDialog, setOpenMembershipDialog] = useState(false);
+  const [selectedPlanId, setSelectedPlanId] = useState<string | null | undefined>(null);
+  const [membershipData, setMembershipData] = useState<Membership | null>(null);
+  const [isExpired, setIsExpired] = useState<boolean>(membershipStatus === 'expired');
+
+  const searchParams = useSearchParams();
+  const id = searchParams.get('id');
+  const isExpiryDateValid = expiryDate && !isNaN(new Date(membershipData?.expiryDate || expiryDate).getTime());
+  const formattedExpiryDate = isExpiryDateValid
+    ? dayjs(membershipData?.expiryDate || expiryDate).format('MMM D, YYYY')
+    : '';
 
   const handleChipClick = () => {
     setOpenDialog(true); // Open dialog on chip click
+  };
+
+  const openMembershipDialogHandler = (planId: string | null | undefined) => {
+    setSelectedPlanId(planId); // Set the selected plan ID
+    setOpenMembershipDialog(true); // Open the dialog
+  };
+
+  const closeMembershipDialogHandler = () => {
+    setOpenMembershipDialog(false); // Close the dialog
+  };
+
+  const handleButtonClick = async (planId: string | null | undefined, membershipStartDate: string | null) => {
+    if (!planId) {
+      toast.error('Plan ID not found.');
+      return;
+    }
+    try {
+      const startDate = membershipStartDate || new Date().toISOString().slice(0, 10);
+      // Call the API to update the membership plan
+      const response = await axiosInstance.post<{ data: Membership }>(`/users/assign-membership`, {
+        user: Number(id),
+        membershipType: Number(planId),
+        startDate: startDate,
+      });
+      setMembershipData(response.data.data);
+      setIsExpired(response.data.data.status === 'expired');
+      toast.success('Plan updated successfully');
+    } catch (err: unknown) {
+      err instanceof Error ? err.message : 'An unexpected error occurred';
+    }
+  };
+
+  const handleMembershipDialogSubmit = (data: { startDate: string | null }) => {
+    void handleButtonClick(selectedPlanId, data.startDate); // Proceed with the button click using the selected plan
+    closeMembershipDialogHandler(); // Close the dialog
   };
 
   const handleDialogClose = () => {
@@ -72,16 +140,16 @@ const MembershipPlanCard: React.FC<MembershipPlanCardProps> = ({
   return (
     <Card className="memberCard" {...cardProps}>
       <CardContent style={{ flexGrow: 1 }}>
-        <Stack flexDirection={'row'} alignItems={'center'} justifyContent={'space-between'}>
+        <Stack flexDirection={'row'} alignItems={'center'}>
           <Typography variant="h5" component="div" gutterBottom>
             {title}
           </Typography>
-          {!onlyShow && (
+          {showMembershipStatus && (
             <Typography variant="h6" component="div" color="black">
               {membershipStatus && (
                 <Chip
-                  label={MEMBERSHIP_PLAN_STATUS_DETAILS[membershipStatus]?.label}
-                  color={MEMBERSHIP_PLAN_STATUS_DETAILS[membershipStatus]?.color}
+                  label={MEMBERSHIP_PLAN_STATUS_DETAILS[membershipData?.status || membershipStatus]?.label}
+                  color={MEMBERSHIP_PLAN_STATUS_DETAILS[membershipData?.status || membershipStatus]?.color}
                   sx={{ ml: 2 }}
                   // onClick={handleChipClick}
                 />
@@ -100,16 +168,24 @@ const MembershipPlanCard: React.FC<MembershipPlanCardProps> = ({
         <Typography variant="body2" paragraph>
           {description}
         </Typography>
-        <Stack flexDirection={'row'} alignItems={'center'} justifyContent={'space-between'}>
+        <Stack flexDirection={'row'} alignItems={'center'}>
           <Typography variant="h6" component="div" color="black">
             {formatAmount(cost)}
           </Typography>
-          {!onlyShow && (
+          {showMembershipPaymentStatus && (
             <Typography variant="h6" component="div" color="black">
               {paymentStatus && (
                 <Chip
-                  label={MEMBERSHIP_PAYMENT_STATUS_DETAILS[newPaymentStatus || paymentStatus]?.label}
-                  color={MEMBERSHIP_PAYMENT_STATUS_DETAILS[newPaymentStatus || paymentStatus]?.color}
+                  label={
+                    MEMBERSHIP_PAYMENT_STATUS_DETAILS[
+                      membershipData?.paymentStatus || newPaymentStatus || paymentStatus
+                    ]?.label
+                  }
+                  color={
+                    MEMBERSHIP_PAYMENT_STATUS_DETAILS[
+                      membershipData?.paymentStatus || newPaymentStatus || paymentStatus
+                    ]?.color
+                  }
                   sx={{ ml: 2 }}
                   onClick={handleChipClick}
                 />
@@ -117,9 +193,33 @@ const MembershipPlanCard: React.FC<MembershipPlanCardProps> = ({
             </Typography>
           )}
         </Stack>
-        <UpdateMembershipStatusDialog open={openDialog} onClose={handleDialogClose} onSubmit={handleStatusSubmit} />
+        <UpdateMembershipStatusDialog
+          currentStatus={newPaymentStatus || paymentStatus}
+          open={openDialog}
+          onClose={handleDialogClose}
+          onSubmit={handleStatusSubmit}
+        />
       </CardContent>
-      {onlyShow && (
+
+      {showRenewButton && isExpired && (
+        <Button
+          className="common-button"
+          variant="contained"
+          style={{ margin: '10px', alignSelf: 'center' }}
+          onClick={() => {
+            openMembershipDialogHandler(membershipTypeId);
+          }}
+        >
+          Renew Plan
+        </Button>
+      )}
+
+      <ChooseMembershipDialog
+        open={openMembershipDialog}
+        onClose={closeMembershipDialogHandler}
+        onSubmit={handleMembershipDialogSubmit}
+      />
+      {showSelectPlanButton && (
         <Button
           className="common-button"
           variant="contained"

@@ -1,11 +1,14 @@
 import * as React from 'react';
-import { MEMBERSHIP_PLAN_STATUS, MEMBERSHIP_PLAN_STATUS_DETAILS } from '@/utils/constant';
+import {
+  MEMBERSHIP_PAYMENT_STATUS_DETAILS,
+  MEMBERSHIP_PLAN_STATUS,
+  MEMBERSHIP_PLAN_STATUS_DETAILS,
+} from '@/utils/constant';
 import {
   Box,
   Card,
   Chip,
   IconButton,
-  Stack,
   Table,
   TableBody,
   TableCell,
@@ -52,15 +55,15 @@ export interface Subscription {
 }
 
 interface SubscriptionTableProps {
-  onUpdateStatus: (id: number, newStatus: MembershipType['status']) => void;
   rows: Subscription[];
+  onUpdateStatus: (id: number, newStatus: MembershipType['status']) => void;
 }
 
-export function SubscriptionManagementTable({ onUpdateStatus, rows }: SubscriptionTableProps): React.JSX.Element {
+export function SubscriptionManagementTable({ rows, onUpdateStatus }: SubscriptionTableProps): React.JSX.Element {
   const handleStatusChange = (id: number, newStatus: MembershipType['status']): void => {
     onUpdateStatus(id, newStatus);
-    // toast.success('Status updated successfully!'); // Show success toast
   };
+
   return (
     <Card>
       <Box sx={{ overflowX: 'auto' }}>
@@ -72,6 +75,7 @@ export function SubscriptionManagementTable({ onUpdateStatus, rows }: Subscripti
               <TableCell sx={tableCss.tableHeaderCell}>Subscription Date</TableCell>
               <TableCell sx={tableCss.tableHeaderCell}>Start Date</TableCell>
               <TableCell sx={tableCss.tableHeaderCell}>Expiry Date</TableCell>
+              <TableCell sx={tableCss.tableHeaderCell}>Payment Status</TableCell>
               <TableCell sx={tableCss.tableHeaderCell}>Status</TableCell>
               <TableCell sx={tableCss.tableHeaderCell}>Actions</TableCell>
             </TableRow>
@@ -102,31 +106,29 @@ export function SubscriptionManagementTable({ onUpdateStatus, rows }: Subscripti
                   <TableCell sx={tableCss.tableCell}>{dayjs(row.createdAt).format('MMM D, YYYY')}</TableCell>
                   <TableCell sx={tableCss.tableCell}>{dayjs(row.startDate).format('MMM D, YYYY')}</TableCell>
                   <TableCell sx={tableCss.tableCell}>{dayjs(row.expiryDate).format('MMM D, YYYY')}</TableCell>
-
                   <TableCell sx={[tableCss.tableCell]}>
-                    {row.membershipType.status ? (
-                      <Chip
-                        label={MEMBERSHIP_PLAN_STATUS_DETAILS[row.membershipType.status]?.label}
-                        color={MEMBERSHIP_PLAN_STATUS_DETAILS[row.membershipType.status]?.color}
-                        sx={{ ml: 2 }}
-                      />
-                    ) : (
-                      '-'
-                    )}
+                    <Chip
+                      label={MEMBERSHIP_PAYMENT_STATUS_DETAILS[row.paymentStatus]?.label}
+                      color={MEMBERSHIP_PAYMENT_STATUS_DETAILS[row.paymentStatus]?.color}
+                      sx={{ ml: 2 }}
+                    />
                   </TableCell>
                   <TableCell sx={[tableCss.tableCell]}>
-                    <Stack direction="row" spacing={1} alignItems="center">
-                      <IconButton
-                        disabled={[MEMBERSHIP_PLAN_STATUS.CANCEL, MEMBERSHIP_PLAN_STATUS.EXPIRED].includes(
-                          row.membershipType.status
-                        )}
-                        onClick={() => {
-                          handleStatusChange(row.membershipType.id, MEMBERSHIP_PLAN_STATUS.CANCEL);
-                        }}
-                      >
-                        <XCircle />
-                      </IconButton>
-                    </Stack>
+                    <Chip
+                      label={MEMBERSHIP_PLAN_STATUS_DETAILS[row.status]?.label}
+                      color={MEMBERSHIP_PLAN_STATUS_DETAILS[row.status]?.color}
+                      sx={{ ml: 2 }}
+                    />
+                  </TableCell>
+                  <TableCell sx={[tableCss.tableCell]}>
+                    <IconButton
+                      disabled={[MEMBERSHIP_PLAN_STATUS.CANCEL, MEMBERSHIP_PLAN_STATUS.EXPIRED].includes(row.status)}
+                      onClick={() => {
+                        handleStatusChange(row.id, MEMBERSHIP_PLAN_STATUS.CANCEL);
+                      }}
+                    >
+                      <XCircle />
+                    </IconButton>
                   </TableCell>
                 </TableRow>
               ))

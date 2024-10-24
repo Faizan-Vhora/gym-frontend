@@ -759,8 +759,11 @@ export default function CustomerEditForm(): React.JSX.Element {
                         cost={customerS?.membership?.membershipType?.cost}
                         paymentStatus={customerS?.membership?.paymentStatus}
                         membershipId={customerS?.membership?.id}
+                        membershipTypeId={customerS?.membership?.membershipType?.id}
                         membershipStatus={customerS?.membership?.status}
-                        onlyShow={false}
+                        showMembershipStatus={true}
+                        showMembershipPaymentStatus={true}
+                        showRenewButton={true}
                         onButtonClick={(): void => {
                           undefined;
                         }}
@@ -787,7 +790,7 @@ export default function CustomerEditForm(): React.JSX.Element {
                               expiryDate={plan.expiryDate}
                               description={plan.description}
                               cost={plan.cost}
-                              onlyShow={true}
+                              showSelectPlanButton={true}
                               onButtonClick={() => {
                                 openMembershipDialogHandler(plan.id);
                               }}

@@ -264,7 +264,7 @@ export const MEMBERSHIP_PLAN_STATUS_DETAILS: Record<string, { value: string; lab
   [MEMBERSHIP_PLAN_STATUS.PENDING] : { value: MEMBERSHIP_PLAN_STATUS.PENDING, label: "Pending" , color: 'warning'},
   [MEMBERSHIP_PLAN_STATUS.ACTIVE] : { value: MEMBERSHIP_PLAN_STATUS.ACTIVE, label: "Active" , color: 'success'},
   [MEMBERSHIP_PLAN_STATUS.EXPIRED] : { value: MEMBERSHIP_PLAN_STATUS.EXPIRED, label: "Expired" , color: 'error'},
-  [MEMBERSHIP_PLAN_STATUS.CANCEL] : { value: MEMBERSHIP_PLAN_STATUS.CANCEL, label: "Cancel" , color: 'warning'},
+  [MEMBERSHIP_PLAN_STATUS.CANCEL] : { value: MEMBERSHIP_PLAN_STATUS.CANCEL, label: "Cancel" , color: 'error'},
 
 }
 

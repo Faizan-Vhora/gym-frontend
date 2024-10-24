@@ -95,10 +95,10 @@ export const paths = {
     list: '/admin/reports/discount-report'
   },
 
-  SubscriptionManagement: {
-    list: '/admin/subscription-management/'
+  Subscriptions: {
+    list: '/admin/subscriptions'
   },
-  
+
   errors: {
     notFound: '/errors/not-found',
   },

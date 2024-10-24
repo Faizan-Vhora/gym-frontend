@@ -178,7 +178,7 @@ const MembershipPlansForm: React.FC = () => {
                   description={plan.description}
                   cost={plan.cost}
                   paymentStatus={customer?.membership?.paymentStatus}
-                  onlyShow={true}
+                  showSelectPlanButton={true}
                   onButtonClick={() => {
                     openMembershipDialogHandler(plan.id);
                   }}
