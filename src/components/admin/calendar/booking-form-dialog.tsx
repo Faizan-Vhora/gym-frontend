@@ -87,6 +87,10 @@ interface TrainerBlockDatesResponse {
   data: string[];
 }
 
+interface TrainerAvailableWeekDaysResponse {
+  data: number[];
+}
+
 export type SelectedSlotsI = Record<string, SlotI[]>;
 
 export interface BookingDetailsI {
@@ -156,6 +160,7 @@ export function BookingFormDialog({
   const [availableSlotsWeekly, setAvailableSlotWeeklyData] = React.useState<WeeklySlotI[]>([]);
   const [availableSlotsWeeklyByFilter, setAvailableSlotWeeklyByFilterData] = React.useState<WeeklySlotI[]>([]);
   const [trainerBlockDatesList, setTrainerBlockDatesList] = React.useState<string[]>([]);
+  const [tarinerAvailableWeekDays, setTarinerAvailableWeekDays] = React.useState<number[]>([]);
   const [availableWeekDayOptions, setAvailableWeekDayOptions] = React.useState<WeeklyDayOptionI[]>([]);
   const [selectedDays, setSelectedDays] = React.useState<number[]>([dayjs().day()]); // Default to today's weekday
   const [selectedSlots, setSelectedSlots] = React.useState<SelectedSlotsI>({});
@@ -259,6 +264,19 @@ export function BookingFormDialog({
       });
       const trainerBlockDates = response.data.data;
       setTrainerBlockDatesList(trainerBlockDates || []);
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred';
+      toast.error(`Failed to fetch block dates data: ${errorMessage}`);
+    }
+  };
+
+  const fetchTrainerAvailableWeekdaysData = async (trainerId: number): Promise<void> => {
+    try {
+      const response = await axiosInstance.get<TrainerAvailableWeekDaysResponse>('/session-booking/trainer/available-weekdays', {
+        params: { trainerId },
+      });
+      const trainerAvailableWeekDays = response.data.data;
+      setTarinerAvailableWeekDays(trainerAvailableWeekDays || []);
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred';
       toast.error(`Failed to fetch block dates data: ${errorMessage}`);
@@ -694,11 +712,13 @@ export function BookingFormDialog({
     if (bookingType === BOOKING_TYPE.ONE_TIME && selectedTrainer && bookingDate) {
       void fetchTrainerSlotsData(selectedTrainer.id, bookingDate, bookingDate);
       void fetchTrainerBlockDatesData(selectedTrainer.id);
+      void fetchTrainerAvailableWeekdaysData(selectedTrainer.id);
     }
 
     if (bookingType === BOOKING_TYPE.WEEKLY && selectedTrainer && bookingStartDate && bookingEndDate) {
       void fetchTrainerSlotsData(selectedTrainer.id, bookingStartDate, bookingEndDate);
       void fetchTrainerBlockDatesData(selectedTrainer.id);
+      void fetchTrainerAvailableWeekdaysData(selectedTrainer.id);
     }
   }, [selectedTrainer, bookingType, bookingDate, bookingStartDate, bookingEndDate]);
 
@@ -942,8 +962,19 @@ export function BookingFormDialog({
                             helperText: errors.bookingDate?.message,
                           },
                         }}
+                        // shouldDisableDate={(date) => {
+                        //   return trainerBlockDatesList.includes(dayjs(date).format('YYYY-MM-DD'));
+                        // }}
                         shouldDisableDate={(date) => {
-                          return trainerBlockDatesList.includes(dayjs(date).format('YYYY-MM-DD'));
+                          const dayOfWeek = dayjs(date).day(); // Get the day of the week (0 = Sunday, 1 = Monday, etc.)
+                          const isUnavailableWeekday = !tarinerAvailableWeekDays.includes(dayOfWeek); // Check if the day is not in tarinerAvailableWeekDays
+                          console.log("tarinerAvailableWeekDays: ", tarinerAvailableWeekDays)
+                          console.log("dayOfWeek: ", dayOfWeek)
+                          console.log("isUnavailableWeekday: ", isUnavailableWeekday)
+                          return (
+                            trainerBlockDatesList.includes(dayjs(date).format('YYYY-MM-DD')) || // Existing check for blocked dates
+                            isUnavailableWeekday // New check for unavailable weekdays
+                          );
                         }}
                         value={field.value ? dayjs(field.value) : dayjs()} // Set today's date as default if no value
                       />
@@ -984,8 +1015,16 @@ export function BookingFormDialog({
                             helperText: errors.bookingStartDate?.message,
                           },
                         }}
+                        // shouldDisableDate={(date) => {
+                        //   return trainerBlockDatesList.includes(dayjs(date).format('YYYY-MM-DD'));
+                        // }}
                         shouldDisableDate={(date) => {
-                          return trainerBlockDatesList.includes(dayjs(date).format('YYYY-MM-DD'));
+                          const dayOfWeek = dayjs(date).day(); // Get the day of the week (0 = Sunday, 1 = Monday, etc.)
+                          const isUnavailableWeekday = !tarinerAvailableWeekDays.includes(dayOfWeek); // Check if the day is not in tarinerAvailableWeekDays
+                          return (
+                            trainerBlockDatesList.includes(dayjs(date).format('YYYY-MM-DD')) || // Existing check for blocked dates
+                            isUnavailableWeekday // New check for unavailable weekdays
+                          );
                         }}
                         value={field.value ? dayjs(field.value) : dayjs()} // Default to today
                       />
@@ -1020,8 +1059,16 @@ export function BookingFormDialog({
                             helperText: errors.bookingEndDate?.message,
                           },
                         }}
+                        // shouldDisableDate={(date) => {
+                        //   return trainerBlockDatesList.includes(dayjs(date).format('YYYY-MM-DD'));
+                        // }}
                         shouldDisableDate={(date) => {
-                          return trainerBlockDatesList.includes(dayjs(date).format('YYYY-MM-DD'));
+                          const dayOfWeek = dayjs(date).day(); // Get the day of the week (0 = Sunday, 1 = Monday, etc.)
+                          const isUnavailableWeekday = !tarinerAvailableWeekDays.includes(dayOfWeek); // Check if the day is not in tarinerAvailableWeekDays
+                          return (
+                            trainerBlockDatesList.includes(dayjs(date).format('YYYY-MM-DD')) || // Existing check for blocked dates
+                            isUnavailableWeekday // New check for unavailable weekdays
+                          );
                         }}
                         value={bookingEndDate || field.value ? dayjs(bookingEndDate || field.value) : dayjs()} // Default to null
                       />
