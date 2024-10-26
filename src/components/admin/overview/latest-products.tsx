@@ -1,22 +1,20 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Chip, Typography } from '@mui/material';
+import { CustomLoader } from '@/utils/loader';
+import { CardActions, Chip, Typography } from '@mui/material';
 import Box from '@mui/material/Box';
-// import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
-// import CardActions from '@mui/material/CardActions';
 import CardHeader from '@mui/material/CardHeader';
 import Divider from '@mui/material/Divider';
-// import IconButton from '@mui/material/IconButton';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
 import ListItemText from '@mui/material/ListItemText';
-// import { ArrowRight as ArrowRightIcon } from '@phosphor-icons/react/dist/ssr/ArrowRight';
-// import { DotsThreeVertical as DotsThreeVerticalIcon } from '@phosphor-icons/react/dist/ssr/DotsThreeVertical';
 import dayjs from 'dayjs';
 
-export interface Product {
+import axiosInstance from '@/lib/axios';
+
+export interface User {
   id: number;
   image: string;
   name: string;
@@ -29,12 +27,50 @@ const userTypeStatus: Record<number, { label: string; color: 'warning' | 'succes
   3: { label: 'Member', color: 'success' },
 };
 
-export interface LatestProductsProps {
-  products?: Product[];
-}
-
-export function LatestProducts({ products = [] }: LatestProductsProps): React.JSX.Element {
+export function IncompleteProfiles(): React.JSX.Element {
   const router = useRouter();
+  const [users, setUsers] = useState<User[] | null>(null);
+  const [loading, setLoading] = React.useState(false);
+
+  interface IncompleteMemberResponse {
+    id: number;
+    fullName: string;
+    email: string;
+    profileImageUrl: string | '';
+    createdAt: string;
+    userType: number;
+  }
+
+  React.useEffect(() => {
+    const fetchIncompleteProfiles = async (): Promise<void> => {
+      setLoading(true);
+      try {
+        const response = await axiosInstance.get<{ data: IncompleteMemberResponse[] }>(
+          '/deshboard/incomplete-profiles'
+        );
+
+        const totalIncompleteMembersData = response.data.data;
+
+        // Map the response to match the structure required by LatestProducts
+        const mappedMembers = totalIncompleteMembersData.map((member) => ({
+          id: member.id,
+          name: member?.fullName,
+          image: member?.profileImageUrl || '/assets/User@3x-1.png', // Provide default image if none exists
+          createdAt: dayjs(member?.createdAt).format('MMM D, YYYY'), // Convert string to Date object
+          userType: member?.userType,
+        }));
+
+        // Set the mapped data into products state
+        setUsers(mappedMembers);
+      } catch (error) {
+        error instanceof Error ? error.message : 'An unexpected error occurred';
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    void fetchIncompleteProfiles();
+  }, []);
 
   const handleRedirect = (id: number, userType: number) => {
     // Redirect to the member detail page with the specific member's id
@@ -46,71 +82,90 @@ export function LatestProducts({ products = [] }: LatestProductsProps): React.JS
   };
 
   return (
-    <Card sx={{ height: '520px', overflowY: 'scroll' }}>
-      <CardHeader style={{ fontFamily: '"Audiowide", sans-serif !important' }} title="Incomplete Profiles" />
-      <Divider />
-      <List>
-        {products.length === 0 ? (
-          <ListItem>
-            <ListItemText
-              primary={
-                <Typography variant="body2" style={{ fontFamily: '"Audiowide", sans-serif' }} color="text.secondary">
-                  No Incomplete Profiles available
-                </Typography>
-              }
-              sx={{ textAlign: 'center', width: '100%' }}
-            />
-          </ListItem>
-        ) : (
-          products.map((product, index) => (
-            <ListItem
-              divider={index < products.length - 1}
-              key={product.id}
-              onClick={() => {
-                handleRedirect(product.id, product.userType);
-              }}
-              sx={{ cursor: 'pointer' }}
-            >
-              <ListItemAvatar>
-                {product.image ? (
-                  <Box component="img" src={product.image} sx={{ borderRadius: 1, height: '48px', width: '48px' }} />
-                ) : (
-                  <Box
-                    sx={{
-                      borderRadius: 1,
-                      backgroundColor: 'var(--mui-palette-neutral-200)',
-                      height: '48px',
-                      width: '48px',
-                    }}
-                  />
-                )}
-              </ListItemAvatar>
+    <Card>
+      <Card sx={{ height: '520px', overflowY: 'scroll' }}>
+        <CardHeader style={{ fontFamily: '"Audiowide", sans-serif !important' }} title="Incomplete Profiles" />
+        <Divider />
+        <List>
+          {users?.length === 0 ? (
+            <ListItem>
               <ListItemText
-                primary={product.name}
-                primaryTypographyProps={{ variant: 'subtitle1' }}
-                secondary={`Created ${dayjs(product.createdAt).format('MMM D, YYYY')}`}
-                secondaryTypographyProps={{ variant: 'body2' }}
-              />
-              <Chip
-                label={userTypeStatus[product.userType]?.label}
-                color={userTypeStatus[product.userType]?.color}
-                sx={{ ml: 2 }}
+                primary={
+                  <Typography variant="body2" style={{ fontFamily: '"Audiowide", sans-serif' }} color="text.secondary">
+                    No Incomplete Profiles available
+                  </Typography>
+                }
+                sx={{ textAlign: 'center', width: '100%' }}
               />
             </ListItem>
-          ))
-        )}
-      </List>
-      {/* <Divider />
+          ) : (
+            users?.map((product, index) => (
+              <ListItem
+                divider={index < users?.length - 1}
+                key={product.id}
+                onClick={() => {
+                  handleRedirect(product.id, product.userType);
+                }}
+                sx={{ cursor: 'pointer' }}
+              >
+                <ListItemAvatar>
+                  {product.image ? (
+                    <Box component="img" src={product.image} sx={{ borderRadius: 1, height: '48px', width: '48px' }} />
+                  ) : (
+                    <Box
+                      sx={{
+                        borderRadius: 1,
+                        backgroundColor: 'var(--mui-palette-neutral-200)',
+                        height: '48px',
+                        width: '48px',
+                      }}
+                    />
+                  )}
+                </ListItemAvatar>
+                <ListItemText
+                  primary={product.name}
+                  primaryTypographyProps={{ variant: 'subtitle1' }}
+                  secondary={`Created ${dayjs(product.createdAt).format('MMM D, YYYY')}`}
+                  secondaryTypographyProps={{ variant: 'body2' }}
+                />
+                <Chip
+                  label={userTypeStatus[product.userType]?.label}
+                  color={userTypeStatus[product.userType]?.color}
+                  sx={{ ml: 2 }}
+                />
+              </ListItem>
+            ))
+          )}
+        </List>
+        {loading && <CustomLoader />}
+      </Card>
+      <Divider />
+
       <CardActions sx={{ justifyContent: 'flex-end' }}>
-        <Button
+        {/* <Button
           color="inherit"
+          style={{ fontFamily: '"Audiowide", sans-serif' }}
           endIcon={<ArrowRightIcon fontSize="var(--icon-fontSize-md)" />}
           size="small"
-          variant="text"
+          onClick={() => {
+            router.push('/admin/customers');
+          }}
         >
-          View all
+          Overview
         </Button>
-      </CardActions> */}
+
+        <Button
+          color="inherit"
+          style={{ fontFamily: '"Audiowide", sans-serif' }}
+          endIcon={<ArrowRightIcon fontSize="var(--icon-fontSize-md)" />}
+          size="small"
+          onClick={() => {
+            router.push('/admin/customers');
+          }}
+        >
+          Overview
+        </Button> */}
+      </CardActions>
     </Card>
   );
 }

@@ -5,9 +5,7 @@ import { useRouter } from 'next/navigation';
 import { Stack, Typography } from '@mui/material';
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
-import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
-import Divider from '@mui/material/Divider';
 import { alpha, useTheme } from '@mui/material/styles';
 import type { SxProps } from '@mui/material/styles';
 import { ArrowRight as ArrowRightIcon } from '@phosphor-icons/react/dist/ssr/ArrowRight';
@@ -39,21 +37,23 @@ export function Sales({ categories, chartSeries, sx }: SalesProps): React.JSX.El
         <Typography style={{ fontFamily: '"Audiowide", sans-serif' }} color="text.secondary" variant="h5">
           Member Registered
         </Typography>
-
-        {/* <Button
+        <Button
           color="inherit"
-          size="small"
           style={{ fontFamily: '"Audiowide", sans-serif' }}
-          startIcon={<ArrowClockwiseIcon fontSize="var(--icon-fontSize-md)" />}
+          endIcon={<ArrowRightIcon fontSize="var(--icon-fontSize-md)" />}
+          size="small"
+          onClick={() => {
+            router.push('/admin/customers');
+          }}
         >
-          Sync
-        </Button> */}
+          Overview
+        </Button>
       </Stack>
 
       <CardContent>
         <Chart height={350} options={chartOptions} series={chartSeries} type="bar" width="100%" />
       </CardContent>
-      <Divider />
+      {/* <Divider />
       <CardActions sx={{ justifyContent: 'flex-end' }}>
         <Button
           color="inherit"
@@ -66,7 +66,7 @@ export function Sales({ categories, chartSeries, sx }: SalesProps): React.JSX.El
         >
           Overview
         </Button>
-      </CardActions>
+      </CardActions> */}
     </Card>
   );
 }

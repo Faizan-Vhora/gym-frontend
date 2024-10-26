@@ -38,7 +38,7 @@ export function LatestOrders({ orders = [] }: LatestOrdersProps): React.JSX.Elem
   const handleRedirect = (id: number) => {
     // Redirect to the member detail page with the specific member's id
 
-    router.push(`dashboard/bookings/view?id=${id}`);
+    router.push(`/admin/bookings/view?id=${id}`);
   };
 
   return (
