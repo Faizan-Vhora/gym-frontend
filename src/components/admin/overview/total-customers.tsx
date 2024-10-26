@@ -1,24 +1,52 @@
 import * as React from 'react';
+import { CustomLoader } from '@/utils/loader';
+import { Grid } from '@mui/material';
 import Avatar from '@mui/material/Avatar';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Stack from '@mui/material/Stack';
 import type { SxProps } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
-import { ArrowDown as ArrowDownIcon } from '@phosphor-icons/react/dist/ssr/ArrowDown';
-import { ArrowUp as ArrowUpIcon } from '@phosphor-icons/react/dist/ssr/ArrowUp';
 import { Users as UsersIcon } from '@phosphor-icons/react/dist/ssr/Users';
 
+import axiosInstance from '@/lib/axios';
+
 export interface TotalCustomersProps {
-  diff?: number;
-  trend: 'up' | 'down';
   sx?: SxProps;
-  value: number | string | null;
 }
 
-export function TotalCustomers({ diff, trend, sx, value }: TotalCustomersProps): React.JSX.Element {
-  const TrendIcon = trend === 'up' ? ArrowUpIcon : ArrowDownIcon;
-  const trendColor = trend === 'up' ? 'var(--mui-palette-success-main)' : 'var(--mui-palette-error-main)';
+export function TotalCustomers({ sx }: TotalCustomersProps): React.JSX.Element {
+  const [totalMembers, setTotalMembers] = React.useState<number | null>(null);
+  const [activeMembers, setActiveMembers] = React.useState<number | null>(null);
+  const [inActiveMembers, setInActiveMembers] = React.useState<number | null>(null);
+  const [loading, setLoading] = React.useState(false);
+
+  interface TotalCustomerResponse {
+    totalMembers: number;
+    activeMembers: number;
+    inActiveMembers: number;
+  }
+
+  React.useEffect(() => {
+    const fetchTotalMembers = async (): Promise<void> => {
+      setLoading(true);
+      try {
+        const response = await axiosInstance.get<{ data: TotalCustomerResponse }>('/deshboard/total-members-count');
+
+        const totalCustomerData = response.data.data;
+
+        setTotalMembers(totalCustomerData.totalMembers);
+        setActiveMembers(totalCustomerData.activeMembers);
+        setInActiveMembers(totalCustomerData.inActiveMembers);
+      } catch (error) {
+        error instanceof Error ? error.message : 'An unexpected error occurred';
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    void fetchTotalMembers();
+  }, []);
 
   return (
     <Card sx={sx}>
@@ -30,28 +58,38 @@ export function TotalCustomers({ diff, trend, sx, value }: TotalCustomersProps):
                 Total Members
               </Typography>
               <Typography style={{ fontFamily: '"Audiowide", sans-serif' }} variant="h4">
-                {value}
+                {totalMembers ? totalMembers : 0}
               </Typography>
             </Stack>
             <Avatar sx={{ backgroundColor: 'var(--mui-palette-success-main)', height: '56px', width: '56px' }}>
               <UsersIcon fontSize="var(--icon-fontSize-lg)" />
             </Avatar>
           </Stack>
-          {diff ? (
-            <Stack sx={{ alignItems: 'center' }} direction="row" spacing={2}>
-              <Stack sx={{ alignItems: 'center' }} direction="row" spacing={0.5}>
-                <TrendIcon color={trendColor} fontSize="var(--icon-fontSize-md)" />
-                <Typography style={{ fontFamily: '"Audiowide", sans-serif' }} color={trendColor} variant="body2">
-                  {diff}%
+          <Grid container>
+            <Grid item md={12} xs={12}>
+              <Stack flexDirection={'row'} alignItems={'center'} justifyContent={'space-between'}>
+                <Typography variant="overline" style={{ fontFamily: '"Audiowide", sans-serif' }}>
+                  Active{' '}
+                </Typography>
+                <Typography variant="h6" style={{ fontFamily: '"Audiowide", sans-serif' }}>
+                  {activeMembers ? activeMembers : 0}
                 </Typography>
               </Stack>
-              <Typography style={{ fontFamily: '"Audiowide", sans-serif' }} color="text.secondary" variant="caption">
-                Since last month
-              </Typography>
-            </Stack>
-          ) : null}
+            </Grid>
+            <Grid item md={12} xs={12}>
+              <Stack flexDirection={'row'} alignItems={'center'} justifyContent={'space-between'}>
+                <Typography variant="overline" style={{ fontFamily: '"Audiowide", sans-serif' }}>
+                  In Active{' '}
+                </Typography>
+                <Typography variant="h6" style={{ fontFamily: '"Audiowide", sans-serif' }}>
+                  {inActiveMembers ? inActiveMembers : 0}
+                </Typography>
+              </Stack>
+            </Grid>
+          </Grid>
         </Stack>
       </CardContent>
+      {loading && <CustomLoader />}
     </Card>
   );
 }

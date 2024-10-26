@@ -4,32 +4,33 @@ import * as React from 'react';
 import { CustomLoader } from '@/utils/loader';
 // import type { Metadata } from 'next';
 import Grid from '@mui/material/Unstable_Grid2';
-import dayjs from 'dayjs';
 
 // import { config } from '@/config';
 import axiosInstance from '@/lib/axios';
 import { Budget } from '@/components/admin/overview/budget';
+import { CheckInBarChart } from '@/components/admin/overview/check-in-frequency';
+import { CheckInUsers } from '@/components/admin/overview/check-in-users';
 import { LatestOrders } from '@/components/admin/overview/latest-orders';
-import { LatestProducts } from '@/components/admin/overview/latest-products';
+import { IncompleteProfiles } from '@/components/admin/overview/latest-products';
+import { ActivevsExpiredMemberships } from '@/components/admin/overview/membership-bar-chart';
+// import { Stats } from '@/components/admin/overview/membership-growth';
+import { Memberships } from '@/components/admin/overview/memberships';
+import { MembershipExpiring } from '@/components/admin/overview/memberships-expiring';
 import { Sales } from '@/components/admin/overview/sales';
 import { TasksProgress } from '@/components/admin/overview/tasks-progress';
 import { TotalCustomers } from '@/components/admin/overview/total-customers';
-import { TotalProfit } from '@/components/admin/overview/total-profit';
 import { Traffic } from '@/components/admin/overview/traffic';
+import { TrainerSessionsConducted } from '@/components/admin/overview/trainer-sessions-conducted';
+import { TrainerUtitlization } from '@/components/admin/overview/trainer-utitlization';
+import { UserEngagement } from '@/components/admin/overview/user-engagement';
 
 // export const metadata = { title: `Dashboard | ${config.site.name}` } satisfies Metadata;
 
 export default function Page(): React.JSX.Element {
-  const [totalCustomers, setTotalCustomers] = React.useState<number | null>(null);
-  const [diff, setDiff] = React.useState<number>(0);
-  const [trend, setTrend] = React.useState<'up' | 'down'>('up');
   const [chartSeries, setChartSeries] = React.useState<ChartSeries[]>([]);
   const [categories, setCategories] = React.useState<string[]>([]);
   const [mebershipPlanChartSeries, setMebershipPlanChartSeries] = React.useState<number[]>([]);
   const [labels, setLabels] = React.useState<string[]>([]);
-  const [members, setMembers] = React.useState<
-    { id: number; name: string; image: string; createdAt: string; userType: number }[]
-  >([]);
   const [latestBookings, setLatestBookings] = React.useState<
     {
       id: number;
@@ -46,16 +47,6 @@ export default function Page(): React.JSX.Element {
   const [sessionAttendedPercentage, setSessionAttendedPercentage] = React.useState<number | null>(null);
   const [loading, setLoading] = React.useState(false);
 
-  interface Progress {
-    trendType: 'up' | 'down';
-    diffValue: number;
-  }
-
-  interface TotalCustomerResponse {
-    totalMembers: number;
-    progress: Progress;
-  }
-
   interface ChartSeries {
     name: string;
     data: [number];
@@ -70,29 +61,6 @@ export default function Page(): React.JSX.Element {
     chartSeries: [number];
     labels: [string];
   }
-
-  React.useEffect(() => {
-    const fetchTotalMembers = async (): Promise<void> => {
-      setLoading(true);
-      try {
-        const response = await axiosInstance.get<{ data: TotalCustomerResponse }>('/deshboard/total-members-count');
-
-        const totalCustomerData = response.data.data;
-
-        const { totalMembers, progress } = totalCustomerData;
-
-        setTotalCustomers(totalMembers);
-        setDiff(progress.diffValue);
-        setTrend(progress.trendType);
-      } catch (error) {
-        error instanceof Error ? error.message : 'An unexpected error occurred';
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    void fetchTotalMembers();
-  }, []);
 
   React.useEffect(() => {
     const fetchMemberRegistered = async (): Promise<void> => {
@@ -132,46 +100,6 @@ export default function Page(): React.JSX.Element {
     };
 
     void fetchMembershipPlans();
-  }, []);
-
-  interface IncompleteMemberResponse {
-    id: number;
-    fullName: string;
-    email: string;
-    profileImageUrl: string | '';
-    createdAt: string;
-    userType: number;
-  }
-
-  React.useEffect(() => {
-    const fetchIncompleteProfiles = async (): Promise<void> => {
-      setLoading(true);
-      try {
-        const response = await axiosInstance.get<{ data: IncompleteMemberResponse[] }>(
-          '/deshboard/incomplete-profiles'
-        );
-
-        const totalIncompleteMembersData = response.data.data;
-
-        // Map the response to match the structure required by LatestProducts
-        const mappedMembers = totalIncompleteMembersData.map((member) => ({
-          id: member.id,
-          name: member?.fullName,
-          image: member?.profileImageUrl || '/assets/User@3x-1.png', // Provide default image if none exists
-          createdAt: dayjs(member?.createdAt).format('MMM D, YYYY'), // Convert string to Date object
-          userType: member?.userType,
-        }));
-
-        // Set the mapped data into products state
-        setMembers(mappedMembers);
-      } catch (error) {
-        error instanceof Error ? error.message : 'An unexpected error occurred';
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    void fetchIncompleteProfiles();
   }, []);
 
   interface Customer {
@@ -263,78 +191,67 @@ export default function Page(): React.JSX.Element {
 
   return (
     <Grid container spacing={3}>
-      <Grid lg={3} sm={6} xs={12}>
-        <Budget diff={12} trend="up" sx={{ height: '100%' }} value="$24k" />
+      <Grid lg={4} sm={6} xs={12}>
+        <TotalCustomers sx={{ height: '100%' }} />
       </Grid>
-      <Grid lg={3} sm={6} xs={12}>
+      <Grid lg={4} sm={6} xs={12}>
+        <Budget sx={{ height: '100%' }} />
+      </Grid>
+      {/* <Grid lg={3} sm={6} xs={12}>
         <TotalProfit sx={{ height: '100%' }} value="$15k" />
-      </Grid>
-      <Grid lg={3} sm={6} xs={12}>
-        <TotalCustomers diff={diff} trend={trend} sx={{ height: '100%' }} value={totalCustomers} />
-      </Grid>
-      <Grid lg={3} sm={6} xs={12}>
+      </Grid> */}
+
+      <Grid lg={4} sm={6} xs={12}>
         <TasksProgress sx={{ height: '100%' }} value={Number(sessionAttendedPercentage)} />
       </Grid>
-
       <Grid lg={8} xs={12}>
         <Sales categories={categories} chartSeries={chartSeries} sx={{ height: '100%' }} />
+      </Grid>
+
+      <Grid lg={4} md={6} xs={12}>
+        <IncompleteProfiles />
+      </Grid>
+
+      {/* <Grid lg={4} xs={12}>
+        <CostBreakdown />
+      </Grid> */}
+
+      <Grid lg={12} md={12} xs={12}>
+        <LatestOrders orders={latestBookings} />
+      </Grid>
+      <Grid lg={4} sm={6} xs={12}>
+        <Memberships sx={{ height: '100%' }} />
+      </Grid>
+      <Grid lg={4} sm={6} xs={12}>
+        <UserEngagement sx={{ height: '100%' }} />
+      </Grid>
+      <Grid lg={4} sm={6} xs={12}>
+        <TrainerUtitlization sx={{ height: '100%' }} />
       </Grid>
       <Grid lg={4} md={6} xs={12}>
         <Traffic chartSeries={mebershipPlanChartSeries} labels={labels} sx={{ height: '100%' }} />
       </Grid>
-      <Grid lg={4} md={6} xs={12}>
-        <LatestProducts products={members} />
-      </Grid>
       <Grid lg={8} md={12} xs={12}>
-        <LatestOrders
-          orders={latestBookings}
-          // orders={[
-          //   {
-          //     id: 'ORD-007',
-          //     customer: { name: 'Ekaterina Tankova' },
-          //     amount: 30.5,
-          //     status: 'pending',
-          //     createdAt: dayjs().subtract(10, 'minutes').toDate(),
-          //   },
-          //   {
-          //     id: 'ORD-006',
-          //     customer: { name: 'Cao Yu' },
-          //     amount: 25.1,
-          //     status: 'delivered',
-          //     createdAt: dayjs().subtract(10, 'minutes').toDate(),
-          //   },
-          //   {
-          //     id: 'ORD-004',
-          //     customer: { name: 'Alexa Richardson' },
-          //     amount: 10.99,
-          //     status: 'refunded',
-          //     createdAt: dayjs().subtract(10, 'minutes').toDate(),
-          //   },
-          //   {
-          //     id: 'ORD-003',
-          //     customer: { name: 'Anje Keizer' },
-          //     amount: 96.43,
-          //     status: 'pending',
-          //     createdAt: dayjs().subtract(10, 'minutes').toDate(),
-          //   },
-          //   {
-          //     id: 'ORD-002',
-          //     customer: { name: 'Clarke Gillebert' },
-          //     amount: 32.54,
-          //     status: 'delivered',
-          //     createdAt: dayjs().subtract(10, 'minutes').toDate(),
-          //   },
-          //   {
-          //     id: 'ORD-001',
-          //     customer: { name: 'Adam Denisov' },
-          //     amount: 16.76,
-          //     status: 'delivered',
-          //     createdAt: dayjs().subtract(10, 'minutes').toDate(),
-          //   },
-          // ]}
-        />
+        <CheckInUsers />
       </Grid>
 
+      <Grid lg={6} md={6} xs={12}>
+        <MembershipExpiring />
+      </Grid>
+
+      {/* <Grid xs={12}>
+        <Stats />
+      </Grid> */}
+
+      <Grid md={6} xs={12}>
+        <ActivevsExpiredMemberships />
+      </Grid>
+      <Grid md={12} xs={12}>
+        <TrainerSessionsConducted />
+      </Grid>
+      <Grid md={12} xs={12}>
+        <CheckInBarChart />
+      </Grid>
       {loading && <CustomLoader />}
     </Grid>
   );
