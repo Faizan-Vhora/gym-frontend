@@ -44,6 +44,9 @@ export const formatTime = (inputDate: Date | string | null) => {
 };
 
 export function formatTo12HourFormat(time:string) {
+  if(!time){
+    return "-";
+  }
   const [hours, minutes, seconds] = time.split(':').map(Number);
   const ampm = hours >= 12 ? 'PM' : 'AM';
   const hours12 = hours % 12 || 12; // Convert hour 0 to 12
