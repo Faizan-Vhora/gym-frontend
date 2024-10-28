@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { NEXT_PUBLIC_PUSHER_KEY, NEXT_PUSHER_APP_CLUSTER, NEXT_PUSHER_CHANNEL, NEXT_PUSHER_EVENT } from '@/app-config';
 import { Badge, Tooltip } from '@mui/material';
 import Avatar from '@mui/material/Avatar';
 import Box from '@mui/material/Box';
@@ -8,6 +9,7 @@ import IconButton from '@mui/material/IconButton';
 import Stack from '@mui/material/Stack';
 import { Bell } from '@phosphor-icons/react';
 import { List as ListIcon } from '@phosphor-icons/react/dist/ssr/List';
+import Pusher from 'pusher-js';
 import Swal from 'sweetalert2';
 
 import axiosInstance from '@/lib/axios';
@@ -33,6 +35,10 @@ export function MainNav(): React.JSX.Element {
 
   const notificationPopover = usePopover<HTMLDivElement>();
 
+  const pusher = new Pusher(NEXT_PUBLIC_PUSHER_KEY, {
+    cluster: NEXT_PUSHER_APP_CLUSTER,
+  });
+
   const getNotificationListData = React.useCallback(async (): Promise<void> => {
     try {
       const response = await axiosInstance.get<{ data: NotificationEntry[] }>('/notification/my/unread');
@@ -42,6 +48,18 @@ export function MainNav(): React.JSX.Element {
       await Swal.fire('Error!', 'Something went wrong.', 'error');
     }
   }, []);
+
+  React.useEffect(() => {
+    const channel = pusher.subscribe(NEXT_PUSHER_CHANNEL);
+
+    channel.bind(NEXT_PUSHER_EVENT, () => {
+      void getNotificationListData();
+    });
+
+    return () => {
+      pusher.unsubscribe(NEXT_PUSHER_CHANNEL);
+    };
+  }, [unreadCount]);
 
   React.useEffect(() => {
     // Retrieve user data from localStorage

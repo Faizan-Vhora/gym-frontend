@@ -1,19 +1,22 @@
-"use client"
+'use client';
+
 import * as React from 'react';
+import { Metadata } from 'next';
+import { usePathname, useSearchParams } from 'next/navigation';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import GlobalStyles from '@mui/material/GlobalStyles';
 import { ToastContainer } from 'react-toastify';
-import { usePathname, useSearchParams } from 'next/navigation'
+
+import { config } from '@/config';
 import { MainNav } from '@/components/admin/layout/main-nav';
 import { SideNav } from '@/components/admin/layout/side-nav';
-import { config } from '@/config';
-import { Metadata } from 'next';
+
+import PushNotificationComponent from './pushNotification';
 
 interface LayoutProps {
   children: React.ReactNode;
 }
-
 
 const pathToPageTitle = (currentPath: string): string => {
   const segments = currentPath.split('/admin')[1]?.split('/').filter(Boolean) || [];
@@ -21,15 +24,12 @@ const pathToPageTitle = (currentPath: string): string => {
   const capitalizeWords = (str: string): string => {
     return str
       .split(' ')
-      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
       .join(' ');
   };
 
-  return segments
-    .map(segment => capitalizeWords(segment.replace(/-/g, ' ')))
-    .join(' | ');
+  return segments.map((segment) => capitalizeWords(segment.replace(/-/g, ' '))).join(' | ');
 };
-
 
 export default function Layout({ children }: LayoutProps): React.JSX.Element {
   const searchParams = useSearchParams();
@@ -68,6 +68,7 @@ export default function Layout({ children }: LayoutProps): React.JSX.Element {
           minHeight: '100%',
         }}
       >
+        <PushNotificationComponent />
         <SideNav />
         <Box
           className="dashboard"

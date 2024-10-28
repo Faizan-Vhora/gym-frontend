@@ -28,6 +28,12 @@ const config = {
         },
       ];
     },
+
+    serviceWorker: {
+      name: 'firebase-messaging-sw.js',
+      entry: 'public/firebase-messaging-sw.js',
+      livereload: true
+    }
 };
 
 export default config;
