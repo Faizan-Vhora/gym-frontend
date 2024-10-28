@@ -70,7 +70,7 @@ export function MembershipPlanReportTable({ rows }: MembershipPlanTableProps): R
 
               <TableCell sx={tableCss.tableHeaderCell}>Cancelled</TableCell>
               <TableCell sx={tableCss.tableHeaderCell}>Completed</TableCell>
-              <TableCell sx={tableCss.tableHeaderCell}>Revemue</TableCell>
+              {/* <TableCell sx={tableCss.tableHeaderCell}>Revenue</TableCell> */}
               <TableCell sx={tableCss.tableHeaderCell}>Status</TableCell>
             </TableRow>
           </TableHead>
@@ -106,7 +106,7 @@ export function MembershipPlanReportTable({ rows }: MembershipPlanTableProps): R
 
                   <TableCell sx={[tableCss.tableCell]}>{row.cancelledCount}</TableCell>
                   <TableCell sx={tableCss.tableCell}>{row.completedCount}</TableCell>
-                  <TableCell sx={tableCss.tableCell}>{formatAmount(row.revenue)}</TableCell>
+                  {/* <TableCell sx={tableCss.tableCell}>{formatAmount(row.revenue)}</TableCell> */}
                   <TableCell sx={tableCss.tableCell}>
                     <FormControlLabel
                       control={

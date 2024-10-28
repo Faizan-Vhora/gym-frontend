@@ -272,9 +272,12 @@ export function BookingFormDialog({
 
   const fetchTrainerAvailableWeekdaysData = async (trainerId: number): Promise<void> => {
     try {
-      const response = await axiosInstance.get<TrainerAvailableWeekDaysResponse>('/session-booking/trainer/available-weekdays', {
-        params: { trainerId },
-      });
+      const response = await axiosInstance.get<TrainerAvailableWeekDaysResponse>(
+        '/session-booking/trainer/available-weekdays',
+        {
+          params: { trainerId },
+        }
+      );
       const trainerAvailableWeekDays = response.data.data;
       setTarinerAvailableWeekDays(trainerAvailableWeekDays || []);
     } catch (error) {
@@ -968,9 +971,6 @@ export function BookingFormDialog({
                         shouldDisableDate={(date) => {
                           const dayOfWeek = dayjs(date).day(); // Get the day of the week (0 = Sunday, 1 = Monday, etc.)
                           const isUnavailableWeekday = !tarinerAvailableWeekDays.includes(dayOfWeek); // Check if the day is not in tarinerAvailableWeekDays
-                          console.log("tarinerAvailableWeekDays: ", tarinerAvailableWeekDays)
-                          console.log("dayOfWeek: ", dayOfWeek)
-                          console.log("isUnavailableWeekday: ", isUnavailableWeekday)
                           return (
                             trainerBlockDatesList.includes(dayjs(date).format('YYYY-MM-DD')) || // Existing check for blocked dates
                             isUnavailableWeekday // New check for unavailable weekdays
