@@ -138,13 +138,13 @@ const SubscriptionReport: React.FC = () => {
             Subscription Report
           </Typography>
           <Grid container spacing={2}>
-            <Grid item md={4} xs={12}>
+            <Grid item md={4} sm={6} xs={12}>
               <SearchFilter onSearchChange={handleSearchChange} />
             </Grid>
-            <Grid item md={4} xs={12}>
+            <Grid item md={4} sm={6} xs={12}>
               <DateRangeFilter dateRange={dateRange} onDateChange={handleDateChange} />
             </Grid>
-            <Grid item md={4} xs={12}>
+            <Grid item md={4} sm={6} xs={12}>
               <SubscriptionFilters onMembershipTypeChange={handleMembershipTypeChange} />
             </Grid>
           </Grid>

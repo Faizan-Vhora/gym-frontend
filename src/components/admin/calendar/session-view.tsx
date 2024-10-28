@@ -147,7 +147,7 @@ const SessionPreview: React.FC<SessionNotesFormProps> = ({
                           ) : (
                             ''
                           )}
-                          <Typography>
+                          <Typography sx={{fontSize:'0.75rem'}}>
                           {sessionObj.customer?.email}
                           </Typography>
                         </Typography>

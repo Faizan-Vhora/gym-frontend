@@ -5,6 +5,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { PickersShortcutsItem } from '@mui/x-date-pickers/PickersShortcuts';
 import dayjs, { Dayjs } from 'dayjs';
+import { height, width } from '@mui/system';
 
 interface DateRangeFilterProps {
   dateRange?: DateRange<Dayjs>;
@@ -79,8 +80,8 @@ const DateRangeFilter: React.FC<DateRangeFilterProps> = ({ dateRange, onDateChan
   ];
 
   return (
-    <LocalizationProvider dateAdapter={AdapterDayjs} >
-      <DateRangePicker
+    <LocalizationProvider  dateAdapter={AdapterDayjs} >
+      <DateRangePicker sx={{width:'100%'}}
         localeText={{ start: 'Start Date', end: 'End Date' }}
         value={dateRange}
         onChange={handleDateChange}
