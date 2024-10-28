@@ -173,17 +173,20 @@ export function MembershipPlanTable({
           </TableBody>
         </Table>
       </Box>
-      <Divider />
-      <TablePagination
-        component="div"
-        count={count}
-        page={page}
-        rowsPerPage={rowsPerPage}
-        onPageChange={onPageChange}
-        onRowsPerPageChange={onRowsPerPageChange}
-        rowsPerPageOptions={[5, 10, 25]}
-      />
-
+      {rows.length > 0 && (
+        <>
+          <Divider />
+          <TablePagination
+            component="div"
+            count={count}
+            page={page}
+            rowsPerPage={rowsPerPage}
+            onPageChange={onPageChange}
+            onRowsPerPageChange={onRowsPerPageChange}
+            rowsPerPageOptions={[5, 10, 25]}
+          />
+        </>
+      )}
       {/* Modal for QR Code Preview */}
       {/* <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
             <DialogContent>

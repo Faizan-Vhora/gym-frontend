@@ -121,7 +121,7 @@ const MembershipReport: React.FC = () => {
           </Grid>
         </Stack>
 
-        <Stack sx={{ padding: '30px' }}></Stack>
+        {/* <Stack sx={{ padding: '30px' }}></Stack> */}
 
         {loading ? <CustomLoader /> : <DiscountReportTable rows={data} />}
         {data.length > 0 && (
