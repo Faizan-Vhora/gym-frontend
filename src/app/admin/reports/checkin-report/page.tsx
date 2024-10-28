@@ -122,7 +122,7 @@ const CheckInReport: React.FC = () => {
           </Grid>
         </Stack>
 
-        <Stack sx={{ padding: '30px' }}></Stack>
+        {/* <Stack sx={{ padding: '30px' }}></Stack> */}
 
         {loading ? <CustomLoader /> : <CheckInReportTable rows={data} />}
         {data.length > 0 && (
