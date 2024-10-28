@@ -9,12 +9,12 @@ export const navItems = [
       { key: 'calendar', title: 'Calendar', href: paths.dashboard.calendar, icon: 'notepad', items:[] },
       { key: 'bookings', title: 'Bookings', href: paths.bookings.bookingsList, icon: 'money-wavy', items:[] },
       { key: 'members', title: 'Members', href: paths.customers.customers, icon: 'users', items:[] },
-      { key: 'trainers', title: 'Trainers', href: paths.trainers.trainers, icon: 'users', items:[] },
+      { key: 'trainers', title: 'Trainers', href: paths.trainers.trainers, icon: 'barbell', items:[] },
       // { key: 'services', title: 'Service Management', href: paths.services.services, icon: 'users', items:[] },
       // { key: 'faq', title: 'FAQ', href: paths.faq.faq, icon: 'chat-centered-dots', items:[] },
       // { key: 'experties', title: 'Experties', href: paths.experties.experties, icon: 'user-check', items:[] },
       // { key: 'discount', title: 'Discount', href: paths.discount.discount, icon: 'tag', items:[] },
-      { key: 'membership-plan', title: 'Membership Plan', href: paths.membershipPlan.membershipPlan, icon: 'users', items:[] },
+      { key: 'membership-plan', title: 'Membership Plan', href: paths.membershipPlan.membershipPlan, icon: 'diamond', items:[] },
       { key: 'check-in', title: 'CheckIn', href: paths.checkIn.checkIn, icon: 'clock-user', items:[] },
      
 
@@ -37,12 +37,12 @@ export const navItems = [
       {
         key: 'reports',
         title: 'Reports',
-        icon: 'gear',
+        icon: 'chart-line',
         items: [
-          { key: 'reports:trainer-report', title: 'Trainer Report', href: paths.trainerReport.list, icon: 'user-check' },
-          { key: 'reports:membership-report', title: 'Membership Report', href: paths.membershipReport.list, icon: 'user-check' },
-          { key: 'reports:subscription-report', title: 'Subscription Report', href: paths.subscriptionReport.list, icon: 'user-check' },
-          { key: 'reports:checkin-report', title: 'Check In Report', href: paths.CheckInReport.list, icon: 'user-check' },
+          { key: 'reports:trainer-report', title: 'Trainer Report', href: paths.trainerReport.list, icon: 'barbell' },
+          { key: 'reports:membership-report', title: 'Membership Report', href: paths.membershipReport.list, icon: 'diamond' },
+          { key: 'reports:subscription-report', title: 'Subscription Report', href: paths.subscriptionReport.list, icon: 'crown-simple' },
+          { key: 'reports:checkin-report', title: 'Check In Report', href: paths.CheckInReport.list, icon: 'clock-user' },
           { key: 'reports:discount-report', title: 'Discount Report', href: paths.DiscountReport.list, icon: 'tag' },
           // { key: 'customers:discount', title: 'Discount', href: paths.discount.discount, icon: 'tag' },
           // { key: 'settings:faq', title: 'FAQ', href: paths.faq.faq, icon: 'chat-centered-dots' },

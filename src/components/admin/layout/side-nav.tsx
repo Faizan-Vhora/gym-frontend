@@ -6,8 +6,10 @@ import { usePathname } from 'next/navigation';
 import Box from '@mui/material/Box';
 import Divider from '@mui/material/Divider';
 import Stack from '@mui/material/Stack';
-import Typography from '@mui/material/Typography';
 import { useColorScheme } from '@mui/material/styles';
+import Typography from '@mui/material/Typography';
+import { CaretDown as CaretDownIcon } from '@phosphor-icons/react/dist/ssr/CaretDown';
+import { CaretRight as CaretRightIcon } from '@phosphor-icons/react/dist/ssr/CaretRight';
 
 import type { NavItemConfig } from '@/types/nav';
 import { paths } from '@/paths';
@@ -16,9 +18,6 @@ import { Logo } from '@/components/core/logo';
 
 import { navItems } from './config';
 import { navIcons } from './nav-icons';
-
-import { CaretDown as CaretDownIcon } from '@phosphor-icons/react/dist/ssr/CaretDown';
-import { CaretRight as CaretRightIcon } from '@phosphor-icons/react/dist/ssr/CaretRight';
 
 export function SideNav(): React.JSX.Element {
   const pathname = usePathname();
@@ -46,6 +45,7 @@ export function SideNav(): React.JSX.Element {
         maxWidth: '100%',
         position: 'fixed',
         scrollbarWidth: 'none',
+        overflowY: 'scroll',
         top: 0,
         width: 'var(--SideNav-width)',
         zIndex: 'var(--SideNav-zIndex)',
@@ -87,7 +87,6 @@ function renderNavItems({
   items?: NavItemConfig[];
   pathname: string;
 }): React.JSX.Element {
-
   const children = items.reduce((acc: React.ReactNode[], curr: NavItemConfig): React.ReactNode[] => {
     const { items: childItems, key, ...item } = curr;
 
@@ -128,7 +127,6 @@ function NavItem({
   pathname,
   title,
   icon,
-
 }: NavItemProps): React.JSX.Element {
   const active = isNavItemActive({ disabled, external, href, matcher, pathname });
   const Icon = icon ? navIcons[icon] : null;
@@ -162,29 +160,28 @@ function NavItem({
                   }
                 : { role: 'button' }),
             })}
-            sx={{
-              alignItems: 'center',
-              borderRadius: 1,
-              color: 'var(--NavItem-color)',
-              cursor: 'pointer',
-              display: 'flex',
-              flex: '0 0 auto',
-              gap: 1,
-              p: '6px 16px',
-              position: 'relative',
-              textDecoration: 'none',
-              whiteSpace: 'nowrap',
-              ...(disabled && {
-                bgcolor: 'var(--NavItem-disabled-background)',
-                color: 'var(--NavItem-disabled-color)',
-                cursor: 'not-allowed',
-              }),
-              ...(active && { bgcolor: 'var(--NavItem-active-background)', color: 'var(--NavItem-active-color)' }),
-            }}
+        sx={{
+          alignItems: 'center',
+          borderRadius: 1,
+          color: 'var(--NavItem-color)',
+          cursor: 'pointer',
+          display: 'flex',
+          flex: '0 0 auto',
+          gap: 1,
+          p: '6px 16px',
+          position: 'relative',
+          textDecoration: 'none',
+          whiteSpace: 'nowrap',
+          ...(disabled && {
+            bgcolor: 'var(--NavItem-disabled-background)',
+            color: 'var(--NavItem-disabled-color)',
+            cursor: 'not-allowed',
+          }),
+          ...(active && { bgcolor: 'var(--NavItem-active-background)', color: 'var(--NavItem-active-color)' }),
+        }}
         tabIndex={0}
       >
-
-      <Box sx={{ alignItems: 'center', display: 'flex', justifyContent: 'center', flex: '0 0 auto' }}>
+        <Box sx={{ alignItems: 'center', display: 'flex', justifyContent: 'center', flex: '0 0 auto' }}>
           {Icon ? (
             <Icon
               fill={active ? 'var(--NavItem-icon-active-color)' : 'var(--NavItem-icon-color)'}
