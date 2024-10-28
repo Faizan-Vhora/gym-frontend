@@ -79,7 +79,7 @@ const DateRangeFilter: React.FC<DateRangeFilterProps> = ({ dateRange, onDateChan
   ];
 
   return (
-    <LocalizationProvider dateAdapter={AdapterDayjs}>
+    <LocalizationProvider dateAdapter={AdapterDayjs} >
       <DateRangePicker
         localeText={{ start: 'Start Date', end: 'End Date' }}
         value={dateRange}

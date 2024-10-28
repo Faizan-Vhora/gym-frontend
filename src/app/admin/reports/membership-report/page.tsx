@@ -125,7 +125,7 @@ const MembershipReport: React.FC = () => {
               <SearchFilter onSearchChange={handleSearchChange} />
             </Grid>
             <Grid item md={4} xs={12}>
-              <DateRangeFilter dateRange={dateRange} onDateChange={handleDateChange} />
+              <DateRangeFilter  dateRange={dateRange} onDateChange={handleDateChange} />
             </Grid>
             <Grid item md={4} xs={12}>
               <StatusFilters onStatusChange={handleStatusChange} />

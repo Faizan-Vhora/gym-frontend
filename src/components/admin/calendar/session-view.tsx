@@ -102,11 +102,13 @@ const SessionPreview: React.FC<SessionNotesFormProps> = ({
             }}
           >
             <>
-              {sessionObj && (
+            <Grid container justifyContent={'space-between'}>
+            <Grid item sm={5}  xs={12} alignContent={'center'}>
+            {sessionObj && (
                 <Card
                   sx={{
                     // height: '140px',
-
+                    // width:'50%',
                     boxShadow: 5, // Normal box shadow
                     '&:hover': {
                       boxShadow: 15, // Increased box shadow on hover
@@ -116,30 +118,38 @@ const SessionPreview: React.FC<SessionNotesFormProps> = ({
                   }}
                 >
                   <CardContent sx={{ padding: '10px 15px' }}>
-                    <Typography variant="h6" textAlign={'center'} color="text.secondary" gutterBottom>
-                      Member :
-                    </Typography>
-                    <Grid container>
-                      <Grid item md={4} xs={12} alignContent={'center'}>
+                    <Stack sx={{flexDirection:'row', justifyContent:'space-between'}}>
+                    <Stack>
                         <Avatar
                           src={sessionObj.customer?.profileImageUrl || '/assets/User@3x-1.png'}
                           sx={{ height: '56px', width: '56px' }}
-                        ></Avatar>
+                        >
+                        </Avatar>
+                        <Typography variant="subtitle1">{sessionObj.customer?.fullName}</Typography>
+                    </Stack>
+                    <Typography variant="h6" textAlign={'center'} color="text.secondary" gutterBottom>
+                      Member :
+                    </Typography>
+                    </Stack>
+                    <Grid container>
+                      <Grid item  xs={12} alignContent={'center'}>
                       </Grid>
                       <Grid item md={8} xs={12} alignContent={'center'}>
-                        <Typography variant="subtitle1">{sessionObj.customer?.fullName}</Typography>
+                        
                         <Typography
                           variant="caption"
-                          sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}
+                          sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}
                         >
                           {sessionObj.customer?.email ? (
-                            <IconButton sx={{ padding: '0px', marginRight: '5px' }}>
+                            <IconButton sx={{ padding: '0px', marginRight: '5px', }}>
                               <Envelope width={18} height={18} />
                             </IconButton>
                           ) : (
                             ''
                           )}
+                          <Typography>
                           {sessionObj.customer?.email}
+                          </Typography>
                         </Typography>
                         <Typography
                           variant="caption"
@@ -161,11 +171,12 @@ const SessionPreview: React.FC<SessionNotesFormProps> = ({
                   </CardContent>
                 </Card>
               )}
-
+              </Grid>
+              <Grid item sm={5}  xs={12} alignContent={'center'}>
               {sessionObj && (
                 <Card
                   sx={{
-                    // height: '140px',
+                    // height: '240px',
                     boxShadow: 5, // Normal box shadow
                     '&:hover': {
                       boxShadow: 15, // Increased box shadow on hover
@@ -175,21 +186,23 @@ const SessionPreview: React.FC<SessionNotesFormProps> = ({
                   }}
                 >
                   <CardContent sx={{ padding: '10px 15px' }}>
-                    <Typography variant="h6" textAlign={'center'} color="text.secondary" gutterBottom>
-                      Trainer :
-                    </Typography>
-                    <Grid container spacing={4}>
-                      <Grid item md={4} xs={12} alignContent={'center'}>
-                        <Avatar
+                  <Stack sx={{flexDirection:'row', justifyContent:'space-between'}}>
+                    <Stack>
+                    <Avatar
                           src={sessionObj.trainer?.profileImageUrl || '/assets/User@3x-1.png'}
                           sx={{ height: '56px', width: '56px' }}
                         ></Avatar>
-                      </Grid>
-                      <Grid item md={8} xs={12} alignContent={'center'}>
-                        <Typography variant="subtitle1">{sessionObj.trainer?.fullName}</Typography>
+                         <Typography variant="subtitle1">{sessionObj.trainer?.fullName}</Typography>
+                    </Stack>
+                    <Typography variant="h6" textAlign={'center'} color="text.secondary" gutterBottom>
+                      Trainer :
+                    </Typography>
+                    </Stack>
+                    <Grid container spacing={4} alignItems={'center'}>
+                      <Grid item   xs={6} alignContent={'center'}>    
                         <Typography
                           variant="caption"
-                          sx={{ display: 'flex', alignItems: 'center', flexDirection: 'column' }}
+                          sx={{ display: 'flex', alignItems:'flex-start', flexDirection: 'column' }}
                         >
                           {sessionObj.trainer?.fees ? (
                             <IconButton sx={{ padding: '0px', marginRight: '5px' }}>
@@ -200,9 +213,12 @@ const SessionPreview: React.FC<SessionNotesFormProps> = ({
                           )}
                           {sessionObj.trainer?.fees} per Hour
                         </Typography>
+                      </Grid>
+                      <Grid item  xs={6} alignContent={'center'} >
+                       
                         <Typography
                           variant="caption"
-                          sx={{ display: 'flex', alignItems: 'center', flexDirection: 'column' }}
+                          sx={{ display: 'flex', alignItems: 'flex-start', flexDirection: 'column' }}
                         >
                           {sessionObj.trainer?.experience ? (
                             <IconButton sx={{ padding: '0px', marginRight: '5px' }}>
@@ -220,6 +236,11 @@ const SessionPreview: React.FC<SessionNotesFormProps> = ({
                   </CardContent>
                 </Card>
               )}
+              </Grid>
+              </Grid>
+
+
+
             </>
           </Stack>
 
