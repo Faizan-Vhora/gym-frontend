@@ -50,7 +50,8 @@ export function formatTo12HourFormat(time:string) {
   const [hours, minutes, seconds] = time.split(':').map(Number);
   const ampm = hours >= 12 ? 'PM' : 'AM';
   const hours12 = hours % 12 || 12; // Convert hour 0 to 12
-  return `${hours12}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')} ${ampm}`;
+  // return `${hours12}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')} ${ampm}`;
+  return `${hours12}:${String(minutes).padStart(2, '0')} ${ampm}`;
 }
 
 
