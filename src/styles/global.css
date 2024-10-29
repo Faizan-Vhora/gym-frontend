@@ -229,3 +229,6 @@ body {
   .fc-license-message {
     display: none !important;
   }
+  .MuiDateRangeCalendar-root > *:first-child {
+    display: none;
+  }
