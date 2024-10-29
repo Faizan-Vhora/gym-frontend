@@ -5,6 +5,12 @@ import { firebaseCloudMessaging } from '@/app/admin/push-notification/firebase';
 
 import axiosInstance from '@/lib/axios';
 
+
+interface NotificationDataI {
+  title: string;
+  body: string;
+}
+
 export default function PushNotificationComponent(): React.JSX.Element {
   const [fcmToken, setFcmToken] = React.useState<string | null>(null);
   const [lastFcmToken, setLastFcmToken] = React.useState<string | null>(null);
@@ -51,8 +57,10 @@ export default function PushNotificationComponent(): React.JSX.Element {
 
   React.useEffect(() => {
     const handleServiceWorkerMessage = (event: MessageEvent) => {
-      if (event.data && event.data.notification) {
-        showNotification(event.data.notification);
+      const data = event.data as { notification?: NotificationDataI }; // Type assertion
+
+      if (data?.notification) {
+        showNotification(data.notification);
       }
     };
 
@@ -71,24 +79,25 @@ export default function PushNotificationComponent(): React.JSX.Element {
 
 
   const showNotification = (notification: { title: string; body: string }) => {
-    if (Notification.permission === 'granted') {
-      new Notification(notification.title, {
+    const createNotification = () => {
+      return new Notification(notification.title, {
         body: notification.body,
         icon: '/assets/red-strength-logo-dark.png', // Main icon
         badge: '/assets/red-strength-logo-dark.png', // Badge icon
       });
+    };
+
+    if (Notification.permission === 'granted') {
+      createNotification();
     } else if (Notification.permission !== 'denied') {
-      Notification.requestPermission().then((permission) => {
+      void Notification.requestPermission().then((permission) => {
         if (permission === 'granted') {
-          new Notification(notification.title, {
-            body: notification.body,
-            icon: '/assets/red-strength-logo-dark.png', // Main icon
-            badge: '/assets/red-strength-logo-dark.png', // Badge icon
-          });
+          createNotification();
         }
       });
     }
   };
+
 
 
   React.useEffect(() => {
@@ -96,12 +105,12 @@ export default function PushNotificationComponent(): React.JSX.Element {
       if (lastFcmToken !== fcmToken) {
         setLastFcmToken(fcmToken);
         if (fcmToken) {
-          updateFccToken(fcmToken);
+         void updateFccToken(fcmToken);
         }
       }
     }, 10000); // Check every 10 seconds
 
-    return () => clearInterval(interval);
+    return () => {clearInterval(interval)} ;
   }, [fcmToken, lastFcmToken]);
 
   return <></>;
