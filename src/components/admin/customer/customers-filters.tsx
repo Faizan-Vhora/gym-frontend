@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useSearchParams } from 'next/navigation';
 import { FormControl, Grid, IconButton, InputAdornment, InputLabel, Select, TextField } from '@mui/material';
 import type { SelectChangeEvent } from '@mui/material';
 import MenuItem from '@mui/material/MenuItem';
@@ -21,9 +22,10 @@ export function CustomersFilters({
   onStatusChange,
   onMembershipTypeChange,
 }: CustomersFiltersProps): React.JSX.Element {
-  const [searchTerm, setSearchTerm] = React.useState('');
-  const [status, setStatus] = React.useState('ALL');
-  const [membershipType, setMembershipType] = React.useState('ALL'); // State for membership type
+  const searchParams = useSearchParams();
+  const [searchTerm, setSearchTerm] = React.useState(searchParams.get('search') || '');
+  const [status, setStatus] = React.useState(searchParams.get('status') || 'ALL');
+  const [membershipType, setMembershipType] = React.useState(searchParams.get('membershipTypeId') || 'ALL'); // State for membership type
   const [membershipTypes, setMembershipTypes] = React.useState<MembershipPlans[]>([]);
 
   // Create a debounced version of the search handler

@@ -24,9 +24,11 @@ export default function Page(): React.JSX.Element {
   const [trainerIdFilter, setTrainerIdFilter] = React.useState(searchParams.get('trainerId') || 'All');
   const [customerIdFilter, setCustomerIdFilter] = React.useState(searchParams.get('memberId') || 'All');
   const [startDateFilter, setStartDateFilter] = React.useState(searchParams.get('startDate') || '');
-  const [endDateFilter, setEndDateFilter] = React.useState('');
-  const [page, setPage] = React.useState<number>(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(5);
+  const [endDateFilter, setEndDateFilter] = React.useState(searchParams.get('endDate') || '');
+  const [page, setPage] = React.useState<number>(searchParams.get('page') ? Number(searchParams.get('page')) : 0);
+  const [rowsPerPage, setRowsPerPage] = React.useState(
+    searchParams.get('rowPerPage') ? Number(searchParams.get('rowPerPage')) : 5
+  );
   const [count, setCount] = React.useState<number>(0);
   const [loading, setLoading] = React.useState(true);
 
@@ -83,6 +85,8 @@ export default function Page(): React.JSX.Element {
     bookingTypeFilter,
     startDateFilter,
     endDateFilter,
+    page,
+    rowsPerPage,
   ]);
 
   const updateUrlPathQueryParams = () => {
@@ -94,6 +98,8 @@ export default function Page(): React.JSX.Element {
       bookingType: bookingTypeFilter,
       startDate: startDateFilter,
       endDate: endDateFilter,
+      page: String(page),
+      rowsPerPage: String(rowsPerPage),
     };
 
     // Construct the query string using URLSearchParams
@@ -211,8 +217,8 @@ export default function Page(): React.JSX.Element {
         ) : (
           <BookingTable
             entries={entries}
-            page={page}
-            rowsPerPage={rowsPerPage}
+            page={searchParams.get('page') ? Number(searchParams.get('page')) : page}
+            rowsPerPage={searchParams.get('rowsPerPage') ? Number(searchParams.get('rowsPerPage')) : rowsPerPage}
             totalEntries={count}
             onUpdateStatus={handleUpdateStatus}
             onPageChange={handlePageChange}

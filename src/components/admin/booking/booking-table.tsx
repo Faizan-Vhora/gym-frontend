@@ -18,7 +18,7 @@ import { ToastContainer } from 'react-toastify'; // Import toast and ToastContai
 
 import 'react-toastify/dist/ReactToastify.css'; // Import toast styles
 
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { BOOKING_STATUS, BOOKING_STATUS_DETAILS } from '@/utils/constant';
 import { formatHours } from '@/utils/converter';
 import { formatDate } from '@/utils/date-utils';
@@ -94,6 +94,7 @@ export function BookingTable({
   onPageChange,
   onRowsPerPageChange,
 }: BookingTableProps): React.JSX.Element {
+  const searchParams = useSearchParams();
   const router = useRouter();
 
   const handleStatusChange = (id: number, newStatus: BookingEntry['status']): void => {

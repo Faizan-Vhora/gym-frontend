@@ -59,8 +59,12 @@ export function BookingFilters({
   const [trainerOptions, setTrainerOptions] = useState<Trainer[]>([]);
   const [customerOptions, setCustomerOptions] = useState<Customer[]>([]);
 
-  const [startDate, setStartDate] = useState<Dayjs | null>();
-  const [endDate, setEndDate] = useState<Dayjs | null>();
+  const [startDate, setStartDate] = useState<Dayjs | null>(
+    searchParams.get('startDate') ? dayjs(searchParams.get('startDate')) : null
+  );
+  const [endDate, setEndDate] = useState<Dayjs | null>(
+    searchParams.get('endDate') ? dayjs(searchParams.get('endDate')) : null
+  );
   const [cleared, setCleared] = React.useState<boolean>(false);
 
   const debouncedSearch = React.useCallback(
