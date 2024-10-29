@@ -13,9 +13,10 @@ import { CheckInUsers } from '@/components/admin/overview/check-in-users';
 import { LatestOrders } from '@/components/admin/overview/latest-orders';
 import { IncompleteProfiles } from '@/components/admin/overview/latest-products';
 import { ActivevsExpiredMemberships } from '@/components/admin/overview/membership-bar-chart';
-// import { Stats } from '@/components/admin/overview/membership-growth';
+import { MembershipGrowth } from '@/components/admin/overview/membership-growth';
 import { Memberships } from '@/components/admin/overview/memberships';
 import { MembershipExpiring } from '@/components/admin/overview/memberships-expiring';
+import { MonthlyRevenueTrends } from '@/components/admin/overview/revenue-line-graph';
 import { Sales } from '@/components/admin/overview/sales';
 import { TasksProgress } from '@/components/admin/overview/tasks-progress';
 import { TotalCustomers } from '@/components/admin/overview/total-customers';
@@ -252,6 +253,13 @@ export default function Page(): React.JSX.Element {
       <Grid md={12} xs={12}>
         <CheckInBarChart />
       </Grid>
+      <Grid md={6} xs={12}>
+        <MembershipGrowth />
+      </Grid>
+      <Grid md={6} xs={12}>
+        <MonthlyRevenueTrends />
+      </Grid>
+
       {loading && <CustomLoader />}
     </Grid>
   );
