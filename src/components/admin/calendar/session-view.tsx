@@ -3,6 +3,7 @@ import {
   BOOKING_SESSION_PAYMENT_STATUS_DETAILS,
   BOOKING_SESSION_STATUS_DETAILS,
   BOOKING_STATUS,
+  GENDER_TYPE_DETAILS,
 } from '@/utils/constant';
 import { formatAmount, formatHours } from '@/utils/converter';
 import { formatDate, formatTo12HourFormat } from '@/utils/date-utils';
@@ -20,7 +21,7 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
-import { Barbell, CurrencyCircleDollar, Envelope, Phone } from '@phosphor-icons/react';
+import { Barbell, CurrencyCircleDollar, Envelope, GenderIntersex, MapPin, Phone } from '@phosphor-icons/react';
 
 import { BookingSessionEntry } from '../booking/view/booking-sessions/booking-session-table';
 
@@ -102,145 +103,220 @@ const SessionPreview: React.FC<SessionNotesFormProps> = ({
             }}
           >
             <>
-            <Grid container justifyContent={'space-between'}>
-            <Grid item sm={5}  xs={12} alignContent={'center'}>
-            {sessionObj && (
-                <Card
-                  sx={{
-                    // height: '140px',
-                    // width:'50%',
-                    boxShadow: 5, // Normal box shadow
-                    '&:hover': {
-                      boxShadow: 15, // Increased box shadow on hover
-                    },
-                    transition: 'box-shadow 0.3s ease-in-out', // Smooth transition effect
-                    marginTop: '10px',
-                  }}
-                >
-                  <CardContent sx={{ padding: '10px 15px' }}>
-                    <Stack sx={{flexDirection:'row', justifyContent:'space-between'}}>
-                    <Stack>
+              <Grid container justifyContent={'space-between'}>
+                <Grid item sm={5} xs={12} alignContent={'center'}>
+                  {sessionObj && (
+                    <Card className="bookin-card">
+                      <Stack
+                        sx={{
+                          display: 'flex',
+                          flexDirection: 'row',
+                          justifyContent: 'space-between',
+                          borderBottom: '1px solid',
+                          borderColor: '#dcdfe4',
+                          marginBottom: '30px',
+                        }}
+                      >
+                        <Typography
+                          color="text.secondary"
+                          style={{ fontFamily: '"Audiowide", sans-serif' }}
+                          fontWeight={'600'}
+                          gutterBottom
+                        >
+                          Member Id :
+                        </Typography>
+                        <Typography
+                          textAlign={'end'}
+                          style={{ fontFamily: '"Audiowide", sans-serif' }}
+                          color="text.secondary"
+                          gutterBottom
+                        >
+                          {sessionObj?.customer?.memberId}
+                        </Typography>
+                      </Stack>
+
+                      <Stack
+                        sx={{
+                          display: 'flex',
+                          flexDirection: {
+                            xs: 'column', // Column direction for mobile screens
+                            md: 'row', // Row direction for larger screens like tablets and above
+                          },
+                          alignItems: 'start',
+                          columnGap: '20px',
+                        }}
+                      >
                         <Avatar
                           src={sessionObj.customer?.profileImageUrl || '/assets/User@3x-1.png'}
                           sx={{ height: '56px', width: '56px' }}
-                        >
-                        </Avatar>
-                        <Typography variant="subtitle1">{sessionObj.customer?.fullName}</Typography>
-                    </Stack>
-                    <Typography variant="h6" textAlign={'center'} color="text.secondary" gutterBottom>
-                      Member :
-                    </Typography>
-                    </Stack>
-                    <Grid container>
-                      <Grid item  xs={12} alignContent={'center'}>
-                      </Grid>
-                      <Grid item md={8} xs={12} alignContent={'center'}>
-                        
-                        <Typography
-                          variant="caption"
-                          sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}
-                        >
-                          {sessionObj.customer?.email ? (
-                            <IconButton sx={{ padding: '0px', marginRight: '5px', }}>
-                              <Envelope width={18} height={18} />
-                            </IconButton>
-                          ) : (
-                            ''
-                          )}
-                          <Typography sx={{fontSize:'0.75rem'}}>
-                          {sessionObj.customer?.email}
-                          </Typography>
-                        </Typography>
-                        <Typography
-                          variant="caption"
-                          sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}
-                        >
-                          {sessionObj.customer?.phoneNumber ? (
-                            <IconButton sx={{ padding: '0px', marginRight: '5px' }}>
-                              <Phone width={18} height={18} />
-                            </IconButton>
-                          ) : (
-                            ''
-                          )}
-                          {sessionObj.customer?.phoneNumber}
-                        </Typography>
-                      </Grid>
-                    </Grid>
-
-                    {/* Add other fields as necessary */}
-                  </CardContent>
-                </Card>
-              )}
-              </Grid>
-              <Grid item sm={5}  xs={12} alignContent={'center'}>
-              {sessionObj && (
-                <Card
-                  sx={{
-                    // height: '240px',
-                    boxShadow: 5, // Normal box shadow
-                    '&:hover': {
-                      boxShadow: 15, // Increased box shadow on hover
-                    },
-                    transition: 'box-shadow 0.3s ease-in-out', // Smooth transition effect
-                    marginTop: '10px',
-                  }}
-                >
-                  <CardContent sx={{ padding: '10px 15px' }}>
-                  <Stack sx={{flexDirection:'row', justifyContent:'space-between'}}>
-                    <Stack>
-                    <Avatar
-                          src={sessionObj.trainer?.profileImageUrl || '/assets/User@3x-1.png'}
-                          sx={{ height: '56px', width: '56px' }}
                         ></Avatar>
-                         <Typography variant="subtitle1">{sessionObj.trainer?.fullName}</Typography>
-                    </Stack>
-                    <Typography variant="h6" textAlign={'center'} color="text.secondary" gutterBottom>
-                      Trainer :
-                    </Typography>
-                    </Stack>
-                    <Grid container spacing={4} alignItems={'center'}>
-                      <Grid item   xs={6} alignContent={'center'}>    
-                        <Typography
-                          variant="caption"
-                          sx={{ display: 'flex', alignItems:'flex-start', flexDirection: 'column' }}
-                        >
-                          {sessionObj.trainer?.fees ? (
-                            <IconButton sx={{ padding: '0px', marginRight: '5px' }}>
-                              <CurrencyCircleDollar width={18} height={18} />
+
+                        <Stack>
+                          <Typography
+                            color="text.secondary"
+                            style={{ fontFamily: '"Audiowide", sans-serif' }}
+                            fontWeight={'600'}
+                            gutterBottom
+                          >
+                            {sessionObj?.customer?.fullName}
+                          </Typography>
+
+                          <Stack flexDirection={'row'} alignItems={'center'}>
+                            <IconButton>
+                              <Envelope size={25} />
                             </IconButton>
-                          ) : (
-                            ''
-                          )}
-                          {sessionObj.trainer?.fees} per Hour
-                        </Typography>
-                      </Grid>
-                      <Grid item  xs={6} alignContent={'center'} >
-                       
-                        <Typography
-                          variant="caption"
-                          sx={{ display: 'flex', alignItems: 'flex-start', flexDirection: 'column' }}
-                        >
-                          {sessionObj.trainer?.experience ? (
-                            <IconButton sx={{ padding: '0px', marginRight: '5px' }}>
-                              <Barbell width={18} height={18} />
+
+                            <Typography
+                              color="text.secondary"
+                              gutterBottom
+                              sx={{
+                                wordBreak: 'break-word',
+                                overflowWrap: 'break-word',
+                              }}
+                            >
+                              {sessionObj?.customer?.email}
+                            </Typography>
+                          </Stack>
+                          <Stack flexDirection={'row'} alignItems={'center'}>
+                            <IconButton>
+                              {' '}
+                              <Phone size={25} />
                             </IconButton>
-                          ) : (
-                            ''
-                          )}
-                          {sessionObj.trainer?.experience} years
+                            <Typography color="text.secondary" gutterBottom>
+                              {sessionObj?.customer?.phoneNumber}
+                            </Typography>
+                          </Stack>
+                          <Stack flexDirection={'row'} alignItems={'center'}>
+                            <IconButton>
+                              <GenderIntersex size={25} />
+                            </IconButton>
+                            <Typography color="text.secondary" gutterBottom>
+                              {sessionObj?.customer?.gender && GENDER_TYPE_DETAILS[sessionObj?.customer?.gender]?.label}
+                            </Typography>
+                          </Stack>
+                          <Stack flexDirection={'row'} alignItems={'center'}>
+                            <IconButton>
+                              <MapPin size={25} />
+                            </IconButton>
+                            <Typography color="text.secondary" gutterBottom>
+                              {sessionObj?.customer?.address}
+                            </Typography>
+                          </Stack>
+                        </Stack>
+                      </Stack>
+
+                      {/* Add other fields as necessary */}
+                    </Card>
+                  )}
+                </Grid>
+                <Grid item sm={5} xs={12} alignContent={'center'}>
+                  {sessionObj && (
+                    <Card className="bookin-card">
+                      <Stack
+                        sx={{
+                          display: 'flex',
+                          flexDirection: 'row',
+                          justifyContent: 'space-between',
+                          borderBottom: '1px solid',
+                          borderColor: '#dcdfe4',
+                          marginBottom: '30px',
+                        }}
+                      >
+                        <Typography
+                          color="text.secondary"
+                          style={{ fontFamily: '"Audiowide", sans-serif' }}
+                          fontWeight={'600'}
+                          gutterBottom
+                        >
+                          Trainer Id :
                         </Typography>
-                      </Grid>
-                    </Grid>
+                        <Typography
+                          textAlign={'end'}
+                          style={{ fontFamily: '"Audiowide", sans-serif' }}
+                          color="text.secondary"
+                          gutterBottom
+                        >
+                          {sessionObj?.trainer?.memberId}
+                        </Typography>
+                      </Stack>
 
-                    {/* Add other fields as necessary */}
-                  </CardContent>
-                </Card>
-              )}
+                      <Stack
+                        sx={{
+                          display: 'flex',
+                          flexDirection: {
+                            xs: 'column', // Column direction for mobile screens
+                            md: 'row', // Row direction for larger screens like tablets and above
+                          },
+                          alignItems: 'start',
+                          columnGap: '20px',
+                        }}
+                      >
+                        <Stack>
+                          <Avatar
+                            src={sessionObj.trainer?.profileImageUrl || '/assets/User@3x-1.png'}
+                            sx={{ height: '56px', width: '56px' }}
+                          ></Avatar>
+                          <Stack flexDirection={'row'} justifyContent={'center'} alignItems={'center'}>
+                            <IconButton>
+                              <Barbell size={18} />
+                            </IconButton>
+                            <Typography color="text.secondary" gutterBottom>
+                              {sessionObj?.trainer?.experience} years
+                            </Typography>
+                            <Typography color="text.secondary" gutterBottom>
+                              {formatAmount(sessionObj?.trainer?.fees)}
+                            </Typography>
+                          </Stack>
+                        </Stack>
+                        <Stack>
+                          <Typography
+                            color="text.secondary"
+                            style={{ fontFamily: '"Audiowide", sans-serif' }}
+                            fontWeight={'600'}
+                            gutterBottom
+                          >
+                            {sessionObj?.trainer?.fullName}
+                          </Typography>
+
+                          <Stack flexDirection={'row'} alignItems={'center'}>
+                            <IconButton>
+                              <Envelope size={25} />
+                            </IconButton>
+                            <Typography color="text.secondary" gutterBottom>
+                              {sessionObj?.trainer?.email}
+                            </Typography>
+                          </Stack>
+                          <Stack flexDirection={'row'} alignItems={'center'}>
+                            <IconButton>
+                              {' '}
+                              <Phone size={25} />
+                            </IconButton>
+                            <Typography color="text.secondary" gutterBottom>
+                              {sessionObj?.trainer?.phoneNumber}
+                            </Typography>
+                          </Stack>
+                          <Stack flexDirection={'row'} alignItems={'center'}>
+                            <IconButton>
+                              <GenderIntersex size={25} />
+                            </IconButton>
+                            <Typography color="text.secondary" gutterBottom>
+                              {sessionObj?.trainer?.gender && GENDER_TYPE_DETAILS[sessionObj?.trainer?.gender]?.label}
+                            </Typography>
+                          </Stack>
+                          <Stack flexDirection={'row'} alignItems={'center'}>
+                            <IconButton>
+                              <MapPin size={25} />
+                            </IconButton>
+                            <Typography color="text.secondary" gutterBottom>
+                              {sessionObj?.trainer?.address}
+                            </Typography>
+                          </Stack>
+                        </Stack>
+                      </Stack>
+                    </Card>
+                  )}
+                </Grid>
               </Grid>
-              </Grid>
-
-
-
             </>
           </Stack>
 
