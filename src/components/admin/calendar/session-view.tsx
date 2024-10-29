@@ -154,7 +154,7 @@ const SessionPreview: React.FC<SessionNotesFormProps> = ({
                           <Typography
                             color="text.secondary"
                             style={{ fontFamily: '"Audiowide", sans-serif' }}
-                            fontWeight={'600'}
+                            fontWeight={'300'}
                             gutterBottom
                           >
                             {sessionObj?.customer?.fullName}
@@ -271,7 +271,7 @@ const SessionPreview: React.FC<SessionNotesFormProps> = ({
                           <Typography
                             color="text.secondary"
                             style={{ fontFamily: '"Audiowide", sans-serif' }}
-                            fontWeight={'600'}
+                            fontWeight={'300'}
                             gutterBottom
                           >
                             {sessionObj?.trainer?.fullName}
