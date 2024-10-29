@@ -2,6 +2,7 @@
 
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
+import { NEXT_PUBLIC_PUSHER_KEY, NEXT_PUSHER_APP_CLUSTER, NEXT_PUSHER_CHANNEL, NEXT_PUSHER_EVENT } from '@/app-config';
 import { CustomLoader } from '@/utils/loader';
 import Avatar from '@mui/material/Avatar';
 import Box from '@mui/material/Box';
@@ -15,6 +16,7 @@ import Typography from '@mui/material/Typography';
 import { ChatText as ChatTextIcon } from '@phosphor-icons/react/dist/ssr/ChatText';
 import { EnvelopeSimple as EnvelopeSimpleIcon } from '@phosphor-icons/react/dist/ssr/EnvelopeSimple';
 import { X as XIcon } from '@phosphor-icons/react/dist/ssr/X';
+import Pusher from 'pusher-js';
 import Swal from 'sweetalert2';
 
 import axiosInstance from '@/lib/axios';
@@ -35,6 +37,9 @@ export function NotificationsPopover({
 }: NotificationsPopoverProps): React.JSX.Element {
   const [notifications, setNotifications] = React.useState<NotificationEntry[]>([]);
   const [loading, setLoading] = React.useState(true);
+  const pusher = new Pusher(NEXT_PUBLIC_PUSHER_KEY, {
+    cluster: NEXT_PUSHER_APP_CLUSTER,
+  });
 
   const getNotificationListData = React.useCallback(async (): Promise<void> => {
     setLoading(true);
@@ -59,6 +64,18 @@ export function NotificationsPopover({
       await Swal.fire('Error!', 'Failed to mark all notifications as read.', 'error'); // Error handling
     }
   };
+
+  React.useEffect(() => {
+    const channel = pusher.subscribe(NEXT_PUSHER_CHANNEL);
+
+    channel.bind(NEXT_PUSHER_EVENT, () => {
+      getNotificationListData();
+    });
+
+    return () => {
+      pusher.unsubscribe(NEXT_PUSHER_CHANNEL);
+    };
+  }, []);
 
   React.useEffect(() => {
     if (open) {
