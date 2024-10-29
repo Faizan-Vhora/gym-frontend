@@ -174,6 +174,7 @@ function NotificationContent({ notification, unread }: NotificationContentProps)
           router.push(notification?.redirectionPath);
           unread();
         }}
+        style={{ cursor: 'pointer' }}
       >
         <Typography variant="subtitle2">{notification?.title}</Typography>
         <Typography variant="body2">{notification?.message}</Typography>

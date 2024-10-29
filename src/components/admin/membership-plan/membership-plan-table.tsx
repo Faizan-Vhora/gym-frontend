@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
+import { formatAmount } from '@/utils/converter';
 import { getStatusStringText, UserStatusString } from '@/utils/userstatus';
 import {
   Box,
@@ -20,7 +21,7 @@ import {
   TableRow,
   Typography,
 } from '@mui/material';
-import { CurrencyDollar, PencilSimple, Trash } from '@phosphor-icons/react';
+import { PencilSimple, Trash } from '@phosphor-icons/react';
 import dayjs from 'dayjs';
 
 import tableCss from '@/styles/table-css';
@@ -119,10 +120,7 @@ export function MembershipPlanTable({
                     </Typography>
                   </TableCell>
 
-                  <TableCell sx={tableCss.tableCell}>
-                    <CurrencyDollar />
-                    {row.cost}
-                  </TableCell>
+                  <TableCell sx={tableCss.tableCell}>{formatAmount(row.cost)}</TableCell>
 
                   <TableCell sx={tableCss.tableCell}>{row.durationInMonths} months</TableCell>
                   <TableCell sx={tableCss.tableCell}>{formatPaymentFrequency(row.paymentFrequency)}</TableCell>
