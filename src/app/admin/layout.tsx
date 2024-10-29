@@ -11,10 +11,9 @@ import { ToastContainer } from 'react-toastify';
 import { config } from '@/config';
 import { MainNav } from '@/components/admin/layout/main-nav';
 import { SideNav } from '@/components/admin/layout/side-nav';
+import PushNotificationComponent from './push-notification/PushNotificationComponent';
 
-import PushNotificationComponent from './pushNotification';
-
-interface LayoutProps {
+interface AdminLayoutProps {
   children: React.ReactNode;
 }
 
@@ -23,27 +22,26 @@ const pathToPageTitle = (currentPath: string): string => {
 
   const capitalizeWords = (str: string): string => {
     return str
-      .split(' ')
+      .split('-')
       .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
       .join(' ');
   };
 
-  return segments.map((segment) => capitalizeWords(segment.replace(/-/g, ' '))).join(' | ');
+  return segments.map((segment) => capitalizeWords(segment)).join(' | ');
 };
 
-export default function Layout({ children }: LayoutProps): React.JSX.Element {
+const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
   const searchParams = useSearchParams();
-  const currentPath: string = usePathname();
+  const currentPath = usePathname();
 
-  const updatedPath = currentPath.replace('form', searchParams.get('id') ? `edit` : 'add');
-
+  const updatedPath = currentPath.replace('form', searchParams.get('id') ? 'edit' : 'add');
   const pageTitle = pathToPageTitle(updatedPath) || null;
   const title = pageTitle ? `${pageTitle} | ${config.site.name}` : config.site.name;
   const metadata = { title } satisfies Metadata;
 
   React.useEffect(() => {
     document.title = metadata.title; // Update document title
-  }, [metadata.title]);
+  }, [metadata.title]); // Depend on title only
 
   return (
     <>
@@ -59,6 +57,7 @@ export default function Layout({ children }: LayoutProps): React.JSX.Element {
           },
         }}
       />
+      <PushNotificationComponent />
       <Box
         sx={{
           bgcolor: 'var(--mui-palette-background-default)',
@@ -68,7 +67,6 @@ export default function Layout({ children }: LayoutProps): React.JSX.Element {
           minHeight: '100%',
         }}
       >
-        <PushNotificationComponent />
         <SideNav />
         <Box
           className="dashboard"
@@ -96,4 +94,6 @@ export default function Layout({ children }: LayoutProps): React.JSX.Element {
       </Box>
     </>
   );
-}
+};
+
+export default AdminLayout;

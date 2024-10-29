@@ -1,5 +1,5 @@
 // Import the functions you need from the SDKs you need
-import { NEXT_PUBLIC_FIREBASE_VAPID_KEY } from "@/app-config";
+import { NEXT_PUBLIC_FIREBASE_API_KEY, NEXT_PUBLIC_FIREBASE_APP_ID, NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN, NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID, NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID, NEXT_PUBLIC_FIREBASE_PROJECT_ID, NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET, NEXT_PUBLIC_FIREBASE_VAPID_KEY } from "@/app-config";
 import * as firebase from "firebase/app";
 import {getMessaging, getToken, onMessage} from 'firebase/messaging';
 // TODO: Add SDKs for Firebase products that you want to use
@@ -8,19 +8,19 @@ import {getMessaging, getToken, onMessage} from 'firebase/messaging';
 const firebaseCloudMessaging = {
     //checking whether token is available in indexed DB
     tokenInlocalforage: async () => {
-        return localStorage.getItem('fcm_token')
+        return localStorage.getItem('fcmToken')
     },
     //initializing firebase app
     init: async function () {
         if (!firebase.getApps().length) {
             firebase.initializeApp({
-                apiKey: "AIzaSyC_GCk91WFhvh6zBPV9tpwV5x570uZi-J8",
-                authDomain: "gym-redstrength.firebaseapp.com",
-                projectId: "gym-redstrength",
-                storageBucket: "gym-redstrength.appspot.com",
-                messagingSenderId: "416742758261",
-                appId: "1:416742758261:web:d1ead03d8b0b474872653c",
-                measurementId: "G-1J1VZEEMGX"
+                apiKey: NEXT_PUBLIC_FIREBASE_API_KEY,
+                authDomain: NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+                projectId: NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+                storageBucket: NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+                messagingSenderId: NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+                appId: NEXT_PUBLIC_FIREBASE_APP_ID,
+                measurementId: NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID
 
             })
 
@@ -35,14 +35,14 @@ const firebaseCloudMessaging = {
                 const status = await Notification.requestPermission()
                 if (status && status === 'granted') {
                     //getting token from FCM
-                    const fcm_token = await getToken(messaging,{
-                        vapidKey: "BFV7Be3lAmMfmMjrM0HnwIveUJHH72an90yShbh-1flKkvEXZDge-NzmDHu92e7abX1vLlvlSmQhFuW4vqsHqAw"
+                    const fcmToken = await getToken(messaging,{
+                        vapidKey: NEXT_PUBLIC_FIREBASE_VAPID_KEY
                     })
-                    if (fcm_token) {
+                    if (fcmToken) {
                         //setting FCM token in indexed db using localforage
-                        localStorage.setItem('fcm_token', fcm_token)
+                        localStorage.setItem('fcmToken', fcmToken)
                         //return the FCM token after saving it
-                        return fcm_token
+                        return fcmToken
                     }
                 }
             } catch (error) {
@@ -60,14 +60,14 @@ const firebaseCloudMessaging = {
                 const status = await Notification.requestPermission()
                 if (status && status === 'granted') {
                     //getting token from FCM
-                    const fcm_token = await getToken(messaging,{
+                    const fcmToken = await getToken(messaging,{
                         vapidKey: process.env.NEXT_PUBLIC_VAPID_KEY
                     })
-                    if (fcm_token) {
+                    if (fcmToken) {
                         //setting FCM token in indexed db using localforage
-                        localStorage.setItem('fcm_token', fcm_token)
+                        localStorage.setItem('fcmToken', fcmToken)
                         //return the FCM token after saving it
-                        return fcm_token
+                        return fcmToken
                     }
                 }
             }catch (error) {

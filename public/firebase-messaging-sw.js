@@ -18,8 +18,8 @@ messaging.onBackgroundMessage(function (payload) {
                 if (reg)
                     await reg.showNotification(payload.notification.title, {
                         body: payload.notification.body,
-                        icon: '/assets/red-strength-logo-dark.png',  // Main icon //TODO
-                        badge: '/assets/red-strength-logo-dark.png'  // Badge icon
+                        icon: '/assets/red-strength-logo-dark.png', // Main icon
+                        badge: '/assets/red-strength-logo-dark.png', // Badge icon
                     });
             });
     }
