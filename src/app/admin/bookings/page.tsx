@@ -2,6 +2,7 @@
 
 import * as React from 'react';
 import { useCallback, useEffect } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { BOOKING_STATUS } from '@/utils/constant';
 import { CustomLoader } from '@/utils/loader';
 import { Card, Stack, Typography } from '@mui/material';
@@ -13,13 +14,16 @@ import { BookingFilters } from '@/components/admin/booking/booking-filters';
 import { BookingEntry, BookingTable } from '@/components/admin/booking/booking-table';
 
 export default function Page(): React.JSX.Element {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+
   const [entries, setEntries] = React.useState<BookingEntry[]>([]);
-  const [searchTerm, setSearchTerm] = React.useState('');
-  const [bookingTypeFilter, setBookingTypeFilter] = React.useState('All');
-  const [bookingStatusFilter, setBookingStatusFilter] = React.useState('All');
-  const [trainerIdFilter, setTrainerIdFilter] = React.useState('All');
-  const [customerIdFilter, setCustomerIdFilter] = React.useState('All');
-  const [startDateFilter, setStartDateFilter] = React.useState('');
+  const [searchTerm, setSearchTerm] = React.useState(searchParams.get('search') || '');
+  const [bookingTypeFilter, setBookingTypeFilter] = React.useState(searchParams.get('bookingType') || 'All');
+  const [bookingStatusFilter, setBookingStatusFilter] = React.useState(searchParams.get('status') || 'All');
+  const [trainerIdFilter, setTrainerIdFilter] = React.useState(searchParams.get('trainerId') || 'All');
+  const [customerIdFilter, setCustomerIdFilter] = React.useState(searchParams.get('memberId') || 'All');
+  const [startDateFilter, setStartDateFilter] = React.useState(searchParams.get('startDate') || '');
   const [endDateFilter, setEndDateFilter] = React.useState('');
   const [page, setPage] = React.useState<number>(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
@@ -68,6 +72,36 @@ export default function Page(): React.JSX.Element {
     endDateFilter,
     bookingStatusFilter,
   ]);
+
+  React.useEffect(() => {
+    updateUrlPathQueryParams();
+  }, [
+    searchTerm,
+    trainerIdFilter,
+    trainerIdFilter,
+    bookingStatusFilter,
+    bookingTypeFilter,
+    startDateFilter,
+    endDateFilter,
+  ]);
+
+  const updateUrlPathQueryParams = () => {
+    const pathQueryParams = {
+      search: searchTerm,
+      trainerId: trainerIdFilter,
+      memberId: customerIdFilter,
+      status: bookingStatusFilter,
+      bookingType: bookingTypeFilter,
+      startDate: startDateFilter,
+      endDate: endDateFilter,
+    };
+
+    // Construct the query string using URLSearchParams
+    const queryString = new URLSearchParams(pathQueryParams).toString();
+
+    // Use router.push with the constructed query string
+    router.push(`/admin/bookings?${queryString}`);
+  };
 
   const handleUpdateStatus = async (id: number, newStatus: BookingEntry['status']): Promise<void> => {
     let swalText = `Do you want to change the status?`;

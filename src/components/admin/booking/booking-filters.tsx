@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { BOOKING_STATUS_OPTIONS, BOOKING_TYPE_OPTIONS } from '@/utils/constant';
 import { DATE_FORMAT } from '@/utils/date-utils';
 import {
@@ -46,17 +47,20 @@ export function BookingFilters({
   onStatusChange,
   onEndDateChange,
 }: SupportFiltersProps): React.JSX.Element {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [status, setStatus] = useState('All');
-  const [bookingType, setBookingType] = useState('All');
-  const [trainerId, setTrainerId] = useState('All');
-  const [customerId, setCustomerId] = useState('All');
+  const searchParams = useSearchParams();
+
+  const [searchTerm, setSearchTerm] = useState(searchParams.get('search') || '');
+
+  const [status, setStatus] = useState(searchParams.get('status') || 'All');
+  const [bookingType, setBookingType] = useState(searchParams.get('bookingType') || 'All');
+  const [trainerId, setTrainerId] = useState(searchParams.get('trainerId') || 'All');
+  const [customerId, setCustomerId] = useState(searchParams.get('memberId') || 'All');
 
   const [trainerOptions, setTrainerOptions] = useState<Trainer[]>([]);
   const [customerOptions, setCustomerOptions] = useState<Customer[]>([]);
 
-  const [startDate, setStartDate] = useState<Dayjs | null>(null);
-  const [endDate, setEndDate] = useState<Dayjs | null>(null);
+  const [startDate, setStartDate] = useState<Dayjs | null>();
+  const [endDate, setEndDate] = useState<Dayjs | null>();
   const [cleared, setCleared] = React.useState<boolean>(false);
 
   const debouncedSearch = React.useCallback(
