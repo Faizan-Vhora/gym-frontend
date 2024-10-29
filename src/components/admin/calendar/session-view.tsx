@@ -11,7 +11,6 @@ import {
   Avatar,
   Button,
   Card,
-  CardContent,
   Chip,
   Dialog,
   DialogActions,
@@ -21,7 +20,7 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
-import { Barbell, CurrencyCircleDollar, Envelope, GenderIntersex, MapPin, Phone } from '@phosphor-icons/react';
+import { Barbell, Envelope, GenderIntersex, MapPin, Phone } from '@phosphor-icons/react';
 
 import { BookingSessionEntry } from '../booking/view/booking-sessions/booking-session-table';
 

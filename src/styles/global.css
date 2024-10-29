@@ -225,3 +225,7 @@ body {
    .ck-powered-by {
     display: none;
   }
+
+  .fc-license-message {
+    display: none !important;
+  }

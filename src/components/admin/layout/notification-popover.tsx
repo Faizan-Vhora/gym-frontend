@@ -69,7 +69,7 @@ export function NotificationsPopover({
     const channel = pusher.subscribe(NEXT_PUSHER_CHANNEL);
 
     channel.bind(NEXT_PUSHER_EVENT, () => {
-      getNotificationListData();
+      void getNotificationListData();
     });
 
     return () => {
