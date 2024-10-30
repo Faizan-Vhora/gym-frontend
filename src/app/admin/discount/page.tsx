@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { CustomLoader } from '@/utils/loader';
 import { Button, Card, Stack, Typography } from '@mui/material';
 import { Plus as PlusIcon } from '@phosphor-icons/react'; // Import XIcon from phosphor-react
@@ -15,12 +15,13 @@ import { DiscountStatus, DiscountTable } from '@/components/admin/discount/disco
 import type { DiscountEntryResponse } from '@/components/admin/discount/discount-table';
 
 export default function DiscountManagementPage(): React.JSX.Element {
+  const searchParams = useSearchParams();
   const [discounts, setDiscounts] = React.useState<DiscountEntryResponse[]>([]);
   const [page, setPage] = React.useState<number>(0);
   const [rowsPerPage, setRowsPerPage] = React.useState<number>(5);
   const [totalItems, setTotalItems] = React.useState<number>(0);
-  const [filterType, setFilterType] = React.useState<string>('All');
-  const [search, setSearch] = React.useState<string>('');
+  const [filterType, setFilterType] = React.useState<string>(searchParams.get('status') || 'All');
+  const [search, setSearch] = React.useState<string>(searchParams.get('search') || '');
   const [loading, setLoading] = React.useState(true);
   const router = useRouter();
 
@@ -77,6 +78,25 @@ export default function DiscountManagementPage(): React.JSX.Element {
       err instanceof Error ? err.message : 'An unexpected error occurred';
     });
   }, [fetchDiscounts]);
+
+  React.useEffect(() => {
+    updateUrlPathQueryParams();
+  }, [search, filterType, page, rowsPerPage]);
+
+  const updateUrlPathQueryParams = () => {
+    const pathQueryParams = {
+      search: search,
+      status: filterType,
+      page: String(page),
+      rowsPerPage: String(rowsPerPage),
+    };
+
+    // Construct the query string using URLSearchParams
+    const queryString = new URLSearchParams(pathQueryParams).toString();
+
+    // Use router.push with the constructed query string
+    router.push(`/admin/discount?${queryString}`);
+  };
 
   const handleAddClick = (): void => {
     router.push('/admin/discount/form');
@@ -161,7 +181,7 @@ export default function DiscountManagementPage(): React.JSX.Element {
         </Stack>
         <Button
           className="common-button"
-          style={{fontFamily:'Audiowide, sans-serif !important',}}
+          style={{ fontFamily: 'Audiowide, sans-serif !important' }}
           startIcon={<PlusIcon fontSize="var(--icon-fontSize-md)" />}
           variant="contained"
           onClick={handleAddClick}

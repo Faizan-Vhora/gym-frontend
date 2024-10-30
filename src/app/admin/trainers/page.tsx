@@ -111,7 +111,7 @@ export default function TrainersPage(): React.JSX.Element {
     const queryString = new URLSearchParams(pathQueryParams).toString();
 
     // Use router.push with the constructed query string
-    router.push(`/admin/customers?${queryString}`);
+    router.push(`/admin/trainers?${queryString}`);
   };
 
   const handleAddClick = (): void => {

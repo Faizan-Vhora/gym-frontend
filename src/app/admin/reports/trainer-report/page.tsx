@@ -1,10 +1,11 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { CustomLoader } from '@/utils/loader';
 import { Card, Divider, Grid, Paper, Stack, TableContainer, Typography } from '@mui/material';
 import { DateRange } from '@mui/x-date-pickers-pro';
-import { Dayjs } from 'dayjs';
+import dayjs, { Dayjs } from 'dayjs';
 import { toast } from 'react-toastify';
 
 import axiosInstance from '@/lib/axios';
@@ -39,16 +40,21 @@ interface ApiResponse {
 }
 
 const TrainerReport: React.FC = () => {
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const [data, setData] = useState<Trainer[]>([]);
 
-  const [search, setSearch] = useState<string>('');
+  const [search, setSearch] = useState<string>(searchParams.get('search') || '');
   const [currentPage, setCurrentPage] = useState<number>(0);
   const [itemsPerPage, setItemsPerPage] = useState<number>(5);
   const [totalItems, setTotalItems] = useState<number>(0);
-  const [dateRange, setDateRange] = useState<DateRange<Dayjs>>([null, null]);
+  const rawDateRange = searchParams.get('dateRange');
+  const [start, end] = rawDateRange ? rawDateRange.split(',') : [null, null];
+  const initialDateRange: DateRange<Dayjs> = [start ? dayjs(start) : null, end ? dayjs(end) : null];
+  const [dateRange, setDateRange] = useState<DateRange<Dayjs>>(initialDateRange);
   const [startDate, setStartDate] = useState<string | null>(null);
   const [endDate, setEndDate] = useState<string | null>(null);
-  const [statusFilter, setStatusFilter] = useState('ALL');
+  const [statusFilter, setStatusFilter] = useState(searchParams.get('status') || 'ALL');
   const [loading, setLoading] = React.useState(false);
 
   // Function to fetch data
@@ -100,6 +106,28 @@ const TrainerReport: React.FC = () => {
     void fetchTrainerReports();
   }, [currentPage, itemsPerPage, search, startDate, endDate, statusFilter]);
 
+  React.useEffect(() => {
+    updateUrlPathQueryParams();
+  }, [search, currentPage, itemsPerPage, statusFilter, dateRange]);
+
+  const updateUrlPathQueryParams = () => {
+    const formattedDateRange =
+      dateRange[0] && dateRange[1] ? `${dateRange[0].toISOString()},${dateRange[1].toISOString()}` : ''; // Converts dateRange to a string if both dates are present
+    const pathQueryParams = {
+      search: search,
+      status: statusFilter,
+      dateRange: formattedDateRange,
+      page: String(currentPage),
+      rowsPerPage: String(itemsPerPage),
+    };
+
+    // Construct the query string using URLSearchParams
+    const queryString = new URLSearchParams(pathQueryParams).toString();
+
+    // Use router.push with the constructed query string
+    router.push(`/admin/reports/trainer-report?${queryString}`);
+  };
+
   const handleSearchChange = (value: string) => {
     setSearch(value);
     setCurrentPage(0);
@@ -107,9 +135,9 @@ const TrainerReport: React.FC = () => {
 
   const handleDateChange = (dateRangeS: DateRange<Dayjs>) => {
     setDateRange(dateRangeS);
-    const [start, end] = dateRangeS;
-    setStartDate(start?.format('YYYY-MM-DD') || null);
-    setEndDate(end?.format('YYYY-MM-DD') || null);
+    const [starts, ends] = dateRangeS;
+    setStartDate(starts?.format('YYYY-MM-DD') || null);
+    setEndDate(ends?.format('YYYY-MM-DD') || null);
   };
 
   const handleStatusChange: (status: string) => void = (status) => {

@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useSearchParams } from 'next/navigation';
 import { FormControl, InputLabel, MenuItem, Select } from '@mui/material';
 import type { SelectChangeEvent } from '@mui/material';
 
@@ -11,7 +12,8 @@ interface SubscriptionFiltersProps {
 }
 
 export function SubscriptionFilters({ onMembershipTypeChange }: SubscriptionFiltersProps): React.JSX.Element {
-  const [membershipType, setMembershipType] = React.useState('ALL'); // State for membership type
+  const searchParams = useSearchParams();
+  const [membershipType, setMembershipType] = React.useState(searchParams.get('membershipId') || ''); // State for membership type
   const [membershipTypes, setMembershipTypes] = React.useState<MembershipPlans[]>([]);
 
   const handleMembershipTypeChange = (event: SelectChangeEvent): void => {

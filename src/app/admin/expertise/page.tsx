@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Alert, Button, Card, Stack, Typography } from '@mui/material';
 import { Plus as PlusIcon } from '@phosphor-icons/react/dist/ssr/Plus';
 import { toast, ToastContainer } from 'react-toastify'; // Import the toast function
@@ -18,10 +18,11 @@ import { ExpertiseTable } from '@/components/admin/expertise/expertise-table';
 import type { ExpertiseEntry } from '@/components/admin/expertise/expertise-table';
 
 export default function ExpertisePage(): React.JSX.Element {
+  const searchParams = useSearchParams();
   const [entries, setEntries] = useState<ExpertiseEntry[]>([]);
   const [totalEntries, setTotalEntries] = useState<number>(0);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState('ALL');
+  const [searchTerm, setSearchTerm] = useState(searchParams.get('search') || '');
+  const [statusFilter, setStatusFilter] = useState(searchParams.get('status') || 'ALL');
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [loading, setLoading] = useState(true);
@@ -77,6 +78,25 @@ export default function ExpertisePage(): React.JSX.Element {
       err instanceof Error ? err.message : 'An unexpected error occurred';
     });
   }, [searchTerm, statusFilter, page, rowsPerPage]);
+
+  React.useEffect(() => {
+    updateUrlPathQueryParams();
+  }, [searchTerm, statusFilter, page, rowsPerPage]);
+
+  const updateUrlPathQueryParams = () => {
+    const pathQueryParams = {
+      search: searchTerm,
+      status: statusFilter,
+      page: String(page),
+      rowsPerPage: String(rowsPerPage),
+    };
+
+    // Construct the query string using URLSearchParams
+    const queryString = new URLSearchParams(pathQueryParams).toString();
+
+    // Use router.push with the constructed query string
+    router.push(`/admin/expertise?${queryString}`);
+  };
 
   const handleSearchChange: (newSearchTerm: string) => void = (newSearchTerm) => {
     setSearchTerm(newSearchTerm);
@@ -178,7 +198,7 @@ export default function ExpertisePage(): React.JSX.Element {
         </Stack>
         <Button
           className="common-button"
-          style={{fontFamily:'Audiowide, sans-serif !important',}}
+          style={{ fontFamily: 'Audiowide, sans-serif !important' }}
           startIcon={<PlusIcon fontSize="var(--icon-fontSize-md)" />}
           variant="contained"
           onClick={handleAddClick}

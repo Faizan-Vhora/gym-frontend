@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { DateRange, DateRangePicker } from '@mui/x-date-pickers-pro';
 import { SingleInputDateRangeField } from '@mui/x-date-pickers-pro/SingleInputDateRangeField';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -12,12 +13,33 @@ interface DateRangeFilterProps {
 }
 
 const DateRangeFilter: React.FC<DateRangeFilterProps> = ({ dateRange, onDateChange }) => {
+  const searchParams = useSearchParams();
+
+  // Helper function to parse date range from URL query parameter
+  const parseDateRange = (dateRangeString: string | null): DateRange<Dayjs> => {
+    if (!dateRangeString) return [null, null];
+
+    const [start, end] = dateRangeString.split(',');
+    const startDate = start ? dayjs(start) : null;
+    const endDate = end ? dayjs(end) : null;
+
+    return [startDate, endDate];
+  };
+
+  const defaultDateRange: DateRange<Dayjs> = [null, null]; // Default DateRange value
+  const initialDateRange: DateRange<Dayjs> = parseDateRange(searchParams.get('dateRange')) || defaultDateRange;
+
+  const [dateRangeS, setDateRange] = useState<DateRange<Dayjs>>(initialDateRange);
+
+  // Handle date change and update both state and parent component
   const handleDateChange = (newValue: DateRange<Dayjs>) => {
+    setDateRange(newValue);
     if (onDateChange) {
       onDateChange(newValue);
     }
   };
 
+  // Shortcut options for quick date selection
   const shortcutsItems: PickersShortcutsItem<DateRange<Dayjs>>[] = [
     {
       label: 'This Week',
@@ -62,8 +84,7 @@ const DateRangeFilter: React.FC<DateRangeFilterProps> = ({ dateRange, onDateChan
       getValue: () => {
         const today = dayjs();
         const startOfYear = today.startOf('year');
-        const endOfYear = today;
-        return [startOfYear, endOfYear];
+        return [startOfYear, today];
       },
     },
     {
@@ -83,7 +104,7 @@ const DateRangeFilter: React.FC<DateRangeFilterProps> = ({ dateRange, onDateChan
       <DateRangePicker
         sx={{ width: '100%' }}
         localeText={{ start: 'Start Date', end: 'End Date' }}
-        value={dateRange}
+        value={dateRangeS || dateRange}
         onChange={handleDateChange}
         slots={{ field: SingleInputDateRangeField }}
         slotProps={{

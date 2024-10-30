@@ -181,7 +181,7 @@ export default function Page(): React.JSX.Element {
         ) : (
           <CustomersTable
             count={count}
-            page={page}
+            page={searchParams.get('page') ? Number(searchParams.get('page')) : page}
             rowsPerPage={rowsPerPage}
             rows={customers}
             onPageChange={handlePageChange}

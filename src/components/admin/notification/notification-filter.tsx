@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { Grid, IconButton, InputAdornment, TextField } from '@mui/material';
 import { X as XIcon } from '@phosphor-icons/react'; // Import XIcon from phosphor-react
 import debounce from 'lodash/debounce';
@@ -9,7 +10,8 @@ interface NotificationFiltersProps {
 }
 
 export function NotificationFilters({ onSearchChange }: NotificationFiltersProps): React.JSX.Element {
-  const [searchTerm, setSearchTerm] = useState('');
+  const searchParams = useSearchParams();
+  const [searchTerm, setSearchTerm] = useState(searchParams.get('search') || '');
 
   // Create a debounced version of the search handler
   const debouncedSearch = React.useCallback(

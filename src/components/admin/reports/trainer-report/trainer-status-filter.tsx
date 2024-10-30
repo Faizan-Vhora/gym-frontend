@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useSearchParams } from 'next/navigation';
 import { FormControl, InputLabel, MenuItem, Select } from '@mui/material';
 import type { SelectChangeEvent } from '@mui/material';
 
@@ -13,7 +14,8 @@ const statusOptions = [
 ];
 
 export function TrainerStatusFilters({ onStatusChange }: StatusFiltersProps): React.JSX.Element {
-  const [status, setStatus] = React.useState('ALL');
+  const searchParams = useSearchParams();
+  const [status, setStatus] = React.useState(searchParams.get('status') || 'ALL');
 
   // Handle status change
   const handleStatusChange = (e: SelectChangeEvent): void => {

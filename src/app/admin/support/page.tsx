@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { useCallback, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { CustomLoader } from '@/utils/loader';
 import { Button, Card, Stack, Typography } from '@mui/material';
 import { Plus as PlusIcon } from '@phosphor-icons/react';
@@ -16,12 +16,13 @@ import { SupportTable } from '@/components/admin/support/support-table';
 
 export default function Page(): React.JSX.Element {
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   // State variables
   const [entries, setEntries] = React.useState<SupportEntry[]>([]);
-  const [searchTerm, setSearchTerm] = React.useState('');
-  const [statusFilter, setStatusFilter] = React.useState('All');
-  const [fromFilter, setFromFilter] = React.useState('All');
+  const [searchTerm, setSearchTerm] = React.useState(searchParams.get('search') || '');
+  const [statusFilter, setStatusFilter] = React.useState(searchParams.get('status') || 'All');
+  const [fromFilter, setFromFilter] = React.useState(searchParams.get('from') || 'All');
   const [page, setPage] = React.useState<number>(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [count, setCount] = React.useState<number>(0);
@@ -52,6 +53,26 @@ export default function Page(): React.JSX.Element {
       setLoading(false);
     }
   }, [page, rowsPerPage, searchTerm, statusFilter, fromFilter]);
+
+  React.useEffect(() => {
+    updateUrlPathQueryParams();
+  }, [searchTerm, statusFilter, page, rowsPerPage, fromFilter]);
+
+  const updateUrlPathQueryParams = () => {
+    const pathQueryParams = {
+      search: searchTerm,
+      status: statusFilter,
+      from: fromFilter,
+      page: String(page),
+      rowsPerPage: String(rowsPerPage),
+    };
+
+    // Construct the query string using URLSearchParams
+    const queryString = new URLSearchParams(pathQueryParams).toString();
+
+    // Use router.push with the constructed query string
+    router.push(`/admin/support?${queryString}`);
+  };
 
   const handleAddClick = (): void => {
     router.push('/admin/support/form');

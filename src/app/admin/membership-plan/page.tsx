@@ -9,7 +9,7 @@ import { toast, ToastContainer } from 'react-toastify'; // Import the toast func
 
 import 'react-toastify/dist/ReactToastify.css';
 
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { CustomLoader } from '@/utils/loader';
 import { Button, Card } from '@mui/material';
 import Swal from 'sweetalert2';
@@ -20,13 +20,14 @@ import { MembershipPlanTable } from '@/components/admin/membership-plan/membersh
 import type { MembershipPlans } from '@/components/admin/membership-plan/membership-plan-table';
 
 export default function MembershipPlanPage(): React.JSX.Element {
+  const searchParams = useSearchParams();
   const [membershipPlans, setMembershipPlans] = useState<MembershipPlans[]>([]);
   const [count, setCount] = useState<number>(0);
   const [page, setPage] = useState<number>(0);
   const [rowsPerPage, setRowsPerPage] = useState<number>(5);
-  const [statusFilter, setStatusFilter] = useState<string>('ALL'); // Status filter
+  const [statusFilter, setStatusFilter] = useState<string>(searchParams.get('status') || 'ALL'); // Status filter
   const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = React.useState('');
+  const [searchTerm, setSearchTerm] = React.useState(searchParams.get('search') || '');
   const router = useRouter();
 
   interface MembershipPlanResponse {
@@ -68,6 +69,25 @@ export default function MembershipPlanPage(): React.JSX.Element {
 
     void loadMembershipPlans();
   }, [fetchMembershipPlans]);
+
+  React.useEffect(() => {
+    updateUrlPathQueryParams();
+  }, [searchTerm, statusFilter, page, rowsPerPage]);
+
+  const updateUrlPathQueryParams = () => {
+    const pathQueryParams = {
+      search: searchTerm,
+      status: statusFilter,
+      page: String(page),
+      rowsPerPage: String(rowsPerPage),
+    };
+
+    // Construct the query string using URLSearchParams
+    const queryString = new URLSearchParams(pathQueryParams).toString();
+
+    // Use router.push with the constructed query string
+    router.push(`/admin/membership-plan?${queryString}`);
+  };
 
   const handleAddClick = (): void => {
     router.push('/admin/membership-plan/form');
@@ -158,7 +178,7 @@ export default function MembershipPlanPage(): React.JSX.Element {
         </Stack>
         <Button
           className="common-button"
-          style={{fontFamily:'Audiowide, sans-serif !important',}}
+          style={{ fontFamily: 'Audiowide, sans-serif !important' }}
           startIcon={<PlusIcon fontSize="var(--icon-fontSize-md)" />}
           variant="contained"
           onClick={handleAddClick}

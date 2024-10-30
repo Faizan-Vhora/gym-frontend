@@ -13,7 +13,7 @@ interface TrainersFiltersProps {
 export function TrainersFilters({ onFilterChange, onStatusChange }: TrainersFiltersProps): React.JSX.Element {
   const searchParams = useSearchParams();
   const [searchTerm, setSearchTerm] = React.useState<string>(searchParams.get('search') || '');
-  const [status, setStatus] = React.useState<string>('ALL');
+  const [status, setStatus] = React.useState<string>(searchParams.get('status') || 'ALL');
 
   // Create a debounced version of the search handler
   const debouncedSearch = React.useCallback(
