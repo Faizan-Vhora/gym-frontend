@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { useSearchParams } from 'next/navigation';
 import { FormControl, Grid, IconButton, InputAdornment, InputLabel, MenuItem, Select, TextField } from '@mui/material';
 import type { SelectChangeEvent } from '@mui/material';
 import { X as XIcon } from '@phosphor-icons/react'; // Import XIcon from phosphor-react
@@ -13,10 +14,11 @@ interface ExpertiseFiltersProps {
 
 export default function ExpertiseFilters({ onSearchChange, onStatusChange }: ExpertiseFiltersProps): React.JSX.Element {
   // component implementation
+  const searchParams = useSearchParams();
 
   // export default function ExpertiseFilters({ onSearchChange, onStatusChange }: ExpertiseFiltersProps): React.JSX.Element {
-  const [searchTerm, setSearchTerm] = React.useState('');
-  const [status, setStatus] = React.useState('ALL');
+  const [searchTerm, setSearchTerm] = React.useState(searchParams.get('search') || '');
+  const [status, setStatus] = React.useState(searchParams.get('status') || 'ALL');
 
   const debouncedSearch = React.useCallback(
     debounce((value: string) => {

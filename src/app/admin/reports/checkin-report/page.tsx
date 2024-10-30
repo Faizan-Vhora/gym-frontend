@@ -1,10 +1,11 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { CustomLoader } from '@/utils/loader';
 import { Card, Divider, Grid, Stack, Typography } from '@mui/material';
 import { DateRange } from '@mui/x-date-pickers-pro';
-import { Dayjs } from 'dayjs';
+import dayjs, { Dayjs } from 'dayjs';
 import { toast } from 'react-toastify';
 
 import axiosInstance from '@/lib/axios';
@@ -35,13 +36,18 @@ interface ApiResponse {
 }
 
 const CheckInReport: React.FC = () => {
+  const searchParams = useSearchParams();
+  const router = useRouter();
   const [data, setData] = useState<CheckInEntry[]>([]);
 
-  const [search, setSearch] = React.useState<string>('');
+  const [search, setSearch] = React.useState<string>(searchParams.get('search') || '');
   const [currentPage, setCurrentPage] = useState<number>(0);
   const [itemsPerPage, setItemsPerPage] = useState<number>(5);
   const [totalItems, setTotalItems] = useState<number>(0);
-  const [dateRange, setDateRange] = useState<DateRange<Dayjs>>([null, null]);
+  const rawDateRange = searchParams.get('dateRange');
+  const [start, end] = rawDateRange ? rawDateRange.split(',') : [null, null];
+  const initialDateRange: DateRange<Dayjs> = [start ? dayjs(start) : null, end ? dayjs(end) : null];
+  const [dateRange, setDateRange] = useState<DateRange<Dayjs>>(initialDateRange);
   const [startDate, setStartDate] = useState<string | null>(null);
   const [endDate, setEndDate] = useState<string | null>(null);
   const [loading, setLoading] = React.useState(false);
@@ -91,7 +97,28 @@ const CheckInReport: React.FC = () => {
     };
 
     void fetchCheckinReports();
-  }, [currentPage, itemsPerPage, search, startDate, endDate]);
+  }, [currentPage, itemsPerPage, search, dateRange]);
+
+  React.useEffect(() => {
+    updateUrlPathQueryParams();
+  }, [search, currentPage, itemsPerPage, dateRange]);
+
+  const updateUrlPathQueryParams = () => {
+    const formattedDateRange =
+      dateRange[0] && dateRange[1] ? `${dateRange[0].toISOString()},${dateRange[1].toISOString()}` : ''; // Converts dateRange to a string if both dates are present
+    const pathQueryParams = {
+      search: search,
+      dateRange: formattedDateRange,
+      page: String(currentPage),
+      rowsPerPage: String(itemsPerPage),
+    };
+
+    // Construct the query string using URLSearchParams
+    const queryString = new URLSearchParams(pathQueryParams).toString();
+
+    // Use router.push with the constructed query string
+    router.push(`/admin/reports/checkin-report?${queryString}`);
+  };
 
   const handleSearchChange = (value: string) => {
     setSearch(value);
@@ -100,9 +127,9 @@ const CheckInReport: React.FC = () => {
 
   const handleDateChange = (dateRangeS: DateRange<Dayjs>) => {
     setDateRange(dateRangeS);
-    const [start, end] = dateRangeS;
-    setStartDate(start?.format('YYYY-MM-DD') || null);
-    setEndDate(end?.format('YYYY-MM-DD') || null);
+    const [starts, ends] = dateRangeS;
+    setStartDate(starts?.format('YYYY-MM-DD') || null);
+    setEndDate(ends?.format('YYYY-MM-DD') || null);
   };
 
   return (

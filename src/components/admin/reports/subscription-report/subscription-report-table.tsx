@@ -68,14 +68,14 @@ export function SubscriptionReportTable({ rows }: SubscriptionTableProps): React
               rows.map((row) => (
                 <TableRow hover key={row.id} sx={tableCss.tableRow}>
                   <TableCell sx={tableCss.tableCell}>
-                    <Typography variant="subtitle2">{row.user.fullName}</Typography>
+                    <Typography variant="subtitle2">{row.user?.fullName}</Typography>
                     <Typography color="textSecondary" variant="body2">
-                      {row.user.email}
+                      {row.user?.email}
                     </Typography>
                   </TableCell>
 
                   <TableCell sx={tableCss.tableCell}>
-                    <Typography variant="subtitle2">{row.membershipType.title}</Typography>
+                    <Typography variant="subtitle2">{row.membershipType?.title}</Typography>
                     <Typography color="textSecondary" variant="body2">
                       {row.membershipType.durationInMonths} months
                     </Typography>

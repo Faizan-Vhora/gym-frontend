@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { useSearchParams } from 'next/navigation';
 import { FormControl, Grid, IconButton, InputAdornment, InputLabel, MenuItem, Select, TextField } from '@mui/material';
 import type { SelectChangeEvent } from '@mui/material';
 import { X as XIcon } from '@phosphor-icons/react'; // Import XIcon from phosphor-react
@@ -17,9 +18,10 @@ export default function CheckinFilters({
   onUserTypeChange,
   onStatusChange,
 }: CheckinFiltersProps): React.JSX.Element {
-  const [searchTerm, setSearchTerm] = React.useState('');
-  const [userType, setUserType] = React.useState('ALL');
-  const [status, setStatus] = React.useState('ALL');
+  const searchParams = useSearchParams();
+  const [searchTerm, setSearchTerm] = React.useState(searchParams.get('search') || '');
+  const [userType, setUserType] = React.useState(searchParams.get('userType') || 'ALL');
+  const [status, setStatus] = React.useState(searchParams.get('status') || 'ALL');
 
   const debouncedSearch = React.useCallback(
     debounce((value: string) => {
@@ -59,7 +61,7 @@ export default function CheckinFilters({
 
   return (
     <Grid container spacing={2}>
-      <Grid item md={4} sm={6}  xs={12}>
+      <Grid item md={4} sm={6} xs={12}>
         <TextField
           label="Search"
           value={searchTerm}
@@ -77,7 +79,7 @@ export default function CheckinFilters({
           }}
         />
       </Grid>
-      <Grid item md={4} sm={6}  xs={12}>
+      <Grid item md={4} sm={6} xs={12}>
         <FormControl fullWidth variant="outlined">
           <InputLabel>User Type</InputLabel>
           <Select label="User Type" value={userType} onChange={handleUserTypeChange} variant="outlined" fullWidth>
@@ -87,7 +89,7 @@ export default function CheckinFilters({
           </Select>
         </FormControl>
       </Grid>
-      <Grid item md={4} sm={6}  xs={12}>
+      <Grid item md={4} sm={6} xs={12}>
         <FormControl fullWidth variant="outlined">
           <InputLabel>Status</InputLabel>
           <Select label="Status" value={status} onChange={handleStatusChange} variant="outlined" fullWidth>

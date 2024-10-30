@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Alert, Button, Card, Stack, Typography } from '@mui/material';
 import { Plus as PlusIcon } from '@phosphor-icons/react';
 import { toast, ToastContainer } from 'react-toastify';
@@ -19,13 +19,14 @@ import Swal from 'sweetalert2';
 const initialFaqs: FaqEntry[] = [];
 
 export default function FaqManagementPage(): React.JSX.Element {
+  const searchParams = useSearchParams();
   const [faqs, setFaqs] = React.useState<FaqEntry[]>(initialFaqs);
   const [page, setPage] = React.useState<number>(0);
-  const [searchTerm, setSearchTerm] = React.useState('');
+  const [searchTerm, setSearchTerm] = React.useState(searchParams.get('search') || '');
   const [totalItems, setTotalItems] = React.useState<number>(0);
   const [rowsPerPage, setRowsPerPage] = React.useState<number>(5);
-  const [filterType, setFilterType] = React.useState<string>('ALL');
-  const [filterStatus, setFilterStatus] = React.useState<string>('ALL');
+  const [filterType, setFilterType] = React.useState<string>(searchParams.get('type') || 'ALL');
+  const [filterStatus, setFilterStatus] = React.useState<string>(searchParams.get('status') || 'ALL');
   const [error, setError] = React.useState<string | null>(null);
   const [loading, setLoading] = React.useState(true);
 
@@ -95,6 +96,26 @@ export default function FaqManagementPage(): React.JSX.Element {
       toast.error(errorMessage);
     });
   }, [fetchFaqs]);
+
+  React.useEffect(() => {
+    updateUrlPathQueryParams();
+  }, [searchTerm, filterStatus, filterType, page, rowsPerPage]);
+
+  const updateUrlPathQueryParams = () => {
+    const pathQueryParams = {
+      search: searchTerm,
+      status: filterStatus,
+      type: filterType,
+      page: String(page),
+      rowsPerPage: String(rowsPerPage),
+    };
+
+    // Construct the query string using URLSearchParams
+    const queryString = new URLSearchParams(pathQueryParams).toString();
+
+    // Use router.push with the constructed query string
+    router.push(`/admin/faq?${queryString}`);
+  };
 
   const handleAddClick = (): void => {
     router.push('/admin/faq/form');
@@ -181,7 +202,7 @@ export default function FaqManagementPage(): React.JSX.Element {
           startIcon={<PlusIcon fontSize="var(--icon-fontSize-md)" />}
           variant="contained"
           onClick={handleAddClick}
-          style={{fontFamily:'Audiowide, sans-serif !important',}}
+          style={{ fontFamily: 'Audiowide, sans-serif !important' }}
         >
           Add
         </Button>

@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Alert, Button, Card, Stack, Typography } from '@mui/material';
 import { Plus as PlusIcon } from '@phosphor-icons/react/dist/ssr/Plus';
 import { toast, ToastContainer } from 'react-toastify';
@@ -18,11 +18,12 @@ import { CheckInTable } from '@/components/admin/check-in/check-in-table';
 import type { CheckInEntry } from '@/components/admin/check-in/check-in-table';
 
 export default function CheckinPage(): React.JSX.Element {
+  const searchParams = useSearchParams();
   const [entries, setEntries] = useState<CheckInEntry[]>([]);
   const [totalEntries, setTotalEntries] = useState<number>(0);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState('ALL');
-  const [userTypeFilter, setUserTypeFilter] = useState('ALL');
+  const [searchTerm, setSearchTerm] = useState(searchParams.get('search') || '');
+  const [statusFilter, setStatusFilter] = useState(searchParams.get('status') || 'ALL');
+  const [userTypeFilter, setUserTypeFilter] = useState(searchParams.get('userType') || 'ALL');
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [loading, setLoading] = useState(true);
@@ -89,6 +90,26 @@ export default function CheckinPage(): React.JSX.Element {
       toast.error(errorMessage);
     });
   }, [searchTerm, statusFilter, userTypeFilter, page, rowsPerPage]);
+
+  React.useEffect(() => {
+    updateUrlPathQueryParams();
+  }, [searchTerm, statusFilter, page, rowsPerPage, userTypeFilter]);
+
+  const updateUrlPathQueryParams = () => {
+    const pathQueryParams = {
+      search: searchTerm,
+      status: statusFilter,
+      page: String(page),
+      rowsPerPage: String(rowsPerPage),
+      userType: userTypeFilter,
+    };
+
+    // Construct the query string using URLSearchParams
+    const queryString = new URLSearchParams(pathQueryParams).toString();
+
+    // Use router.push with the constructed query string
+    router.push(`/admin/check-in?${queryString}`);
+  };
 
   const handleSearchChange = (newSearchTerm: string) => {
     setSearchTerm(newSearchTerm);

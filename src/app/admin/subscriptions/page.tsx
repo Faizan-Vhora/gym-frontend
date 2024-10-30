@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useCallback, useEffect, useState } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { MEMBERSHIP_PLAN_STATUS } from '@/utils/constant';
 import { CustomLoader } from '@/utils/loader';
 import { Card, Divider, Grid, Stack, Typography } from '@mui/material';
@@ -40,16 +40,17 @@ const initialSubscription: Subscription[] = [];
 
 export default function SubscriptionManagementPage(): React.JSX.Element {
   const searchParams = useSearchParams();
+  const router = useRouter();
   const SubscriptionId = searchParams.get('membershipTypeId');
 
   const [data, setData] = useState<Subscription[]>(initialSubscription);
 
-  const [search, setSearch] = useState<string>('');
+  const [search, setSearch] = useState<string>(searchParams.get('search') || '');
   const [currentPage, setCurrentPage] = useState<number>(0);
   const [itemsPerPage, setItemsPerPage] = useState<number>(5);
   const [totalItems, setTotalItems] = useState<number>(0);
   const [loading, setLoading] = useState(false);
-  const [membershipFilter, setMembershipFilter] = useState<string>('ALL'); // Membership type filter
+  const [membershipFilter, setMembershipFilter] = useState<string>(searchParams.get('membershipId') || 'ALL'); // Membership type filter
 
   // Function to fetch data
   const fetchSubscriptionPlans = useCallback(async (): Promise<void> => {
@@ -94,6 +95,25 @@ export default function SubscriptionManagementPage(): React.JSX.Element {
       setLoading(false);
     }
   }, [currentPage, itemsPerPage, search, membershipFilter, SubscriptionId]); // Add dependencies here
+
+  React.useEffect(() => {
+    updateUrlPathQueryParams();
+  }, [search, membershipFilter, currentPage, itemsPerPage]);
+
+  const updateUrlPathQueryParams = () => {
+    const pathQueryParams = {
+      search: search,
+      membershipId: membershipFilter,
+      page: String(currentPage),
+      rowsPerPage: String(itemsPerPage),
+    };
+
+    // Construct the query string using URLSearchParams
+    const queryString = new URLSearchParams(pathQueryParams).toString();
+
+    // Use router.push with the constructed query string
+    router.push(`/admin/subscriptions?${queryString}`);
+  };
 
   useEffect(() => {
     void fetchSubscriptionPlans();

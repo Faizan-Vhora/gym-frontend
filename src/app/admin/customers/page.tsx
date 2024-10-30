@@ -9,7 +9,7 @@ import { toast, ToastContainer } from 'react-toastify'; // Import the toast func
 
 import 'react-toastify/dist/ReactToastify.css';
 
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { CustomLoader } from '@/utils/loader';
 import { Button, Card } from '@mui/material';
 import Swal from 'sweetalert2';
@@ -20,13 +20,14 @@ import { CustomersTable } from '@/components/admin/customer/customers-table';
 import type { Customer } from '@/components/admin/customer/customers-table';
 
 export default function Page(): React.JSX.Element {
+  const searchParams = useSearchParams();
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [count, setCount] = useState<number>(0);
   const [page, setPage] = useState<number>(0);
   const [rowsPerPage, setRowsPerPage] = useState<number>(5);
-  const [filter, setFilter] = useState<string>(''); // Search filter
-  const [statusFilter, setStatusFilter] = useState<string>('ALL'); // Status filter
-  const [membershipFilter, setMembershipFilter] = useState<string>('ALL'); // Membership type filter
+  const [filter, setFilter] = useState<string>(searchParams.get('search') || ''); // Search filter
+  const [statusFilter, setStatusFilter] = useState<string>(searchParams.get('status') || 'ALL'); // Status filter
+  const [membershipFilter, setMembershipFilter] = useState<string>(searchParams.get('membershipTypeId') || 'ALL'); // Membership type filter
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
@@ -73,6 +74,26 @@ export default function Page(): React.JSX.Element {
 
     void loadCustomers();
   }, [fetchCustomers]);
+
+  React.useEffect(() => {
+    updateUrlPathQueryParams();
+  }, [filter, statusFilter, membershipFilter, page, rowsPerPage]);
+
+  const updateUrlPathQueryParams = () => {
+    const pathQueryParams = {
+      search: filter,
+      status: statusFilter,
+      membershipTypeId: membershipFilter,
+      page: String(page),
+      rowsPerPage: String(rowsPerPage),
+    };
+
+    // Construct the query string using URLSearchParams
+    const queryString = new URLSearchParams(pathQueryParams).toString();
+
+    // Use router.push with the constructed query string
+    router.push(`/admin/customers?${queryString}`);
+  };
 
   const handleAddClick = (): void => {
     router.push('/admin/customers/form');
@@ -160,7 +181,7 @@ export default function Page(): React.JSX.Element {
         ) : (
           <CustomersTable
             count={count}
-            page={page}
+            page={searchParams.get('page') ? Number(searchParams.get('page')) : page}
             rowsPerPage={rowsPerPage}
             rows={customers}
             onPageChange={handlePageChange}

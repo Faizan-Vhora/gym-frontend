@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useSearchParams } from 'next/navigation';
 import { FormControl, Grid, IconButton, InputAdornment, InputLabel, MenuItem, Select, TextField } from '@mui/material';
 import type { SelectChangeEvent } from '@mui/material'; // Importing as a type
 import { X as XIcon } from '@phosphor-icons/react'; // Import XIcon from phosphor-react
@@ -10,8 +11,9 @@ interface TrainersFiltersProps {
 }
 
 export function TrainersFilters({ onFilterChange, onStatusChange }: TrainersFiltersProps): React.JSX.Element {
-  const [searchTerm, setSearchTerm] = React.useState<string>('');
-  const [status, setStatus] = React.useState<string>('ALL');
+  const searchParams = useSearchParams();
+  const [searchTerm, setSearchTerm] = React.useState<string>(searchParams.get('search') || '');
+  const [status, setStatus] = React.useState<string>(searchParams.get('status') || 'ALL');
 
   // Create a debounced version of the search handler
   const debouncedSearch = React.useCallback(

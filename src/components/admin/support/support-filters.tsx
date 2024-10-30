@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { SUPPORT_TICKET_STATUS_OPTIONS, SUPPORT_TICKET_USER_TYPE_OPTIONS } from '@/utils/constant';
 import { FormControl, Grid, IconButton, InputAdornment, InputLabel, MenuItem, Select, TextField } from '@mui/material';
 import type { SelectChangeEvent } from '@mui/material';
@@ -17,9 +18,10 @@ export function SupportFilters({
   onStatusChange,
   onFromChange,
 }: SupportFiltersProps): React.JSX.Element {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [status, setStatus] = useState('All');
-  const [from, setFrom] = useState('All');
+  const searchParams = useSearchParams();
+  const [searchTerm, setSearchTerm] = useState(searchParams.get('search') || '');
+  const [status, setStatus] = useState(searchParams.get('status') || 'All');
+  const [from, setFrom] = useState(searchParams.get('from') || 'All');
 
   // Create a debounced version of the search handler
   const debouncedSearch = React.useCallback(

@@ -102,7 +102,7 @@ export function BookingTable({
   };
 
   const handleRowClick = (id: number): void => {
-    router.push(`/admin/bookings/view?id=${id}`); // Replace with the actual path to your form page
+    router.push(`/admin/bookings/view?id=${id}&tab=1`); // Replace with the actual path to your form page
   };
 
   return (

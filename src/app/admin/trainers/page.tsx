@@ -9,7 +9,7 @@ import { toast, ToastContainer } from 'react-toastify';
 
 import 'react-toastify/dist/ReactToastify.css';
 
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { CustomLoader } from '@/utils/loader';
 import { Alert, Button, Card } from '@mui/material';
 import Swal from 'sweetalert2';
@@ -20,12 +20,13 @@ import { TrainersTable } from '@/components/admin/trainer/trainer-table';
 import type { Trainer } from '@/components/admin/trainer/trainer-table';
 
 export default function TrainersPage(): React.JSX.Element {
+  const searchParams = useSearchParams();
   const [trainers, setTrainers] = useState<Trainer[]>([]);
   const [count, setCount] = useState<number>(0);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
-  const [filter, setFilter] = useState(''); // Search filter
-  const [statusFilter, setStatusFilter] = useState('ALL'); // Status filter
+  const [filter, setFilter] = useState<string>(searchParams.get('search') || ''); // Search filter
+  const [statusFilter, setStatusFilter] = useState<string>(searchParams.get('status') || 'ALL'); // Status filter
   const [error, setError] = React.useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
@@ -93,6 +94,25 @@ export default function TrainersPage(): React.JSX.Element {
       err instanceof Error ? err.message : 'An unexpected error occurred';
     });
   }, [fetchTrainers]);
+
+  React.useEffect(() => {
+    updateUrlPathQueryParams();
+  }, [filter, statusFilter, page, rowsPerPage]);
+
+  const updateUrlPathQueryParams = () => {
+    const pathQueryParams = {
+      search: filter,
+      status: statusFilter,
+      page: String(page),
+      rowsPerPage: String(rowsPerPage),
+    };
+
+    // Construct the query string using URLSearchParams
+    const queryString = new URLSearchParams(pathQueryParams).toString();
+
+    // Use router.push with the constructed query string
+    router.push(`/admin/trainers?${queryString}`);
+  };
 
   const handleAddClick = (): void => {
     router.push('/admin/trainers/form');

@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useSearchParams } from 'next/navigation';
 import { FormControl, Grid, IconButton, InputAdornment, InputLabel, MenuItem, Select, TextField } from '@mui/material';
 import type { SelectChangeEvent } from '@mui/material';
 import { X as XIcon } from '@phosphor-icons/react'; // Import XIcon from phosphor-react
@@ -24,9 +25,10 @@ const statusOptions = [
 ];
 
 export function FaqFilters({ onSearchChange, onTypeChange, onStatusChange }: FaqFiltersProps): React.JSX.Element {
-  const [searchTerm, setSearchTerm] = React.useState('');
-  const [type, setType] = React.useState('ALL');
-  const [status, setStatus] = React.useState('ALL');
+  const searchParams = useSearchParams();
+  const [searchTerm, setSearchTerm] = React.useState(searchParams.get('search') || '');
+  const [type, setType] = React.useState(searchParams.get('type') || 'ALL');
+  const [status, setStatus] = React.useState(searchParams.get('status') || 'ALL');
 
   //Create a debounced version of the search handler
   const debouncedSearch = React.useCallback(

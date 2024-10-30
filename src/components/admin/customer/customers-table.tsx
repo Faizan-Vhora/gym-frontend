@@ -73,13 +73,13 @@ export function CustomersTable({
 
   const handleEdit = React.useCallback(
     (id: string) => {
-      router.push(`/admin/customers/form?id=${id}`);
+      router.push(`/admin/customers/form?id=${id}&tab=1`);
     },
     [router]
   );
 
   const handleRowClick = (id: string): void => {
-    router.push(`/admin/customers/form?id=${id}`); // Replace with the actual path to your form page
+    router.push(`/admin/customers/form?id=${id}&tab=1`); // Replace with the actual path to your form page
   };
 
   return (
