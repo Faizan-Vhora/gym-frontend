@@ -195,7 +195,7 @@ export default function Page(): React.JSX.Element {
           startIcon={<PlusIcon fontSize="var(--icon-fontSize-md)" />}
           variant="contained"
           onClick={handleAddClick}
-          style={{ fontFamily: 'Audiowide, sans-serif !important' }}
+          style={{ fontFamily: 'Audiowide, sans-serif' }}
         >
           Add
         </Button>

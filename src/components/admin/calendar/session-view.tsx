@@ -190,17 +190,23 @@ const SessionPreview: React.FC<SessionNotesFormProps> = ({
                             </Typography>
                           </Stack>
                           <Stack flexDirection={'row'} alignItems={'center'}>
-                            <IconButton>
-                              <GenderIntersex size={25} />
-                            </IconButton>
+                            {sessionObj?.customer?.gender && (
+                              <IconButton>
+                                <GenderIntersex size={25} />
+                              </IconButton>
+                            )}
+
                             <Typography color="text.secondary" gutterBottom>
                               {sessionObj?.customer?.gender && GENDER_TYPE_DETAILS[sessionObj?.customer?.gender]?.label}
                             </Typography>
                           </Stack>
                           <Stack flexDirection={'row'} alignItems={'center'}>
-                            <IconButton>
-                              <MapPin size={25} />
-                            </IconButton>
+                            {sessionObj?.customer?.address && (
+                              <IconButton>
+                                <MapPin size={25} />
+                              </IconButton>
+                            )}
+
                             <Typography color="text.secondary" gutterBottom>
                               {sessionObj?.customer?.address}
                             </Typography>
@@ -393,6 +399,7 @@ const SessionPreview: React.FC<SessionNotesFormProps> = ({
               borderColor: 'darkred',
               backgroundColor: 'rgba(255, 0, 0, 0.1)',
             },
+            marginRight: '10px',
           }}
         >
           Cancel
