@@ -1,5 +1,5 @@
 import React from 'react';
-import { formatTo12HourFormat } from '@/utils/date-utils';
+import { formatDate, formatTo12HourFormat } from '@/utils/date-utils';
 import {
   Box,
   Card,
@@ -16,7 +16,6 @@ import {
   Typography,
 } from '@mui/material';
 import { Clock } from '@phosphor-icons/react';
-import dayjs from 'dayjs';
 
 export interface CheckInEntry {
   id: number;
@@ -76,7 +75,7 @@ export function CheckInTableView({
             ) : (
               entries.map((entry) => (
                 <TableRow key={entry.id}>
-                  <TableCell>{dayjs(entry.entryDate).format('MMM D, YYYY')}</TableCell>
+                  <TableCell>{formatDate(entry.entryDate)}</TableCell>
                   <TableCell>
                     <IconButton>
                       <Clock />

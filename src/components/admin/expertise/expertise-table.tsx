@@ -1,5 +1,6 @@
 import React from 'react';
 import { useRouter } from 'next/navigation';
+import { formatDate } from '@/utils/date-utils';
 import {
   Box,
   Card,
@@ -17,7 +18,6 @@ import {
   Typography,
 } from '@mui/material';
 import { PencilSimple, Trash } from '@phosphor-icons/react';
-import dayjs from 'dayjs';
 
 import tableCss from '@/styles/table-css';
 
@@ -82,14 +82,15 @@ export function ExpertiseTable({
             <TableRow sx={tableCss.tableRow}>
               <TableCell sx={tableCss.tableHeaderCell}>Title</TableCell>
               <TableCell sx={tableCss.tableHeaderCell}>Description</TableCell>
-              <TableCell sx={tableCss.tableHeaderCell}>Updated At</TableCell>
+              <TableCell sx={{ ...tableCss.tableHeaderCell, textAlign: 'center' }}>Updated At</TableCell>
               <TableCell
                 sx={{
                   ...tableCss.tableHeaderCell,
-                  width: '200px', // Adjust width as needed
-                  whiteSpace: 'nowrap',
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
+                  // width: '200px', // Adjust width as needed
+                  // whiteSpace: 'nowrap',
+                  // overflow: 'hidden',
+                  // textOverflow: 'ellipsis',
+                  textAlign: 'center',
                 }}
               >
                 Status
@@ -108,7 +109,7 @@ export function ExpertiseTable({
               entries.map((entry) => (
                 <TableRow key={entry.id} sx={tableCss.tableRow}>
                   <TableCell
-                    sx={tableCss.tableCell}
+                    sx={{ ...tableCss.tableCell, textAlign: 'left' }}
                     onClick={() => {
                       handleRowClick(entry.id);
                     }}
@@ -122,10 +123,21 @@ export function ExpertiseTable({
                       textOverflow: 'ellipsis',
                       maxWidth: '100px',
                       overflow: 'hidden',
+                      textAlign: 'left',
                     }}
                     dangerouslySetInnerHTML={{ __html: entry?.description || '-' }}
                   />
-                  <TableCell sx={tableCss.tableCell}>{dayjs(entry.updatedAt).format('MMM D, YYYY')}</TableCell>
+                  <TableCell sx={tableCss.tableCell}>
+                    <Typography>
+                      {formatDate(
+                        typeof entry.updatedAt === 'string'
+                          ? entry.updatedAt
+                          : entry.updatedAt instanceof Date
+                            ? entry.updatedAt.toISOString().split('T')[0]
+                            : ''
+                      )}
+                    </Typography>
+                  </TableCell>
 
                   <TableCell sx={tableCss.tableCell}>
                     <FormControlLabel

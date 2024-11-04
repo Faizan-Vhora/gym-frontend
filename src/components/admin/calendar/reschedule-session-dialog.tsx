@@ -112,7 +112,7 @@ const SlotRescheduleForm: React.FC<SlotRescheduleFormProps> = ({ sessionObj, ope
   };
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
+    <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth sx={{ zIndex: 99999 }}>
       <DialogTitle>Reschedule Session</DialogTitle>
       <DialogContent>
         <form onSubmit={handleSubmit(onSubmitForm)}>
@@ -206,10 +206,24 @@ const SlotRescheduleForm: React.FC<SlotRescheduleFormProps> = ({ sessionObj, ope
         </form>
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose} color="secondary">
+        <Button
+          onClick={onClose}
+          sx={{
+            border: '1px solid',
+            borderColor: '#d0021b',
+            color: '#d0021b',
+            fontFamily: 'Audiowide, sans-serif !important',
+            transform: 'skewX(-20deg)',
+            '&:hover': {
+              borderColor: 'darkred',
+              backgroundColor: 'rgba(255, 0, 0, 0.1)',
+            },
+          }}
+        >
           Cancel
         </Button>
         <Button
+          className="common-button"
           onClick={handleSubmit(onSubmitForm)}
           color="primary"
           disabled={Boolean(errors.selectedDate) || Boolean(errors.selectedDate) || loading}

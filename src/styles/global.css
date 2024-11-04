@@ -162,6 +162,7 @@ body {
 .bookin-card {
     height: 290px;
     padding: 20px 10px;
+    width: 300px
 
    }
    /* .bookin-card p , .duration p {

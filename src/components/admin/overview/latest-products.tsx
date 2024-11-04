@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { formatDate } from '@/utils/date-utils';
 import { CustomLoader } from '@/utils/loader';
 import { CardActions, Chip, Typography } from '@mui/material';
 import Box from '@mui/material/Box';
@@ -125,7 +126,7 @@ export function IncompleteProfiles(): React.JSX.Element {
                 <ListItemText
                   primary={product.name}
                   primaryTypographyProps={{ variant: 'subtitle1' }}
-                  secondary={`Created ${dayjs(product.createdAt).format('MMM D, YYYY')}`}
+                  secondary={`Created ${formatDate(product.createdAt)}`}
                   secondaryTypographyProps={{ variant: 'body2' }}
                 />
                 <Chip

@@ -21,8 +21,8 @@ import 'react-toastify/dist/ReactToastify.css'; // Import toast styles
 
 import { useRouter } from 'next/navigation';
 import { SUPPORT_TICKET_STATUS_OPTIONS, USER_TYPE_OPTIONS, UserTypeOption } from '@/utils/constant';
+import { formatDate } from '@/utils/date-utils';
 import { Chat, PencilSimple } from '@phosphor-icons/react';
-import dayjs from 'dayjs';
 
 import tableCss from '@/styles/table-css';
 
@@ -113,7 +113,7 @@ export function SupportTable({
               ) : (
                 entries.map((entry) => (
                   <TableRow hover key={entry.id} sx={tableCss.tableRow}>
-                    <TableCell sx={tableCss.tableCell}>
+                    <TableCell sx={{ ...tableCss.tableCell, textAlign: 'left' }}>
                       <Stack direction="row" spacing={2}>
                         <Box>
                           <Typography variant="subtitle2">{entry?.user?.fullName}</Typography>
@@ -126,8 +126,20 @@ export function SupportTable({
                     <TableCell sx={tableCss.tableCell}>
                       {USER_TYPE_OPTIONS.find((ele: UserTypeOption) => ele.value === entry.userType)?.label || '-'}
                     </TableCell>
-                    <TableCell sx={tableCss.tableCell}>{entry.subject}</TableCell>
-                    <TableCell sx={tableCss.tableCell}>{dayjs(entry.createdAt).format('MMM D, YYYY')}</TableCell>
+                    <TableCell sx={{ ...tableCss.tableCell, textAlign: 'left' }}>{entry.subject}</TableCell>
+                    <TableCell sx={tableCss.tableCell}>
+                      {entry.createdAt && (
+                        <Typography color="textSecondary">
+                          {formatDate(
+                            typeof entry.createdAt === 'string'
+                              ? entry.createdAt
+                              : entry.createdAt instanceof Date
+                                ? entry.createdAt.toISOString().split('T')[0]
+                                : ''
+                          )}
+                        </Typography>
+                      )}
+                    </TableCell>
                     <TableCell>
                       <Select
                         sx={{ height: '40px', width: '120px' }}

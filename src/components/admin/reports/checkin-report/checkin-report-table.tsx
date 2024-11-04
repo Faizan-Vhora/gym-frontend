@@ -1,5 +1,5 @@
 import React from 'react';
-import { formatTo12HourFormat } from '@/utils/date-utils';
+import { formatDate, formatTo12HourFormat } from '@/utils/date-utils';
 import {
   Box,
   Card,
@@ -14,7 +14,6 @@ import {
   Typography,
 } from '@mui/material';
 import { Clock } from '@phosphor-icons/react';
-import dayjs from 'dayjs';
 
 import tableCss from '@/styles/table-css';
 
@@ -58,8 +57,8 @@ export function CheckInReportTable({ rows }: CheckInTableProps): React.JSX.Eleme
               <TableCell sx={tableCss.tableHeaderCell}>Entry Date</TableCell>
               <TableCell sx={tableCss.tableHeaderCell}>Entry In Time</TableCell>
               <TableCell sx={tableCss.tableHeaderCell}>Entry Out Time</TableCell>
-              <TableCell sx={tableCss.tableHeaderCell}>User Type</TableCell>
-              <TableCell sx={tableCss.tableHeaderCell}>Status</TableCell>
+              <TableCell sx={{ ...tableCss.tableHeaderCell, textAlign: 'center' }}>User Type</TableCell>
+              <TableCell sx={{ ...tableCss.tableHeaderCell, textAlign: 'center' }}>Status</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -72,13 +71,13 @@ export function CheckInReportTable({ rows }: CheckInTableProps): React.JSX.Eleme
             ) : (
               rows.map((entry) => (
                 <TableRow key={entry.id}>
-                  <TableCell sx={tableCss.tableCell}>
+                  <TableCell sx={{ ...tableCss.tableCell, textAlign: 'left' }}>
                     <Typography variant="subtitle2">{entry.user?.fullName}</Typography>
                     <Typography color="textSecondary" variant="body2">
                       {entry.user?.email}
                     </Typography>
                   </TableCell>
-                  <TableCell>{dayjs(entry.entryDate).format('MMM D, YYYY')}</TableCell>
+                  <TableCell>{formatDate(entry.entryDate)}</TableCell>
                   <TableCell>
                     <IconButton>
                       <Clock />

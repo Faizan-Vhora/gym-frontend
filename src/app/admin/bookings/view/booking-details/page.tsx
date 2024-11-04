@@ -15,7 +15,6 @@ import { formatDate } from '@/utils/date-utils';
 import { CustomLoader } from '@/utils/loader';
 import { Avatar, Box, Card, Grid, IconButton, Stack, Typography } from '@mui/material';
 import { Barbell, Envelope, GenderIntersex, MapPin, Phone } from '@phosphor-icons/react';
-import dayjs from 'dayjs';
 import { toast, ToastContainer } from 'react-toastify';
 
 import axiosInstance from '@/lib/axios';
@@ -63,7 +62,7 @@ export default function BookingDetailsPage(): React.JSX.Element {
         <Card sx={{ padding: '20px 10px' }}>
           {/* <CardContent> */}
 
-          <Grid container rowGap={6} columnGap={6} justifyContent={'center'} sx={{ padding: '20px 10px' }}>
+          <Grid container rowGap={5} columnGap={5} justifyContent={'center'} sx={{ padding: '20px 10px' }}>
             {/*  Booking Details */}
             <Grid item xs={12} sm={6} md={4}>
               <Typography
@@ -90,6 +89,7 @@ export default function BookingDetailsPage(): React.JSX.Element {
                     textAlign={'end'}
                     style={{ fontFamily: '"Audiowide", sans-serif' }}
                     color="text.secondary"
+                    fontWeight={600}
                     gutterBottom
                   >
                     {BOOKING_TYPE_DETAILS[bookingDetail.bookingType]?.label}
@@ -99,6 +99,7 @@ export default function BookingDetailsPage(): React.JSX.Element {
                     component="span"
                     style={{ fontFamily: '"Audiowide", sans-serif' }}
                     color="text.secondary"
+                    fontWeight={600}
                     gutterBottom
                   >
                     {BOOKING_STATUS_DETAILS[bookingDetail.status]?.label}
@@ -136,9 +137,7 @@ export default function BookingDetailsPage(): React.JSX.Element {
                   </Typography>
                 </Stack>
 
-                <Stack
-                  sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', marginTop: '30px' }}
-                >
+                <Stack sx={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: '30px' }}>
                   <Typography color="text.secondary" style={{ fontFamily: '"Audiowide", sans-serif' }} gutterBottom>
                     {bookingDetail?.createdBy?.fullName} <br />
                     <Typography variant="body2" component="span" fontSize={'12px'}>
@@ -160,7 +159,16 @@ export default function BookingDetailsPage(): React.JSX.Element {
                     style={{ fontFamily: '"Audiowide", sans-serif' }}
                     textAlign={'center'}
                   >
-                    {dayjs(bookingDetail?.createdAt).format('DD/MM/YYYY')} <br />
+                    {bookingDetail?.createdAt && (
+                      <Typography>
+                        {formatDate(
+                          typeof bookingDetail.createdAt === 'string'
+                            ? bookingDetail.createdAt
+                            : bookingDetail.createdAt?.toISOString().split('T')[0] // Ensure it’s not null before calling toISOString
+                        )}
+                      </Typography>
+                    )}
+                    <br />
                     <Typography variant="body2" component="span" fontSize={'12px'}>
                       Booking at
                     </Typography>
@@ -347,26 +355,34 @@ export default function BookingDetailsPage(): React.JSX.Element {
                       </Typography>
                     </Stack>
                     <Stack flexDirection={'row'} alignItems={'center'}>
-                      <IconButton>
-                        {' '}
-                        <Phone size={25} />
-                      </IconButton>
+                      {bookingDetail?.customer?.phoneNumber && (
+                        <IconButton>
+                          <Phone size={25} />
+                        </IconButton>
+                      )}
+
                       <Typography color="text.secondary" gutterBottom>
                         {bookingDetail?.customer?.phoneNumber}
                       </Typography>
                     </Stack>
                     <Stack flexDirection={'row'} alignItems={'center'}>
-                      <IconButton>
-                        <GenderIntersex size={25} />
-                      </IconButton>
+                      {bookingDetail?.customer?.gender && (
+                        <IconButton>
+                          <GenderIntersex size={25} />
+                        </IconButton>
+                      )}
+
                       <Typography color="text.secondary" gutterBottom>
                         {bookingDetail?.customer?.gender && GENDER_TYPE_DETAILS[bookingDetail?.customer?.gender]?.label}
                       </Typography>
                     </Stack>
                     <Stack flexDirection={'row'} alignItems={'center'}>
-                      <IconButton>
-                        <MapPin size={25} />
-                      </IconButton>
+                      {bookingDetail?.customer?.address && (
+                        <IconButton>
+                          <MapPin size={25} />
+                        </IconButton>
+                      )}
+
                       <Typography color="text.secondary" gutterBottom>
                         {bookingDetail?.customer?.address}
                       </Typography>
@@ -431,12 +447,17 @@ export default function BookingDetailsPage(): React.JSX.Element {
                   <Stack>
                     <Avatar sx={{ height: '76px', width: '76px' }}></Avatar>
                     <Stack flexDirection={'row'} justifyContent={'center'} alignItems={'center'}>
-                      <IconButton>
-                        <Barbell size={18} />
-                      </IconButton>
-                      <Typography color="text.secondary" gutterBottom>
-                        {bookingDetail?.trainer?.experience} years
-                      </Typography>
+                      {bookingDetail?.trainer?.experience && (
+                        <>
+                          {' '}
+                          <IconButton>
+                            <Barbell size={18} />
+                          </IconButton>
+                          <Typography color="text.secondary" gutterBottom>
+                            {bookingDetail?.trainer?.experience} years
+                          </Typography>
+                        </>
+                      )}
                     </Stack>
                   </Stack>
                   <Stack>
@@ -458,26 +479,35 @@ export default function BookingDetailsPage(): React.JSX.Element {
                       </Typography>
                     </Stack>
                     <Stack flexDirection={'row'} alignItems={'center'}>
-                      <IconButton>
-                        {' '}
-                        <Phone size={25} />
-                      </IconButton>
+                      {bookingDetail?.trainer?.phoneNumber && (
+                        <IconButton>
+                          {' '}
+                          <Phone size={25} />
+                        </IconButton>
+                      )}
+
                       <Typography color="text.secondary" gutterBottom>
                         {bookingDetail?.trainer?.phoneNumber}
                       </Typography>
                     </Stack>
                     <Stack flexDirection={'row'} alignItems={'center'}>
-                      <IconButton>
-                        <GenderIntersex size={25} />
-                      </IconButton>
+                      {bookingDetail?.trainer?.gender && (
+                        <IconButton>
+                          <GenderIntersex size={25} />
+                        </IconButton>
+                      )}
+
                       <Typography color="text.secondary" gutterBottom>
                         {bookingDetail?.trainer?.gender && GENDER_TYPE_DETAILS[bookingDetail?.trainer?.gender]?.label}
                       </Typography>
                     </Stack>
                     <Stack flexDirection={'row'} alignItems={'center'}>
-                      <IconButton>
-                        <MapPin size={25} />
-                      </IconButton>
+                      {bookingDetail?.trainer?.address && (
+                        <IconButton>
+                          <MapPin size={25} />
+                        </IconButton>
+                      )}
+
                       <Typography color="text.secondary" gutterBottom>
                         {bookingDetail?.trainer?.address}
                       </Typography>

@@ -40,7 +40,7 @@ const SessionNotesForm: React.FC<SessionNotesFormProps> = ({ sessionObj, open, o
   };
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
+    <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth sx={{ zIndex: 99999 }}>
       <DialogTitle>Notes</DialogTitle>
       <DialogContent>
         <form onSubmit={handleSubmit(onSubmitForm)}>
@@ -65,10 +65,27 @@ const SessionNotesForm: React.FC<SessionNotesFormProps> = ({ sessionObj, open, o
         </form>
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose} color="secondary">
+        <Button
+          onClick={onClose}
+          sx={{
+            border: '1px solid',
+            borderColor: '#d0021b',
+            color: '#d0021b',
+            fontFamily: 'Audiowide, sans-serif !important',
+            transform: 'skewX(-20deg)',
+            '&:hover': {
+              borderColor: 'darkred',
+              backgroundColor: 'rgba(255, 0, 0, 0.1)',
+            },
+          }}
+        >
           Cancel
         </Button>
-        <Button onClick={handleSubmit(onSubmitForm)} color="primary" disabled={Boolean(errors.notes) || loading}>
+        <Button
+          onClick={handleSubmit(onSubmitForm)}
+          className="common-button"
+          disabled={Boolean(errors.notes) || loading}
+        >
           Submit
         </Button>
       </DialogActions>

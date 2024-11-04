@@ -1,5 +1,5 @@
 import React from 'react';
-import { formatTo12HourFormat } from '@/utils/date-utils';
+import { formatDate, formatTo12HourFormat } from '@/utils/date-utils';
 import {
   Avatar,
   Box,
@@ -18,7 +18,6 @@ import {
   Typography,
 } from '@mui/material';
 import { Clock, Trash } from '@phosphor-icons/react';
-import dayjs from 'dayjs';
 
 import tableCss from '@/styles/table-css';
 
@@ -98,7 +97,7 @@ export function CheckInTable({
             ) : (
               entries.map((entry) => (
                 <TableRow key={entry.id}>
-                  <TableCell sx={tableCss.tableCell}>
+                  <TableCell sx={{ ...tableCss.tableCell, textAlign: 'left' }}>
                     <Stack flexDirection={'row'} columnGap={2} paddingY={1}>
                       <Avatar
                         src={entry?.user?.profileImageUrl || '/assets/User@3x-1.png'}
@@ -112,7 +111,7 @@ export function CheckInTable({
                       </Stack>
                     </Stack>
                   </TableCell>
-                  <TableCell>{dayjs(entry.entryDate).format('MMM D, YYYY')}</TableCell>
+                  <TableCell>{formatDate(entry.entryDate)}</TableCell>
                   <TableCell>
                     <IconButton>
                       <Clock />

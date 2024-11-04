@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
+import { formatDate } from '@/utils/date-utils';
 import {
   Box,
   Card,
@@ -20,8 +21,7 @@ import {
   TableRow,
   Typography,
 } from '@mui/material';
-import { Note, PencilSimple, Trash, XCircle } from '@phosphor-icons/react';
-import dayjs from 'dayjs';
+import { Eye, PencilSimple, Trash, XCircle } from '@phosphor-icons/react';
 
 import tableCss from '@/styles/table-css';
 
@@ -182,10 +182,10 @@ export function DiscountTable({
                       {discount.codeName}
                     </TableCell>
                     <TableCell sx={[tableCss.tableCell, { whiteSpace: 'nowrap' }]}>
-                      {discount.startDate ? dayjs(discount.startDate).format('MMM D, YYYY') : '-'}
+                      {discount.startDate ? formatDate(discount.startDate) : '-'}
                     </TableCell>
                     <TableCell sx={[tableCss.tableCell, { whiteSpace: 'nowrap' }]}>
-                      {discount.expiryDate ? dayjs(discount.expiryDate).format('MMM D, YYYY') : '-'}
+                      {discount.expiryDate ? formatDate(discount.expiryDate) : '-'}
                     </TableCell>
                     <TableCell sx={tableCss.tableCell}>
                       {discount.discountType === DiscountType.Percentage ? 'Percentage' : 'Fixed'}
@@ -235,7 +235,7 @@ export function DiscountTable({
                           handleCodeView(discount.codeName);
                         }}
                       >
-                        <Note />
+                        <Eye />
                       </IconButton>
                     </TableCell>
                   </TableRow>

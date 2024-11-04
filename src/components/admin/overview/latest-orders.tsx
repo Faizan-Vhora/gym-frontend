@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import { BOOKING_STATUS_DETAILS } from '@/utils/constant';
+import { formatDate } from '@/utils/date-utils';
 import { Typography } from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -15,7 +16,6 @@ import TableCell from '@mui/material/TableCell';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import { ArrowRight as ArrowRightIcon } from '@phosphor-icons/react/dist/ssr/ArrowRight';
-import dayjs from 'dayjs';
 
 export interface Order {
   id: number;
@@ -88,7 +88,7 @@ export function LatestOrders({ orders = [] }: LatestOrdersProps): React.JSX.Elem
                       {order?.trainerPhoneNumber}
                     </Typography>
                   </TableCell>
-                  <TableCell>{dayjs(order.createdAt).format('MMM D, YYYY')}</TableCell>
+                  <TableCell>{formatDate(order.createdAt)}</TableCell>
                   <TableCell>
                     <Chip color={color} label={label} size="small" />
                   </TableCell>

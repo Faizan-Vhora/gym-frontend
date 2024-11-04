@@ -89,7 +89,7 @@ export default function FaqTable({
         <Table>
           <TableHead>
             <TableRow sx={tableCss.tableRow}>
-              <TableCell sx={tableCss.tableHeaderCell}>
+              <TableCell sx={{ ...tableCss.tableHeaderCell, textAlign: 'center' }}>
                 <TableSortLabel
                   onClick={() => {
                     handleRequestSort('type');
@@ -116,7 +116,7 @@ export default function FaqTable({
                   Answer
                 </TableSortLabel>
               </TableCell>
-              <TableCell sx={tableCss.tableHeaderCell}>
+              <TableCell sx={{ ...tableCss.tableHeaderCell, textAlign: 'center' }}>
                 <TableSortLabel
                   onClick={() => {
                     handleRequestSort('status');
@@ -125,7 +125,7 @@ export default function FaqTable({
                   Status
                 </TableSortLabel>
               </TableCell>
-              <TableCell sx={tableCss.tableHeaderCell}>Actions</TableCell>
+              <TableCell sx={{ ...tableCss.tableHeaderCell, textAlign: 'center' }}>Actions</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -149,12 +149,24 @@ export default function FaqTable({
                     {/* Fallback to original type if it's not in the mapping */}
                   </TableCell>
                   <TableCell
-                    sx={{ ...tableCss.tableCell, textOverflow: 'ellipsis', maxWidth: '120px', overflow: 'hidden' }}
+                    sx={{
+                      ...tableCss.tableCell,
+                      textOverflow: 'ellipsis',
+                      maxWidth: '120px',
+                      overflow: 'hidden',
+                      textAlign: 'left',
+                    }}
                   >
                     {faq.question}
                   </TableCell>
                   <TableCell
-                    sx={{ ...tableCss.tableCell, textOverflow: 'ellipsis', maxWidth: '120px', overflow: 'hidden' }}
+                    sx={{
+                      ...tableCss.tableCell,
+                      textOverflow: 'ellipsis',
+                      maxWidth: '120px',
+                      overflow: 'hidden',
+                      textAlign: 'left',
+                    }}
                   >
                     {faq.answer}
                   </TableCell>

@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
-import { formatTo12HourFormat } from '@/utils/date-utils';
+import { formatDate, formatTo12HourFormat } from '@/utils/date-utils';
 import { CustomLoader } from '@/utils/loader';
 import { IconButton, Typography } from '@mui/material';
 import Box from '@mui/material/Box';
@@ -16,7 +16,6 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import { Clock } from '@phosphor-icons/react';
 import { ArrowRight as ArrowRightIcon } from '@phosphor-icons/react/dist/ssr/ArrowRight';
-import dayjs from 'dayjs';
 
 import axiosInstance from '@/lib/axios';
 
@@ -102,7 +101,7 @@ export function CheckInUsers(): React.JSX.Element {
                         {order?.user?.phoneNumber}
                       </Typography>
                     </TableCell>
-                    <TableCell>{dayjs(order.entryDate).format('MMM D, YYYY')}</TableCell>
+                    <TableCell>{formatDate(order.entryDate)}</TableCell>
                     <TableCell>
                       <IconButton>
                         <Clock />

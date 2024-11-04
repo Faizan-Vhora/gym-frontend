@@ -5,6 +5,7 @@ import {
   MEMBERSHIP_PLAN_STATUS,
   MEMBERSHIP_PLAN_STATUS_DETAILS,
 } from '@/utils/constant';
+import { formatDate } from '@/utils/date-utils';
 import { getStatusText } from '@/utils/userstatus';
 import {
   Box,
@@ -23,7 +24,6 @@ import {
   Typography,
 } from '@mui/material';
 import { PencilSimple, XCircle } from '@phosphor-icons/react';
-import dayjs from 'dayjs';
 
 import tableCss from '@/styles/table-css';
 
@@ -133,7 +133,7 @@ export function CustomersTable({
             ) : (
               rows.map((row) => (
                 <TableRow hover key={row.id} sx={tableCss.tableRow}>
-                  <TableCell sx={tableCss.tableCell}>
+                  <TableCell sx={{ ...tableCss.tableCell, textAlign: 'left' }}>
                     <Typography
                       variant="subtitle2"
                       onClick={() => {
@@ -162,31 +162,38 @@ export function CustomersTable({
                       whiteSpace: 'nowrap',
                       overflow: 'hidden',
                       textOverflow: 'ellipsis !important',
+                      textAlign: 'left',
                     }}
                   >
                     {row.address || '-'}
                   </TableCell>
                   <TableCell sx={tableCss.tableCell}>{row.phoneNumber || '-'}</TableCell>
-                  <TableCell sx={tableCss.tableCell}>{dayjs(row.updatedAt).format('MMM D, YYYY')}</TableCell>
+                  <TableCell sx={tableCss.tableCell}>{formatDate(row.updatedAt)}</TableCell>
                   <TableCell sx={tableCss.tableCell}>
                     <Typography color="black" variant="subtitle2">
                       {row?.membership?.membershipType?.title || '-'}
                     </Typography>
                     {row?.membership?.membershipType?.title &&
                       row?.membership?.startDate &&
-                      !isNaN(new Date(row?.membership?.startDate).getTime()) && (
-                        <Typography color="textSecondary" variant="body2">
-                          Start: {dayjs(row?.membership?.startDate).format('MMM D, YYYY')}
-                        </Typography>
-                      )}
+                      (() => {
+                        const startDate = new Date(row.membership.startDate);
+                        return !isNaN(startDate.getTime()) ? (
+                          <Typography color="textSecondary" variant="body2">
+                            Start: {formatDate(startDate.toISOString().split('T')[0])}
+                          </Typography>
+                        ) : null;
+                      })()}
 
                     {row?.membership?.membershipType?.title &&
                       row?.membership?.expiryDate &&
-                      !isNaN(new Date(row?.membership?.expiryDate).getTime()) && (
-                        <Typography color="textSecondary" variant="body2">
-                          Exp: {dayjs(row?.membership?.expiryDate).format('MMM D, YYYY')}
-                        </Typography>
-                      )}
+                      (() => {
+                        const expiryDate = new Date(row.membership.expiryDate);
+                        return !isNaN(expiryDate.getTime()) ? (
+                          <Typography color="textSecondary" variant="body2">
+                            Exp: {formatDate(expiryDate.toISOString())}
+                          </Typography>
+                        ) : null;
+                      })()}
                   </TableCell>
                   <TableCell sx={[tableCss.tableCell]}>
                     {row?.membership?.paymentStatus ? (

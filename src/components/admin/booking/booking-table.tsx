@@ -142,7 +142,7 @@ export function BookingTable({
                       #{entry.id}
                     </TableCell>
 
-                    <TableCell sx={tableCss.tableCell}>
+                    <TableCell sx={{ ...tableCss.tableCell, textAlign: 'left' }}>
                       <Stack direction="row" spacing={2} alignItems="center">
                         <Box>
                           <Typography variant="subtitle2">
@@ -157,7 +157,7 @@ export function BookingTable({
                       </Stack>
                     </TableCell>
 
-                    <TableCell sx={tableCss.tableCell}>
+                    <TableCell sx={{ ...tableCss.tableCell, textAlign: 'left' }}>
                       <Stack direction="row" spacing={2}>
                         <Box>
                           <Typography variant="subtitle2">{entry?.customer?.fullName}</Typography>
@@ -168,7 +168,7 @@ export function BookingTable({
                       </Stack>
                     </TableCell>
 
-                    <TableCell sx={tableCss.tableCell}>
+                    <TableCell sx={{ ...tableCss.tableCell, textAlign: 'left' }}>
                       <Stack direction="row" spacing={2}>
                         <Box>
                           <Typography variant="subtitle2">{entry?.trainer?.fullName}</Typography>

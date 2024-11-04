@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
+import { formatDate } from '@/utils/date-utils';
 import { getStatusText } from '@/utils/userstatus';
 import {
   Box,
@@ -18,7 +19,6 @@ import {
   Typography,
 } from '@mui/material';
 import { PencilSimple } from '@phosphor-icons/react';
-import dayjs from 'dayjs';
 
 import tableCss from '@/styles/table-css';
 
@@ -111,9 +111,9 @@ export function TrainersTable({
             <TableRow sx={tableCss.tableRow}>
               <TableCell sx={tableCss.tableHeaderCell}>User Details</TableCell>
               <TableCell sx={tableCss.tableHeaderCell}>Address</TableCell>
-              <TableCell sx={tableCss.tableHeaderCell}>Phone</TableCell>
-              <TableCell sx={tableCss.tableHeaderCell}>Updated At</TableCell>
-              <TableCell sx={tableCss.tableHeaderCell}>Status</TableCell>
+              <TableCell sx={{ ...tableCss.tableHeaderCell, textAlign: 'center' }}>Phone</TableCell>
+              <TableCell sx={{ ...tableCss.tableHeaderCell, textAlign: 'center' }}>Updated At</TableCell>
+              <TableCell sx={{ ...tableCss.tableHeaderCell, textAlign: 'center' }}>Status</TableCell>
               <TableCell sx={tableCss.tableHeaderCell}>Actions</TableCell>
             </TableRow>
           </TableHead>
@@ -127,7 +127,7 @@ export function TrainersTable({
             ) : (
               rows.map((row) => (
                 <TableRow hover key={row.id} sx={tableCss.tableRow}>
-                  <TableCell sx={tableCss.tableCell}>
+                  <TableCell sx={{ ...tableCss.tableCell, textAlign: 'left' }}>
                     <Typography
                       variant="subtitle2"
                       onClick={() => {
@@ -160,13 +160,14 @@ export function TrainersTable({
                         whiteSpace: 'nowrap',
                         overflow: 'hidden',
                         textOverflow: 'ellipsis !important',
+                        textAlign: 'left',
                       },
                     ]}
                   >
                     {row.address || '-'}
                   </TableCell>
                   <TableCell sx={tableCss.tableCell}>{row.phoneNumber || '-'}</TableCell>
-                  <TableCell sx={tableCss.tableCell}>{dayjs(row.updatedAt).format('MMM D, YYYY')}</TableCell>
+                  <TableCell sx={tableCss.tableCell}>{formatDate(row.updatedAt)}</TableCell>
                   <TableCell sx={tableCss.tableCell}>
                     <FormControlLabel
                       control={

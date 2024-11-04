@@ -20,7 +20,7 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
-import { Barbell, Envelope, GenderIntersex, MapPin, Phone } from '@phosphor-icons/react';
+import { Barbell, CurrencyDollar, Envelope, GenderIntersex, MapPin, Phone } from '@phosphor-icons/react';
 
 import { BookingSessionEntry } from '../booking/view/booking-sessions/booking-session-table';
 
@@ -57,7 +57,7 @@ const SessionPreview: React.FC<SessionNotesFormProps> = ({
     (1000 * 60 * 60); // Calculate duration in hours
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth sx={{ zIndex: 999 }}>
+    <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth sx={{ zIndex: 9999 }}>
       {/* <DialogTitle>Session Details</DialogTitle> */}
       <DialogContent>
         <Typography variant="h6" component="div" color="black" marginBottom={'10px'}>
@@ -76,6 +76,7 @@ const SessionPreview: React.FC<SessionNotesFormProps> = ({
             <Typography variant="h6" textAlign={'end'} color="text.secondary" gutterBottom>
               Payment Status :
               <Chip
+                sx={{ marginLeft: '10px' }}
                 label={PaymentStatus?.label} // Show label based on the status
                 color={PaymentStatus?.color} // Set color based on the status
                 variant="filled" // You can change to "filled" if desired
@@ -84,6 +85,7 @@ const SessionPreview: React.FC<SessionNotesFormProps> = ({
             <Typography variant="h6" textAlign={'end'} color="text.secondary" gutterBottom>
               Session Status :
               <Chip
+                sx={{ marginLeft: '10px' }}
                 label={statusDetail?.label} // Show label based on the status
                 color={statusDetail?.color} // Set color based on the status
                 variant="filled" // You can change to "filled" if desired
@@ -97,12 +99,12 @@ const SessionPreview: React.FC<SessionNotesFormProps> = ({
                 xs: 'column', // Applies on small screens and below
                 sm: 'row', // Applies on small screens and above
               },
-              justifyContent: 'space-between',
+              // justifyContent: 'space-between',
               margin: '10px',
             }}
           >
             <>
-              <Grid container justifyContent={'space-between'}>
+              <Grid container columnGap={5} justifyContent={'space-evenly'}>
                 <Grid item sm={5} xs={12} alignContent={'center'}>
                   {sessionObj && (
                     <Card className="bookin-card">
@@ -177,10 +179,12 @@ const SessionPreview: React.FC<SessionNotesFormProps> = ({
                             </Typography>
                           </Stack>
                           <Stack flexDirection={'row'} alignItems={'center'}>
-                            <IconButton>
-                              {' '}
-                              <Phone size={25} />
-                            </IconButton>
+                            {sessionObj?.customer?.phoneNumber && (
+                              <IconButton>
+                                <Phone size={25} />
+                              </IconButton>
+                            )}
+
                             <Typography color="text.secondary" gutterBottom>
                               {sessionObj?.customer?.phoneNumber}
                             </Typography>
@@ -262,9 +266,6 @@ const SessionPreview: React.FC<SessionNotesFormProps> = ({
                             <Typography color="text.secondary" gutterBottom>
                               {sessionObj?.trainer?.experience} years
                             </Typography>
-                            <Typography color="text.secondary" gutterBottom>
-                              {formatAmount(sessionObj?.trainer?.fees)}
-                            </Typography>
                           </Stack>
                         </Stack>
                         <Stack>
@@ -286,29 +287,46 @@ const SessionPreview: React.FC<SessionNotesFormProps> = ({
                             </Typography>
                           </Stack>
                           <Stack flexDirection={'row'} alignItems={'center'}>
-                            <IconButton>
-                              {' '}
-                              <Phone size={25} />
-                            </IconButton>
+                            {sessionObj?.trainer?.phoneNumber && (
+                              <IconButton>
+                                <Phone size={25} />
+                              </IconButton>
+                            )}
                             <Typography color="text.secondary" gutterBottom>
                               {sessionObj?.trainer?.phoneNumber}
                             </Typography>
                           </Stack>
                           <Stack flexDirection={'row'} alignItems={'center'}>
-                            <IconButton>
-                              <GenderIntersex size={25} />
-                            </IconButton>
+                            {sessionObj?.trainer?.gender && (
+                              <IconButton>
+                                <GenderIntersex size={25} />
+                              </IconButton>
+                            )}
                             <Typography color="text.secondary" gutterBottom>
                               {sessionObj?.trainer?.gender && GENDER_TYPE_DETAILS[sessionObj?.trainer?.gender]?.label}
                             </Typography>
                           </Stack>
                           <Stack flexDirection={'row'} alignItems={'center'}>
-                            <IconButton>
-                              <MapPin size={25} />
-                            </IconButton>
+                            {sessionObj?.trainer?.address && (
+                              <IconButton>
+                                <MapPin size={25} />
+                              </IconButton>
+                            )}
                             <Typography color="text.secondary" gutterBottom>
                               {sessionObj?.trainer?.address}
                             </Typography>
+                          </Stack>
+                          <Stack flexDirection={'row'} alignItems={'center'}>
+                            {sessionObj?.trainer?.fees && (
+                              <>
+                                <IconButton>
+                                  <CurrencyDollar size={20} />
+                                </IconButton>
+                                <Typography color="text.secondary" gutterBottom>
+                                  {sessionObj?.trainer?.fees}
+                                </Typography>
+                              </>
+                            )}
                           </Stack>
                         </Stack>
                       </Stack>
@@ -403,7 +421,7 @@ const SessionPreview: React.FC<SessionNotesFormProps> = ({
           sessionObj.status !== BOOKING_STATUS.CANCELED &&
           sessionObj.status !== BOOKING_STATUS.COMPLETED && (
             <Button
-              sx={{ fontFamily: 'Audiowide, sans-serif !important' }}
+              sx={{ fontFamily: 'Audiowide, sans-serif !important', margin: '10px' }}
               className="common-button"
               onClick={() => {
                 handleStatusChange(String(sessionObj.id), BOOKING_STATUS.CANCELED);

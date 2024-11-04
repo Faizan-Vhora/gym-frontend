@@ -16,8 +16,8 @@ import { ToastContainer } from 'react-toastify'; // Import toast and ToastContai
 
 import 'react-toastify/dist/ReactToastify.css'; // Import toast styles
 
+import { formatDate } from '@/utils/date-utils';
 import { Trash } from '@phosphor-icons/react';
-import dayjs from 'dayjs';
 
 import tableCss from '@/styles/table-css';
 
@@ -83,7 +83,19 @@ export function NotificationTable({
                     <TableCell sx={tableCss.tableCell}>{entry?.title}</TableCell>
                     <TableCell sx={tableCss.tableCell} dangerouslySetInnerHTML={{ __html: entry?.message }} />
                     <TableCell sx={tableCss.tableCell}>{entry?.noOfNotifications}</TableCell>
-                    <TableCell sx={tableCss.tableCell}>{dayjs(entry.createdAt).format('MMM D, YYYY')}</TableCell>
+                    <TableCell sx={tableCss.tableCell}>
+                      {entry.updatedAt && (
+                        <Typography color="textSecondary">
+                          {formatDate(
+                            typeof entry.updatedAt === 'string'
+                              ? entry.updatedAt
+                              : entry.updatedAt instanceof Date
+                                ? entry.updatedAt.toISOString().split('T')[0]
+                                : ''
+                          )}
+                        </Typography>
+                      )}
+                    </TableCell>
                     <TableCell sx={tableCss.tableCell}>
                       <IconButton
                         onClick={() => {

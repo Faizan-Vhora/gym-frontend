@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { formatDate } from '@/utils/date-utils';
 import { CustomLoader } from '@/utils/loader';
 import { Table, TableBody, TableCell, TableHead, TableRow, Typography } from '@mui/material';
 import Card from '@mui/material/Card';
 import CardHeader from '@mui/material/CardHeader';
 import Divider from '@mui/material/Divider';
-import dayjs from 'dayjs';
 
 import axiosInstance from '@/lib/axios';
 
@@ -94,7 +94,7 @@ export function MembershipExpiring(): React.JSX.Element {
                 </TableCell>
                 <TableCell>
                   <Typography variant="subtitle1">{membership?.membershipType.title}</Typography>
-                  <Typography variant="caption">{dayjs(membership?.expiryDate).format('MMM D, YYYY')}</Typography>
+                  <Typography variant="caption">{formatDate(membership?.expiryDate)}</Typography>
                 </TableCell>
                 {/* <TableCell>
                   <Typography variant="caption">{dayjs(membership?.expiryDate).format('MMM D, YYYY')}</Typography>
