@@ -9,6 +9,7 @@ import { CustomLoader } from '@/utils/loader';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Alert,
+  Autocomplete,
   Box,
   Button,
   Card,
@@ -22,6 +23,7 @@ import {
   MenuItem,
   OutlinedInput,
   Select,
+  TextField,
   Typography,
 } from '@mui/material';
 import { useForm } from 'react-hook-form';
@@ -261,6 +263,24 @@ export default function SupportForm(): React.JSX.Element {
 
             <Grid item xs={12} md={4} sm={12}>
               <FormControl fullWidth variant="outlined" required error={Boolean(errors.user)}>
+                <Autocomplete
+                  options={userOptions}
+                  getOptionLabel={(option) => option.label} // display the label of each option
+                  value={userOptions.find((option) => option.value === user) || null} // set selected value
+                  onChange={(event, newValue) => {
+                    setValue('user', newValue ? newValue.value : ''); // update selected value
+                  }}
+                  renderInput={(params) => (
+                    <TextField {...params} label="User" error={Boolean(errors.user)} {...register('user')} />
+                  )}
+                />
+                {errors.user && (
+                  <Typography color="error" variant="caption">
+                    {errors.user.message}
+                  </Typography>
+                )}
+              </FormControl>
+              {/* <FormControl fullWidth variant="outlined" required error={Boolean(errors.user)}>
                 <InputLabel>User</InputLabel>
                 <Select
                   {...register('user')}
@@ -281,7 +301,7 @@ export default function SupportForm(): React.JSX.Element {
                     {errors.user.message}
                   </Typography>
                 )}
-              </FormControl>
+              </FormControl> */}
             </Grid>
 
             <Grid item xs={12}>

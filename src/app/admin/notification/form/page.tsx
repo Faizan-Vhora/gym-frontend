@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { REGEX_VALIDATION } from '@/utils/constant';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
+  Autocomplete,
   Box,
   Button,
   Card,
@@ -137,6 +138,8 @@ export default function NotificationForm() {
     }
   };
 
+  const options = tabValue === 'member' ? customers : trainers;
+
   return (
     <Box sx={{ width: '100%' }}>
       <Card>
@@ -176,22 +179,30 @@ export default function NotificationForm() {
                   <Controller
                     name="userIds"
                     control={control}
-                    render={({ field }) => (
-                      <FormControl fullWidth error={Boolean(errors.userIds)} required>
-                        <InputLabel>{tabValue === 'member' ? 'Members' : 'Trainers'}</InputLabel>
-                        <Select
-                          {...field}
+                    render={({ field: { onChange, value, ref } }) => (
+                      <FormControl fullWidth variant="outlined">
+                        <Autocomplete
                           multiple
-                          label={tabValue === 'member' ? 'Members' : 'Trainers'}
-                          disabled={loadingUsers}
-                        >
-                          {(tabValue === 'member' ? customers : trainers).map((user) => (
-                            <MenuItem key={user.id} value={user.id}>
-                              {`${user.memberId} | ${user.fullName}`}
-                            </MenuItem>
-                          ))}
-                        </Select>
-                        {errors.userIds && <FormHelperText>{errors.userIds.message}</FormHelperText>}
+                          options={options}
+                          getOptionLabel={(option) => `${option.memberId} | ${option.fullName} | ${option.email}`} // Display the user's fullName
+                          onChange={(event, newValue) => {
+                            // Map the selected users to their ids
+                            onChange(newValue.map((user) => user.id));
+                          }}
+                          value={options.filter((user) => value?.includes(user.id))} // Filter options based on selected user IDs
+                          renderInput={(params) => (
+                            <TextField
+                              {...params}
+                              label="User"
+                              variant="outlined"
+                              error={Boolean(errors.userIds)}
+                              helperText={errors.userIds ? errors.userIds.message : ''}
+                              inputRef={ref} // Attach ref for react-hook-form
+                            />
+                          )}
+                          loading={loadingUsers} // Show loading spinner
+                          noOptionsText="No users found" // Text when no options match
+                        />
                       </FormControl>
                     )}
                   />
