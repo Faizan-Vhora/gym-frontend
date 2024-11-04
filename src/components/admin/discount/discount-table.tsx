@@ -37,15 +37,17 @@ interface DiscountTableProps {
   onRowsPerPageChange: (newRowsPerPage: number) => void;
 }
 
+interface MembershipType {
+  id: number;
+  title: string;
+}
+
 export interface DiscountEntryResponse {
   id: number;
   codeName: string;
   startDate: string;
   expiryDate: string; // Updated from Date to string for API data handling
-  membershipType: {
-    id: number;
-    title: string;
-  };
+  membershipType: MembershipType[] | MembershipType | undefined;
   discountType: DiscountType;
   hasUsageLimit: boolean;
   usageLimit: number;
@@ -64,7 +66,7 @@ export interface DiscountEntry {
   codeName: string;
   startDate: string;
   expiryDate: string; // Updated from Date to string for API data handling
-  membershipType: number;
+  membershipType?: number[];
   discountType: DiscountType;
   hasUsageLimit: boolean;
   usageLimit: number;
@@ -194,7 +196,13 @@ export function DiscountTable({
                     <TableCell sx={tableCss.tableCell}>
                       {discount.hasMinimumAmount ? discount.minimumPurchaseAmount : '-'}
                     </TableCell>
-                    <TableCell sx={tableCss.tableCell}>{discount.membershipType?.title || '-'}</TableCell>
+                    <TableCell sx={tableCss.tableCell}>
+                      {Array.isArray(discount.membershipType) && discount.membershipType.length > 0
+                        ? discount.membershipType
+                            .map((membership) => membership.title) // Map to titles directly
+                            .join(', ') // Join titles with a comma
+                        : '-'}
+                    </TableCell>
                     <TableCell sx={tableCss.tableCell}>
                       {discount.discountType === DiscountType.Percentage
                         ? `${Math.floor(discount.discountValue)}%` // Remove decimal points and display percentage

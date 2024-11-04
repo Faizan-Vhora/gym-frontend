@@ -56,7 +56,7 @@ const baseDiscountSchema = z.object({
   discountImage: z.string().min(1, 'Discount Image is required'),
   status: z.nativeEnum(DiscountStatus).optional(),
   isNewUser: z.boolean().optional(),
-  membershipType: z.number().nullable().optional(),
+  membershipType: z.array(z.number().nullable().optional()),
 });
 
 const updateDiscountSchema = baseDiscountSchema.partial().extend({
@@ -72,7 +72,7 @@ export default function DiscountFormPage(): React.JSX.Element {
     startDate: '',
     expiryDate: '',
     discountType: DiscountType.Percentage,
-    membershipType: 0,
+    membershipType: [],
     hasUsageLimit: false,
     usageLimit: 0,
     hasMinimumAmount: false,
@@ -93,7 +93,7 @@ export default function DiscountFormPage(): React.JSX.Element {
   const [hasUsageLimit, setHasUsageLimit] = React.useState<boolean>(false);
   const [hasMinimumAmount, setHasMinimumAmount] = React.useState<boolean>(false);
   const [plans, setPlans] = React.useState<MembershipPlans[]>([]);
-  const [membershipTypeId, setMembershipTypeId] = React.useState<number | null>(null);
+  const [membershipTypeId, setMembershipTypeId] = React.useState<number[] | null>(null);
   const fileInputRef = React.useRef<HTMLInputElement>(null);
 
   const router = useRouter();
@@ -118,7 +118,11 @@ export default function DiscountFormPage(): React.JSX.Element {
             startDate: data.startDate,
             expiryDate: data.expiryDate,
             discountType: data.discountType,
-            membershipType: data.membershipType.id,
+            membershipType: Array.isArray(data.membershipType)
+              ? data.membershipType.map((item) => item.id) // If it's an array, map to ids
+              : data.membershipType && data.membershipType.id // If it's an object, get the id
+                ? [data.membershipType.id] // Wrap the id in an array
+                : [],
             hasUsageLimit: data.hasUsageLimit,
             usageLimit: data.usageLimit,
             hasMinimumAmount: data.hasMinimumAmount,
@@ -139,9 +143,9 @@ export default function DiscountFormPage(): React.JSX.Element {
           if (data.hasMinimumAmount) {
             setHasMinimumAmount(data.hasMinimumAmount);
           }
-          if (data.membershipType) {
-            setMembershipTypeId(data.membershipType.id);
-          }
+          // if (data.membershipType) {
+          //   setMembershipTypeId(data.membershipType.id);
+          // }
         })
         .catch((error: unknown) => {
           error instanceof Error ? error.message : 'An unexpected error occurred';
@@ -271,7 +275,7 @@ export default function DiscountFormPage(): React.JSX.Element {
     }
   };
 
-  const handleMembershipTypeChange = (membershipId: number | null): void => {
+  const handleMembershipTypeChange = (membershipId: number[] | null): void => {
     setMembershipTypeId(membershipId);
   };
 
@@ -283,7 +287,9 @@ export default function DiscountFormPage(): React.JSX.Element {
       discount.discountValue = Number(discount.discountValue);
       discount.usageLimit = Number(discount.usageLimit);
       discount.minimumPurchaseAmount = Number(discount.minimumPurchaseAmount);
-      discount.membershipType = Number(membershipTypeId);
+      if (Array.isArray(membershipTypeId)) {
+        discount.membershipType = membershipTypeId.map(Number); // Convert to an array of numbers
+      }
 
       // Check if startDate is greater than expiryDate
       const startDate = new Date(discount.startDate);
@@ -316,8 +322,8 @@ export default function DiscountFormPage(): React.JSX.Element {
     const formData = new FormData();
     formData.append('codeName', discount.codeName);
 
-    if (discount.membershipType > 0) {
-      formData.append('membershipType', discount.membershipType.toString());
+    if (Array.isArray(discount.membershipType) && discount.membershipType.length > 0) {
+      formData.append('membershipType', JSON.stringify(discount.membershipType)); // Send as JSON string
     }
 
     formData.append('expiryDate', discount.expiryDate || '');
@@ -449,18 +455,23 @@ export default function DiscountFormPage(): React.JSX.Element {
                   <Controller
                     control={control}
                     name="membershipType"
-                    defaultValue={membershipTypeId}
                     render={({ field }) => (
                       <FormControl fullWidth error={Boolean(errors?.membershipType)}>
                         <Autocomplete
+                          multiple // Enable multiple selection
                           options={[{ id: null, title: 'ALL' }, ...plans]} // Add the "ALL" option at the beginning
                           getOptionLabel={(option) => option.title || ''}
                           isOptionEqualToValue={(option, value) => option?.id === value?.id}
-                          value={plans.find((plan) => plan.id === membershipTypeId) || { id: null, title: 'ALL' }} // Default "ALL" selection
+                          value={
+                            field.value?.length > 0
+                              ? plans.filter((plan) => field.value.includes(plan.id))
+                              : [{ id: null, title: 'ALL' }]
+                          }
                           onChange={(e, value) => {
-                            const membershipType = value ? Number(value.id) : null; // Get the selected option's idcted
-                            field.onChange(membershipType);
-                            handleMembershipTypeChange(membershipType);
+                            // Convert selected options to an array of IDs
+                            const membershipTypeIds = value.map((item) => item.id).filter((id) => id !== null); // exclude 'ALL'
+                            field.onChange(membershipTypeIds);
+                            handleMembershipTypeChange(membershipTypeIds);
                           }}
                           renderInput={(params) => (
                             <TextField {...params} label="Membership Plan" error={Boolean(errors?.membershipType)} />
@@ -473,16 +484,16 @@ export default function DiscountFormPage(): React.JSX.Element {
                   {/* <Controller
                     control={control}
                     name="membershipType"
-                    defaultValue={membershipTypeId}
+                    // defaultValue={membershipTypeId}
                     render={({ field }) => (
                       <FormControl fullWidth error={Boolean(errors?.membershipType)}>
                         <Autocomplete
-                          options={plans}
+                          options={[{ id: null, title: 'ALL' }, ...plans]} // Add the "ALL" option at the beginning
                           getOptionLabel={(option) => option.title || ''}
-                          isOptionEqualToValue={(option, value) => option.id === value.id}
-                          value={plans.find((plan) => plan.id === membershipTypeId) || null} // Match the selected plan by comparing the ID
+                          isOptionEqualToValue={(option, value) => option?.id === value?.id}
+                          value={plans.find((plan) => plan.id === membershipTypeId) || { id: null, title: 'ALL' }} // Default "ALL" selection
                           onChange={(e, value) => {
-                            const membershipType = value ? Number(value.id) : null; // Get the selected option's id
+                            const membershipType = value ? Number(value.id) : null; // Get the selected option's idcted
                             field.onChange(membershipType);
                             handleMembershipTypeChange(membershipType);
                           }}
