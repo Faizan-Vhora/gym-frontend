@@ -107,6 +107,7 @@ const DateRangeFilter: React.FC<DateRangeFilterProps> = ({ dateRange, onDateChan
         value={dateRangeS || dateRange}
         onChange={handleDateChange}
         slots={{ field: SingleInputDateRangeField }}
+        format="MM-DD-YYYY"
         slotProps={{
           shortcuts: {
             items: shortcutsItems,

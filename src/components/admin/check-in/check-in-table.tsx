@@ -1,7 +1,7 @@
 import React from 'react';
-import { useRouter } from 'next/navigation';
 import { formatTo12HourFormat } from '@/utils/date-utils';
 import {
+  Avatar,
   Box,
   Card,
   Chip,
@@ -17,7 +17,7 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material';
-import { Clock, PencilSimple, Trash } from '@phosphor-icons/react';
+import { Clock, Trash } from '@phosphor-icons/react';
 import dayjs from 'dayjs';
 
 import tableCss from '@/styles/table-css';
@@ -34,6 +34,7 @@ export interface CheckInEntry {
     fullName: string;
     email: string;
     userType: number;
+    profileImageUrl?: string;
   };
 }
 
@@ -54,7 +55,7 @@ interface CheckInTableProps {
   rowsPerPage: number;
   onPageChange: (event: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => void;
   onRowsPerPageChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  onEdit: (id: number) => void;
+  // onEdit: (id: number) => void;
   onDelete: (id: number) => void;
 }
 
@@ -65,14 +66,12 @@ export function CheckInTable({
   rowsPerPage,
   onPageChange,
   onRowsPerPageChange,
-  onEdit,
+  // onEdit,
   onDelete,
 }: CheckInTableProps): React.JSX.Element {
-  const router = useRouter();
-
-  const handleRowClick = (id: string): void => {
-    router.push(`/admin/check-in/form?id=${id}`); // Replace with the actual path to your form page
-  };
+  // const handleRowClick = (id: string): void => {
+  //   router.push(`/admin/check-in/form?id=${id}`); // Replace with the actual path to your form page
+  // };
 
   return (
     <Card>
@@ -100,25 +99,18 @@ export function CheckInTable({
               entries.map((entry) => (
                 <TableRow key={entry.id}>
                   <TableCell sx={tableCss.tableCell}>
-                    <Typography
-                      variant="subtitle2"
-                      onClick={() => {
-                        handleRowClick(String(entry.id));
-                      }}
-                      style={{ cursor: 'pointer' }}
-                    >
-                      {entry.user.fullName}
-                    </Typography>
-                    <Typography
-                      color="textSecondary"
-                      variant="body2"
-                      onClick={() => {
-                        handleRowClick(String(entry.id));
-                      }}
-                      style={{ cursor: 'pointer' }}
-                    >
-                      {entry.user.email}
-                    </Typography>
+                    <Stack flexDirection={'row'} columnGap={2} paddingY={1}>
+                      <Avatar
+                        src={entry?.user?.profileImageUrl || '/assets/User@3x-1.png'}
+                        sx={{ height: '56px', width: '56px' }}
+                      />
+                      <Stack>
+                        <Typography variant="subtitle2">{entry.user.fullName}</Typography>
+                        <Typography color="textSecondary" variant="body2">
+                          {entry.user.email}
+                        </Typography>
+                      </Stack>
+                    </Stack>
                   </TableCell>
                   <TableCell>{dayjs(entry.entryDate).format('MMM D, YYYY')}</TableCell>
                   <TableCell>
@@ -155,13 +147,13 @@ export function CheckInTable({
                   </TableCell>
                   <TableCell>
                     <Stack direction="row" spacing={1} alignItems="center">
-                      <IconButton
+                      {/* <IconButton
                         onClick={() => {
                           onEdit(entry.id);
                         }}
                       >
                         <PencilSimple />
-                      </IconButton>
+                      </IconButton> */}
                       <IconButton
                         onClick={() => {
                           onDelete(entry.id);

@@ -22,7 +22,7 @@ export const navItems = [
 
       { key: 'notification', title: 'Notification', href: paths.notification.notificationList, icon: 'bell', items:[] },
 
-      { key: 'subscriptions', title: 'Subscriptions', href: paths.Subscriptions.list, icon: 'crown-simple', items:[] },
+      // { key: 'subscriptions', title: 'Subscriptions', href: paths.Subscriptions.list, icon: 'crown-simple', items:[] },
       {
         key: 'settings',
         title: 'Settings',
@@ -41,7 +41,7 @@ export const navItems = [
         items: [
           { key: 'reports:trainer-report', title: 'Trainer Report', href: paths.trainerReport.list, icon: 'barbell' },
           { key: 'reports:membership-report', title: 'Membership Report', href: paths.membershipReport.list, icon: 'diamond' },
-          { key: 'reports:subscription-report', title: 'Subscription Report', href: paths.subscriptionReport.list, icon: 'crown-simple' },
+          // { key: 'reports:subscription-report', title: 'Subscription Report', href: paths.subscriptionReport.list, icon: 'crown-simple' },
           { key: 'reports:checkin-report', title: 'Check In Report', href: paths.CheckInReport.list, icon: 'clock-user' },
           { key: 'reports:discount-report', title: 'Discount Report', href: paths.DiscountReport.list, icon: 'tag' },
           // { key: 'customers:discount', title: 'Discount', href: paths.discount.discount, icon: 'tag' },

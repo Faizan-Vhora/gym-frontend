@@ -6,10 +6,12 @@ import { CustomLoader } from '@/utils/loader';
 import { Card, Divider, Grid, Stack, Typography } from '@mui/material';
 import { DateRange } from '@mui/x-date-pickers-pro';
 import dayjs, { Dayjs } from 'dayjs';
+import { useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
 
 import axiosInstance from '@/lib/axios';
 import { CheckInEntry } from '@/components/admin/check-in/check-in-table';
+import TimeFilter from '@/components/admin/reports/checkin-report/checkin-filter';
 import { CheckInReportTable } from '@/components/admin/reports/checkin-report/checkin-report-table';
 import DateRangeFilter from '@/components/admin/reports/common-filters/date-range-filter';
 import CommonTablePagination from '@/components/admin/reports/common-filters/pagination';
@@ -51,6 +53,10 @@ const CheckInReport: React.FC = () => {
   const [startDate, setStartDate] = useState<string | null>(null);
   const [endDate, setEndDate] = useState<string | null>(null);
   const [loading, setLoading] = React.useState(false);
+  // Add state variables for time filters
+  const [checkInTime, setCheckInTime] = useState<string | null>(null);
+  const [checkOutTime, setCheckOutTime] = useState<string | null>(null);
+  const { control } = useForm();
 
   // Function to fetch data
   useEffect(() => {
@@ -63,6 +69,8 @@ const CheckInReport: React.FC = () => {
           search?: string | null;
           startDate?: string | null;
           endDate?: string | null;
+          startTime?: string | null;
+          endTime?: string | null;
         }
 
         const params: CheckInReportQueryI = {
@@ -71,6 +79,8 @@ const CheckInReport: React.FC = () => {
           search: search,
           startDate: null,
           endDate: null,
+          startTime: checkInTime,
+          endTime: checkOutTime,
         };
 
         if (startDate && endDate) {
@@ -78,7 +88,7 @@ const CheckInReport: React.FC = () => {
           params.endDate = endDate;
         }
 
-        const response = await axiosInstance.get<ApiResponse>('/entry-logs', { params });
+        const response = await axiosInstance.get<ApiResponse>('/report/user-check-in-report', { params });
         const { items, meta } = response.data.data;
 
         if (Array.isArray(items)) {
@@ -97,7 +107,7 @@ const CheckInReport: React.FC = () => {
     };
 
     void fetchCheckinReports();
-  }, [currentPage, itemsPerPage, search, dateRange]);
+  }, [currentPage, itemsPerPage, search, dateRange, checkInTime, checkOutTime]);
 
   React.useEffect(() => {
     updateUrlPathQueryParams();
@@ -132,6 +142,24 @@ const CheckInReport: React.FC = () => {
     setEndDate(ends?.format('YYYY-MM-DD') || null);
   };
 
+  const handleTimeChange = (time: Date | null, isCheckIn: boolean) => {
+    if (time) {
+      const formattedTime = dayjs(time).format('HH:mm:ss'); // Format time as needed
+      if (isCheckIn) {
+        setCheckInTime(formattedTime); // Set check-in time
+      } else {
+        setCheckOutTime(formattedTime); // Set check-out time
+      }
+    } else {
+      // Handle the case when time is cleared
+      if (isCheckIn) {
+        setCheckInTime(null);
+      } else {
+        setCheckOutTime(null);
+      }
+    }
+  };
+
   return (
     <>
       <Card>
@@ -145,6 +173,30 @@ const CheckInReport: React.FC = () => {
             </Grid>
             <Grid item md={4} xs={12}>
               <DateRangeFilter dateRange={dateRange} onDateChange={handleDateChange} />
+            </Grid>
+            <Grid item md={4} xs={12}>
+              <Grid container spacing={2}>
+                <Grid item md={6}>
+                  <TimeFilter
+                    label="CheckIn"
+                    name="checkInTime"
+                    control={control}
+                    onTimeChange={(time) => {
+                      handleTimeChange(time, true);
+                    }} // Pass true for check-in
+                  />
+                </Grid>
+                <Grid item md={6}>
+                  <TimeFilter
+                    label="CheckOut"
+                    name="checkOutTime"
+                    control={control}
+                    onTimeChange={(time) => {
+                      handleTimeChange(time, false);
+                    }} // Pass false for check-out
+                  />
+                </Grid>
+              </Grid>
             </Grid>
           </Grid>
         </Stack>

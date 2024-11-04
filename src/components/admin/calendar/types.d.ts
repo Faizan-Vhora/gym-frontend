@@ -24,7 +24,7 @@ export interface Sessions {
 
 export type EventPriority = 'low' | 'medium' | 'high';
 
-export type ViewMode = 'dayGridMonth' | 'timeGridWeek' | 'timeGridDay' | 'listWeek';
+export type ViewMode = 'dayGridMonth' | 'timeGridWeek' | 'timeGridDay' ;
 
 
 export type BookingType = 'one_time' | 'weekly'

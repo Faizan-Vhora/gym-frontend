@@ -1,12 +1,11 @@
 'use client';
 
 import * as React from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { BOOKING_STATUS } from '@/utils/constant';
 import type { DateSelectArg, EventClickArg } from '@fullcalendar/core';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
-import listPlugin from '@fullcalendar/list';
 import Calendar from '@fullcalendar/react';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import timelinePlugin from '@fullcalendar/timeline';
@@ -15,12 +14,14 @@ import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
 import IconButton from '@mui/material/IconButton';
 import Stack from '@mui/material/Stack';
+import { DateRange } from '@mui/x-date-pickers-pro';
 import { CaretLeft as CaretLeftIcon } from '@phosphor-icons/react/dist/ssr/CaretLeft';
 import { CaretRight as CaretRightIcon } from '@phosphor-icons/react/dist/ssr/CaretRight';
 import { toast, ToastContainer } from 'react-toastify';
 
 import 'react-toastify/dist/ReactToastify.css';
 
+import dayjs, { Dayjs } from 'dayjs';
 import Swal from 'sweetalert2';
 
 import { paths } from '@/paths';
@@ -41,7 +42,7 @@ interface BookingFormDialogData {
   range?: { start: Date; end: Date };
 }
 
-const plugins = [dayGridPlugin, interactionPlugin, listPlugin, timeGridPlugin, timelinePlugin];
+const plugins = [dayGridPlugin, interactionPlugin, timeGridPlugin, timelinePlugin];
 
 export interface CalendarViewProps {
   view?: ViewMode;
@@ -49,7 +50,7 @@ export interface CalendarViewProps {
 
 export function CalendarView({ view = 'dayGridMonth' }: CalendarViewProps): React.JSX.Element {
   React.useContext(CalendarContext);
-
+  const searchParams = useSearchParams();
   const router = useRouter();
 
   const calendarRef = React.useRef<Calendar | null>(null);
@@ -60,12 +61,16 @@ export function CalendarView({ view = 'dayGridMonth' }: CalendarViewProps): Reac
   const [selectedSession, setSelectedSession] = React.useState<BookingSessionEntry | null>(null);
 
   const [isDialogOpen, setIsDialogOpen] = React.useState(false);
-  const [searchTerm, setSearchTerm] = React.useState('');
+  const [searchTerm, setSearchTerm] = React.useState(searchParams.get('search') || '');
+  const rawDateRange = searchParams.get('dateRange');
+  const [start, end] = rawDateRange ? rawDateRange.split(',') : [null, null];
+  const initialDateRange: DateRange<Dayjs> = [start ? dayjs(start) : null, end ? dayjs(end) : null];
+  const [dateRange, setDateRange] = React.useState<DateRange<Dayjs>>(initialDateRange);
   const [trainer, selectedTrainer] = React.useState<number | null>(null);
   const [member, selectedMember] = React.useState<number | null>(null);
-  const [statusFilter, setStatusFilter] = React.useState('ALL');
-  const [startDateFilter, setStarteDateFilter] = React.useState('');
-  const [endDateFilter, setEndDateFilter] = React.useState('');
+  const [statusFilter, setStatusFilter] = React.useState(searchParams.get('status') || 'ALL');
+  const [startDate, setStartDate] = React.useState<string | null>(null); // Keep as string
+  const [endDate, setEndDate] = React.useState<string | null>(null); // Keep as string
   const [isDialogOpenForNotes, setIsDialogOpenForNotes] = React.useState(false);
   const [isDialogOpenForRechedule, setIsDialogOpenForRechedule] = React.useState(false);
 
@@ -78,8 +83,8 @@ export function CalendarView({ view = 'dayGridMonth' }: CalendarViewProps): Reac
       const params = {
         trainerId: trainer,
         customerId: member,
-        startDate: startDateFilter,
-        endDate: endDateFilter,
+        startDate: startDate,
+        endDate: endDate,
         pagination: false,
         sessionStatus: statusFilter !== 'ALL' ? statusFilter : undefined,
         search: searchTerm,
@@ -113,7 +118,29 @@ export function CalendarView({ view = 'dayGridMonth' }: CalendarViewProps): Reac
 
   React.useEffect(() => {
     void fetchEvents();
-  }, [searchTerm, trainer, member, statusFilter, startDateFilter, endDateFilter]);
+  }, [searchTerm, trainer, member, statusFilter]);
+
+  React.useEffect(() => {
+    updateUrlPathQueryParams();
+  }, [searchTerm, trainer, member, dateRange, statusFilter]);
+
+  const updateUrlPathQueryParams = () => {
+    const formattedDateRange =
+      dateRange[0] && dateRange[1] ? `${dateRange[0].toISOString()},${dateRange[1].toISOString()}` : ''; // Converts dateRange to a string if both dates are present
+    const pathQueryParams = {
+      search: searchTerm,
+      ...(trainer !== null && { trainerId: trainer.toString() }),
+      ...(member !== null && { memberId: member.toString() }),
+      dateRange: formattedDateRange,
+      status: statusFilter,
+    };
+
+    // Construct the query string using URLSearchParams
+    const queryString = new URLSearchParams(pathQueryParams).toString();
+
+    // Use router.push with the constructed query string
+    router.push(`/admin/calendar?${queryString}`);
+  };
 
   const handleViewChange = React.useCallback(
     (value: ViewMode) => {
@@ -144,13 +171,13 @@ export function CalendarView({ view = 'dayGridMonth' }: CalendarViewProps): Reac
     setStatusFilter(status);
   };
 
-  const handleStartDateChange = (startDate: string): void => {
-    setStarteDateFilter(startDate);
-  };
+  // const handleStartDateChange = (startDate: string): void => {
+  //   setStarteDateFilter(startDate);
+  // };
 
-  const handleEndDateChange = (endDate: string): void => {
-    setEndDateFilter(endDate);
-  };
+  // const handleEndDateChange = (endDate: string): void => {
+  //   setEndDateFilter(endDate);
+  // };
 
   const handleDateToday = React.useCallback(() => {
     const calendarApi = calendarRef.current?.getApi();
@@ -260,6 +287,18 @@ export function CalendarView({ view = 'dayGridMonth' }: CalendarViewProps): Reac
   //   [updateEvent]
   // );
 
+  const handleDateRangeChange = (newDateRange: [Dayjs | null, Dayjs | null]) => {
+    // Update the date range state
+    setDateRange(newDateRange);
+
+    // Destructure the newDateRange tuple
+    const [starts, ends] = newDateRange;
+
+    // Set formatted start and end dates, or null if undefined
+    setStartDate(starts ? starts.format('YYYY-MM-DD') : null);
+    setEndDate(ends ? ends.format('YYYY-MM-DD') : null);
+  };
+
   const handleUpdateStatus = async (id: string, newStatus: BookingSessionEntry['status']): Promise<void> => {
     let swalText = `Do you want to change the status?`;
     let swalConfirmButtonText = `Yes, update it!`;
@@ -327,8 +366,8 @@ export function CalendarView({ view = 'dayGridMonth' }: CalendarViewProps): Reac
           handleTrainerChange={handleTrainerSelect}
           handleMemberChange={handleMemberSelect}
           onStatusChange={handleStatusChange}
-          onStartDateChange={handleStartDateChange}
-          onEndDateChange={handleEndDateChange}
+          dateRange={dateRange} // Provide the date range as a tuple
+          onDateRangeChange={handleDateRangeChange} // Provide the handler for date range changes
         />
         <Card sx={{ overflowX: 'auto' }}>
           <Box sx={{ minWidth: '800px' }}>

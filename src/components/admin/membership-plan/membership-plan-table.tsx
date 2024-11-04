@@ -185,17 +185,6 @@ export function MembershipPlanTable({
           />
         </>
       )}
-      {/* Modal for QR Code Preview */}
-      {/* <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
-            <DialogContent>
-              <img src={selectedImage} alt="QR Code" style={{ width: '50%', height: 'auto', objectFit: 'contain' }} />
-            </DialogContent>
-            <DialogActions>
-              <Button onClick={handleClose} color="primary">
-                Close
-              </Button>
-            </DialogActions>
-          </Dialog> */}
     </Card>
   );
 }

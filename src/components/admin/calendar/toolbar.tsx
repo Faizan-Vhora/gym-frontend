@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { useSearchParams } from 'next/navigation';
 import { BOOKING_SESSION_STATUS_OPTIONS } from '@/utils/constant';
 import { CustomLoader } from '@/utils/loader';
 import {
@@ -18,8 +19,8 @@ import type { SelectChangeEvent } from '@mui/material/Select';
 import Select from '@mui/material/Select';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+// import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
+// import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { X as XIcon } from '@phosphor-icons/react';
 import { Plus as PlusIcon } from '@phosphor-icons/react/dist/ssr/Plus';
 import { Dayjs } from 'dayjs';
@@ -31,6 +32,7 @@ import { dayjs } from '@/lib/dayjs';
 import { Option } from '@/components/core/option';
 
 import { Customer } from '../customer/customers-table';
+import DateRangeFilter from '../reports/common-filters/date-range-filter';
 import { Trainer } from '../trainer/trainer-table';
 import type { ViewMode } from './types';
 
@@ -43,8 +45,8 @@ export interface ToolbarProps {
   handleTrainerChange: (selectedTrainer: number) => void;
   handleMemberChange: (selectedMember: number) => void;
   onStatusChange: (status: string) => void;
-  onStartDateChange: (date: string) => void;
-  onEndDateChange: (date: string) => void;
+  dateRange: [Dayjs | null, Dayjs | null]; // Change to a tuple type
+  onDateRangeChange: (dateRange: [Dayjs | null, Dayjs | null]) => void; // Update to receive a single argumen
 }
 
 export function Toolbar({
@@ -56,9 +58,10 @@ export function Toolbar({
   handleTrainerChange,
   handleMemberChange,
   onStatusChange,
-  onStartDateChange,
-  onEndDateChange,
+  dateRange,
+  onDateRangeChange,
 }: ToolbarProps): React.JSX.Element {
+  const searchParams = useSearchParams();
   const handleViewChange = React.useCallback(
     (event: SelectChangeEvent) => {
       onViewChange?.(event.target.value as ViewMode);
@@ -66,15 +69,15 @@ export function Toolbar({
     [onViewChange]
   );
 
-  const [searchTerm, setSearchTerm] = React.useState('');
+  const [searchTerm, setSearchTerm] = React.useState(searchParams.get('search') || '');
   const [trainers, setTrainers] = React.useState<Trainer[]>([]);
   const [loading, setLoading] = React.useState(true);
-  const [selectedTrainer, setSelectedTrainer] = React.useState<string>('');
-  const [selectedMember, setSelectedMember] = React.useState<string>('');
-  const [selectedStatus, setSelectedStatus] = React.useState<string>('');
+  const [selectedTrainer, setSelectedTrainer] = React.useState<string>(searchParams.get('trainerId') || '');
+  const [selectedMember, setSelectedMember] = React.useState<string>(searchParams.get('memberId') || '');
+  const [selectedStatus, setSelectedStatus] = React.useState<string>(searchParams.get('status') || '');
   const [customers, setCustomers] = React.useState<Customer[]>([]);
-  const [startDate, setStartDate] = React.useState<Dayjs | null>(null); // Change to Dayjs
-  const [endDate, setEndDate] = React.useState<Dayjs | null>(null); // Change to Dayjs
+  // const [startDate, setStartDate] = React.useState<Dayjs | null>(null); // Change to Dayjs
+  // const [endDate, setEndDate] = React.useState<Dayjs | null>(null); // Change to Dayjs
   const [cleared, setCleared] = React.useState<boolean>(false);
 
   // Trainer API
@@ -207,19 +210,22 @@ export function Toolbar({
     setSelectedStatus(newStatus);
   };
 
-  const handleStartDateChange = (newStartDate: Dayjs | null): void => {
-    setStartDate(newStartDate);
-    onStartDateChange(newStartDate ? dayjs(newStartDate).format('YYYY-MM-DD') : '');
-    // Reset endDate if it's before the new start date
-    if (newStartDate && endDate?.isBefore(newStartDate)) {
-      setEndDate(null);
-    }
+  const handleDateChange = (newDateRange: [Dayjs | null, Dayjs | null]) => {
+    onDateRangeChange(newDateRange);
   };
+  // const handleStartDateChange = (newStartDate: Dayjs | null): void => {
+  //   setStartDate(newStartDate);
+  //   onStartDateChange(newStartDate ? dayjs(newStartDate).format('YYYY-MM-DD') : '');
+  //   // Reset endDate if it's before the new start date
+  //   if (newStartDate && endDate?.isBefore(newStartDate)) {
+  //     setEndDate(null);
+  //   }
+  // };
 
-  const handleEndDateChange = (newEndDate: Dayjs | null): void => {
-    setEndDate(newEndDate);
-    onEndDateChange(newEndDate ? dayjs(newEndDate).format('YYYY-MM-DD') : '');
-  };
+  // const handleEndDateChange = (newEndDate: Dayjs | null): void => {
+  //   setEndDate(newEndDate);
+  //   onEndDateChange(newEndDate ? dayjs(newEndDate).format('YYYY-MM-DD') : '');
+  // };
 
   return (
     <Stack
@@ -308,7 +314,6 @@ export function Toolbar({
             <Option value="dayGridMonth">Month</Option>
             <Option value="timeGridWeek">Week</Option>
             <Option value="timeGridDay">Day</Option>
-            <Option value="listWeek">Agenda</Option>
           </Select>
         </Grid>
 
@@ -327,10 +332,10 @@ export function Toolbar({
           </FormControl>
         </Grid>
 
-        <LocalizationProvider dateAdapter={AdapterDayjs}>
-          <Grid item md={3} sm={6} xs={12}>
-            {/* Start Date Picker */}
-            <DatePicker
+        <Grid item md={6} sm={6} xs={12}>
+          <DateRangeFilter dateRange={dateRange} onDateChange={handleDateChange} />
+          {/* Start Date Picker */}
+          {/* <DatePicker
               label="Start Date"
               value={startDate ? dayjs(startDate) : null}
               onChange={handleStartDateChange}
@@ -343,11 +348,11 @@ export function Toolbar({
                   },
                 },
               }}
-            />
-          </Grid>
-          <Grid item md={3} sm={6} xs={12}>
-            {/* End Date Picker */}
-            <DatePicker
+            /> */}
+        </Grid>
+
+        {/* End Date Picker */}
+        {/* <DatePicker
               label="End Date"
               value={endDate ? dayjs(endDate) : null}
               onChange={handleEndDateChange}
@@ -361,19 +366,17 @@ export function Toolbar({
                   },
                 },
               }}
-            />
-          </Grid>
-        </LocalizationProvider>
+            /> */}
 
-        <Grid item md={3} sm={6} xs={12} sx={{textAlign:'end'}} >
+        <Grid item md={3} sm={6} xs={12} sx={{ textAlign: 'end' }}>
           {/* Add Booking Button */}
           <Button
             onClick={onAdd}
             className="common-button"
             startIcon={<PlusIcon />}
-            sx={{marginLeft:'auto',}}
+            sx={{ marginLeft: 'auto' }}
             variant="contained"
-            style={{ fontFamily: '"Audiowide", sans-serif',width:'max-content' }}
+            style={{ fontFamily: '"Audiowide", sans-serif', width: 'max-content' }}
           >
             New Booking
           </Button>

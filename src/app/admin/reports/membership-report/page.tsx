@@ -51,6 +51,7 @@ const MembershipReport: React.FC = () => {
   const [dateRange, setDateRange] = useState<DateRange<Dayjs>>(initialDateRange);
   const [startDate, setStartDate] = useState<string | null>(null);
   const [endDate, setEndDate] = useState<string | null>(null);
+  const lastXDays = '30';
   const [loading, setLoading] = React.useState(false);
   const [statusFilter, setStatusFilter] = useState(searchParams.get('status') || 'ALL');
 
@@ -66,6 +67,7 @@ const MembershipReport: React.FC = () => {
           startDate?: string | null;
           endDate?: string | null;
           status?: string | null;
+          lastXDays?: string | null;
         }
 
         const params: MembershipReportQueryI = {
@@ -75,6 +77,7 @@ const MembershipReport: React.FC = () => {
           startDate: null,
           endDate: null,
           status: statusFilter !== 'ALL' ? statusFilter : undefined,
+          lastXDays: lastXDays,
         };
 
         if (startDate && endDate) {
@@ -101,7 +104,7 @@ const MembershipReport: React.FC = () => {
     };
 
     void fetchMembershipReports();
-  }, [currentPage, itemsPerPage, search, startDate, endDate, statusFilter]);
+  }, [currentPage, itemsPerPage, search, startDate, endDate, statusFilter, lastXDays]);
 
   React.useEffect(() => {
     updateUrlPathQueryParams();
@@ -163,7 +166,7 @@ const MembershipReport: React.FC = () => {
 
         {/* <Stack sx={{ padding: '30px' }}></Stack> */}
 
-        {loading ? <CustomLoader /> : <MembershipPlanReportTable rows={data} />}
+        {loading ? <CustomLoader /> : <MembershipPlanReportTable lastXDays={lastXDays} rows={data} />}
         {data.length > 0 && (
           <>
             <Divider />

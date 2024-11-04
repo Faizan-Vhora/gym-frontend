@@ -1,8 +1,14 @@
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
+import {
+  MEMBERSHIP_PAYMENT_STATUS_DETAILS,
+  MEMBERSHIP_PLAN_STATUS,
+  MEMBERSHIP_PLAN_STATUS_DETAILS,
+} from '@/utils/constant';
 import { getStatusText } from '@/utils/userstatus';
 import {
   Box,
+  Chip,
   Divider,
   FormControlLabel,
   IconButton,
@@ -16,10 +22,12 @@ import {
   TableRow,
   Typography,
 } from '@mui/material';
-import { PencilSimple } from '@phosphor-icons/react';
+import { PencilSimple, XCircle } from '@phosphor-icons/react';
 import dayjs from 'dayjs';
 
 import tableCss from '@/styles/table-css';
+
+import { MembershipType } from '../subscriptions/subscription-table';
 
 export interface Customer {
   id: number;
@@ -58,6 +66,7 @@ interface CustomersTableProps {
   onPageChange: (event: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => void;
   onRowsPerPageChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   updateCustomerStatus: (id: string, currentStatus: number) => void; // Added prop
+  onUpdateStatus: (id: number, newStatus: MembershipType['status']) => void;
 }
 
 export function CustomersTable({
@@ -68,6 +77,7 @@ export function CustomersTable({
   onPageChange,
   onRowsPerPageChange,
   updateCustomerStatus, // Added prop
+  onUpdateStatus,
 }: CustomersTableProps): React.JSX.Element {
   const router = useRouter();
 
@@ -77,6 +87,10 @@ export function CustomersTable({
     },
     [router]
   );
+
+  const handleStatusChange = (id: number, newStatus: MembershipType['status']): void => {
+    onUpdateStatus(id, newStatus);
+  };
 
   const handleRowClick = (id: string): void => {
     router.push(`/admin/customers/form?id=${id}&tab=1`); // Replace with the actual path to your form page
@@ -103,7 +117,9 @@ export function CustomersTable({
               <TableCell sx={tableCss.tableHeaderCell}>Phone</TableCell>
               <TableCell sx={tableCss.tableHeaderCell}>Updated At</TableCell>
               <TableCell sx={tableCss.tableHeaderCell}>Membership Plan</TableCell>
+              <TableCell sx={tableCss.tableHeaderCell}>Membership Payment Status</TableCell>
               <TableCell sx={tableCss.tableHeaderCell}>Status</TableCell>
+              <TableCell sx={tableCss.tableHeaderCell}>Membership Status</TableCell>
               <TableCell sx={tableCss.tableHeaderCell}>Actions</TableCell>
             </TableRow>
           </TableHead>
@@ -156,6 +172,13 @@ export function CustomersTable({
                     <Typography color="black" variant="subtitle2">
                       {row?.membership?.membershipType?.title || '-'}
                     </Typography>
+                    {row?.membership?.membershipType?.title &&
+                      row?.membership?.startDate &&
+                      !isNaN(new Date(row?.membership?.startDate).getTime()) && (
+                        <Typography color="textSecondary" variant="body2">
+                          Start: {dayjs(row?.membership?.startDate).format('MMM D, YYYY')}
+                        </Typography>
+                      )}
 
                     {row?.membership?.membershipType?.title &&
                       row?.membership?.expiryDate &&
@@ -165,7 +188,17 @@ export function CustomersTable({
                         </Typography>
                       )}
                   </TableCell>
-
+                  <TableCell sx={[tableCss.tableCell]}>
+                    {row?.membership?.paymentStatus ? (
+                      <Chip
+                        label={MEMBERSHIP_PAYMENT_STATUS_DETAILS[row.membership?.paymentStatus]?.label}
+                        color={MEMBERSHIP_PAYMENT_STATUS_DETAILS[row.membership?.paymentStatus]?.color}
+                        sx={{ ml: 2 }}
+                      />
+                    ) : (
+                      '-'
+                    )}
+                  </TableCell>
                   <TableCell>
                     <FormControlLabel
                       control={
@@ -181,6 +214,17 @@ export function CustomersTable({
                       label={getStatusText(row.status)}
                     />
                   </TableCell>
+                  <TableCell sx={[tableCss.tableCell]}>
+                    {row?.membership?.status ? (
+                      <Chip
+                        label={MEMBERSHIP_PLAN_STATUS_DETAILS[row.membership?.status]?.label}
+                        color={MEMBERSHIP_PLAN_STATUS_DETAILS[row.membership?.status]?.color}
+                        sx={{ ml: 2 }}
+                      />
+                    ) : (
+                      '-'
+                    )}
+                  </TableCell>
                   <TableCell sx={tableCss.tableCell}>
                     <Stack direction="row" spacing={1} alignItems="center">
                       <IconButton
@@ -189,6 +233,19 @@ export function CustomersTable({
                         }}
                       >
                         <PencilSimple />
+                      </IconButton>
+                      <IconButton
+                        disabled={
+                          !row.membership?.status ||
+                          [MEMBERSHIP_PLAN_STATUS.CANCEL, MEMBERSHIP_PLAN_STATUS.EXPIRED].includes(
+                            row.membership.status
+                          )
+                        }
+                        onClick={() => {
+                          handleStatusChange(row.id, MEMBERSHIP_PLAN_STATUS.CANCEL);
+                        }}
+                      >
+                        <XCircle />
                       </IconButton>
                     </Stack>
                   </TableCell>

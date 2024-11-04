@@ -123,9 +123,9 @@ export default function CheckinPage(): React.JSX.Element {
     router.push('/admin/check-in/form');
   };
 
-  const handleEdit = (id: number) => {
-    router.push(`/admin/check-in/form?id=${id}`);
-  };
+  // const handleEdit = (id: number) => {
+  //   router.push(`/admin/check-in/form?id=${id}`);
+  // };
 
   const handleDelete = async (id: number) => {
     const result = await Swal.fire({
@@ -200,7 +200,7 @@ export default function CheckinPage(): React.JSX.Element {
             rowsPerPage={rowsPerPage}
             onPageChange={handlePageChange}
             onRowsPerPageChange={handleRowsPerPageChange}
-            onEdit={handleEdit}
+            // onEdit={handleEdit}
             onDelete={handleDelete}
           />
         )}

@@ -10,6 +10,7 @@ import { toast, ToastContainer } from 'react-toastify'; // Import the toast func
 import 'react-toastify/dist/ReactToastify.css';
 
 import { useRouter, useSearchParams } from 'next/navigation';
+import { MEMBERSHIP_PLAN_STATUS } from '@/utils/constant';
 import { CustomLoader } from '@/utils/loader';
 import { Button, Card } from '@mui/material';
 import Swal from 'sweetalert2';
@@ -18,6 +19,7 @@ import axiosInstance from '@/lib/axios';
 import { CustomersFilters } from '@/components/admin/customer/customers-filters';
 import { CustomersTable } from '@/components/admin/customer/customers-table';
 import type { Customer } from '@/components/admin/customer/customers-table';
+import { MembershipType } from '@/components/admin/subscriptions/subscription-table';
 
 export default function Page(): React.JSX.Element {
   const searchParams = useSearchParams();
@@ -149,6 +151,37 @@ export default function Page(): React.JSX.Element {
     }
   };
 
+  const handleUpdateStatus = async (id: number, newStatus: MembershipType['status']): Promise<void> => {
+    let swalText = `Do you want to change the status?`;
+    let swalConfirmButtonText = `Yes, update it!`;
+    let swalSuccessMessage = `The status has been updated`;
+
+    if (newStatus === MEMBERSHIP_PLAN_STATUS.CANCEL) {
+      swalText = `Do you want to cancel the subscription?`;
+      swalConfirmButtonText = `Yes`;
+      swalSuccessMessage = `The subscription has been cancelled`;
+    }
+
+    const result = await Swal.fire({
+      title: 'Are you sure?',
+      text: swalText,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: swalConfirmButtonText,
+      cancelButtonText: 'No',
+    });
+
+    if (result.isConfirmed) {
+      try {
+        await axiosInstance.patch(`/users/membership/update-status/${id}`, { status: newStatus });
+        await fetchCustomers(); // Refresh customer data
+        toast.success(swalSuccessMessage);
+      } catch (error) {
+        await Swal.fire('Error!', 'Failed to update.', 'error');
+      }
+    }
+  };
+
   return (
     <Stack spacing={3}>
       <Stack direction="row" spacing={3}>
@@ -187,6 +220,7 @@ export default function Page(): React.JSX.Element {
             onPageChange={handlePageChange}
             onRowsPerPageChange={handleRowsPerPageChange}
             updateCustomerStatus={updateCustomerStatus}
+            onUpdateStatus={handleUpdateStatus}
           />
         )}
       </Card>

@@ -32,6 +32,9 @@ export interface MembershipPlans {
   cancelledCount?: number;
   completedCount?: number;
   revenue?: number;
+  newMembersInlastXDays?: number;
+  revenueInlastXDays?: string;
+  cancellationInlastXDays?: number;
 }
 
 const formatPaymentFrequency = (value: string | undefined): string => {
@@ -47,10 +50,11 @@ const formatPaymentFrequency = (value: string | undefined): string => {
 };
 
 interface MembershipPlanTableProps {
+  lastXDays: string;
   rows: MembershipPlans[];
 }
 
-export function MembershipPlanReportTable({ rows }: MembershipPlanTableProps): React.JSX.Element {
+export function MembershipPlanReportTable({ lastXDays, rows }: MembershipPlanTableProps): React.JSX.Element {
   const router = useRouter();
 
   const handleRowClick = (id: string): void => {
@@ -66,10 +70,16 @@ export function MembershipPlanReportTable({ rows }: MembershipPlanTableProps): R
               <TableCell sx={tableCss.tableHeaderCell}>Plan</TableCell>
               <TableCell sx={tableCss.tableHeaderCell}>Cost</TableCell>
               <TableCell sx={tableCss.tableHeaderCell}>Payment Frequency</TableCell>
+
               <TableCell sx={tableCss.tableHeaderCell}>User Count</TableCell>
 
               <TableCell sx={tableCss.tableHeaderCell}>Cancelled</TableCell>
               <TableCell sx={tableCss.tableHeaderCell}>Completed</TableCell>
+              <TableCell sx={tableCss.tableHeaderCell}>New Members Last {lastXDays ? lastXDays : 0} days</TableCell>
+              <TableCell sx={tableCss.tableHeaderCell}>Revenue Last {lastXDays ? lastXDays : 0} days</TableCell>
+              <TableCell sx={tableCss.tableHeaderCell}>
+                Cancelled Memberships Last {lastXDays ? lastXDays : 0} days
+              </TableCell>
               {/* <TableCell sx={tableCss.tableHeaderCell}>Revenue</TableCell> */}
               <TableCell sx={tableCss.tableHeaderCell}>Status</TableCell>
             </TableRow>
@@ -94,6 +104,7 @@ export function MembershipPlanReportTable({ rows }: MembershipPlanTableProps): R
                   <TableCell sx={tableCss.tableCell}>{formatAmount(row.cost)}</TableCell>
 
                   <TableCell sx={tableCss.tableCell}>{formatPaymentFrequency(row.paymentFrequency)}</TableCell>
+
                   <TableCell
                     sx={tableCss.tableCell}
                     onClick={() => {
@@ -106,6 +117,9 @@ export function MembershipPlanReportTable({ rows }: MembershipPlanTableProps): R
 
                   <TableCell sx={[tableCss.tableCell]}>{row.cancelledCount}</TableCell>
                   <TableCell sx={tableCss.tableCell}>{row.completedCount}</TableCell>
+                  <TableCell sx={tableCss.tableCell}>{row?.newMembersInlastXDays || '-'}</TableCell>
+                  <TableCell sx={tableCss.tableCell}>{formatAmount(row?.revenueInlastXDays) || '-'}</TableCell>
+                  <TableCell sx={tableCss.tableCell}>{row?.cancellationInlastXDays || '-'}</TableCell>
                   {/* <TableCell sx={tableCss.tableCell}>{formatAmount(row.revenue)}</TableCell> */}
                   <TableCell sx={tableCss.tableCell}>
                     <FormControlLabel
