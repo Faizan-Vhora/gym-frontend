@@ -112,7 +112,7 @@ const SlotRescheduleForm: React.FC<SlotRescheduleFormProps> = ({ sessionObj, ope
   };
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth sx={{ zIndex: 99999 }}>
+    <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
       <DialogTitle>Reschedule Session</DialogTitle>
       <DialogContent>
         <form onSubmit={handleSubmit(onSubmitForm)}>

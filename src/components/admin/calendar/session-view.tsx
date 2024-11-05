@@ -57,7 +57,7 @@ const SessionPreview: React.FC<SessionNotesFormProps> = ({
     (1000 * 60 * 60); // Calculate duration in hours
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth sx={{ zIndex: 9999 }}>
+    <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth sx={{ zIndex: 999 }}>
       {/* <DialogTitle>Session Details</DialogTitle> */}
       <DialogContent>
         <Typography variant="h6" component="div" color="black" marginBottom={'10px'}>

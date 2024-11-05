@@ -40,7 +40,7 @@ const SessionNotesForm: React.FC<SessionNotesFormProps> = ({ sessionObj, open, o
   };
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth sx={{ zIndex: 99999 }}>
+    <Dialog open={open} onClose={onClose} maxWidth="sm">
       <DialogTitle>Notes</DialogTitle>
       <DialogContent>
         <form onSubmit={handleSubmit(onSubmitForm)}>

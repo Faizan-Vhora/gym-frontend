@@ -37,15 +37,30 @@ interface DiscountTableProps {
   onRowsPerPageChange: (newRowsPerPage: number) => void;
 }
 
+export interface MembershipType {
+  id: number;
+  title: string;
+  cost: string;
+  durationInMonths: number;
+  paymentFrequency: string;
+  description: string;
+  status: string;
+  isMostPopular: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface DiscountMembershipType {
+  id: number;
+  membershipType: MembershipType;
+}
+
 export interface DiscountEntryResponse {
   id: number;
   codeName: string;
   startDate: string;
-  expiryDate: string; // Updated from Date to string for API data handling
-  membershipType: {
-    id: number;
-    title: string;
-  };
+  expiryDate: string;
+  discountMembershipTypes: DiscountMembershipType[]; // Updated to reflect the array structure in the response
   discountType: DiscountType;
   hasUsageLimit: boolean;
   usageLimit: number;
@@ -64,7 +79,7 @@ export interface DiscountEntry {
   codeName: string;
   startDate: string;
   expiryDate: string; // Updated from Date to string for API data handling
-  membershipType: number;
+  membershipType?: number[];
   discountType: DiscountType;
   hasUsageLimit: boolean;
   usageLimit: number;
@@ -194,7 +209,13 @@ export function DiscountTable({
                     <TableCell sx={tableCss.tableCell}>
                       {discount.hasMinimumAmount ? discount.minimumPurchaseAmount : '-'}
                     </TableCell>
-                    <TableCell sx={tableCss.tableCell}>{discount.membershipType?.title || '-'}</TableCell>
+                    <TableCell sx={tableCss.tableCell}>
+                      {Array.isArray(discount.discountMembershipTypes) && discount.discountMembershipTypes.length > 0
+                        ? discount.discountMembershipTypes
+                            .map((membership) => membership.membershipType.title) // Access `membershipType.title` directly
+                            .join(', ') // Join titles with a comma
+                        : '-'}
+                    </TableCell>
                     <TableCell sx={tableCss.tableCell}>
                       {discount.discountType === DiscountType.Percentage
                         ? `${Math.floor(discount.discountValue)}%` // Remove decimal points and display percentage
