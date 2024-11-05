@@ -37,17 +37,30 @@ interface DiscountTableProps {
   onRowsPerPageChange: (newRowsPerPage: number) => void;
 }
 
-interface MembershipType {
+export interface MembershipType {
   id: number;
   title: string;
+  cost: string;
+  durationInMonths: number;
+  paymentFrequency: string;
+  description: string;
+  status: string;
+  isMostPopular: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface DiscountMembershipType {
+  id: number;
+  membershipType: MembershipType;
 }
 
 export interface DiscountEntryResponse {
   id: number;
   codeName: string;
   startDate: string;
-  expiryDate: string; // Updated from Date to string for API data handling
-  membershipType: MembershipType[] | MembershipType | undefined;
+  expiryDate: string;
+  discountMembershipTypes: DiscountMembershipType[]; // Updated to reflect the array structure in the response
   discountType: DiscountType;
   hasUsageLimit: boolean;
   usageLimit: number;
@@ -197,9 +210,9 @@ export function DiscountTable({
                       {discount.hasMinimumAmount ? discount.minimumPurchaseAmount : '-'}
                     </TableCell>
                     <TableCell sx={tableCss.tableCell}>
-                      {Array.isArray(discount.membershipType) && discount.membershipType.length > 0
-                        ? discount.membershipType
-                            .map((membership) => membership.title) // Map to titles directly
+                      {Array.isArray(discount.discountMembershipTypes) && discount.discountMembershipTypes.length > 0
+                        ? discount.discountMembershipTypes
+                            .map((membership) => membership.membershipType.title) // Access `membershipType.title` directly
                             .join(', ') // Join titles with a comma
                         : '-'}
                     </TableCell>

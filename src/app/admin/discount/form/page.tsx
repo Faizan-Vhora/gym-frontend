@@ -93,7 +93,7 @@ export default function DiscountFormPage(): React.JSX.Element {
   const [hasUsageLimit, setHasUsageLimit] = React.useState<boolean>(false);
   const [hasMinimumAmount, setHasMinimumAmount] = React.useState<boolean>(false);
   const [plans, setPlans] = React.useState<MembershipPlans[]>([]);
-  const [membershipTypeId, setMembershipTypeId] = React.useState<number[] | null>(null);
+  const [membershipTypeId, setMembershipTypeId] = React.useState<number[]>([]);
   const fileInputRef = React.useRef<HTMLInputElement>(null);
 
   const router = useRouter();
@@ -118,11 +118,9 @@ export default function DiscountFormPage(): React.JSX.Element {
             startDate: data.startDate,
             expiryDate: data.expiryDate,
             discountType: data.discountType,
-            membershipType: Array.isArray(data.membershipType)
-              ? data.membershipType.map((item) => item.id) // If it's an array, map to ids
-              : data.membershipType && data.membershipType.id // If it's an object, get the id
-                ? [data.membershipType.id] // Wrap the id in an array
-                : [],
+            membershipType: Array.isArray(data.discountMembershipTypes)
+              ? data.discountMembershipTypes.map((item) => item.membershipType.id) // Map to membershipType ids
+              : [], // Default to an empty array if discountMembershipTypes is not an array
             hasUsageLimit: data.hasUsageLimit,
             usageLimit: data.usageLimit,
             hasMinimumAmount: data.hasMinimumAmount,
@@ -143,9 +141,9 @@ export default function DiscountFormPage(): React.JSX.Element {
           if (data.hasMinimumAmount) {
             setHasMinimumAmount(data.hasMinimumAmount);
           }
-          // if (data.membershipType) {
-          //   setMembershipTypeId(data.membershipType.id);
-          // }
+          if (data.discountMembershipTypes) {
+            setMembershipTypeId(data.discountMembershipTypes.map((membership) => membership.membershipType.id));
+          }
         })
         .catch((error: unknown) => {
           error instanceof Error ? error.message : 'An unexpected error occurred';
@@ -275,7 +273,7 @@ export default function DiscountFormPage(): React.JSX.Element {
     }
   };
 
-  const handleMembershipTypeChange = (membershipId: number[] | null): void => {
+  const handleMembershipTypeChange = (membershipId: number[]): void => {
     setMembershipTypeId(membershipId);
   };
 
@@ -455,21 +453,25 @@ export default function DiscountFormPage(): React.JSX.Element {
                   <Controller
                     control={control}
                     name="membershipType"
+                    defaultValue={membershipTypeId || []} // Set initial value with membershipTypeId array or empty array
                     render={({ field }) => (
                       <FormControl fullWidth error={Boolean(errors?.membershipType)}>
                         <Autocomplete
                           multiple // Enable multiple selection
                           options={[{ id: null, title: 'ALL' }, ...plans]} // Add the "ALL" option at the beginning
-                          getOptionLabel={(option) => option.title || ''}
+                          getOptionLabel={(option) => option?.title || ''}
                           isOptionEqualToValue={(option, value) => option?.id === value?.id}
                           value={
                             field.value?.length > 0
-                              ? plans.filter((plan) => field.value.includes(plan.id))
-                              : [{ id: null, title: 'ALL' }]
+                              ? plans.filter((plan) => field.value.includes(plan.id)) // Filter plans based on selected IDs
+                              : membershipTypeId?.map((id) => plans.find((plan) => plan.id === id)).filter(Boolean) ||
+                                [] // Show selected plans based on IDs
                           }
                           onChange={(e, value) => {
-                            // Convert selected options to an array of IDs
-                            const membershipTypeIds = value.map((item) => item.id).filter((id) => id !== null); // exclude 'ALL'
+                            // Convert selected options to an array of IDs, excluding 'ALL'
+                            const membershipTypeIds = value
+                              .map((item) => item?.id)
+                              .filter((id) => id !== null) as number[]; // Cast to number[]
                             field.onChange(membershipTypeIds);
                             handleMembershipTypeChange(membershipTypeIds);
                           }}
