@@ -326,7 +326,10 @@ export default function BookingDetailsPage(): React.JSX.Element {
                     columnGap: '20px',
                   }}
                 >
-                  <Avatar sx={{ height: '76px', width: '76px' }}></Avatar>
+                  <Avatar
+                    sx={{ height: '76px', width: '76px' }}
+                    src={bookingDetail.customer?.profileImageUrl || '/assets/User@3x-1.png'}
+                  ></Avatar>
 
                   <Stack>
                     <Typography
@@ -445,7 +448,10 @@ export default function BookingDetailsPage(): React.JSX.Element {
                   }}
                 >
                   <Stack>
-                    <Avatar sx={{ height: '76px', width: '76px' }}></Avatar>
+                    <Avatar
+                      sx={{ height: '76px', width: '76px' }}
+                      src={bookingDetail.trainer?.profileImageUrl || '/assets/User@3x-1.png'}
+                    ></Avatar>
                     <Stack flexDirection={'row'} justifyContent={'center'} alignItems={'center'}>
                       {bookingDetail?.trainer?.experience && (
                         <>

@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+// import { useRouter } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { FormHelperText, Grid } from '@mui/material';
 import Avatar from '@mui/material/Avatar';
@@ -22,7 +22,9 @@ import axiosInstance from '@/lib/axios';
 
 import 'react-toastify/dist/ReactToastify.css';
 
+import { addUser } from '@/app/redux/slice';
 import { REGEX_VALIDATION } from '@/utils/constant';
+import { useDispatch } from 'react-redux';
 import Swal from 'sweetalert2';
 
 const accountDetailsSchema = z.object({
@@ -53,7 +55,7 @@ export function AccountDetailsForm(): React.JSX.Element {
   const [file, setFile] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [changeProfileImage, setChangeProfileImage] = React.useState(false);
-  const router = useRouter();
+  const dispatch = useDispatch();
 
   interface User {
     id: number;
@@ -159,9 +161,11 @@ export function AccountDetailsForm(): React.JSX.Element {
 
       const updatedUser = response.data.data;
       setUser(updatedUser);
-
+      localStorage.setItem('user', JSON.stringify(updatedUser));
+      dispatch(addUser(updatedUser));
       toast.success('Profile updated successfully');
-      router.push('/admin/dashboard');
+      // window.location.reload();
+      // router.push('/admin/dashboard');
     } catch (err: unknown) {
       err instanceof Error ? err.message : 'An unexpected error occurred';
     } finally {

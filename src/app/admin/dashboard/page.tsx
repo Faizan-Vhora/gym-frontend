@@ -236,15 +236,11 @@ export default function Page(): React.JSX.Element {
         <CheckInUsers />
       </Grid>
 
-      <Grid lg={6} md={6} xs={12}>
+      <Grid lg={4} md={4} xs={12}>
         <MembershipExpiring />
       </Grid>
 
-      {/* <Grid xs={12}>
-        <Stats />
-      </Grid> */}
-
-      <Grid md={6} xs={12}>
+      <Grid md={8} xs={12}>
         <ActivevsExpiredMemberships />
       </Grid>
       <Grid md={12} xs={12}>

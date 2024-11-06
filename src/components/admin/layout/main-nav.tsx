@@ -10,6 +10,7 @@ import Stack from '@mui/material/Stack';
 import { Bell } from '@phosphor-icons/react';
 import { List as ListIcon } from '@phosphor-icons/react/dist/ssr/List';
 import Pusher from 'pusher-js';
+import { useSelector } from 'react-redux';
 import Swal from 'sweetalert2';
 
 import axiosInstance from '@/lib/axios';
@@ -28,7 +29,7 @@ interface User {
 
 export function MainNav(): React.JSX.Element {
   const [openNav, setOpenNav] = React.useState<boolean>(false);
-  const [user, setUser] = React.useState<User | null>(null);
+  // const [user, setUser] = React.useState<User | null>(null);
   const [unreadCount, setUnreadCount] = React.useState<number>(0);
 
   const userPopover = usePopover<HTMLDivElement>();
@@ -61,13 +62,20 @@ export function MainNav(): React.JSX.Element {
     };
   }, [unreadCount]);
 
+  interface UserData {
+    user: User;
+  }
+
+  const userData = useSelector((data: UserData) => data);
+
   React.useEffect(() => {
     // Retrieve user data from localStorage
-    const storedUser = localStorage.getItem('user');
-    const parsedUser = storedUser ? (JSON.parse(storedUser) as User) : null;
-    setUser(parsedUser);
+    // const storedUser = localStorage.getItem('user');
+    // const parsedUser = storedUser ? (JSON.parse(storedUser) as User) : null;
+    // setUser(userData);
+
     void getNotificationListData();
-  }, [unreadCount]);
+  }, [unreadCount, userData]);
 
   return (
     <React.Fragment>
@@ -114,7 +122,7 @@ export function MainNav(): React.JSX.Element {
             <Avatar
               onClick={userPopover.handleOpen}
               ref={userPopover.anchorRef}
-              src={user?.profileImageUrl || '/assets/user-default.png'} // Use user image or fallback
+              src={userData.user?.profileImageUrl || '/assets/user-default.png'} // Use user image or fallback
               sx={{ cursor: 'pointer' }}
             />
           </Stack>

@@ -8,6 +8,8 @@ import { AuthGuard } from '@/components/auth/auth-guard';
 import { LocalizationProvider } from '@/components/core/localization-provider';
 import { ThemeProvider } from '@/components/core/theme-provider/theme-provider';
 
+import { Providers } from './redux/providers';
+
 export const viewport = { width: 'device-width', initialScale: 1 } satisfies Viewport;
 
 interface LayoutProps {
@@ -21,7 +23,9 @@ export default function Layout({ children }: LayoutProps): React.JSX.Element {
         <AuthGuard>
           <LocalizationProvider>
             <UserProvider>
-              <ThemeProvider>{children}</ThemeProvider>
+              <ThemeProvider>
+                <Providers>{children}</Providers>
+              </ThemeProvider>
             </UserProvider>
           </LocalizationProvider>
         </AuthGuard>

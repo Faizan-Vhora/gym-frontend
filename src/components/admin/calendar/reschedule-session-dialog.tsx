@@ -17,6 +17,7 @@ import {
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import dayjs, { Dayjs } from 'dayjs';
+import moment from 'moment';
 import { Controller, useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
 
@@ -32,6 +33,24 @@ interface SlotRescheduleFormProps {
   onSubmit: (payload: { sessionStartTime: string; sessionEndTime: string; sessionDate: string }) => void;
 }
 
+export interface SlotI {
+  date?: string;
+  weekday?: number;
+  startTime?: string;
+  endTime?: string;
+  isAvailable?: boolean;
+  isDateLabel?: boolean;
+  discount?: boolean;
+}
+
+interface TrainerBlockDatesResponse {
+  data: string[];
+}
+
+interface TrainerAvailableWeekDaysResponse {
+  data: number[];
+}
+
 const SlotRescheduleForm: React.FC<SlotRescheduleFormProps> = ({ sessionObj, open, onClose, onSubmit }) => {
   const {
     control,
@@ -44,7 +63,8 @@ const SlotRescheduleForm: React.FC<SlotRescheduleFormProps> = ({ sessionObj, ope
     selectedDate: Dayjs | null;
     selectedSlot: Slot | null;
   }>();
-
+  const [trainerBlockDatesList, setTrainerBlockDatesList] = React.useState<string[]>([]);
+  const [tarinerAvailableWeekDays, setTarinerAvailableWeekDays] = React.useState<number[]>([]);
   const [scheduleResponse, setScheduleResponse] = useState<ScheduleResponse | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -82,9 +102,40 @@ const SlotRescheduleForm: React.FC<SlotRescheduleFormProps> = ({ sessionObj, ope
     }
   };
 
+  const fetchTrainerBlockDatesData = async (trainerId: number | undefined): Promise<void> => {
+    try {
+      const response = await axiosInstance.get<TrainerBlockDatesResponse>('/session-booking/trainer/block-dates', {
+        params: { trainerId },
+      });
+      const trainerBlockDates = response.data.data;
+      setTrainerBlockDatesList(trainerBlockDates || []);
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred';
+      toast.error(`Failed to fetch block dates data: ${errorMessage}`);
+    }
+  };
+
+  const fetchTrainerAvailableWeekdaysData = async (trainerId: number | undefined): Promise<void> => {
+    try {
+      const response = await axiosInstance.get<TrainerAvailableWeekDaysResponse>(
+        '/session-booking/trainer/available-weekdays',
+        {
+          params: { trainerId },
+        }
+      );
+      const trainerAvailableWeekDays = response.data.data;
+      setTarinerAvailableWeekDays(trainerAvailableWeekDays || []);
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred';
+      toast.error(`Failed to fetch block dates data: ${errorMessage}`);
+    }
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       if (sessionObj && selectedDate) {
+        void fetchTrainerBlockDatesData(sessionObj.trainer?.id);
+        void fetchTrainerAvailableWeekdaysData(sessionObj.trainer?.id);
         return fetchSlotsData(sessionObj.trainer?.id, selectedDate);
       }
     };
@@ -98,6 +149,16 @@ const SlotRescheduleForm: React.FC<SlotRescheduleFormProps> = ({ sessionObj, ope
         toast.error(errorMessage); // Display toast error message
       });
   }, [sessionObj, selectedDate]);
+
+  const isPastDatetime = (slotOption: SlotI): boolean => {
+    // Combine date and time strings to create full datetime strings
+    // console.log("slotOption:: ", slotOption)
+    const startDatetime = moment(`${slotOption.date} ${slotOption.startTime}`, 'YYYY-MM-DD HH:mm:ss');
+    // const endDatetime = moment(`${slotOption.date} ${slotOption.endTime}`, 'YYYY-MM-DD HH:mm:ss');
+    // Get the current date and time
+    const now = moment();
+    return startDatetime.isSameOrBefore(now);
+  };
 
   const onSubmitForm = (data: { selectedDate: Dayjs | null; selectedSlot: Slot | null }) => {
     if (data.selectedSlot && data.selectedDate) {
@@ -138,6 +199,14 @@ const SlotRescheduleForm: React.FC<SlotRescheduleFormProps> = ({ sessionObj, ope
                         helperText: fieldState.error?.message,
                       },
                     }}
+                    shouldDisableDate={(date) => {
+                      const dayOfWeek = dayjs(date).day(); // Get the day of the week (0 = Sunday, 1 = Monday, etc.)
+                      const isUnavailableWeekday = !tarinerAvailableWeekDays.includes(dayOfWeek); // Check if the day is not in tarinerAvailableWeekDays
+                      return (
+                        trainerBlockDatesList.includes(dayjs(date).format('YYYY-MM-DD')) || // Existing check for blocked dates
+                        isUnavailableWeekday // New check for unavailable weekdays
+                      );
+                    }}
                   />
                 )}
               />
@@ -167,6 +236,7 @@ const SlotRescheduleForm: React.FC<SlotRescheduleFormProps> = ({ sessionObj, ope
                           <Autocomplete
                             {...field}
                             options={weekSlot.slots}
+                            getOptionDisabled={(option) => !option.isAvailable || isPastDatetime(option)}
                             getOptionLabel={(option: Slot) => `${option.startTime} - ${option.endTime}`}
                             isOptionEqualToValue={(option, value) =>
                               option.startTime === value.startTime && option.endTime === value.endTime
@@ -176,7 +246,7 @@ const SlotRescheduleForm: React.FC<SlotRescheduleFormProps> = ({ sessionObj, ope
                             }}
                             renderOption={(props, option, { selected }) => (
                               <li {...props} style={{ opacity: option.isAvailable ? 1 : 0.5 }}>
-                                <Checkbox checked={selected} disabled={!option.isAvailable} />
+                                <Checkbox checked={selected} disabled={!option.isAvailable || isPastDatetime(option)} />
                                 {`${formatTo12HourFormat(option.startTime)} - ${formatTo12HourFormat(option.endTime)}`}
                                 {!option.isAvailable}
                               </li>
@@ -191,7 +261,6 @@ const SlotRescheduleForm: React.FC<SlotRescheduleFormProps> = ({ sessionObj, ope
                                 helperText={fieldState.error?.message}
                               />
                             )}
-                            getOptionDisabled={(option) => !option.isAvailable}
                           />
                         )}
                       />

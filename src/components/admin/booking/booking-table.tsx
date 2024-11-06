@@ -116,6 +116,7 @@ export function BookingTable({
                 <TableCell sx={tableCss.tableHeaderCell}>Booking Date</TableCell>
                 <TableCell sx={tableCss.tableHeaderCell}>Member</TableCell>
                 <TableCell sx={tableCss.tableHeaderCell}>Trainer</TableCell>
+                <TableCell sx={tableCss.tableHeaderCell}>Created At</TableCell>
                 {/* <TableCell sx={tableCss.tableHeaderCell}>Booking Type</TableCell> */}
                 <TableCell sx={tableCss.tableHeaderCell}>Status</TableCell>
                 <TableCell sx={tableCss.tableHeaderCell}>Actions</TableCell>
@@ -178,7 +179,13 @@ export function BookingTable({
                         </Box>
                       </Stack>
                     </TableCell>
-
+                    <TableCell sx={{ ...tableCss.tableCell, textAlign: 'left' }}>
+                      {entry.createdAt
+                        ? formatDate(
+                            typeof entry.createdAt === 'string' ? entry.createdAt : entry.createdAt.toISOString()
+                          )
+                        : '-'}
+                    </TableCell>
                     {/* <TableCell sx={tableCss.tableCell}>
 
                       <Chip
