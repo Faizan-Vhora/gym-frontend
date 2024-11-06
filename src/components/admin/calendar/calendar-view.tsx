@@ -14,14 +14,14 @@ import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
 import IconButton from '@mui/material/IconButton';
 import Stack from '@mui/material/Stack';
-import { DateRange } from '@mui/x-date-pickers-pro';
+// import { DateRange } from '@mui/x-date-pickers-pro';
 import { CaretLeft as CaretLeftIcon } from '@phosphor-icons/react/dist/ssr/CaretLeft';
 import { CaretRight as CaretRightIcon } from '@phosphor-icons/react/dist/ssr/CaretRight';
 import { toast, ToastContainer } from 'react-toastify';
 
 import 'react-toastify/dist/ReactToastify.css';
 
-import dayjs, { Dayjs } from 'dayjs';
+// import dayjs, { Dayjs } from 'dayjs';
 import Swal from 'sweetalert2';
 
 import { paths } from '@/paths';
@@ -62,15 +62,15 @@ export function CalendarView({ view = 'dayGridMonth' }: CalendarViewProps): Reac
 
   const [isDialogOpen, setIsDialogOpen] = React.useState(false);
   const [searchTerm, setSearchTerm] = React.useState(searchParams.get('search') || '');
-  const rawDateRange = searchParams.get('dateRange');
-  const [start, end] = rawDateRange ? rawDateRange.split(',') : [null, null];
-  const initialDateRange: DateRange<Dayjs> = [start ? dayjs(start) : null, end ? dayjs(end) : null];
-  const [dateRange, setDateRange] = React.useState<DateRange<Dayjs>>(initialDateRange);
+  // const rawDateRange = searchParams.get('dateRange');
+  // const [start, end] = rawDateRange ? rawDateRange.split(',') : [null, null];
+  // const initialDateRange: DateRange<Dayjs> = [start ? dayjs(start) : null, end ? dayjs(end) : null];
+  // const [dateRange, setDateRange] = React.useState<DateRange<Dayjs>>(initialDateRange);
   const [trainer, selectedTrainer] = React.useState<number | null>(null);
   const [member, selectedMember] = React.useState<number | null>(null);
   const [statusFilter, setStatusFilter] = React.useState(searchParams.get('status') || 'ALL');
-  const [startDate, setStartDate] = React.useState<string | null>(null); // Keep as string
-  const [endDate, setEndDate] = React.useState<string | null>(null); // Keep as string
+  // const [startDate, setStartDate] = React.useState<string | null>(null); // Keep as string
+  // const [endDate, setEndDate] = React.useState<string | null>(null); // Keep as string
   const [isDialogOpenForNotes, setIsDialogOpenForNotes] = React.useState(false);
   const [isDialogOpenForRechedule, setIsDialogOpenForRechedule] = React.useState(false);
 
@@ -83,8 +83,8 @@ export function CalendarView({ view = 'dayGridMonth' }: CalendarViewProps): Reac
       const params = {
         trainerId: trainer,
         customerId: member,
-        startDate: startDate,
-        endDate: endDate,
+        // startDate: startDate,
+        // endDate: endDate,
         pagination: false,
         sessionStatus: statusFilter !== 'ALL' ? statusFilter : undefined,
         search: searchTerm,
@@ -122,16 +122,16 @@ export function CalendarView({ view = 'dayGridMonth' }: CalendarViewProps): Reac
 
   React.useEffect(() => {
     updateUrlPathQueryParams();
-  }, [searchTerm, trainer, member, dateRange, statusFilter]);
+  }, [searchTerm, trainer, member, statusFilter]);
 
   const updateUrlPathQueryParams = () => {
-    const formattedDateRange =
-      dateRange[0] && dateRange[1] ? `${dateRange[0].toISOString()},${dateRange[1].toISOString()}` : ''; // Converts dateRange to a string if both dates are present
+    // const formattedDateRange =
+    //   dateRange[0] && dateRange[1] ? `${dateRange[0].toISOString()},${dateRange[1].toISOString()}` : ''; // Converts dateRange to a string if both dates are present
     const pathQueryParams = {
       search: searchTerm,
       ...(trainer !== null && { trainerId: trainer.toString() }),
       ...(member !== null && { memberId: member.toString() }),
-      dateRange: formattedDateRange,
+      // dateRange: formattedDateRange,
       status: statusFilter,
     };
 
@@ -287,17 +287,17 @@ export function CalendarView({ view = 'dayGridMonth' }: CalendarViewProps): Reac
   //   [updateEvent]
   // );
 
-  const handleDateRangeChange = (newDateRange: [Dayjs | null, Dayjs | null]) => {
-    // Update the date range state
-    setDateRange(newDateRange);
+  // const handleDateRangeChange = (newDateRange: [Dayjs | null, Dayjs | null]) => {
+  //   // Update the date range state
+  //   setDateRange(newDateRange);
 
-    // Destructure the newDateRange tuple
-    const [starts, ends] = newDateRange;
+  //   // Destructure the newDateRange tuple
+  //   const [starts, ends] = newDateRange;
 
-    // Set formatted start and end dates, or null if undefined
-    setStartDate(starts ? starts.format('YYYY-MM-DD') : null);
-    setEndDate(ends ? ends.format('YYYY-MM-DD') : null);
-  };
+  //   // Set formatted start and end dates, or null if undefined
+  //   setStartDate(starts ? starts.format('YYYY-MM-DD') : null);
+  //   setEndDate(ends ? ends.format('YYYY-MM-DD') : null);
+  // };
 
   const handleUpdateStatus = async (id: string, newStatus: BookingSessionEntry['status']): Promise<void> => {
     let swalText = `Do you want to change the status?`;
@@ -366,8 +366,8 @@ export function CalendarView({ view = 'dayGridMonth' }: CalendarViewProps): Reac
           handleTrainerChange={handleTrainerSelect}
           handleMemberChange={handleMemberSelect}
           onStatusChange={handleStatusChange}
-          dateRange={dateRange} // Provide the date range as a tuple
-          onDateRangeChange={handleDateRangeChange} // Provide the handler for date range changes
+          // dateRange={dateRange} // Provide the date range as a tuple
+          // onDateRangeChange={handleDateRangeChange} // Provide the handler for date range changes
         />
         <Card sx={{ overflowX: 'auto' }}>
           <Box sx={{ minWidth: '800px' }}>

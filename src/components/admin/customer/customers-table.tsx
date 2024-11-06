@@ -2,19 +2,20 @@ import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import {
   MEMBERSHIP_PAYMENT_STATUS_DETAILS,
-  MEMBERSHIP_PLAN_STATUS,
+  // MEMBERSHIP_PLAN_STATUS,
   MEMBERSHIP_PLAN_STATUS_DETAILS,
 } from '@/utils/constant';
-import { formatDate } from '@/utils/date-utils';
-import { getStatusText } from '@/utils/userstatus';
+import { formatDate, formatTo12HourFormat } from '@/utils/date-utils';
+// import { getStatusText } from '@/utils/userstatus';
 import {
   Box,
   Chip,
   Divider,
-  FormControlLabel,
   IconButton,
+  // FormControlLabel,
+  // IconButton,
   Stack,
-  Switch,
+  // Switch,
   Table,
   TableBody,
   TableCell,
@@ -23,7 +24,9 @@ import {
   TableRow,
   Typography,
 } from '@mui/material';
-import { PencilSimple, XCircle } from '@phosphor-icons/react';
+import { Clock } from '@phosphor-icons/react';
+
+// import { PencilSimple, XCircle } from '@phosphor-icons/react';
 
 import tableCss from '@/styles/table-css';
 
@@ -42,6 +45,8 @@ export interface Customer {
   qrCodeImageUrl: string;
   profileImageUrl?: string;
   changeProfileImage: boolean;
+  lastEntryInTime?: string;
+  lastEntryDate?: string;
   membership: {
     startDate: Date;
     expiryDate: Date;
@@ -65,7 +70,7 @@ interface CustomersTableProps {
   rows: Customer[];
   onPageChange: (event: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => void;
   onRowsPerPageChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  updateCustomerStatus: (id: string, currentStatus: number) => void; // Added prop
+  // updateCustomerStatus: (id: string, currentStatus: number) => void; // Added prop
   onUpdateStatus: (id: number, newStatus: MembershipType['status']) => void;
 }
 
@@ -76,21 +81,21 @@ export function CustomersTable({
   rows,
   onPageChange,
   onRowsPerPageChange,
-  updateCustomerStatus, // Added prop
-  onUpdateStatus,
+  // updateCustomerStatus, // Added prop
+  // onUpdateStatus,
 }: CustomersTableProps): React.JSX.Element {
   const router = useRouter();
 
-  const handleEdit = React.useCallback(
-    (id: string) => {
-      router.push(`/admin/customers/form?id=${id}&tab=1`);
-    },
-    [router]
-  );
+  // const handleEdit = React.useCallback(
+  //   (id: string) => {
+  //     router.push(`/admin/customers/form?id=${id}&tab=1`);
+  //   },
+  //   [router]
+  // );
 
-  const handleStatusChange = (id: number, newStatus: MembershipType['status']): void => {
-    onUpdateStatus(id, newStatus);
-  };
+  // const handleStatusChange = (id: number, newStatus: MembershipType['status']): void => {
+  //   onUpdateStatus(id, newStatus);
+  // };
 
   const handleRowClick = (id: string): void => {
     router.push(`/admin/customers/form?id=${id}&tab=1`); // Replace with the actual path to your form page
@@ -103,7 +108,7 @@ export function CustomersTable({
           <TableHead>
             <TableRow sx={tableCss.tableRow}>
               <TableCell sx={tableCss.tableHeaderCell}>User Details</TableCell>
-              <TableCell
+              {/* <TableCell
                 sx={{
                   ...tableCss.tableHeaderCell,
                   width: '250px',
@@ -113,14 +118,14 @@ export function CustomersTable({
                 }}
               >
                 Address
-              </TableCell>
+              </TableCell> */}
               <TableCell sx={tableCss.tableHeaderCell}>Phone</TableCell>
-              <TableCell sx={tableCss.tableHeaderCell}>Updated At</TableCell>
+              <TableCell sx={tableCss.tableHeaderCell}>Last CheckIn</TableCell>
               <TableCell sx={tableCss.tableHeaderCell}>Membership Plan</TableCell>
               <TableCell sx={tableCss.tableHeaderCell}>Membership Payment Status</TableCell>
-              <TableCell sx={tableCss.tableHeaderCell}>Status</TableCell>
+              {/* <TableCell sx={tableCss.tableHeaderCell}>Status</TableCell> */}
               <TableCell sx={tableCss.tableHeaderCell}>Membership Status</TableCell>
-              <TableCell sx={tableCss.tableHeaderCell}>Actions</TableCell>
+              {/* <TableCell sx={tableCss.tableHeaderCell}>Actions</TableCell> */}
             </TableRow>
           </TableHead>
           <TableBody>
@@ -155,7 +160,7 @@ export function CustomersTable({
                     </Typography>
                   </TableCell>
 
-                  <TableCell
+                  {/* <TableCell
                     sx={{
                       ...tableCss.tableCell,
                       maxWidth: '70px !important',
@@ -166,9 +171,26 @@ export function CustomersTable({
                     }}
                   >
                     {row.address || '-'}
-                  </TableCell>
+                  </TableCell> */}
                   <TableCell sx={tableCss.tableCell}>{row.phoneNumber || '-'}</TableCell>
-                  <TableCell sx={tableCss.tableCell}>{formatDate(row.updatedAt)}</TableCell>
+                  <TableCell sx={tableCss.tableCell}>
+                    {row.lastEntryDate && row.lastEntryInTime ? (
+                      <>
+                        <Typography variant="subtitle2">{formatDate(row.lastEntryDate)}</Typography>
+                        <Typography color="textSecondary" variant="body2">
+                          <>
+                            <IconButton>
+                              <Clock />
+                            </IconButton>
+                            {row.lastEntryInTime ? formatTo12HourFormat(row.lastEntryInTime) : '-'}
+                          </>
+                        </Typography>
+                      </>
+                    ) : (
+                      '-'
+                    )}
+                  </TableCell>
+                  {/* <TableCell sx={tableCss.tableCell}>{formatDate(row.updatedAt)}</TableCell> */}
                   <TableCell sx={tableCss.tableCell}>
                     <Typography color="black" variant="subtitle2">
                       {row?.membership?.membershipType?.title || '-'}
@@ -206,7 +228,7 @@ export function CustomersTable({
                       '-'
                     )}
                   </TableCell>
-                  <TableCell>
+                  {/* <TableCell>
                     <FormControlLabel
                       control={
                         <Switch
@@ -220,7 +242,7 @@ export function CustomersTable({
                       }
                       label={getStatusText(row.status)}
                     />
-                  </TableCell>
+                  </TableCell> */}
                   <TableCell sx={[tableCss.tableCell]}>
                     {row?.membership?.status ? (
                       <Chip
@@ -232,7 +254,7 @@ export function CustomersTable({
                       '-'
                     )}
                   </TableCell>
-                  <TableCell sx={tableCss.tableCell}>
+                  {/* <TableCell sx={tableCss.tableCell}>
                     <Stack direction="row" spacing={1} alignItems="center">
                       <IconButton
                         onClick={() => {
@@ -255,7 +277,7 @@ export function CustomersTable({
                         <XCircle />
                       </IconButton>
                     </Stack>
-                  </TableCell>
+                  </TableCell> */}
                 </TableRow>
               ))
             )}

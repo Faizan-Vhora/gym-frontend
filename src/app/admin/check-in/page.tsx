@@ -10,7 +10,10 @@ import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 import { CustomLoader } from '@/utils/loader';
-import Swal from 'sweetalert2';
+import { DateRange } from '@mui/x-date-pickers-pro';
+import dayjs, { Dayjs } from 'dayjs';
+
+// import Swal from 'sweetalert2';
 
 import axiosInstance from '@/lib/axios';
 import CheckinFilters from '@/components/admin/check-in/check-in-filter';
@@ -28,6 +31,14 @@ export default function CheckinPage(): React.JSX.Element {
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  // const rawDateRange = searchParams.get('dateRange');
+  // const [start, end] = rawDateRange ? rawDateRange.split(',') : [null, null];
+  // const initialDateRange: DateRange<Dayjs> = [start ? dayjs(start) : null, end ? dayjs(end) : null];
+  // const [dateRange, setDateRange] = React.useState<DateRange<Dayjs>>(initialDateRange);
+  const [startDate, setStartDate] = React.useState<string | null>(null);
+  const [endDate, setEndDate] = React.useState<string | null>(null);
+  const [checkInTime, setCheckInTime] = React.useState<string | null>(null);
+  const [checkOutTime, setCheckOutTime] = React.useState<string | null>(null);
   const router = useRouter();
 
   interface ErrorDetail {
@@ -55,6 +66,10 @@ export default function CheckinPage(): React.JSX.Element {
           status: statusFilter !== 'ALL' ? statusFilter : undefined,
           search: searchTerm,
           userType: userTypeFilter !== 'ALL' ? userTypeFilter : undefined,
+          startDate: startDate,
+          endDate: endDate,
+          startTime: checkInTime,
+          endTime: checkOutTime,
         };
         const response = await axiosInstance.get<CheckinResponse>('/entry-logs', { params });
 
@@ -89,7 +104,7 @@ export default function CheckinPage(): React.JSX.Element {
       }
       toast.error(errorMessage);
     });
-  }, [searchTerm, statusFilter, userTypeFilter, page, rowsPerPage]);
+  }, [searchTerm, statusFilter, userTypeFilter, page, rowsPerPage, startDate, endDate, checkInTime, checkOutTime]);
 
   React.useEffect(() => {
     updateUrlPathQueryParams();
@@ -127,29 +142,29 @@ export default function CheckinPage(): React.JSX.Element {
   //   router.push(`/admin/check-in/form?id=${id}`);
   // };
 
-  const handleDelete = async (id: number) => {
-    const result = await Swal.fire({
-      title: 'Are you sure?',
-      text: 'This action cannot be undone.',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Yes, delete it!',
-      cancelButtonText: 'Cancel',
-    });
+  // const handleDelete = async (id: number) => {
+  //   const result = await Swal.fire({
+  //     title: 'Are you sure?',
+  //     text: 'This action cannot be undone.',
+  //     icon: 'warning',
+  //     showCancelButton: true,
+  //     confirmButtonColor: '#3085d6',
+  //     cancelButtonColor: '#d33',
+  //     confirmButtonText: 'Yes, delete it!',
+  //     cancelButtonText: 'Cancel',
+  //   });
 
-    if (result.isConfirmed) {
-      try {
-        await axiosInstance.delete(`/entry-logs/${id}`);
-        setEntries((prevEntries) => prevEntries.filter((entry) => entry.id !== id));
-        toast.success('Checkin deleted successfully');
-        setPage(0);
-      } catch (err) {
-        toast.error('Failed to delete Checkin');
-      }
-    }
-  };
+  //   if (result.isConfirmed) {
+  //     try {
+  //       await axiosInstance.delete(`/entry-logs/${id}`);
+  //       setEntries((prevEntries) => prevEntries.filter((entry) => entry.id !== id));
+  //       toast.success('Checkin deleted successfully');
+  //       setPage(0);
+  //     } catch (err) {
+  //       toast.error('Failed to delete Checkin');
+  //     }
+  //   }
+  // };
 
   const handleStatusChange: (status: string) => void = (status) => {
     setStatusFilter(status);
@@ -162,6 +177,30 @@ export default function CheckinPage(): React.JSX.Element {
   const handleRowsPerPageChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
+  };
+
+  const handleDateChange = (dateRangeS: DateRange<Dayjs>) => {
+    const [starts, ends] = dateRangeS;
+    setStartDate(starts?.format('YYYY-MM-DD') || null);
+    setEndDate(ends?.format('YYYY-MM-DD') || null);
+  };
+
+  const handleTimeChange = (time: Date | null, isCheckIn: boolean) => {
+    if (time) {
+      const formattedTime = dayjs(time).format('HH:mm:ss'); // Format time as needed
+      if (isCheckIn) {
+        setCheckInTime(formattedTime); // Set check-in time
+      } else {
+        setCheckOutTime(formattedTime); // Set check-out time
+      }
+    } else {
+      // Handle the case when time is cleared
+      if (isCheckIn) {
+        setCheckInTime(null);
+      } else {
+        setCheckOutTime(null);
+      }
+    }
   };
 
   return (
@@ -188,6 +227,9 @@ export default function CheckinPage(): React.JSX.Element {
             onSearchChange={handleSearchChange}
             onUserTypeChange={handleUserTypeChange}
             onStatusChange={handleStatusChange}
+            onDateChange={handleDateChange}
+            onCheckInTimeChange={handleTimeChange}
+            onCheckOutTimeChange={handleTimeChange}
           />
         </Stack>
         {loading ? (
@@ -201,7 +243,7 @@ export default function CheckinPage(): React.JSX.Element {
             onPageChange={handlePageChange}
             onRowsPerPageChange={handleRowsPerPageChange}
             // onEdit={handleEdit}
-            onDelete={handleDelete}
+            // onDelete={handleDelete}
           />
         )}
       </Card>

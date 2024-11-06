@@ -23,7 +23,7 @@ import Typography from '@mui/material/Typography';
 // import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { X as XIcon } from '@phosphor-icons/react';
 import { Plus as PlusIcon } from '@phosphor-icons/react/dist/ssr/Plus';
-import { Dayjs } from 'dayjs';
+// import { Dayjs } from 'dayjs';
 import debounce from 'lodash/debounce';
 import { toast } from 'react-toastify';
 
@@ -32,7 +32,7 @@ import { dayjs } from '@/lib/dayjs';
 import { Option } from '@/components/core/option';
 
 import { Customer } from '../customer/customers-table';
-import DateRangeFilter from '../reports/common-filters/date-range-filter';
+// import DateRangeFilter from '../reports/common-filters/date-range-filter';
 import { Trainer } from '../trainer/trainer-table';
 import type { ViewMode } from './types';
 
@@ -45,8 +45,8 @@ export interface ToolbarProps {
   handleTrainerChange: (selectedTrainer: number) => void;
   handleMemberChange: (selectedMember: number) => void;
   onStatusChange: (status: string) => void;
-  dateRange: [Dayjs | null, Dayjs | null]; // Change to a tuple type
-  onDateRangeChange: (dateRange: [Dayjs | null, Dayjs | null]) => void; // Update to receive a single argumen
+  // dateRange: [Dayjs | null, Dayjs | null];
+  // onDateRangeChange: (dateRange: [Dayjs | null, Dayjs | null]) => void;
 }
 
 export function Toolbar({
@@ -58,8 +58,8 @@ export function Toolbar({
   handleTrainerChange,
   handleMemberChange,
   onStatusChange,
-  dateRange,
-  onDateRangeChange,
+  // dateRange,
+  // onDateRangeChange,
 }: ToolbarProps): React.JSX.Element {
   const searchParams = useSearchParams();
   const handleViewChange = React.useCallback(
@@ -210,9 +210,9 @@ export function Toolbar({
     setSelectedStatus(newStatus);
   };
 
-  const handleDateChange = (newDateRange: [Dayjs | null, Dayjs | null]) => {
-    onDateRangeChange(newDateRange);
-  };
+  // const handleDateChange = (newDateRange: [Dayjs | null, Dayjs | null]) => {
+  //   onDateRangeChange(newDateRange);
+  // };
   // const handleStartDateChange = (newStartDate: Dayjs | null): void => {
   //   setStartDate(newStartDate);
   //   onStartDateChange(newStartDate ? dayjs(newStartDate).format('YYYY-MM-DD') : '');
@@ -250,7 +250,7 @@ export function Toolbar({
         {/* Search Field */}
         <Grid item md={3} sm={6} xs={12}>
           <TextField
-            label="Search"
+            label="Search by Member & Trainer"
             value={searchTerm}
             onChange={handleSearchChange}
             variant="outlined"
@@ -304,17 +304,6 @@ export function Toolbar({
         </Grid>
         <Grid item md={3} sm={6} xs={12}>
           {/* View Selection */}
-          <Select
-            name="view"
-            onChange={handleViewChange}
-            style={{ fontFamily: '"Audiowide", sans-serif' }}
-            sx={{ minWidth: '100%', order: { xs: -1, md: 0 } }}
-            value={view}
-          >
-            <Option value="dayGridMonth">Month</Option>
-            <Option value="timeGridWeek">Week</Option>
-            <Option value="timeGridDay">Day</Option>
-          </Select>
         </Grid>
 
         <Grid item md={3} sm={6} xs={12}>
@@ -332,8 +321,19 @@ export function Toolbar({
           </FormControl>
         </Grid>
 
-        <Grid item md={6} sm={6} xs={12}>
-          <DateRangeFilter dateRange={dateRange} onDateChange={handleDateChange} />
+        <Grid item md={3} sm={6} xs={12}>
+          <Select
+            name="view"
+            onChange={handleViewChange}
+            style={{ fontFamily: '"Audiowide", sans-serif' }}
+            sx={{ minWidth: '100%', order: { xs: -1, md: 0 } }}
+            value={view}
+          >
+            <Option value="dayGridMonth">Month</Option>
+            <Option value="timeGridWeek">Week</Option>
+            <Option value="timeGridDay">Day</Option>
+          </Select>
+          {/* <DateRangeFilter dateRange={dateRange} onDateChange={handleDateChange} /> */}
           {/* Start Date Picker */}
           {/* <DatePicker
               label="Start Date"
@@ -350,6 +350,7 @@ export function Toolbar({
               }}
             /> */}
         </Grid>
+        <Grid item md={3} sm={6} xs={12}></Grid>
 
         {/* End Date Picker */}
         {/* <DatePicker

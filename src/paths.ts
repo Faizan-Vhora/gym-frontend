@@ -70,10 +70,14 @@ export const paths = {
     bookingsView: (id?: number) => `/admin/bookings/view/${id}`,
   },
 
+  communication: {
+    communicationList: '/admin/communication',
+  },
+
   notification: {
     notificationList: '/admin/notification',
-
   },
+
 
   trainerReport: {
     list: '/admin/reports/trainer-report'

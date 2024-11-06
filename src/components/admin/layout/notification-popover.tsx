@@ -21,7 +21,7 @@ import Swal from 'sweetalert2';
 
 import axiosInstance from '@/lib/axios';
 import { dayjs } from '@/lib/dayjs';
-import { NotificationEntry } from '@/components/admin/notification/notification-table';
+import { NotificationEntry } from '@/components/admin/communication/notification-table';
 
 export interface NotificationsPopoverProps {
   anchorEl: null | Element;

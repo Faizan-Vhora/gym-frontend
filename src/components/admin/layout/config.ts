@@ -20,8 +20,8 @@ export const navItems = [
 
       { key: 'support', title: 'Support', href: paths.support.supportList, icon: 'headset', items:[] },
 
+      { key: 'communication', title: 'Communication', href: paths.communication.communicationList, icon: 'bell', items:[] },
       { key: 'notification', title: 'Notification', href: paths.notification.notificationList, icon: 'bell', items:[] },
-
       // { key: 'subscriptions', title: 'Subscriptions', href: paths.Subscriptions.list, icon: 'crown-simple', items:[] },
       {
         key: 'settings',

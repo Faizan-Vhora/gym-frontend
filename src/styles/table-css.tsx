@@ -24,7 +24,6 @@ const tableCss = {
   },
   tableRow: {
     backgroundColor: '#fff !important',
-
     borderRadius: '8px', // Round the corners
     boxShadow: '0 4px 8px rgba(0,0,0,0.1)', // Shadow for a card-like appearance
     marginBottom: '10px', // Space between rows
