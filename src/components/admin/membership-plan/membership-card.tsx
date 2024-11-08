@@ -2,14 +2,21 @@
 
 import React, { useState } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { MEMBERSHIP_PAYMENT_STATUS_DETAILS, MEMBERSHIP_PLAN_STATUS_DETAILS } from '@/utils/constant';
+import {
+  MEMBERSHIP_PAYMENT_STATUS_DETAILS,
+  MEMBERSHIP_PLAN_STATUS,
+  MEMBERSHIP_PLAN_STATUS_DETAILS,
+} from '@/utils/constant';
 import { formatAmount } from '@/utils/converter';
-import { Button, Card, CardContent, CardProps, Chip, Stack, Typography } from '@mui/material';
+import { Button, Card, CardContent, CardProps, Chip, IconButton, Stack, Typography } from '@mui/material';
+import { XCircle } from '@phosphor-icons/react';
 import dayjs from 'dayjs';
 import { toast } from 'react-toastify';
+import Swal from 'sweetalert2';
 
 import axiosInstance from '@/lib/axios';
 
+import { MembershipType } from '../subscriptions/subscription-table';
 import { ChooseMembershipDialog } from './membership-popover';
 import { UpdateMembershipStatusDialog } from './membership-status-popover';
 
@@ -27,6 +34,7 @@ interface MembershipPlanCardProps extends CardProps {
   showMembershipStatus?: boolean;
   showMembershipPaymentStatus?: boolean;
   showRenewButton?: boolean;
+  showCrossButton?: boolean;
   onButtonClick: () => void;
 }
 
@@ -57,6 +65,7 @@ const MembershipPlanCard: React.FC<MembershipPlanCardProps> = ({
   showMembershipStatus,
   showMembershipPaymentStatus,
   showRenewButton,
+  showCrossButton,
   onButtonClick,
   ...cardProps
 }) => {
@@ -64,6 +73,7 @@ const MembershipPlanCard: React.FC<MembershipPlanCardProps> = ({
 
   const [openDialog, setOpenDialog] = useState(false);
   const [newPaymentStatus, setNewPaymentStatus] = useState<string | null>(null);
+  const [newMembershipStatus, setNewMembershipStatus] = useState<string | null>(null);
   const [openMembershipDialog, setOpenMembershipDialog] = useState(false);
   const [selectedPlanId, setSelectedPlanId] = useState<string | null | undefined>(null);
   const [membershipData, setMembershipData] = useState<Membership | null>(null);
@@ -137,6 +147,46 @@ const MembershipPlanCard: React.FC<MembershipPlanCardProps> = ({
     }
   };
 
+  interface UpdateStatusResponse {
+    status: string | null; // Or whatever type the `status` is supposed to be
+  }
+
+  const handleStatusChange = async (newStatus: MembershipType['status']): Promise<void> => {
+    let swalText = `Do you want to change the status?`;
+    let swalConfirmButtonText = `Yes, `;
+    let swalSuccessMessage = `The status has been updated`;
+
+    if (newStatus === MEMBERSHIP_PLAN_STATUS.CANCEL) {
+      swalText = `Do you want to cancel the subscription?`;
+      swalConfirmButtonText = `Yes`;
+      swalSuccessMessage = `The subscription has been cancelled`;
+    }
+
+    const result = await Swal.fire({
+      title: 'Are you sure?',
+      text: swalText,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: swalConfirmButtonText,
+      cancelButtonText: 'No',
+    });
+
+    if (result.isConfirmed) {
+      try {
+        const response = await axiosInstance.patch<UpdateStatusResponse>(
+          `/users/membership/update-status/${membershipId}`,
+          {
+            status: newStatus,
+          }
+        );
+        toast.success(swalSuccessMessage);
+        setNewMembershipStatus(response.data.status);
+      } catch (error) {
+        await Swal.fire('Error!', 'Failed to update.', 'error');
+      }
+    }
+  };
+
   return (
     <Card className="memberCard" {...cardProps}>
       <CardContent style={{ flexGrow: 1 }}>
@@ -148,13 +198,32 @@ const MembershipPlanCard: React.FC<MembershipPlanCardProps> = ({
             <Typography variant="h6" component="div" color="black">
               {membershipStatus && (
                 <Chip
-                  label={MEMBERSHIP_PLAN_STATUS_DETAILS[membershipData?.status || membershipStatus]?.label}
-                  color={MEMBERSHIP_PLAN_STATUS_DETAILS[membershipData?.status || membershipStatus]?.color}
+                  label={
+                    MEMBERSHIP_PLAN_STATUS_DETAILS[newMembershipStatus || membershipData?.status || membershipStatus]
+                      ?.label
+                  }
+                  color={
+                    MEMBERSHIP_PLAN_STATUS_DETAILS[newMembershipStatus || membershipData?.status || membershipStatus]
+                      ?.color
+                  }
                   sx={{ ml: 2 }}
                   // onClick={handleChipClick}
                 />
               )}
             </Typography>
+          )}
+          {showCrossButton && (
+            <IconButton
+              disabled={
+                !membershipStatus ||
+                [MEMBERSHIP_PLAN_STATUS.CANCEL, MEMBERSHIP_PLAN_STATUS.EXPIRED].includes(membershipStatus)
+              }
+              onClick={() => {
+                void handleStatusChange(MEMBERSHIP_PLAN_STATUS.CANCEL);
+              }}
+            >
+              <XCircle />
+            </IconButton>
           )}
         </Stack>
         <Typography color="text.secondary" gutterBottom>

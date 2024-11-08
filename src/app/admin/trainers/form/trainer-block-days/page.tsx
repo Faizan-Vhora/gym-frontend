@@ -21,8 +21,12 @@ const dateRangeSchema = z
   .object({
     unavailableDates: z.array(
       z.object({
-        startDate: z.string().nonempty('Start date cannot be empty'),
-        endDate: z.string().nonempty('End date cannot be empty'),
+        startDate: z.string().refine((val) => dayjs(val).isValid(), {
+          message: 'Start date is invalid',
+        }),
+        endDate: z.string().refine((val) => dayjs(val).isValid(), {
+          message: 'End date is invalid',
+        }),
       })
     ),
   })
@@ -31,7 +35,7 @@ const dateRangeSchema = z
       const { startDate, endDate } = dateRange;
 
       // Check if endDate is provided and is before the startDate
-      if (new Date(endDate) < new Date(startDate)) {
+      if (dayjs(endDate).isBefore(dayjs(startDate))) {
         ctx.addIssue({
           path: ['unavailableDates', index, 'endDate'],
           code: z.ZodIssueCode.custom,
@@ -46,6 +50,7 @@ const UnavailableDateRanges = () => {
   const id = searchParams.get('id');
   const router = useRouter();
   const [isLoading, setIsLoading] = React.useState(true);
+  const [existingDates, setExistingDates] = React.useState<UnavailableDate[]>([]);
   const {
     control,
     handleSubmit,
@@ -81,18 +86,21 @@ const UnavailableDateRanges = () => {
   };
 
   const onSubmit = async (data: FormData) => {
-    const payload = {
-      trainerBlockDates: data.unavailableDates.map((dateRange) => ({
-        startDate: dayjs(dateRange.startDate).format(DateFormat.dateFormat),
-        endDate: dayjs(dateRange.endDate).format(DateFormat.dateFormat),
-      })),
-    };
+    const newRanges = data.unavailableDates.map((dateRange) => ({
+      startDate: dayjs(dateRange.startDate).format(DateFormat.dateFormat),
+      endDate: dayjs(dateRange.endDate).format(DateFormat.dateFormat),
+    }));
+
     try {
+      const payload = {
+        trainerBlockDates: newRanges,
+      };
+
       await axiosInstance.put(`/trainer/${id}/trainer-block-dates`, payload);
       toast.success('Block Dates saved successfully!');
-      router.push('/admin/trainers'); // Adjust the redirect as needed
+      router.push('/admin/trainers');
     } catch (error) {
-      error instanceof Error ? error.message : 'An unexpected error occurred';
+      toast.error(error instanceof Error ? error.message : 'An unexpected error occurred');
     }
   };
 
@@ -101,10 +109,11 @@ const UnavailableDateRanges = () => {
     const fetchData = async () => {
       try {
         const response = await axiosInstance.get<{ data: UnavailableDate[] }>(`/trainer/${id}/trainer-block-dates`);
-        const existingDates: UnavailableDate[] = response.data.data; // Explicitly define the type
-        if (existingDates.length > 0) {
+        const existingDatesS: UnavailableDate[] = response.data.data; // Explicitly define the type
+        setExistingDates(existingDatesS);
+        if (existingDatesS.length > 0) {
           // Set the form values with the existing dates
-          setValue('unavailableDates', existingDates);
+          setValue('unavailableDates', existingDatesS);
         }
       } catch (error) {
         error instanceof Error ? error.message : 'An unexpected error occurred';
@@ -150,9 +159,9 @@ const UnavailableDateRanges = () => {
             {unavailableDates.map((dateRange, index) => (
               <Grid container alignItems={'center'} key={index} sx={{ marginLeft: '5px' }}>
                 <Grid item xs={12} sm={6} md={4} sx={{ padding: '15px' }}>
-                  <FormControl fullWidth error={Boolean(errors?.unavailableDates?.[index]?.startDate)}>
+                  <FormControl fullWidth>
                     <Controller
-                      name={`unavailableDates.${index}.startDate`} // Correct the name
+                      name={`unavailableDates.${index}.startDate`}
                       control={control}
                       render={({ field, fieldState: { error: fieldError } }) => (
                         <DatePicker
@@ -168,7 +177,23 @@ const UnavailableDateRanges = () => {
                             textField: {
                               fullWidth: true,
                               helperText: fieldError ? fieldError.message : '',
+                              error: Boolean(fieldError), // Apply error style based on field error, not on disabled state
+                              InputProps: {
+                                readOnly: true, // Disable typing in the input field
+                              },
                             },
+                          }}
+                          shouldDisableDate={(date) => {
+                            const selectedDate = dayjs(date);
+                            return existingDates.some(({ startDate, endDate }) => {
+                              const start = dayjs(startDate);
+                              const end = dayjs(endDate);
+                              return (
+                                selectedDate.isSame(start, 'day') ||
+                                selectedDate.isSame(end, 'day') ||
+                                (selectedDate.isAfter(start, 'day') && selectedDate.isBefore(end, 'day'))
+                              );
+                            });
                           }}
                         />
                       )}
@@ -199,7 +224,29 @@ const UnavailableDateRanges = () => {
                             textField: {
                               fullWidth: true,
                               helperText: fieldError ? fieldError.message : '',
+                              error: Boolean(fieldError),
+                              InputProps: {
+                                readOnly: true, // Disable typing in the input field
+                              },
                             },
+                          }}
+                          shouldDisableDate={(date) => {
+                            // Format the current date to dayjs object
+                            const selectedDate = dayjs(date);
+
+                            // Check if the date is within any of the existing date ranges
+                            return existingDates.some(({ startDate, endDate }) => {
+                              // Convert startDate and endDate to dayjs objects for comparison
+                              const start = dayjs(startDate);
+                              const end = dayjs(endDate);
+
+                              // Check if the selected date is within the range (inclusive of start and end)
+                              return (
+                                selectedDate.isSame(start, 'day') ||
+                                selectedDate.isSame(end, 'day') ||
+                                (selectedDate.isAfter(start, 'day') && selectedDate.isBefore(end, 'day'))
+                              );
+                            });
                           }}
                         />
                       )}
@@ -210,18 +257,20 @@ const UnavailableDateRanges = () => {
                   </FormControl>
                 </Grid>
 
-                <Grid item xs={12} sm={6} md={1}>
+                <Grid item xs={12} sm={6} md={2} sx={{ padding: '15px' }}>
                   <IconButton
                     onClick={() => {
                       removeDateRange(index);
                     }}
                     color="error"
+                    sx={{ marginTop: '25px' }}
                   >
-                    <Trash />
+                    <Trash size={20} />
                   </IconButton>
                 </Grid>
               </Grid>
             ))}
+
             <Stack className="trainerbtn" alignItems={'end'} flexDirection={'row'} justifyContent={'end'} padding={5}>
               <Button
                 type="submit"

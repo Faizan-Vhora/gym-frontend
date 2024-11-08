@@ -153,7 +153,7 @@ export default function Page(): React.JSX.Element {
 
   const handleUpdateStatus = async (id: number, newStatus: MembershipType['status']): Promise<void> => {
     let swalText = `Do you want to change the status?`;
-    let swalConfirmButtonText = `Yes, update it!`;
+    let swalConfirmButtonText = `Yes, `;
     let swalSuccessMessage = `The status has been updated`;
 
     if (newStatus === MEMBERSHIP_PLAN_STATUS.CANCEL) {

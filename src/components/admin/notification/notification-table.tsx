@@ -5,7 +5,6 @@ import {
   Card,
   Chip,
   Divider,
-  IconButton,
   Stack,
   Table,
   TableBody,
@@ -22,7 +21,9 @@ import 'react-toastify/dist/ReactToastify.css'; // Import toast styles
 
 import { useRouter } from 'next/navigation';
 import { formatDate } from '@/utils/date-utils';
+import Swal from 'sweetalert2';
 
+import axiosInstance from '@/lib/axios';
 // import { Trash } from '@phosphor-icons/react';
 
 import tableCss from '@/styles/table-css';
@@ -64,12 +65,37 @@ export function NotificationTable({
   onPageChange,
   onRowsPerPageChange,
 }: NotificationTableProps): React.JSX.Element {
+  const [selectedEntry, setSelectedEntry] = React.useState<NotificationEntry | null>(null);
   const router = useRouter();
   const stripHtml = (html: string): string => {
     const div = document.createElement('div');
     div.innerHTML = html;
     return div.textContent || div.innerText || '';
   };
+
+  const handleread = async (entry: NotificationEntry) => {
+    if (!entry) return;
+
+    const payload = {
+      isRead: true,
+    };
+
+    try {
+      await axiosInstance.patch(`/notification/${entry.id}`, payload);
+      // You can update the chip's state or entry state here if needed
+    } catch (error) {
+      error instanceof Error ? error.message : 'An unexpected error occurred';
+      await Swal.fire('Error!', 'Failed to mark notification as read.', 'error');
+    }
+  };
+
+  // useEffect to handle calling `handleread` when `selectedEntry` changes
+  React.useEffect(() => {
+    if (selectedEntry) {
+      void handleread(selectedEntry);
+      // Update chip or UI state here as needed
+    }
+  }, [selectedEntry]);
 
   return (
     <>
@@ -99,6 +125,7 @@ export function NotificationTable({
                     <TableCell
                       sx={{ ...tableCss.tableCell, textAlign: 'left', cursor: 'pointer' }}
                       onClick={() => {
+                        setSelectedEntry(entry);
                         if (entry?.user?.userType === 3) {
                           router.push(`/admin/customers/form?id=${entry?.user?.id}&tab=1`);
                         } else if (entry?.user?.userType === 2) {

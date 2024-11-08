@@ -764,6 +764,7 @@ export default function CustomerEditForm(): React.JSX.Element {
                         showMembershipStatus={true}
                         showMembershipPaymentStatus={true}
                         showRenewButton={true}
+                        showCrossButton={true}
                         onButtonClick={(): void => {
                           undefined;
                         }}
