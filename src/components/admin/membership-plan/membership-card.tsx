@@ -189,6 +189,21 @@ const MembershipPlanCard: React.FC<MembershipPlanCardProps> = ({
 
   return (
     <Card className="memberCard" {...cardProps}>
+      <Stack flexDirection="row" justifyContent={'right'}>
+        {showCrossButton && (
+          <IconButton
+            disabled={
+              !membershipStatus ||
+              [MEMBERSHIP_PLAN_STATUS.CANCEL, MEMBERSHIP_PLAN_STATUS.EXPIRED].includes(membershipStatus)
+            }
+            onClick={() => {
+              void handleStatusChange(MEMBERSHIP_PLAN_STATUS.CANCEL);
+            }}
+          >
+            <XCircle />
+          </IconButton>
+        )}
+      </Stack>
       <CardContent style={{ flexGrow: 1 }}>
         <Stack flexDirection={'row'} alignItems={'center'}>
           <Typography variant="h5" component="div" gutterBottom>
@@ -211,19 +226,6 @@ const MembershipPlanCard: React.FC<MembershipPlanCardProps> = ({
                 />
               )}
             </Typography>
-          )}
-          {showCrossButton && (
-            <IconButton
-              disabled={
-                !membershipStatus ||
-                [MEMBERSHIP_PLAN_STATUS.CANCEL, MEMBERSHIP_PLAN_STATUS.EXPIRED].includes(membershipStatus)
-              }
-              onClick={() => {
-                void handleStatusChange(MEMBERSHIP_PLAN_STATUS.CANCEL);
-              }}
-            >
-              <XCircle />
-            </IconButton>
           )}
         </Stack>
         <Typography color="text.secondary" gutterBottom>
