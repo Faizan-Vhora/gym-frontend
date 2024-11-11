@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import {
   BOOKING_PAYMENT_STATUS_DETAILS,
   BOOKING_PAYMENT_TYPE,
@@ -23,7 +23,7 @@ import { BookingEntry } from '@/components/admin/booking/booking-table';
 export default function BookingDetailsPage(): React.JSX.Element {
   const searchParams = useSearchParams();
   const bookingId = searchParams.get('id');
-
+  const router = useRouter();
   const [bookingDetail, setBookingDetails] = React.useState<BookingEntry | null>(null);
 
   const [loading, setLoading] = React.useState(false);
@@ -286,7 +286,13 @@ export default function BookingDetailsPage(): React.JSX.Element {
               >
                 Member Details
               </Typography>
-              <Card className="bookin-card">
+              <Card
+                className="bookin-card"
+                sx={{ cursor: 'pointer' }}
+                onClick={() => {
+                  router.push(`/admin/customers/form?id=${bookingDetail?.customer?.id}&tab=1`);
+                }}
+              >
                 <Stack
                   sx={{
                     display: 'flex',
@@ -407,7 +413,13 @@ export default function BookingDetailsPage(): React.JSX.Element {
               >
                 Trainer Details
               </Typography>
-              <Card className="bookin-card">
+              <Card
+                className="bookin-card"
+                sx={{ cursor: 'pointer' }}
+                onClick={() => {
+                  router.push(`/admin/trainers/form?id=${bookingDetail?.trainer?.id}&tab=1`);
+                }}
+              >
                 <Stack
                   sx={{
                     display: 'flex',

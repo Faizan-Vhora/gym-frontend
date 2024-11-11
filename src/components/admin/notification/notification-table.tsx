@@ -1,39 +1,51 @@
 import * as React from 'react';
 import {
+  Avatar,
   Box,
   Card,
+  Chip,
   Divider,
-  IconButton,
+  Stack,
   Table,
   TableBody,
   TableCell,
   TableHead,
   TablePagination,
   TableRow,
+  Tooltip,
   Typography,
 } from '@mui/material';
 import { ToastContainer } from 'react-toastify'; // Import toast and ToastContainer
 
 import 'react-toastify/dist/ReactToastify.css'; // Import toast styles
 
+import { useRouter } from 'next/navigation';
 import { formatDate } from '@/utils/date-utils';
-import { Trash } from '@phosphor-icons/react';
+import Swal from 'sweetalert2';
+
+import axiosInstance from '@/lib/axios';
+// import { Trash } from '@phosphor-icons/react';
 
 import tableCss from '@/styles/table-css';
 
 export interface NotificationEntry {
   id: number;
-  user: { id: number; fullName: string; email: string; userType: 2 | 3 } | null;
   title: string;
   message: string;
   notificationType: number;
-  noOfNotifications: number;
-  redirectionPath: string;
   isRead: boolean;
-  data: string;
-  createdAt: Date | string | null;
-  updatedAt: Date | string | null;
-  createdBy: { fullName: string; email: string };
+  createdAt: string; // Use Date type if you'll be converting this to a Date object
+  updatedAt: string; // Use Date type if you'll be converting this to a Date object
+  user: {
+    id: number;
+    memberId: string;
+    fullName: string;
+    email: string;
+    profileImageUrl: string | null;
+    qrCodeImageUrl: string | null;
+    userType?: number;
+  };
+  redirectionPath: string | null;
 }
 
 interface NotificationTableProps {
@@ -43,7 +55,6 @@ interface NotificationTableProps {
   totalEntries: number;
   onPageChange: (newPage: number) => void;
   onRowsPerPageChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  onDelete: (id: number) => void;
 }
 
 export function NotificationTable({
@@ -53,8 +64,39 @@ export function NotificationTable({
   totalEntries,
   onPageChange,
   onRowsPerPageChange,
-  onDelete,
 }: NotificationTableProps): React.JSX.Element {
+  const [selectedEntry, setSelectedEntry] = React.useState<NotificationEntry | null>(null);
+  const router = useRouter();
+  const stripHtml = (html: string): string => {
+    const div = document.createElement('div');
+    div.innerHTML = html;
+    return div.textContent || div.innerText || '';
+  };
+
+  const handleread = async (entry: NotificationEntry) => {
+    if (!entry) return;
+
+    const payload = {
+      isRead: true,
+    };
+
+    try {
+      await axiosInstance.patch(`/notification/${entry.id}`, payload);
+      // You can update the chip's state or entry state here if needed
+    } catch (error) {
+      error instanceof Error ? error.message : 'An unexpected error occurred';
+      await Swal.fire('Error!', 'Failed to mark notification as read.', 'error');
+    }
+  };
+
+  // useEffect to handle calling `handleread` when `selectedEntry` changes
+  React.useEffect(() => {
+    if (selectedEntry) {
+      void handleread(selectedEntry);
+      // Update chip or UI state here as needed
+    }
+  }, [selectedEntry]);
+
   return (
     <>
       <Card>
@@ -62,11 +104,11 @@ export function NotificationTable({
           <Table sx={{ minWidth: '800px' }}>
             <TableHead>
               <TableRow sx={tableCss.tableRow}>
-                <TableCell sx={tableCss.tableHeaderCell}>Title</TableCell>
+                <TableCell sx={tableCss.tableHeaderCell}>User Details</TableCell>
+                <TableCell sx={{ ...tableCss.tableHeaderCell, textAlign: 'center' }}>Title</TableCell>
                 <TableCell sx={tableCss.tableHeaderCell}>Message</TableCell>
-                <TableCell sx={tableCss.tableHeaderCell}>Users Count</TableCell>
                 <TableCell sx={tableCss.tableHeaderCell}>Created At</TableCell>
-                <TableCell sx={tableCss.tableHeaderCell}>Action</TableCell>
+                <TableCell sx={tableCss.tableHeaderCell}>Is Read</TableCell>
               </TableRow>
             </TableHead>
 
@@ -80,30 +122,69 @@ export function NotificationTable({
               ) : (
                 entries.map((entry) => (
                   <TableRow hover key={entry.id} sx={tableCss.tableRow}>
-                    <TableCell sx={tableCss.tableCell}>{entry?.title}</TableCell>
-                    <TableCell sx={tableCss.tableCell} dangerouslySetInnerHTML={{ __html: entry?.message }} />
-                    <TableCell sx={tableCss.tableCell}>{entry?.noOfNotifications}</TableCell>
+                    <TableCell
+                      sx={{ ...tableCss.tableCell, textAlign: 'left', cursor: 'pointer' }}
+                      onClick={() => {
+                        setSelectedEntry(entry);
+                        if (entry?.user?.userType === 3) {
+                          router.push(`/admin/customers/form?id=${entry?.user?.id}&tab=1`);
+                        } else if (entry?.user?.userType === 2) {
+                          router.push(`/admin/trainers/form?id=${entry?.user?.id}&tab=1`);
+                        }
+                      }}
+                    >
+                      <Stack flexDirection={'row'} columnGap={2} paddingY={1}>
+                        <Avatar
+                          src={entry?.user?.profileImageUrl || '/assets/User@3x-1.png'}
+                          sx={{ height: '56px', width: '56px' }}
+                        />
+                        <Stack>
+                          <Typography variant="subtitle2">{entry.user?.fullName}</Typography>
+                          <Typography color="textSecondary" variant="body2">
+                            {entry.user?.email}
+                          </Typography>
+                        </Stack>
+                      </Stack>
+                    </TableCell>
+                    <TableCell
+                      sx={{
+                        ...tableCss.tableCell,
+                        maxWidth: '80px !important',
+                        whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis !important',
+                        textAlign: 'left',
+                      }}
+                    >
+                      <Tooltip title={entry?.title || ''} arrow>
+                        <span>{entry?.title}</span>
+                      </Tooltip>
+                      {/* {entry?.title} */}
+                    </TableCell>
+                    <TableCell
+                      sx={{
+                        ...tableCss.tableCell,
+                        maxWidth: '80px !important',
+                        whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis !important',
+                        textAlign: 'left',
+                      }}
+                    >
+                      <Tooltip title={stripHtml(entry?.message) || ''} arrow>
+                        <span dangerouslySetInnerHTML={{ __html: entry?.message }} />
+                      </Tooltip>
+                    </TableCell>
+
                     <TableCell sx={tableCss.tableCell}>
-                      {entry.updatedAt && (
-                        <Typography color="textSecondary">
-                          {formatDate(
-                            typeof entry.updatedAt === 'string'
-                              ? entry.updatedAt
-                              : entry.updatedAt instanceof Date
-                                ? entry.updatedAt.toISOString().split('T')[0]
-                                : ''
-                          )}
-                        </Typography>
-                      )}
+                      {entry.createdAt && <Typography color="textSecondary">{formatDate(entry.createdAt)}</Typography>}
                     </TableCell>
                     <TableCell sx={tableCss.tableCell}>
-                      <IconButton
-                        onClick={() => {
-                          onDelete(entry.id);
-                        }}
-                      >
-                        <Trash />
-                      </IconButton>
+                      <Chip
+                        label={entry.isRead ? 'Readed' : 'Unread'}
+                        color={entry.isRead ? 'default' : 'success'}
+                        variant="outlined"
+                      />
                     </TableCell>
                   </TableRow>
                 ))

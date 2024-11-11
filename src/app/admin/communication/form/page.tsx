@@ -143,8 +143,8 @@ export default function NotificationForm() {
       <Card>
         <Stack margin={5}>
           <Tabs value={tabValue} onChange={handleTabChange} centered>
-            <Tab label="Member Notification" value="member" />
-            <Tab label="Trainer Notification" value="trainer" />
+            <Tab label="Member Communication" value="member" />
+            <Tab label="Trainer Communication" value="trainer" />
           </Tabs>
 
           <form onSubmit={handleSubmit(onSubmit)} style={{ marginTop: '20px' }}>

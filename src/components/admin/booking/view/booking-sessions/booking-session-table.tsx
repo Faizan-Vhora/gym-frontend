@@ -18,10 +18,7 @@ import { ToastContainer } from 'react-toastify'; // Import toast and ToastContai
 
 import 'react-toastify/dist/ReactToastify.css'; // Import toast styles
 
-import {
-  BOOKING_SESSION_STATUS,
-  BOOKING_SESSION_STATUS_DETAILS,
-} from '@/utils/constant';
+import { BOOKING_SESSION_STATUS, BOOKING_SESSION_STATUS_DETAILS } from '@/utils/constant';
 import { formatAmount } from '@/utils/converter';
 import { formatDate, formatTo12HourFormat } from '@/utils/date-utils';
 import { ArrowsClockwise, Eye, Note, XCircle } from '@phosphor-icons/react';
@@ -127,6 +124,7 @@ export function BookingSessionTable({
           <Table sx={{ minWidth: '800px' }}>
             <TableHead>
               <TableRow sx={tableCss.tableRow}>
+                <TableCell sx={tableCss.tableHeaderCell}>Session ID</TableCell>
                 <TableCell sx={tableCss.tableHeaderCell}>Session Date</TableCell>
                 <TableCell sx={tableCss.tableHeaderCell}>Start Time</TableCell>
                 <TableCell sx={tableCss.tableHeaderCell}>End Time</TableCell>
@@ -149,6 +147,7 @@ export function BookingSessionTable({
               ) : (
                 entries.map((entry) => (
                   <TableRow hover key={entry.id} sx={tableCss.tableRow}>
+                    <TableCell sx={tableCss.tableCell}>#{entry.id}</TableCell>
                     <TableCell sx={tableCss.tableCell}>
                       <Stack direction="row" spacing={2}>
                         <Box>

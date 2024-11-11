@@ -4,13 +4,13 @@ import * as React from 'react';
 import { useCallback, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { CustomLoader } from '@/utils/loader';
-import { Button, Card, Stack, Typography } from '@mui/material';
-import { Plus as PlusIcon } from '@phosphor-icons/react';
-import { toast, ToastContainer } from 'react-toastify';
+import { Card, Stack, Typography } from '@mui/material';
+// import { Plus as PlusIcon } from '@phosphor-icons/react';
+import { ToastContainer } from 'react-toastify';
 import Swal from 'sweetalert2';
 
 import axiosInstance from '@/lib/axios';
-import { NotificationFilters } from '@/components/admin/notification/notification-filter';
+import { NotificationFilters } from '@/components/admin/communication/notification-filter';
 import { NotificationEntry, NotificationTable } from '@/components/admin/notification/notification-table';
 
 export default function Page(): React.JSX.Element {
@@ -36,7 +36,7 @@ export default function Page(): React.JSX.Element {
       };
 
       const response = await axiosInstance.get<{ data: { items: NotificationEntry[]; meta: { totalItems: number } } }>(
-        '/admin-notification',
+        '/notification',
         { params: qParams }
       );
 
@@ -68,9 +68,9 @@ export default function Page(): React.JSX.Element {
     router.push(`/admin/notification?${queryString}`);
   };
 
-  const handleAddClick = (): void => {
-    router.push('/admin/notification/form');
-  };
+  //   const handleAddClick = (): void => {
+  //     router.push('/admin/communication/form');
+  //   };
 
   const handlePageChange = (newPage: number): void => {
     setPage(newPage);
@@ -86,32 +86,6 @@ export default function Page(): React.JSX.Element {
     setPage(0);
   };
 
-  const handleDelete: (id: number) => Promise<void> = async (id) => {
-    // Prompt user with SweetAlert2 confirmation dialog
-    const result = await Swal.fire({
-      title: 'Are you sure?',
-      text: 'This action cannot be undone.',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Yes, delete it!',
-      cancelButtonText: 'Cancel',
-    });
-
-    if (result.isConfirmed) {
-      try {
-        await axiosInstance.delete(`/admin-notification/${id}`);
-        // Trigger a refetch to refresh data
-        toast.success('Notification deleted successfully');
-        void getNotificationListData();
-        setPage(0); // Reset or update the page state if necessary
-      } catch (err) {
-        await Swal.fire('Failed to delete Notification');
-      }
-    }
-  };
-
   // Lifecycle hooks
   useEffect(() => {
     void getNotificationListData(); // Ignore the warning
@@ -125,7 +99,7 @@ export default function Page(): React.JSX.Element {
             Notification
           </Typography>
         </Stack>
-        <Button
+        {/* <Button
           className="common-button"
           startIcon={<PlusIcon fontSize="var(--icon-fontSize-md)" />}
           variant="contained"
@@ -133,7 +107,7 @@ export default function Page(): React.JSX.Element {
           style={{ fontFamily: 'Audiowide, sans-serif' }}
         >
           Add
-        </Button>
+        </Button> */}
       </Stack>
       <Card>
         <Stack sx={{ padding: '30px' }}>
@@ -150,7 +124,7 @@ export default function Page(): React.JSX.Element {
             totalEntries={count}
             onPageChange={handlePageChange}
             onRowsPerPageChange={handleRowsPerPageChange}
-            onDelete={handleDelete}
+            // onDelete={handleDelete}
           />
         )}
       </Card>

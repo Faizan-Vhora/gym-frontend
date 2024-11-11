@@ -23,6 +23,9 @@ import {
   MenuItem,
   OutlinedInput,
   Select,
+  Stack,
+  Tab,
+  Tabs,
   TextField,
   Typography,
 } from '@mui/material';
@@ -34,6 +37,8 @@ import axiosInstance from '@/lib/axios';
 import { Customer } from '@/components/admin/customer/customers-table';
 import { SupportEntry } from '@/components/admin/support/support-table';
 import { Trainer } from '@/components/admin/trainer/trainer-table';
+
+import MessageForm from '../messages/page';
 
 // Dynamically import the CKEditor
 const CustomEditor = dynamic(() => import('@/components/ckeditor'), { ssr: false });
@@ -72,11 +77,13 @@ export default function SupportForm(): React.JSX.Element {
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [tabValue, setTabValue] = useState<string>('edit');
 
   const {
     register,
     handleSubmit,
     setValue,
+    reset,
     formState: { errors },
     watch,
   } = useForm<SupportFormInputs>({
@@ -148,6 +155,18 @@ export default function SupportForm(): React.JSX.Element {
     }
   };
 
+  React.useEffect(() => {
+    if (searchParams.get('tab')) {
+      setTabValue(String(searchParams.get('tab')));
+    }
+  }, []);
+
+  React.useEffect(() => {
+    if (id && tabValue) {
+      router.push(`/admin/support/form?id=${id}&tab=${tabValue}`);
+    }
+  }, [tabValue]);
+
   const fetchCustomers = async (): Promise<void> => {
     try {
       const response = await axiosInstance.get<{ data: Customer[] }>('/users/customer/dropdown');
@@ -191,6 +210,11 @@ export default function SupportForm(): React.JSX.Element {
     }
   };
 
+  const handleTabChange = (event: React.SyntheticEvent, newValue: 'edit' | 'message') => {
+    setTabValue(newValue);
+    reset();
+  };
+
   useEffect(() => {
     void fetchTrainers();
     void fetchCustomers();
@@ -202,85 +226,92 @@ export default function SupportForm(): React.JSX.Element {
 
   return (
     <Box component="form" onSubmit={handleSubmit(onSubmit)} sx={{ p: 3 }}>
-      <Card>
-        <CardHeader
-          style={{ fontFamily: '"Audiowide", sans-serif' }}
-          title={id ? 'Edit Support Ticket' : 'Create Support Ticket'}
-          sx={{ backgroundColor: '#f5f5f5', py: 2 }}
-        />
-        <Divider />
-        <CardContent>
-          <Grid container spacing={3}>
-            <Grid item xs={12} md={4} sm={6}>
-              <FormControl fullWidth variant="outlined" required error={Boolean(errors.userType)}>
-                <InputLabel>User Type</InputLabel>
-                <Select
-                  {...register('userType')}
-                  value={userType}
-                  onChange={(e) => {
-                    setValue('userType', e.target.value);
-                  }}
-                  label="User Type"
-                >
-                  {SUPPORT_TICKET_USER_TYPE_OPTIONS.map((option) => (
-                    <MenuItem key={option.value} value={option.value}>
-                      {option.label}
-                    </MenuItem>
-                  ))}
-                </Select>
-                {errors.userType && (
-                  <Typography color="error" variant="caption">
-                    {errors.userType.message}
-                  </Typography>
-                )}
-              </FormControl>
-            </Grid>
-
-            <Grid item xs={12} md={4} sm={6}>
-              <FormControl fullWidth variant="outlined" required error={Boolean(errors.status)}>
-                <InputLabel>Status</InputLabel>
-                <Select
-                  {...register('status')}
-                  value={status}
-                  onChange={(e) => {
-                    setValue('status', e.target.value);
-                  }}
-                  label="Status"
-                >
-                  {SUPPORT_TICKET_STATUS_OPTIONS.map((option) => (
-                    <MenuItem key={option.value} value={option.value}>
-                      {option.label}
-                    </MenuItem>
-                  ))}
-                </Select>
-                {errors.status && (
-                  <Typography color="error" variant="caption">
-                    {errors.status.message}
-                  </Typography>
-                )}
-              </FormControl>
-            </Grid>
-
-            <Grid item xs={12} md={4} sm={12}>
-              <FormControl fullWidth variant="outlined" required error={Boolean(errors.user)}>
-                <Autocomplete
-                  options={userOptions}
-                  getOptionLabel={(option) => option.label} // display the label of each option
-                  value={userOptions.find((option) => option.value === user) || null} // set selected value
-                  onChange={(event, newValue) => {
-                    setValue('user', newValue ? newValue.value : ''); // update selected value
-                  }}
-                  renderInput={(params) => (
-                    <TextField {...params} label="User" error={Boolean(errors.user)} {...register('user')} />
+      <Stack margin={2}>
+        <Tabs value={tabValue} onChange={handleTabChange} centered>
+          <Tab label="Edit Support Ticket" value="edit" />
+          <Tab label="Message" value="message" />
+        </Tabs>
+      </Stack>
+      {tabValue === 'edit' && (
+        <Card>
+          <CardHeader
+            style={{ fontFamily: '"Audiowide", sans-serif' }}
+            title={id ? 'Edit Support Ticket' : 'Create Support Ticket'}
+            sx={{ backgroundColor: '#f5f5f5', py: 2 }}
+          />
+          <Divider />
+          <CardContent>
+            <Grid container spacing={3}>
+              <Grid item xs={12} md={4} sm={6}>
+                <FormControl fullWidth variant="outlined" required error={Boolean(errors.userType)}>
+                  <InputLabel>User Type</InputLabel>
+                  <Select
+                    {...register('userType')}
+                    value={userType}
+                    onChange={(e) => {
+                      setValue('userType', e.target.value);
+                    }}
+                    label="User Type"
+                  >
+                    {SUPPORT_TICKET_USER_TYPE_OPTIONS.map((option) => (
+                      <MenuItem key={option.value} value={option.value}>
+                        {option.label}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                  {errors.userType && (
+                    <Typography color="error" variant="caption">
+                      {errors.userType.message}
+                    </Typography>
                   )}
-                />
-                {errors.user && (
-                  <Typography color="error" variant="caption">
-                    {errors.user.message}
-                  </Typography>
-                )}
-              </FormControl>
-              {/* <FormControl fullWidth variant="outlined" required error={Boolean(errors.user)}>
+                </FormControl>
+              </Grid>
+
+              <Grid item xs={12} md={4} sm={6}>
+                <FormControl fullWidth variant="outlined" required error={Boolean(errors.status)}>
+                  <InputLabel>Status</InputLabel>
+                  <Select
+                    {...register('status')}
+                    value={status}
+                    onChange={(e) => {
+                      setValue('status', e.target.value);
+                    }}
+                    label="Status"
+                  >
+                    {SUPPORT_TICKET_STATUS_OPTIONS.map((option) => (
+                      <MenuItem key={option.value} value={option.value}>
+                        {option.label}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                  {errors.status && (
+                    <Typography color="error" variant="caption">
+                      {errors.status.message}
+                    </Typography>
+                  )}
+                </FormControl>
+              </Grid>
+
+              <Grid item xs={12} md={4} sm={12}>
+                <FormControl fullWidth variant="outlined" required error={Boolean(errors.user)}>
+                  <Autocomplete
+                    options={userOptions}
+                    getOptionLabel={(option) => option.label} // display the label of each option
+                    value={userOptions.find((option) => option.value === user) || null} // set selected value
+                    onChange={(event, newValue) => {
+                      setValue('user', newValue ? newValue.value : ''); // update selected value
+                    }}
+                    renderInput={(params) => (
+                      <TextField {...params} label="User" error={Boolean(errors.user)} {...register('user')} />
+                    )}
+                  />
+                  {errors.user && (
+                    <Typography color="error" variant="caption">
+                      {errors.user.message}
+                    </Typography>
+                  )}
+                </FormControl>
+                {/* <FormControl fullWidth variant="outlined" required error={Boolean(errors.user)}>
                 <InputLabel>User</InputLabel>
                 <Select
                   {...register('user')}
@@ -302,57 +333,58 @@ export default function SupportForm(): React.JSX.Element {
                   </Typography>
                 )}
               </FormControl> */}
-            </Grid>
+              </Grid>
 
-            <Grid item xs={12}>
-              <FormControl fullWidth required error={Boolean(errors.subject)}>
-                <InputLabel>Subject</InputLabel>
-                <OutlinedInput {...register('subject')} label="Subject" />
-                {errors.subject && (
-                  <Typography color="error" variant="caption">
-                    {errors.subject.message}
-                  </Typography>
-                )}
-              </FormControl>
-            </Grid>
+              <Grid item xs={12}>
+                <FormControl fullWidth required error={Boolean(errors.subject)}>
+                  <InputLabel>Subject</InputLabel>
+                  <OutlinedInput {...register('subject')} label="Subject" />
+                  {errors.subject && (
+                    <Typography color="error" variant="caption">
+                      {errors.subject.message}
+                    </Typography>
+                  )}
+                </FormControl>
+              </Grid>
 
-            <Grid item xs={12}>
-              <InputLabel required>Description</InputLabel>
-              <FormControl fullWidth required>
-                <CustomEditor
-                  data={description}
-                  onChange={(data) => {
-                    setTicketDescription(data);
-                  }}
-                />
-              </FormControl>
+              <Grid item xs={12}>
+                <InputLabel required>Description</InputLabel>
+                <FormControl fullWidth required>
+                  <CustomEditor
+                    data={description}
+                    onChange={(data) => {
+                      setTicketDescription(data);
+                    }}
+                  />
+                </FormControl>
+              </Grid>
             </Grid>
-          </Grid>
-        </CardContent>
-        <Divider />
-        <CardActions sx={{ justifyContent: 'flex-end', p: 2 }}>
-          <Button className="common-button" variant="contained" type="submit" sx={{ mr: 2 }} disabled={isSubmitting}>
-            Save
-          </Button>
-          <Button
-            variant="outlined"
-            onClick={() => {
-              router.back();
-            }}
-            sx={{
-              borderColor: '#d0021b',
-              color: '#d0021b',
-              '&:hover': {
-                borderColor: 'darkred',
-                backgroundColor: 'rgba(255, 0, 0, 0.1)',
-              },
-            }}
-          >
-            Cancel
-          </Button>
-        </CardActions>
-      </Card>
-
+          </CardContent>
+          <Divider />
+          <CardActions sx={{ justifyContent: 'flex-end', p: 2 }}>
+            <Button className="common-button" variant="contained" type="submit" sx={{ mr: 2 }} disabled={isSubmitting}>
+              Save
+            </Button>
+            <Button
+              variant="outlined"
+              onClick={() => {
+                router.back();
+              }}
+              sx={{
+                borderColor: '#d0021b',
+                color: '#d0021b',
+                '&:hover': {
+                  borderColor: 'darkred',
+                  backgroundColor: 'rgba(255, 0, 0, 0.1)',
+                },
+              }}
+            >
+              Cancel
+            </Button>
+          </CardActions>
+        </Card>
+      )}
+      {tabValue === 'message' && <MessageForm />}
       {loading && <CustomLoader />}
       {error ? <Alert color="error">{error}</Alert> : null}
       <ToastContainer />

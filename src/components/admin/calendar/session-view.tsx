@@ -1,4 +1,5 @@
 import React from 'react';
+import { useRouter } from 'next/navigation';
 import {
   BOOKING_SESSION_PAYMENT_STATUS_DETAILS,
   BOOKING_SESSION_STATUS_DETAILS,
@@ -42,7 +43,7 @@ const SessionPreview: React.FC<SessionNotesFormProps> = ({
   onUpdateStatus,
 }) => {
   const statusDetail = BOOKING_SESSION_STATUS_DETAILS[sessionObj.status];
-
+  const router = useRouter();
   const PaymentStatus = BOOKING_SESSION_PAYMENT_STATUS_DETAILS[sessionObj.paymentStatus];
 
   const handleStatusChange = (id: string, newStatus: BookingSessionEntry['status']): void => {
@@ -107,7 +108,13 @@ const SessionPreview: React.FC<SessionNotesFormProps> = ({
               <Grid container columnGap={5} justifyContent={'space-evenly'}>
                 <Grid item sm={5} xs={12} alignContent={'center'}>
                   {sessionObj && (
-                    <Card className="bookin-card">
+                    <Card
+                      className="bookin-card"
+                      sx={{ cursor: 'pointer' }}
+                      onClick={() => {
+                        router.push(`/admin/customers/form?id=${sessionObj?.customer?.id}&tab=1`);
+                      }}
+                    >
                       <Stack
                         sx={{
                           display: 'flex',
@@ -220,7 +227,13 @@ const SessionPreview: React.FC<SessionNotesFormProps> = ({
                 </Grid>
                 <Grid item sm={5} xs={12} alignContent={'center'}>
                   {sessionObj && (
-                    <Card className="bookin-card">
+                    <Card
+                      className="bookin-card"
+                      sx={{ cursor: 'pointer' }}
+                      onClick={() => {
+                        router.push(`/admin/trainers/form?id=${sessionObj?.trainer?.id}&tab=1`);
+                      }}
+                    >
                       <Stack
                         sx={{
                           display: 'flex',

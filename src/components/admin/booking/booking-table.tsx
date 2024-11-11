@@ -132,13 +132,21 @@ export function BookingTable({
                 </TableRow>
               ) : (
                 entries.map((entry) => (
-                  <TableRow hover key={entry.id} sx={tableCss.tableRow}>
+                  <TableRow
+                    hover
+                    key={entry.id}
+                    sx={tableCss.tableRow}
+                    onClick={() => {
+                      handleRowClick(entry.id);
+                    }}
+                    style={{ cursor: 'pointer' }}
+                  >
                     <TableCell
                       sx={tableCss.tableCell}
-                      onClick={() => {
-                        handleRowClick(entry.id);
-                      }}
-                      style={{ cursor: 'pointer' }}
+                      // onClick={() => {
+                      //   handleRowClick(entry.id);
+                      // }}
+                      // style={{ cursor: 'pointer' }}
                     >
                       #{entry.id}
                     </TableCell>
@@ -209,7 +217,8 @@ export function BookingTable({
                       <Stack direction="row" spacing={1} alignItems="center">
                         <IconButton
                           disabled={[BOOKING_STATUS.CANCELED, BOOKING_STATUS.COMPLETED].includes(entry.status)}
-                          onClick={() => {
+                          onClick={(e) => {
+                            e.stopPropagation(); // Prevents the row click from triggering
                             handleStatusChange(entry.id, BOOKING_STATUS.CANCELED);
                           }}
                         >

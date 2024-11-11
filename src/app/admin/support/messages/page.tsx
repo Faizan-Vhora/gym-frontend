@@ -41,7 +41,7 @@ const supportSchema = z.object({
 
 type SupportTicketMessageInputs = z.infer<typeof supportSchema>;
 
-export default function SupportForm(): React.JSX.Element {
+export default function MessageForm(): React.JSX.Element {
   const searchParams = useSearchParams();
   const id = searchParams.get('id');
   const router = useRouter();

@@ -3,7 +3,7 @@ import {
   Box,
   Card,
   Divider,
-  IconButton,
+  // IconButton,
   MenuItem,
   Select,
   Stack,
@@ -22,13 +22,13 @@ import 'react-toastify/dist/ReactToastify.css'; // Import toast styles
 import { useRouter } from 'next/navigation';
 import { SUPPORT_TICKET_STATUS_OPTIONS, USER_TYPE_OPTIONS, UserTypeOption } from '@/utils/constant';
 import { formatDate } from '@/utils/date-utils';
-import { Chat, PencilSimple } from '@phosphor-icons/react';
 
+// import { Chat, PencilSimple } from '@phosphor-icons/react';
 import tableCss from '@/styles/table-css';
 
 export interface SupportEntry {
   id: number;
-  user: { id: number; fullName: string; email: string } | null;
+  user: { id: number; fullName: string; email: string; userType: number } | null;
   type: 'user' | 'trainer' | 'web';
   status: 'pending' | 'resolved' | 'reviewed';
   userType: 2 | 3;
@@ -69,19 +69,23 @@ export function SupportTable({
 }: SupportTableProps): React.JSX.Element {
   const router = useRouter();
 
-  const handleEdit = React.useCallback(
-    (id: number) => {
-      router.push(`/admin/support/form?id=${id}`);
-    },
-    [router]
-  );
+  // const handleEdit = React.useCallback(
+  //   (id: number) => {
+  //     router.push(`/admin/support/form?id=${id}`);
+  //   },
+  //   [router]
+  // );
 
-  const handleCheckMessages = React.useCallback(
-    (id: number) => {
-      router.push(`/admin/support/messages?id=${id}`);
-    },
-    [router]
-  );
+  // const handleCheckMessages = React.useCallback(
+  //   (id: number) => {
+  //     router.push(`/admin/support/messages?id=${id}`);
+  //   },
+  //   [router]
+  // );
+
+  const handleRowClick = (id: number): void => {
+    router.push(`/admin/support/form?id=${id}`); // Replace with the actual path to your form page
+  };
 
   const handleStatusChange = (id: number, newStatus: SupportEntry['status']): void => {
     onUpdateStatus(id, newStatus);
@@ -99,7 +103,7 @@ export function SupportTable({
                 <TableCell sx={tableCss.tableHeaderCell}>Subject</TableCell>
                 <TableCell sx={tableCss.tableHeaderCell}>Created At</TableCell>
                 <TableCell sx={tableCss.tableHeaderCell}>Status</TableCell>
-                <TableCell sx={tableCss.tableHeaderCell}>Actions</TableCell>
+                {/* <TableCell sx={tableCss.tableHeaderCell}>Actions</TableCell> */}
               </TableRow>
             </TableHead>
 
@@ -113,7 +117,16 @@ export function SupportTable({
               ) : (
                 entries.map((entry) => (
                   <TableRow hover key={entry.id} sx={tableCss.tableRow}>
-                    <TableCell sx={{ ...tableCss.tableCell, textAlign: 'left' }}>
+                    <TableCell
+                      sx={{ ...tableCss.tableCell, textAlign: 'left', cursor: 'pointer' }}
+                      onClick={() => {
+                        if (entry?.userType === 3) {
+                          router.push(`/admin/customers/form?id=${entry?.user?.id}&tab=1`);
+                        } else if (entry?.userType === 2) {
+                          router.push(`/admin/trainers/form?id=${entry?.user?.id}&tab=1`);
+                        }
+                      }}
+                    >
                       <Stack direction="row" spacing={2}>
                         <Box>
                           <Typography variant="subtitle2">{entry?.user?.fullName}</Typography>
@@ -126,7 +139,18 @@ export function SupportTable({
                     <TableCell sx={tableCss.tableCell}>
                       {USER_TYPE_OPTIONS.find((ele: UserTypeOption) => ele.value === entry.userType)?.label || '-'}
                     </TableCell>
-                    <TableCell sx={{ ...tableCss.tableCell, textAlign: 'left' }}>{entry.subject}</TableCell>
+                    <TableCell
+                      sx={{
+                        ...tableCss.tableCell,
+                        textAlign: 'left',
+                        cursor: 'pointer',
+                      }}
+                      onClick={() => {
+                        handleRowClick(entry.id);
+                      }} // Pass entry as parameter
+                    >
+                      {entry.subject}
+                    </TableCell>
                     <TableCell sx={tableCss.tableCell}>
                       {entry.createdAt && (
                         <Typography color="textSecondary">
@@ -158,7 +182,7 @@ export function SupportTable({
                       </Select>
                     </TableCell>
 
-                    <TableCell sx={tableCss.tableCell}>
+                    {/* <TableCell sx={tableCss.tableCell}>
                       <Stack direction="row" spacing={1} alignItems="center">
                         <IconButton
                           onClick={() => {
@@ -176,7 +200,7 @@ export function SupportTable({
                           <Chat />
                         </IconButton>
                       </Stack>
-                    </TableCell>
+                    </TableCell> */}
                   </TableRow>
                 ))
               )}

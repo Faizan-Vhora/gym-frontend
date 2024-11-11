@@ -439,7 +439,7 @@ export default function CustomerEditForm(): React.JSX.Element {
       <Card>
         <CardHeader
           style={{ fontFamily: '"Audiowide", sans-serif' }}
-          title={id ? `Edit Member |  ${customer?.memberId || ''}` : 'Create Member'}
+          title={id ? `Edit Member | ${customer?.fullName} |  ${customer?.memberId || ''}` : 'Create Member'}
         />
         {id && (
           <Stack sx={{ marginLeft: '20px' }}>
@@ -764,6 +764,7 @@ export default function CustomerEditForm(): React.JSX.Element {
                         showMembershipStatus={true}
                         showMembershipPaymentStatus={true}
                         showRenewButton={true}
+                        showCrossButton={true}
                         onButtonClick={(): void => {
                           undefined;
                         }}
