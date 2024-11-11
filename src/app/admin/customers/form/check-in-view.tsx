@@ -142,7 +142,7 @@ export function CheckInTableView({
             rowsPerPage={rowsPerPage}
             onPageChange={onPageChange}
             onRowsPerPageChange={onRowsPerPageChange}
-            rowsPerPageOptions={[5, 10, 25]}
+            rowsPerPageOptions={[10, 15, 25]}
           />
         </>
       )}
