@@ -23,8 +23,10 @@ export default function TrainersPage(): React.JSX.Element {
   const searchParams = useSearchParams();
   const [trainers, setTrainers] = useState<Trainer[]>([]);
   const [count, setCount] = useState<number>(0);
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [page, setPage] = useState(searchParams.get('page') ? Number(searchParams.get('page')) : 0);
+  const [rowsPerPage, setRowsPerPage] = useState(
+    searchParams.get('rowsPerPage') ? Number(searchParams.get('rowsPerPage')) : 10
+  );
   const [filter, setFilter] = useState<string>(searchParams.get('search') || ''); // Search filter
   const [statusFilter, setStatusFilter] = useState<string>(searchParams.get('status') || 'ALL'); // Status filter
   const [error, setError] = React.useState<string | null>(null);

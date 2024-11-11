@@ -17,8 +17,10 @@ import type { DiscountEntryResponse } from '@/components/admin/discount/discount
 export default function DiscountManagementPage(): React.JSX.Element {
   const searchParams = useSearchParams();
   const [discounts, setDiscounts] = React.useState<DiscountEntryResponse[]>([]);
-  const [page, setPage] = React.useState<number>(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState<number>(5);
+  const [page, setPage] = React.useState<number>(searchParams.get('page') ? Number(searchParams.get('page')) : 0);
+  const [rowsPerPage, setRowsPerPage] = React.useState<number>(
+    searchParams.get('rowsPerPage') ? Number(searchParams.get('rowsPerPage')) : 10
+  );
   const [totalItems, setTotalItems] = React.useState<number>(0);
   const [filterType, setFilterType] = React.useState<string>(searchParams.get('status') || 'All');
   const [search, setSearch] = React.useState<string>(searchParams.get('search') || '');

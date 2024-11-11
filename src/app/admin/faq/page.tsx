@@ -23,8 +23,12 @@ export default function FaqManagementPage(): React.JSX.Element {
   const [faqs, setFaqs] = React.useState<FaqEntry[]>(initialFaqs);
   const [page, setPage] = React.useState<number>(0);
   const [searchTerm, setSearchTerm] = React.useState(searchParams.get('search') || '');
-  const [totalItems, setTotalItems] = React.useState<number>(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState<number>(5);
+  const [totalItems, setTotalItems] = React.useState<number>(
+    searchParams.get('page') ? Number(searchParams.get('page')) : 0
+  );
+  const [rowsPerPage, setRowsPerPage] = React.useState<number>(
+    searchParams.get('rowsPerPage') ? Number(searchParams.get('rowsPerPage')) : 10
+  );
   const [filterType, setFilterType] = React.useState<string>(searchParams.get('type') || 'ALL');
   const [filterStatus, setFilterStatus] = React.useState<string>(searchParams.get('status') || 'ALL');
   const [error, setError] = React.useState<string | null>(null);

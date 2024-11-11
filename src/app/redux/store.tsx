@@ -1,9 +1,14 @@
-// store.ts
-import { configureStore } from '@reduxjs/toolkit';
+import { combineReducers, configureStore } from '@reduxjs/toolkit';
 import { persistReducer, persistStore } from 'redux-persist';
 import storage from 'redux-persist/lib/storage'; // defaults to localStorage for web
 
-import reducer from './slice'; // Import your existing reducer
+import { notificationReducer, userReducer } from './slice'; // Import your individual reducers
+
+// Combine your reducers into a root reducer
+const rootReducer = combineReducers({
+  user: userReducer,
+  notification: notificationReducer,
+});
 
 // Configuration for redux-persist
 const persistConfig = {
@@ -12,7 +17,7 @@ const persistConfig = {
 };
 
 // Create a persisted reducer
-const persistedReducer = persistReducer(persistConfig, reducer);
+const persistedReducer = persistReducer(persistConfig, rootReducer);
 
 // Configure the Redux store with the persisted reducer
 export const store = configureStore({
@@ -21,3 +26,7 @@ export const store = configureStore({
 
 // Create a persistor
 export const persistor = persistStore(store);
+
+// Export the store's type for TypeScript
+export type RootState = ReturnType<typeof rootReducer>;
+export type AppDispatch = typeof store.dispatch;

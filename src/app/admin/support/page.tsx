@@ -23,8 +23,10 @@ export default function Page(): React.JSX.Element {
   const [searchTerm, setSearchTerm] = React.useState(searchParams.get('search') || '');
   const [statusFilter, setStatusFilter] = React.useState(searchParams.get('status') || 'All');
   const [fromFilter, setFromFilter] = React.useState(searchParams.get('from') || 'All');
-  const [page, setPage] = React.useState<number>(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(5);
+  const [page, setPage] = React.useState<number>(searchParams.get('page') ? Number(searchParams.get('page')) : 0);
+  const [rowsPerPage, setRowsPerPage] = React.useState(
+    searchParams.get('rowsPerPage') ? Number(searchParams.get('rowsPerPage')) : 10
+  );
   const [count, setCount] = React.useState<number>(0);
   const [loading, setLoading] = React.useState(true);
 

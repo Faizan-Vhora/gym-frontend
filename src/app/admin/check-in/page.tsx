@@ -27,8 +27,10 @@ export default function CheckinPage(): React.JSX.Element {
   const [searchTerm, setSearchTerm] = useState(searchParams.get('search') || '');
   const [statusFilter, setStatusFilter] = useState(searchParams.get('status') || 'ALL');
   const [userTypeFilter, setUserTypeFilter] = useState(searchParams.get('userType') || 'ALL');
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [page, setPage] = useState(searchParams.get('page') ? Number(searchParams.get('page')) : 0);
+  const [rowsPerPage, setRowsPerPage] = useState(
+    searchParams.get('rowsPerPage') ? Number(searchParams.get('rowsPerPage')) : 10
+  );
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   // const rawDateRange = searchParams.get('dateRange');

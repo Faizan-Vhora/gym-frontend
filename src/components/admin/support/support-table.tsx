@@ -224,7 +224,7 @@ export function SupportTable({
                 const inputEvent = event as React.ChangeEvent<HTMLInputElement>;
                 onRowsPerPageChange(inputEvent);
               }}
-              rowsPerPageOptions={[5, 10, 25]}
+              rowsPerPageOptions={[10, 15, 25]}
             />
           </>
         )}

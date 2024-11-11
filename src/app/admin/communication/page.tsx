@@ -20,8 +20,12 @@ export default function Page(): React.JSX.Element {
   // State variables
   const [entries, setEntries] = React.useState<NotificationEntry[]>([]);
   const [searchTerm, setSearchTerm] = React.useState(searchParams.get('search') || '');
-  const [page, setPage] = React.useState<number>(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(5);
+  const [page, setPage] = React.useState<number>(
+    searchParams.get('rowsPerPage') ? Number(searchParams.get('rowsPerPage')) : 0
+  );
+  const [rowsPerPage, setRowsPerPage] = React.useState(
+    searchParams.get('rowsPerPage') ? Number(searchParams.get('rowsPerPage')) : 10
+  );
   const [count, setCount] = React.useState<number>(0);
   const [loading, setLoading] = React.useState(true);
 

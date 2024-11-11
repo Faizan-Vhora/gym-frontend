@@ -46,8 +46,12 @@ const SubscriptionReport: React.FC = () => {
   const [data, setData] = useState<Subscription[]>([]);
 
   const [search, setSearch] = React.useState<string>(searchParams.get('search') || '');
-  const [currentPage, setCurrentPage] = useState<number>(0);
-  const [itemsPerPage, setItemsPerPage] = useState<number>(5);
+  const [currentPage, setCurrentPage] = useState<number>(
+    searchParams.get('page') ? Number(searchParams.get('page')) : 0
+  );
+  const [itemsPerPage, setItemsPerPage] = useState<number>(
+    searchParams.get('rowsPerPage') ? Number(searchParams.get('rowsPerPage')) : 10
+  );
   const [totalItems, setTotalItems] = useState<number>(0);
   const rawDateRange = searchParams.get('dateRange');
   const [start, end] = rawDateRange ? rawDateRange.split(',') : [null, null];

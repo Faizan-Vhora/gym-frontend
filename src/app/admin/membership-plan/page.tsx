@@ -23,8 +23,10 @@ export default function MembershipPlanPage(): React.JSX.Element {
   const searchParams = useSearchParams();
   const [membershipPlans, setMembershipPlans] = useState<MembershipPlans[]>([]);
   const [count, setCount] = useState<number>(0);
-  const [page, setPage] = useState<number>(0);
-  const [rowsPerPage, setRowsPerPage] = useState<number>(5);
+  const [page, setPage] = useState<number>(searchParams.get('page') ? Number(searchParams.get('page')) : 0);
+  const [rowsPerPage, setRowsPerPage] = useState<number>(
+    searchParams.get('rowsPerPage') ? Number(searchParams.get('rowsPerPage')) : 10
+  );
   const [statusFilter, setStatusFilter] = useState<string>(searchParams.get('status') || 'ALL'); // Status filter
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = React.useState(searchParams.get('search') || '');

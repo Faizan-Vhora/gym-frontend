@@ -27,6 +27,10 @@ interface User {
   // Add other user properties if necessary
 }
 
+interface NotificationCountS {
+  unreadCount: number;
+}
+
 export function MainNav(): React.JSX.Element {
   const [openNav, setOpenNav] = React.useState<boolean>(false);
   // const [user, setUser] = React.useState<User | null>(null);
@@ -66,7 +70,12 @@ export function MainNav(): React.JSX.Element {
     user: User;
   }
 
+  interface NoticficationCount {
+    notificationCount: NotificationCountS;
+  }
+
   const userData = useSelector((data: UserData) => data);
+  const notificationCount = useSelector((data: NoticficationCount) => data);
 
   React.useEffect(() => {
     // Retrieve user data from localStorage
@@ -107,7 +116,7 @@ export function MainNav(): React.JSX.Element {
           <Stack sx={{ alignItems: 'center' }} direction="row" spacing={2}>
             <Tooltip title={'Notification'}>
               {unreadCount > 0 ? (
-                <Badge badgeContent={unreadCount} color="error">
+                <Badge badgeContent={notificationCount?.notificationCount?.unreadCount || unreadCount} color="error">
                   <IconButton onClick={notificationPopover.handleOpen}>
                     <Bell />
                   </IconButton>

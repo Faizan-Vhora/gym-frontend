@@ -3,6 +3,7 @@
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import { NEXT_PUBLIC_PUSHER_KEY, NEXT_PUSHER_APP_CLUSTER, NEXT_PUSHER_CHANNEL, NEXT_PUSHER_EVENT } from '@/app-config';
+import { notificationCount } from '@/app/redux/slice';
 import { CustomLoader } from '@/utils/loader';
 import Avatar from '@mui/material/Avatar';
 import Box from '@mui/material/Box';
@@ -17,6 +18,7 @@ import { ChatText as ChatTextIcon } from '@phosphor-icons/react/dist/ssr/ChatTex
 import { EnvelopeSimple as EnvelopeSimpleIcon } from '@phosphor-icons/react/dist/ssr/EnvelopeSimple';
 import { X as XIcon } from '@phosphor-icons/react/dist/ssr/X';
 import Pusher from 'pusher-js';
+import { useDispatch } from 'react-redux';
 import Swal from 'sweetalert2';
 
 import axiosInstance from '@/lib/axios';
@@ -36,7 +38,9 @@ export function NotificationsPopover({
   open = false,
 }: NotificationsPopoverProps): React.JSX.Element {
   const [notifications, setNotifications] = React.useState<NotificationEntry[]>([]);
+  const [unreadCount, setUnreadCount] = React.useState<number>(0);
   const [loading, setLoading] = React.useState(true);
+  const dispatch = useDispatch();
   const pusher = new Pusher(NEXT_PUBLIC_PUSHER_KEY, {
     cluster: NEXT_PUSHER_APP_CLUSTER,
   });
@@ -47,6 +51,8 @@ export function NotificationsPopover({
       const response = await axiosInstance.get<{ data: NotificationEntry[] }>('/notification/my/unread');
 
       setNotifications(response.data.data);
+      const unreadCountForNotification = response.data.data.length;
+      setUnreadCount(unreadCountForNotification);
     } catch (error) {
       await Swal.fire('Error!', 'Something went wrong.', 'error');
     } finally {
@@ -80,8 +86,9 @@ export function NotificationsPopover({
   React.useEffect(() => {
     if (open) {
       void getNotificationListData();
+      dispatch(notificationCount({ unreadCount: unreadCount }));
     }
-  }, [open]);
+  }, [open, unreadCount]);
 
   return (
     <Popover

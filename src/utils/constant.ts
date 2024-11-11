@@ -162,7 +162,8 @@ export const BOOKING_PAYMENT_STATUS = {
   PENDING : 'pending',
   CANCELED  : 'cancelled',
   COMPLETED  : 'completed',
-  PAID : 'paid'
+  PAID : 'paid',
+  UNPAID : 'unpaid',
 }
 
 export const BOOKING_PAYMENT_STATUS_OPTIONS = [
@@ -170,6 +171,7 @@ export const BOOKING_PAYMENT_STATUS_OPTIONS = [
   { value: BOOKING_PAYMENT_STATUS.CANCELED, label: "Cancelled" },
   { value: BOOKING_PAYMENT_STATUS.COMPLETED, label: "Completed" },
   { value: BOOKING_PAYMENT_STATUS.PAID, label: "Paid" },
+  { value: BOOKING_PAYMENT_STATUS.UNPAID, label: "Unpaid" },
 ]
 
 export const BOOKING_PAYMENT_STATUS_DETAILS: Record<string, { value: string; label: string; color: 'warning' | 'error' | 'success' }>  = {
@@ -177,6 +179,7 @@ export const BOOKING_PAYMENT_STATUS_DETAILS: Record<string, { value: string; lab
   [BOOKING_PAYMENT_STATUS.CANCELED] : { value: BOOKING_PAYMENT_STATUS.CANCELED, label: "Cancelled" , color: 'error'},
   [BOOKING_PAYMENT_STATUS.COMPLETED] : { value: BOOKING_PAYMENT_STATUS.COMPLETED, label: "Completed" , color: 'success'},
   [BOOKING_PAYMENT_STATUS.PAID] : { value: BOOKING_PAYMENT_STATUS.PAID, label: "Paid" , color: 'success'},
+  [BOOKING_PAYMENT_STATUS.UNPAID] : { value: BOOKING_PAYMENT_STATUS.UNPAID, label: "Unpaid" , color: 'error'},
 }
 
 
@@ -209,6 +212,7 @@ export const BOOKING_SESSION_PAYMENT_STATUS = {
   CANCELED  : 'cancelled',
   COMPLETED  : 'completed',
   PAID : 'paid',
+  UNPAID : 'unpaid',
 }
 
 export const BOOKING_SESSION_PAYMENT_STATUS_OPTIONS = [
@@ -216,6 +220,7 @@ export const BOOKING_SESSION_PAYMENT_STATUS_OPTIONS = [
   { value: BOOKING_SESSION_PAYMENT_STATUS.CANCELED, label: "Cancelled" },
   { value: BOOKING_SESSION_PAYMENT_STATUS.COMPLETED, label: "Completed" },
   { value: BOOKING_SESSION_PAYMENT_STATUS.PAID, label: "Paid" },
+  { value: BOOKING_SESSION_PAYMENT_STATUS.UNPAID, label: "Unpaid" },
 ]
 
 export const BOOKING_SESSION_PAYMENT_STATUS_DETAILS: Record<string, { value: string; label: string; color: 'warning' | 'error' | 'success' }>  = {
@@ -223,6 +228,7 @@ export const BOOKING_SESSION_PAYMENT_STATUS_DETAILS: Record<string, { value: str
   [BOOKING_SESSION_PAYMENT_STATUS.CANCELED] : { value: BOOKING_SESSION_PAYMENT_STATUS.CANCELED, label: "Cancelled" , color: 'error'},
   [BOOKING_SESSION_PAYMENT_STATUS.COMPLETED] : { value: BOOKING_SESSION_PAYMENT_STATUS.COMPLETED, label: "Completed" , color: 'success'},
   [BOOKING_SESSION_PAYMENT_STATUS.PAID] : { value: BOOKING_SESSION_PAYMENT_STATUS.PAID, label: "Paid" , color: 'success'},
+  [BOOKING_SESSION_PAYMENT_STATUS.UNPAID] : { value: BOOKING_SESSION_PAYMENT_STATUS.UNPAID, label: "Unpaid" , color: 'error'},
 }
 
 

@@ -25,7 +25,7 @@ const CommonTablePagination: React.FC<CommonTablePaginationProps> = ({
       rowsPerPage={itemsPerPage}
       onRowsPerPageChange={onRowsPerPageChange}
       labelRowsPerPage="Records per page"
-      rowsPerPageOptions={[5, 10, 25]}
+      rowsPerPageOptions={[10, 15, 25]}
     />
   );
 };

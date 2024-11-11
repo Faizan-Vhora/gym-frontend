@@ -46,8 +46,12 @@ export default function SubscriptionManagementPage(): React.JSX.Element {
   const [data, setData] = useState<Subscription[]>(initialSubscription);
 
   const [search, setSearch] = useState<string>(searchParams.get('search') || '');
-  const [currentPage, setCurrentPage] = useState<number>(0);
-  const [itemsPerPage, setItemsPerPage] = useState<number>(5);
+  const [currentPage, setCurrentPage] = useState<number>(
+    searchParams.get('page') ? Number(searchParams.get('page')) : 0
+  );
+  const [itemsPerPage, setItemsPerPage] = useState<number>(
+    searchParams.get('rowsPerPage') ? Number(searchParams.get('rowsPerPage')) : 10
+  );
   const [totalItems, setTotalItems] = useState<number>(0);
   const [loading, setLoading] = useState(false);
   const [membershipFilter, setMembershipFilter] = useState<string>(searchParams.get('membershipId') || 'ALL'); // Membership type filter

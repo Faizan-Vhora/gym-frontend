@@ -25,8 +25,10 @@ export default function Page(): React.JSX.Element {
   const searchParams = useSearchParams();
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [count, setCount] = useState<number>(0);
-  const [page, setPage] = useState<number>(0);
-  const [rowsPerPage, setRowsPerPage] = useState<number>(5);
+  const [page, setPage] = useState<number>(searchParams.get('page') ? Number(searchParams.get('page')) : 0);
+  const [rowsPerPage, setRowsPerPage] = useState<number>(
+    searchParams.get('rowsPerPage') ? Number(searchParams.get('rowsPerPage')) : 10
+  );
   const [filter, setFilter] = useState<string>(searchParams.get('search') || ''); // Search filter
   const [statusFilter, setStatusFilter] = useState<string>(searchParams.get('status') || 'ALL'); // Status filter
   const [membershipFilter, setMembershipFilter] = useState<string>(searchParams.get('membershipTypeId') || 'ALL'); // Membership type filter

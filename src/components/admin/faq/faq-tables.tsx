@@ -212,7 +212,7 @@ export default function FaqTable({
         <>
           <Divider />
           <TablePagination
-            rowsPerPageOptions={[5, 10, 25]}
+            rowsPerPageOptions={[10, 15, 25]}
             component="div"
             count={totalEntries}
             rowsPerPage={rowsPerPage}
