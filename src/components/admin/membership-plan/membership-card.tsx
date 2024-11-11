@@ -151,41 +151,87 @@ const MembershipPlanCard: React.FC<MembershipPlanCardProps> = ({
     status: string | null; // Or whatever type the `status` is supposed to be
   }
 
-  const handleStatusChange = async (newStatus: MembershipType['status']): Promise<void> => {
-    let swalText = `Do you want to change the status?`;
-    let swalConfirmButtonText = `Yes, `;
-    let swalSuccessMessage = `The status has been updated`;
+  React.useEffect(() => {
+    if (!newMembershipStatus) return;
 
-    if (newStatus === MEMBERSHIP_PLAN_STATUS.CANCEL) {
-      swalText = `Do you want to cancel the subscription?`;
-      swalConfirmButtonText = `Yes`;
-      swalSuccessMessage = `The subscription has been cancelled`;
-    }
+    const updateStatus = async () => {
+      let swalText = `Do you want to change the status?`;
+      let swalConfirmButtonText = `Yes, `;
+      let swalSuccessMessage = `The status has been updated`;
 
-    const result = await Swal.fire({
-      title: 'Are you sure?',
-      text: swalText,
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonText: swalConfirmButtonText,
-      cancelButtonText: 'No',
-    });
-
-    if (result.isConfirmed) {
-      try {
-        const response = await axiosInstance.patch<UpdateStatusResponse>(
-          `/users/membership/update-status/${membershipId}`,
-          {
-            status: newStatus,
-          }
-        );
-        toast.success(swalSuccessMessage);
-        setNewMembershipStatus(response.data.status);
-      } catch (error) {
-        await Swal.fire('Error!', 'Failed to update.', 'error');
+      if (newMembershipStatus === MEMBERSHIP_PLAN_STATUS.CANCEL) {
+        swalText = `Do you want to cancel the subscription?`;
+        swalConfirmButtonText = `Yes`;
+        swalSuccessMessage = `The subscription has been cancelled`;
       }
-    }
+
+      const result = await Swal.fire({
+        title: 'Are you sure?',
+        text: swalText,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: swalConfirmButtonText,
+        cancelButtonText: 'No',
+      });
+
+      if (result.isConfirmed) {
+        try {
+          const response = await axiosInstance.patch<UpdateStatusResponse>(
+            `/users/membership/update-status/${membershipId}`,
+            {
+              status: newMembershipStatus,
+            }
+          );
+          toast.success(swalSuccessMessage);
+        } catch (error) {
+          await Swal.fire('Error!', 'Failed to update.', 'error');
+        }
+      }
+    };
+
+    void updateStatus();
+  }, [newMembershipStatus, membershipId]);
+
+  // Function to set new status
+  const handleStatusChange = (status: MembershipType['status']) => {
+    setNewMembershipStatus(status);
   };
+
+  // const handleStatusChange = async (newStatus: MembershipType['status']): Promise<void> => {
+  //   let swalText = `Do you want to change the status?`;
+  //   let swalConfirmButtonText = `Yes, `;
+  //   let swalSuccessMessage = `The status has been updated`;
+
+  //   if (newStatus === MEMBERSHIP_PLAN_STATUS.CANCEL) {
+  //     swalText = `Do you want to cancel the subscription?`;
+  //     swalConfirmButtonText = `Yes`;
+  //     swalSuccessMessage = `The subscription has been cancelled`;
+  //   }
+
+  //   const result = await Swal.fire({
+  //     title: 'Are you sure?',
+  //     text: swalText,
+  //     icon: 'warning',
+  //     showCancelButton: true,
+  //     confirmButtonText: swalConfirmButtonText,
+  //     cancelButtonText: 'No',
+  //   });
+
+  //   if (result.isConfirmed) {
+  //     try {
+  //       const response = await axiosInstance.patch<UpdateStatusResponse>(
+  //         `/users/membership/update-status/${membershipId}`,
+  //         {
+  //           status: newStatus,
+  //         }
+  //       );
+  //       toast.success(swalSuccessMessage);
+  //       setNewMembershipStatus(response.data.status);
+  //     } catch (error) {
+  //       await Swal.fire('Error!', 'Failed to update.', 'error');
+  //     }
+  //   }
+  // };
 
   return (
     <Card className="memberCard" {...cardProps}>
@@ -194,7 +240,9 @@ const MembershipPlanCard: React.FC<MembershipPlanCardProps> = ({
           <IconButton
             disabled={
               !membershipStatus ||
-              [MEMBERSHIP_PLAN_STATUS.CANCEL, MEMBERSHIP_PLAN_STATUS.EXPIRED].includes(membershipStatus)
+              [MEMBERSHIP_PLAN_STATUS.CANCEL, MEMBERSHIP_PLAN_STATUS.EXPIRED].includes(
+                newMembershipStatus || membershipStatus
+              )
             }
             onClick={() => {
               void handleStatusChange(MEMBERSHIP_PLAN_STATUS.CANCEL);
