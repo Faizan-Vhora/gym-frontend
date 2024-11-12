@@ -176,12 +176,9 @@ const MembershipPlanCard: React.FC<MembershipPlanCardProps> = ({
 
       if (result.isConfirmed) {
         try {
-          const response = await axiosInstance.patch<UpdateStatusResponse>(
-            `/users/membership/update-status/${membershipId}`,
-            {
-              status: newMembershipStatus,
-            }
-          );
+          await axiosInstance.patch<UpdateStatusResponse>(`/users/membership/update-status/${membershipId}`, {
+            status: newMembershipStatus,
+          });
           toast.success(swalSuccessMessage);
         } catch (error) {
           await Swal.fire('Error!', 'Failed to update.', 'error');
@@ -245,7 +242,7 @@ const MembershipPlanCard: React.FC<MembershipPlanCardProps> = ({
               )
             }
             onClick={() => {
-              void handleStatusChange(MEMBERSHIP_PLAN_STATUS.CANCEL);
+              handleStatusChange(MEMBERSHIP_PLAN_STATUS.CANCEL);
             }}
           >
             <XCircle />

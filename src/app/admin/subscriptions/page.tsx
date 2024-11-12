@@ -2,7 +2,6 @@
 
 import React, { useCallback, useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { MEMBERSHIP_PLAN_STATUS } from '@/utils/constant';
 import { CustomLoader } from '@/utils/loader';
 import { Card, Divider, Grid, Stack, Typography } from '@mui/material';
 import { toast } from 'react-toastify';
@@ -14,7 +13,7 @@ import CommonTablePagination from '@/components/admin/reports/common-filters/pag
 import { SearchFilter } from '@/components/admin/reports/common-filters/seach-filter';
 import { SubscriptionFilters } from '@/components/admin/reports/subscription-report/subscription-filter';
 import { Subscription } from '@/components/admin/reports/subscription-report/subscription-report-table';
-import { MembershipType, SubscriptionManagementTable } from '@/components/admin/subscriptions/subscription-table';
+import { SubscriptionManagementTable } from '@/components/admin/subscriptions/subscription-table';
 
 interface ErrorResponse {
   message: string;
@@ -133,17 +132,12 @@ export default function SubscriptionManagementPage(): React.JSX.Element {
     setCurrentPage(0);
   };
 
-  const handleUpdateStatus = async (id: number, newStatus: MembershipType['status']): Promise<void> => {
-    let swalText = `Do you want to change the status?`;
-    let swalConfirmButtonText = `Yes, update it!`;
-    let swalSuccessMessage = `The status has been updated`;
+  const handleDownload = async (id: number): Promise<void> => {
+    const swalText = `Do you want to download this subscription's details?`;
+    const swalConfirmButtonText = `Yes, download it!`;
+    const swalSuccessMessage = `The subscription details have been downloaded`;
 
-    if (newStatus === MEMBERSHIP_PLAN_STATUS.CANCEL) {
-      swalText = `Do you want to cancel the subscription?`;
-      swalConfirmButtonText = `Yes`;
-      swalSuccessMessage = `The subscription has been cancelled`;
-    }
-
+    // Show a confirmation popup with SweetAlert
     const result = await Swal.fire({
       title: 'Are you sure?',
       text: swalText,
@@ -153,24 +147,67 @@ export default function SubscriptionManagementPage(): React.JSX.Element {
       cancelButtonText: 'No',
     });
 
+    // If confirmed, proceed to download
     if (result.isConfirmed) {
       try {
-        await axiosInstance.patch(`/users/membership/update-status/${id}`, { status: newStatus });
-        void fetchSubscriptionPlans();
-        setData((prevData) => {
-          return prevData.map((item) => {
-            if (item.id === id) {
-              return { ...item, status: newStatus }; // Update the specific item's status
-            }
-            return item; // Return the item as is if it's not the one being updated
-          });
+        // Make the API call to download the booking details (replace with actual API endpoint)
+        const response = await axiosInstance.get(`/users/download-membership/${id}`, {
+          responseType: 'blob', // Ensures the response is treated as a file
         });
-        toast.success(swalSuccessMessage);
+
+        // Create a Blob from the response data and trigger the download
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `subscription-${id}-details.pdf`; // Set the filename for download
+        link.click();
+
+        // Optionally, show a success message
+        await Swal.fire('Downloaded!', swalSuccessMessage, 'success');
       } catch (error) {
-        await Swal.fire('Error!', 'Failed to update.', 'error');
+        await Swal.fire('Error!', 'Failed to download the booking details.', 'error');
       }
     }
   };
+
+  // const handleUpdateStatus = async (id: number, newStatus: MembershipType['status']): Promise<void> => {
+  //   let swalText = `Do you want to change the status?`;
+  //   let swalConfirmButtonText = `Yes, update it!`;
+  //   let swalSuccessMessage = `The status has been updated`;
+
+  //   if (newStatus === MEMBERSHIP_PLAN_STATUS.CANCEL) {
+  //     swalText = `Do you want to cancel the subscription?`;
+  //     swalConfirmButtonText = `Yes`;
+  //     swalSuccessMessage = `The subscription has been cancelled`;
+  //   }
+
+  //   const result = await Swal.fire({
+  //     title: 'Are you sure?',
+  //     text: swalText,
+  //     icon: 'warning',
+  //     showCancelButton: true,
+  //     confirmButtonText: swalConfirmButtonText,
+  //     cancelButtonText: 'No',
+  //   });
+
+  //   if (result.isConfirmed) {
+  //     try {
+  //       await axiosInstance.patch(`/users/membership/update-status/${id}`, { status: newStatus });
+  //       void fetchSubscriptionPlans();
+  //       setData((prevData) => {
+  //         return prevData.map((item) => {
+  //           if (item.id === id) {
+  //             return { ...item, status: newStatus }; // Update the specific item's status
+  //           }
+  //           return item; // Return the item as is if it's not the one being updated
+  //         });
+  //       });
+  //       toast.success(swalSuccessMessage);
+  //     } catch (error) {
+  //       await Swal.fire('Error!', 'Failed to update.', 'error');
+  //     }
+  //   }
+  // };
 
   return (
     <>
@@ -194,7 +231,7 @@ export default function SubscriptionManagementPage(): React.JSX.Element {
 
         <Stack sx={{ padding: '30px' }}></Stack>
 
-        {loading ? <CustomLoader /> : <SubscriptionManagementTable onUpdateStatus={handleUpdateStatus} rows={data} />}
+        {loading ? <CustomLoader /> : <SubscriptionManagementTable rows={data} onDownload={handleDownload} />}
         {data.length > 0 && (
           <>
             <Divider />

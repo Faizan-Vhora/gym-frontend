@@ -11,7 +11,7 @@ interface User {
 }
 
 interface UserState {
-  user: User | {};
+  user: User | null;
 }
 
 interface NotificationState {
@@ -20,7 +20,7 @@ interface NotificationState {
 
 // Initial states
 const initialUserState: UserState = {
-  user: {}, // Initialize user as an object
+  user: null, // or `undefined`
 };
 
 const initialNotificationState: NotificationState = {

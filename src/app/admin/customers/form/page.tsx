@@ -53,6 +53,8 @@ import { MembershipPlans } from '@/components/admin/membership-plan/membership-p
 import { ChooseMembershipDialog } from '@/components/admin/membership-plan/membership-popover';
 
 import { CheckInTableView, type CheckInEntry } from './check-in-view';
+// import OutstandingBillingPage from './outstanding-billing';
+import SubscriptionManagementPage from './subscription-view';
 
 export default function CustomerEditForm(): React.JSX.Element {
   const searchParams = useSearchParams();
@@ -448,6 +450,8 @@ export default function CustomerEditForm(): React.JSX.Element {
               <Tab value={1} label="Basic Info" style={{ fontFamily: '"Audiowide", sans-serif' }} />
               <Tab value={2} label="Membership" style={{ fontFamily: '"Audiowide", sans-serif' }} />
               <Tab value={3} label="Check In History" style={{ fontFamily: '"Audiowide", sans-serif' }} />
+              <Tab value={4} label="Subscription" style={{ fontFamily: '"Audiowide", sans-serif' }} />
+              {/* <Tab value={5} label="Outstanding Billing" style={{ fontFamily: '"Audiowide", sans-serif' }} /> */}
             </Tabs>
           </Stack>
         )}
@@ -825,6 +829,9 @@ export default function CustomerEditForm(): React.JSX.Element {
             onRowsPerPageChange={handleRowsPerPageChange}
           />
         )}
+
+        {tab === 4 && <SubscriptionManagementPage />}
+        {/* {tab === 5 && <OutstandingBillingPage />} */}
         {loading && <CustomLoader />}
         {error ? <Alert color="error">{error}</Alert> : null}
       </Card>
