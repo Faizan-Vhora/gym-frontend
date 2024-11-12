@@ -9,6 +9,7 @@ import Typography from '@mui/material/Typography';
 
 import axiosInstance from '@/lib/axios';
 import { ListBullets as ListBulletsIcon } from '@phosphor-icons/react/dist/ssr/ListBullets';
+
 export interface TrainerUtilizationProps {
   //   diff?: number;
   trend?: 'up' | 'down';
