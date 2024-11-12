@@ -27,7 +27,7 @@ export default function Page(): React.JSX.Element {
   const [endDateFilter, setEndDateFilter] = React.useState(searchParams.get('endDate') || '');
   const [page, setPage] = React.useState<number>(searchParams.get('page') ? Number(searchParams.get('page')) : 0);
   const [rowsPerPage, setRowsPerPage] = React.useState(
-    searchParams.get('rowPerPage') ? Number(searchParams.get('rowPerPage')) : 5
+    searchParams.get('rowPerPage') ? Number(searchParams.get('rowPerPage')) : 10
   );
   const [count, setCount] = React.useState<number>(0);
   const [loading, setLoading] = React.useState(true);
@@ -142,6 +142,44 @@ export default function Page(): React.JSX.Element {
     }
   };
 
+  const handleDownload = async (id: number): Promise<void> => {
+    const swalText = `Do you want to download this booking's details?`;
+    const swalConfirmButtonText = `Yes, download it!`;
+    const swalSuccessMessage = `The booking details have been downloaded`;
+
+    // Show a confirmation popup with SweetAlert
+    const result = await Swal.fire({
+      title: 'Are you sure?',
+      text: swalText,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: swalConfirmButtonText,
+      cancelButtonText: 'No',
+    });
+
+    // If confirmed, proceed to download
+    if (result.isConfirmed) {
+      try {
+        // Make the API call to download the booking details (replace with actual API endpoint)
+        const response = await axiosInstance.get(`/session-booking/download-booking/${id}`, {
+          responseType: 'blob', // Ensures the response is treated as a file
+        });
+
+        // Create a Blob from the response data and trigger the download
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `booking-${id}-details.pdf`; // Set the filename for download
+        link.click();
+
+        // Optionally, show a success message
+        await Swal.fire('Downloaded!', swalSuccessMessage, 'success');
+      } catch (error) {
+        await Swal.fire('Error!', 'Failed to download the booking details.', 'error');
+      }
+    }
+  };
+
   const handlePageChange = (newPage: number): void => {
     setPage(newPage);
   };
@@ -221,6 +259,7 @@ export default function Page(): React.JSX.Element {
             rowsPerPage={searchParams.get('rowsPerPage') ? Number(searchParams.get('rowsPerPage')) : rowsPerPage}
             totalEntries={count}
             onUpdateStatus={handleUpdateStatus}
+            onDownload={handleDownload}
             onPageChange={handlePageChange}
             onRowsPerPageChange={handleRowsPerPageChange}
           />

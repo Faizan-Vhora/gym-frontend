@@ -1,9 +1,6 @@
 import * as React from 'react';
-import {
-  MEMBERSHIP_PAYMENT_STATUS_DETAILS,
-  MEMBERSHIP_PLAN_STATUS,
-  MEMBERSHIP_PLAN_STATUS_DETAILS,
-} from '@/utils/constant';
+import { MEMBERSHIP_PAYMENT_STATUS_DETAILS, MEMBERSHIP_PLAN_STATUS_DETAILS } from '@/utils/constant';
+import { formatDate } from '@/utils/date-utils';
 import {
   Box,
   Card,
@@ -16,8 +13,7 @@ import {
   TableRow,
   Typography,
 } from '@mui/material';
-import { XCircle } from '@phosphor-icons/react';
-import dayjs from 'dayjs';
+import { DownloadSimple } from '@phosphor-icons/react';
 
 import tableCss from '@/styles/table-css';
 
@@ -56,21 +52,23 @@ export interface Subscription {
 
 interface SubscriptionTableProps {
   rows: Subscription[];
-  onUpdateStatus: (id: number, newStatus: MembershipType['status']) => void;
+  onDownload: (id: number) => void;
+  // onUpdateStatus: (id: number, newStatus: MembershipType['status']) => void;
 }
 
-export function SubscriptionManagementTable({ rows, onUpdateStatus }: SubscriptionTableProps): React.JSX.Element {
-  const handleStatusChange = (id: number, newStatus: MembershipType['status']): void => {
-    onUpdateStatus(id, newStatus);
+export function SubscriptionManagementTable({ rows, onDownload }: SubscriptionTableProps): React.JSX.Element {
+  const handleDownloadChange = (id: number): void => {
+    if (onDownload) {
+      onDownload(id);
+    }
   };
-
   return (
     <Card>
       <Box sx={{ overflowX: 'auto' }}>
         <Table>
           <TableHead>
             <TableRow sx={tableCss.tableRow}>
-              <TableCell sx={tableCss.tableHeaderCell}>User Details</TableCell>
+              {/* <TableCell sx={tableCss.tableHeaderCell}>User Details</TableCell> */}
               <TableCell sx={tableCss.tableHeaderCell}>Membership</TableCell>
               <TableCell sx={tableCss.tableHeaderCell}>Subscription Date</TableCell>
               <TableCell sx={tableCss.tableHeaderCell}>Start Date</TableCell>
@@ -90,12 +88,12 @@ export function SubscriptionManagementTable({ rows, onUpdateStatus }: Subscripti
             ) : (
               rows.map((row) => (
                 <TableRow hover key={row.id} sx={tableCss.tableRow}>
-                  <TableCell sx={tableCss.tableCell}>
+                  {/* <TableCell sx={tableCss.tableCell}>
                     <Typography variant="subtitle2">{row.user?.fullName}</Typography>
                     <Typography color="textSecondary" variant="body2">
                       {row.user?.email}
                     </Typography>
-                  </TableCell>
+                  </TableCell> */}
 
                   <TableCell sx={tableCss.tableCell}>
                     <Typography variant="subtitle2">{row.membershipType.title}</Typography>
@@ -103,9 +101,9 @@ export function SubscriptionManagementTable({ rows, onUpdateStatus }: Subscripti
                       {row.membershipType.durationInMonths} months
                     </Typography>
                   </TableCell>
-                  <TableCell sx={tableCss.tableCell}>{dayjs(row.createdAt).format('MMM D, YYYY')}</TableCell>
-                  <TableCell sx={tableCss.tableCell}>{dayjs(row.startDate).format('MMM D, YYYY')}</TableCell>
-                  <TableCell sx={tableCss.tableCell}>{dayjs(row.expiryDate).format('MMM D, YYYY')}</TableCell>
+                  <TableCell sx={tableCss.tableCell}>{formatDate(row.createdAt)}</TableCell>
+                  <TableCell sx={tableCss.tableCell}>{formatDate(row.startDate)}</TableCell>
+                  <TableCell sx={tableCss.tableCell}>{formatDate(row.expiryDate)}</TableCell>
                   <TableCell sx={[tableCss.tableCell]}>
                     <Chip
                       label={MEMBERSHIP_PAYMENT_STATUS_DETAILS[row.paymentStatus]?.label}
@@ -122,12 +120,12 @@ export function SubscriptionManagementTable({ rows, onUpdateStatus }: Subscripti
                   </TableCell>
                   <TableCell sx={[tableCss.tableCell]}>
                     <IconButton
-                      disabled={[MEMBERSHIP_PLAN_STATUS.CANCEL, MEMBERSHIP_PLAN_STATUS.EXPIRED].includes(row.status)}
-                      onClick={() => {
-                        handleStatusChange(row.id, MEMBERSHIP_PLAN_STATUS.CANCEL);
+                      onClick={(e) => {
+                        e.stopPropagation(); // Prevents the row click from triggering
+                        handleDownloadChange(row.id);
                       }}
                     >
-                      <XCircle />
+                      <DownloadSimple />
                     </IconButton>
                   </TableCell>
                 </TableRow>

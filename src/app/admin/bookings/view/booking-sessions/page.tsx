@@ -102,7 +102,6 @@ export default function BookingSessionsPage(): React.JSX.Element {
     setIsDialogOpenForPreview(true);
   };
 
-
   const handleRescheduleSession = (session: BookingSessionEntry) => {
     setSelectedSession(session);
     setIsDialogOpen(true);
@@ -166,10 +165,47 @@ export default function BookingSessionsPage(): React.JSX.Element {
     setSelectedSession(null);
   };
 
-
   useEffect(() => {
     void getSessionBookingSessionListData();
   }, [getSessionBookingSessionListData]);
+
+  const handleDownload = async (id: number): Promise<void> => {
+    const swalText = `Do you want to download this session's details?`;
+    const swalConfirmButtonText = `Yes, download it!`;
+    const swalSuccessMessage = `The session details have been downloaded`;
+
+    // Show a confirmation popup with SweetAlert
+    const result = await Swal.fire({
+      title: 'Are you sure?',
+      text: swalText,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: swalConfirmButtonText,
+      cancelButtonText: 'No',
+    });
+
+    // If confirmed, proceed to download
+    if (result.isConfirmed) {
+      try {
+        // Make the API call to download the booking details (replace with actual API endpoint)
+        const response = await axiosInstance.get(`/session-booking/download-session/${id}`, {
+          responseType: 'blob', // Ensures the response is treated as a file
+        });
+
+        // Create a Blob from the response data and trigger the download
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `session-${id}-details.pdf`; // Set the filename for download
+        link.click();
+
+        // Optionally, show a success message
+        await Swal.fire('Downloaded!', swalSuccessMessage, 'success');
+      } catch (error) {
+        await Swal.fire('Error!', 'Failed to download the booking details.', 'error');
+      }
+    }
+  };
 
   return (
     <Stack spacing={3}>
@@ -189,6 +225,7 @@ export default function BookingSessionsPage(): React.JSX.Element {
             onRescheduleSession={handleRescheduleSession}
             onPageChange={handlePageChange}
             onRowsPerPageChange={handleRowsPerPageChange}
+            onDownload={handleDownload}
           />
         )}
       </Card>
@@ -212,11 +249,7 @@ export default function BookingSessionsPage(): React.JSX.Element {
       )}
 
       {selectedSession && (
-        <SessionPreview
-          open={isDialogOpenForPreview}
-          onClose={handlePreviewDialogClose}
-          sessionObj={selectedSession}
-        />
+        <SessionPreview open={isDialogOpenForPreview} onClose={handlePreviewDialogClose} sessionObj={selectedSession} />
       )}
 
       <ToastContainer />
