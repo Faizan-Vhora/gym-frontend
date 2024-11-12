@@ -87,6 +87,7 @@ interface BookingTableProps {
   onRescheduleSession: (session: BookingSessionEntry) => void;
   onPageChange: (newPage: number) => void;
   onRowsPerPageChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  onDownload: (id: number) => void;
 }
 
 export function BookingSessionTable({
@@ -100,6 +101,7 @@ export function BookingSessionTable({
   onRescheduleSession,
   onPageChange,
   onRowsPerPageChange,
+  onDownload,
 }: BookingTableProps): React.JSX.Element {
   const handleStatusChange = (id: number, newStatus: BookingSessionEntry['status']): void => {
     onUpdateStatus(id, newStatus);
@@ -115,6 +117,10 @@ export function BookingSessionTable({
 
   const handleRescheduleSession = (session: BookingSessionEntry): void => {
     onRescheduleSession(session);
+  };
+
+  const handleDownloadChange = (id: number): void => {
+    onDownload(id);
   };
 
   return (
@@ -255,10 +261,15 @@ export function BookingSessionTable({
                           <XCircle />
                         </IconButton>
                         <IconButton
-
-                        // onClick={() => {
-                        //   handleStatusChange(entry.id, BOOKING_SESSION_STATUS.CANCELLED);
-                        // }}
+                          disabled={[
+                            BOOKING_SESSION_STATUS.CANCELLED,
+                            BOOKING_SESSION_STATUS.IN_COMING,
+                            BOOKING_SESSION_STATUS.STARTED,
+                          ].includes(entry.status)}
+                          onClick={(e) => {
+                            e.stopPropagation(); // Prevents the row click from triggering
+                            handleDownloadChange(entry.id);
+                          }}
                         >
                           <DownloadSimple />
                         </IconButton>

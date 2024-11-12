@@ -22,7 +22,7 @@ import { useRouter } from 'next/navigation';
 import { BOOKING_STATUS, BOOKING_STATUS_DETAILS } from '@/utils/constant';
 import { formatHours } from '@/utils/converter';
 import { formatDate } from '@/utils/date-utils';
-import { XCircle } from '@phosphor-icons/react';
+import { DownloadSimple, XCircle } from '@phosphor-icons/react';
 
 import tableCss from '@/styles/table-css';
 
@@ -81,6 +81,7 @@ interface BookingTableProps {
   rowsPerPage: number;
   totalEntries: number;
   onUpdateStatus: (id: number, newStatus: BookingEntry['status']) => void;
+  onDownload: (id: number) => void;
   onPageChange: (newPage: number) => void;
   onRowsPerPageChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
@@ -91,6 +92,7 @@ export function BookingTable({
   rowsPerPage,
   totalEntries,
   onUpdateStatus,
+  onDownload,
   onPageChange,
   onRowsPerPageChange,
 }: BookingTableProps): React.JSX.Element {
@@ -98,6 +100,11 @@ export function BookingTable({
 
   const handleStatusChange = (id: number, newStatus: BookingEntry['status']): void => {
     onUpdateStatus(id, newStatus);
+    // toast.success('Status updated successfully!'); // Show success toast
+  };
+
+  const handleDownloadChange = (id: number): void => {
+    onDownload(id);
     // toast.success('Status updated successfully!'); // Show success toast
   };
 
@@ -223,6 +230,15 @@ export function BookingTable({
                           }}
                         >
                           <XCircle />
+                        </IconButton>
+                        <IconButton
+                          disabled={[BOOKING_STATUS.CANCELED, BOOKING_STATUS.PENDING].includes(entry.status)}
+                          onClick={(e) => {
+                            e.stopPropagation(); // Prevents the row click from triggering
+                            handleDownloadChange(entry.id);
+                          }}
+                        >
+                          <DownloadSimple />
                         </IconButton>
                       </Stack>
                     </TableCell>
