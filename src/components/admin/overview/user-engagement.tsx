@@ -1,14 +1,15 @@
 import * as React from 'react';
 import { CustomLoader } from '@/utils/loader';
-import { CardHeader, Grid } from '@mui/material';
+import { Avatar, CardHeader, Grid } from '@mui/material';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Stack from '@mui/material/Stack';
 import type { SxProps } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
-import { Clock } from '@phosphor-icons/react';
+import { Clock, ClockUser } from '@phosphor-icons/react';
 
 import axiosInstance from '@/lib/axios';
+import { padding } from '@mui/system';
 
 export interface UserEngagementProps {
   //   diff?: number;
@@ -47,17 +48,23 @@ export function UserEngagement({ sx }: UserEngagementProps): React.JSX.Element {
   }, []);
 
   return (
-    <Card sx={sx}>
+    <Card sx={{...sx, padding:'10px 20px'}}>
+      <Stack sx={{flexDirection:'row',alignItems:'center',justifyContent:'space-between',}}>
       <CardHeader style={{ fontFamily: '"Audiowide", sans-serif' }} title={'Check Ins'}></CardHeader>
+      <Avatar sx={{ backgroundColor: 'var(--mui-palette-primary-main)', height: '56px', width: '56px' }}>
+              <ClockUser fontSize="var(--icon-fontSize-lg)" /> 
+
+            </Avatar>
+      </Stack>
       <CardContent>
         <Stack spacing={3}>
           <Stack direction="row" sx={{ alignItems: 'flex-start', justifyContent: 'space-between' }} spacing={3}>
             <Stack spacing={1} sx={{ width: '100%' }}>
-              <Grid container sx={{ width: '100%' }}>
+              <Grid container sx={{ width: '100%',rowGap:'20px',}}>
                 <Grid item md={12} xs={12}>
                   <Stack flexDirection={'row'} alignItems={'center'} justifyContent={'space-between'}>
                     <Typography
-                      sx={{ alignItems: 'center', display: 'flex', columnGap: '5px', marginBottom: '20px' }}
+                      sx={{ alignItems: 'center', display: 'flex', columnGap: '5px' }}
                       variant="overline"
                       style={{ fontFamily: '"Audiowide", sans-serif' }}
                     >
@@ -74,7 +81,7 @@ export function UserEngagement({ sx }: UserEngagementProps): React.JSX.Element {
                 <Grid item md={12} xs={12}>
                   <Stack flexDirection={'row'} alignItems={'center'} justifyContent={'space-between'}>
                     <Typography
-                      sx={{ alignItems: 'center', display: 'flex', columnGap: '5px', marginBottom: '20px' }}
+                      sx={{ alignItems: 'center', display: 'flex', columnGap: '5px' }}
                       variant="overline"
                       style={{ fontFamily: '"Audiowide", sans-serif' }}
                     >
@@ -91,7 +98,7 @@ export function UserEngagement({ sx }: UserEngagementProps): React.JSX.Element {
                 <Grid item md={12} xs={12}>
                   <Stack flexDirection={'row'} alignItems={'center'} justifyContent={'space-between'}>
                     <Typography
-                      sx={{ alignItems: 'center', display: 'flex', columnGap: '5px', marginBottom: '20px' }}
+                      sx={{ alignItems: 'center', display: 'flex', columnGap: '5px' }}
                       variant="overline"
                       style={{ fontFamily: '"Audiowide", sans-serif' }}
                     >

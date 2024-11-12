@@ -148,18 +148,17 @@ const SessionPreview: React.FC<SessionNotesFormProps> = ({
                           display: 'flex',
                           flexDirection: {
                             xs: 'column', // Column direction for mobile screens
-                            md: 'row', // Row direction for larger screens like tablets and above
+                            // md: 'row', // Row direction for larger screens like tablets and above
                           },
                           alignItems: 'start',
                           columnGap: '20px',
                         }}
                       >
+                        <Stack sx={{flexDirection:'row',alignItems:'center',columnGap:'20px'}}>
                         <Avatar
                           src={sessionObj.customer?.profileImageUrl || '/assets/User@3x-1.png'}
                           sx={{ height: '56px', width: '56px' }}
                         ></Avatar>
-
-                        <Stack>
                           <Typography
                             color="text.secondary"
                             style={{ fontFamily: '"Audiowide", sans-serif' }}
@@ -168,6 +167,9 @@ const SessionPreview: React.FC<SessionNotesFormProps> = ({
                           >
                             {sessionObj?.customer?.fullName}
                           </Typography>
+                        </Stack>
+
+                        <Stack>
 
                           <Stack flexDirection={'row'} alignItems={'center'}>
                             <IconButton>
@@ -267,27 +269,17 @@ const SessionPreview: React.FC<SessionNotesFormProps> = ({
                           display: 'flex',
                           flexDirection: {
                             xs: 'column', // Column direction for mobile screens
-                            md: 'row', // Row direction for larger screens like tablets and above
+                            // md: 'row', // Row direction for larger screens like tablets and above
                           },
                           alignItems: 'start',
                           columnGap: '20px',
                         }}
                       >
-                        <Stack>
+                        <Stack sx={{flexDirection:'row',alignItems:'center',columnGap:'20px'}}>
                           <Avatar
                             src={sessionObj.trainer?.profileImageUrl || '/assets/User@3x-1.png'}
                             sx={{ height: '56px', width: '56px' }}
-                          ></Avatar>
-                          <Stack flexDirection={'row'} justifyContent={'center'} alignItems={'center'}>
-                            <IconButton>
-                              <Barbell size={18} />
-                            </IconButton>
-                            <Typography color="text.secondary" gutterBottom>
-                              {sessionObj?.trainer?.experience} years
-                            </Typography>
-                          </Stack>
-                        </Stack>
-                        <Stack>
+                          ></Avatar>   
                           <Typography
                             color="text.secondary"
                             style={{ fontFamily: '"Audiowide", sans-serif' }}
@@ -296,12 +288,22 @@ const SessionPreview: React.FC<SessionNotesFormProps> = ({
                           >
                             {sessionObj?.trainer?.fullName}
                           </Typography>
+                        </Stack>
+                        <Stack>
+                          <Stack flexDirection={'row'}  alignItems={'center'}>
+                            <IconButton>
+                              <Barbell size={18} />
+                            </IconButton>
+                            <Typography color="text.secondary" gutterBottom>
+                              {sessionObj?.trainer?.experience} years
+                            </Typography>
+                          </Stack>
 
                           <Stack flexDirection={'row'} alignItems={'center'}>
                             <IconButton>
                               <Envelope size={25} />
                             </IconButton>
-                            <Typography color="text.secondary" gutterBottom>
+                            <Typography sx={{width:'200px',overflow:'hidden',textOverflow:'ellipsis'}} color="text.secondary" gutterBottom>
                               {sessionObj?.trainer?.email}
                             </Typography>
                           </Stack>

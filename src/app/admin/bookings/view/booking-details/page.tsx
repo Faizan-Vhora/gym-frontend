@@ -64,7 +64,7 @@ export default function BookingDetailsPage(): React.JSX.Element {
 
           <Grid container rowGap={5} columnGap={5} justifyContent={'center'} sx={{ padding: '20px 10px' }}>
             {/*  Booking Details */}
-            <Grid item xs={12} sm={6} md={4}>
+            <Grid item xs={12} sm={6} md={5}>
               <Typography
                 variant="h6"
                 component="div"
@@ -176,7 +176,7 @@ export default function BookingDetailsPage(): React.JSX.Element {
                 </Stack>
               </Card>
             </Grid>
-            <Grid item xs={12} sm={6} md={4}>
+            <Grid item xs={12} sm={6} md={5}>
               {/*  Payment Details */}
 
               <Typography
@@ -275,7 +275,7 @@ export default function BookingDetailsPage(): React.JSX.Element {
               </Card>
             </Grid>
 
-            <Grid item xs={12} sm={6} md={4}>
+            <Grid item xs={12} sm={6} md={5}>
               {/* Member Details */}
               <Typography
                 variant="h6"
@@ -402,7 +402,7 @@ export default function BookingDetailsPage(): React.JSX.Element {
                 {/* Add other fields as necessary */}
               </Card>
             </Grid>
-            <Grid item xs={12} sm={6} md={4}>
+            <Grid item xs={12} sm={6} md={5}>
               {/* Trainer Details */}
               <Typography
                 variant="h6"

@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { CustomLoader } from '@/utils/loader';
-import { CardHeader, Grid } from '@mui/material';
+import { Avatar, CardHeader, Grid } from '@mui/material';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Stack from '@mui/material/Stack';
@@ -8,7 +8,7 @@ import type { SxProps } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
 
 import axiosInstance from '@/lib/axios';
-
+import { ListBullets as ListBulletsIcon } from '@phosphor-icons/react/dist/ssr/ListBullets';
 export interface TrainerUtilizationProps {
   //   diff?: number;
   trend?: 'up' | 'down';
@@ -54,8 +54,13 @@ export function TrainerUtitlization({ sx }: TrainerUtilizationProps): React.JSX.
   }, []);
 
   return (
-    <Card sx={sx}>
+    <Card sx={{...sx, padding:'10px 20px'}}>
+      <Stack sx={{flexDirection:'row',alignItems:'center',justifyContent:'space-between',}}>
       <CardHeader style={{ fontFamily: '"Audiowide", sans-serif' }} title={'Sessions'} />
+      <Avatar sx={{ backgroundColor: 'var(--mui-palette-warning-main)', height: '56px', width: '56px' }}>
+              <ListBulletsIcon fontSize="var(--icon-fontSize-lg)" />
+            </Avatar>
+      </Stack>
       <CardContent>
         <Stack spacing={3}>
           <Stack direction="row" sx={{ alignItems: 'flex-start', justifyContent: 'space-between' }} spacing={3}>
