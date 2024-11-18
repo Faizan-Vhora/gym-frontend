@@ -77,7 +77,7 @@ export default function Page(): React.JSX.Element {
   };
 
   const handleAddClick = (): void => {
-    router.push('/admin/support/form');
+    router.push(`/admin/support/form`);
   };
 
   const handleUpdateStatus = async (id: number, newStatus: SupportEntry['status']): Promise<void> => {

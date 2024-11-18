@@ -165,7 +165,7 @@ export default function SupportForm(): React.JSX.Element {
     if (id && tabValue) {
       router.push(`/admin/support/form?id=${id}&tab=${tabValue}`);
     }
-  }, [tabValue]);
+  }, [id,tabValue]);
 
   const fetchCustomers = async (): Promise<void> => {
     try {
@@ -200,7 +200,7 @@ export default function SupportForm(): React.JSX.Element {
         data,
       });
       toast.success('Support ticket saved successfully');
-      router.push('/admin/support');
+      // router.push('/admin/support');
     } catch (err: unknown) {
       err instanceof Error ? err.message : 'An unexpected error occurred';
       setError('Failed to save support ticket details.');
@@ -225,13 +225,15 @@ export default function SupportForm(): React.JSX.Element {
   }
 
   return (
-    <Box component="form" onSubmit={handleSubmit(onSubmit)} sx={{ p: 3 }}>
+    <>
       <Stack margin={2}>
         <Tabs value={tabValue} onChange={handleTabChange} centered>
           <Tab label="Edit Support Ticket" value="edit" />
           <Tab label="Message" value="message" />
         </Tabs>
       </Stack>
+    <Box component="form" onSubmit={handleSubmit(onSubmit)} sx={{ p: 3 }}>
+      
       {tabValue === 'edit' && (
         <Card>
           <CardHeader
@@ -384,10 +386,11 @@ export default function SupportForm(): React.JSX.Element {
           </CardActions>
         </Card>
       )}
-      {tabValue === 'message' && <MessageForm />}
       {loading && <CustomLoader />}
       {error ? <Alert color="error">{error}</Alert> : null}
       <ToastContainer />
     </Box>
+    {tabValue === 'message' && <MessageForm />}
+    </>
   );
 }
