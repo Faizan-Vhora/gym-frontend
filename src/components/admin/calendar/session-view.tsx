@@ -290,6 +290,18 @@ const SessionPreview: React.FC<SessionNotesFormProps> = ({
                           </Typography>
                         </Stack>
                         <Stack>
+                        <Stack flexDirection={'row'} justifyContent={'space-between'}  
+                           sx={{
+                            flexDirection: {
+                              sm: 'column', // Column direction for mobile screens
+                              md: 'row', // Row direction for larger screens like tablets and above
+                            },
+                            alignItems: {
+                             sm: 'start', // Align items to the start for mobile screens
+                             md:'center'
+                            },
+                           }}
+                          >
                           <Stack flexDirection={'row'}  alignItems={'center'}>
                             <IconButton>
                               <Barbell size={18} />
@@ -298,6 +310,20 @@ const SessionPreview: React.FC<SessionNotesFormProps> = ({
                               {sessionObj?.trainer?.experience} years
                             </Typography>
                           </Stack>
+                          <Stack flexDirection={'row'} alignItems={'center'}>
+                            {sessionObj?.trainer?.fees && (
+                              <>
+                                <IconButton>
+                                  <CurrencyDollar size={20} />
+                                </IconButton>
+                                <Typography color="text.secondary" gutterBottom>
+                                  {sessionObj?.trainer?.fees}
+                                </Typography>
+                              </>
+                            )}
+                          </Stack>
+
+                            </Stack>
 
                           <Stack flexDirection={'row'} alignItems={'center'}>
                             <IconButton>
@@ -307,6 +333,18 @@ const SessionPreview: React.FC<SessionNotesFormProps> = ({
                               {sessionObj?.trainer?.email}
                             </Typography>
                           </Stack>
+                          <Stack flexDirection={'row'} justifyContent={'space-between'}  
+                           sx={{
+                            flexDirection: {
+                              sm: 'column', // Column direction for mobile screens
+                              md: 'row', // Row direction for larger screens like tablets and above
+                            },
+                            alignItems: {
+                             sm: 'start', // Align items to the start for mobile screens
+                             md:'center'
+                            },
+                           }}
+                          >
                           <Stack flexDirection={'row'} alignItems={'center'}>
                             {sessionObj?.trainer?.phoneNumber && (
                               <IconButton>
@@ -327,6 +365,7 @@ const SessionPreview: React.FC<SessionNotesFormProps> = ({
                               {sessionObj?.trainer?.gender && GENDER_TYPE_DETAILS[sessionObj?.trainer?.gender]?.label}
                             </Typography>
                           </Stack>
+                          </Stack>
                           <Stack flexDirection={'row'} alignItems={'center'}>
                             {sessionObj?.trainer?.address && (
                               <IconButton>
@@ -337,18 +376,7 @@ const SessionPreview: React.FC<SessionNotesFormProps> = ({
                               {sessionObj?.trainer?.address}
                             </Typography>
                           </Stack>
-                          <Stack flexDirection={'row'} alignItems={'center'}>
-                            {sessionObj?.trainer?.fees && (
-                              <>
-                                <IconButton>
-                                  <CurrencyDollar size={20} />
-                                </IconButton>
-                                <Typography color="text.secondary" gutterBottom>
-                                  {sessionObj?.trainer?.fees}
-                                </Typography>
-                              </>
-                            )}
-                          </Stack>
+
                         </Stack>
                       </Stack>
                     </Card>

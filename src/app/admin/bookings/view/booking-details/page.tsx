@@ -109,7 +109,7 @@ export default function BookingDetailsPage(): React.JSX.Element {
                 <Stack
                   sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', marginTop: '30px' }}
                 >
-                  <Typography color="text.secondary" style={{ fontFamily: '"Audiowide", sans-serif' }} gutterBottom>
+                  <Typography color="text.secondary" style={{ fontFamily: '"Audiowide", sans-serif',textAlign: 'center' }} gutterBottom>
                     {formatDate(bookingDetail?.startDate)} <br />
                     <Typography variant="body2" component="span" fontSize={'12px'}>
                       Start
@@ -138,9 +138,9 @@ export default function BookingDetailsPage(): React.JSX.Element {
                 </Stack>
 
                 <Stack sx={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: '30px' }}>
-                  <Typography color="text.secondary" style={{ fontFamily: '"Audiowide", sans-serif' }} gutterBottom>
+                  <Typography color="text.secondary" style={{ fontFamily: '"Audiowide", sans-serif',textAlign: 'center' }} gutterBottom>
                     {bookingDetail?.createdBy?.fullName} <br />
-                    <Typography variant="body2" component="span" fontSize={'12px'}>
+                    <Typography  variant="body2" component="span" fontSize={'12px'}>
                       Booking By
                     </Typography>
                   </Typography>
@@ -150,7 +150,7 @@ export default function BookingDetailsPage(): React.JSX.Element {
                     textAlign={'center'}
                   >
                     {bookingDetail?.recurrenceWeeks} <br />
-                    <Typography variant="body2" component="span" fontSize={'12px'}>
+                    <Typography  variant="body2" component="span" fontSize={'12px'}>
                       (Recurrence Weeks)
                     </Typography>
                   </Typography>
@@ -160,15 +160,14 @@ export default function BookingDetailsPage(): React.JSX.Element {
                     textAlign={'center'}
                   >
                     {bookingDetail?.createdAt && (
-                      <Typography>
+                      <Typography style={{ fontFamily: '"Audiowide", sans-serif' }}>
                         {formatDate(
                           typeof bookingDetail.createdAt === 'string'
                             ? bookingDetail.createdAt
                             : bookingDetail.createdAt?.toISOString().split('T')[0] // Ensure it’s not null before calling toISOString
                         )}
                       </Typography>
-                    )}
-                    <br />
+                    )} 
                     <Typography variant="body2" component="span" fontSize={'12px'}>
                       Booking at
                     </Typography>
