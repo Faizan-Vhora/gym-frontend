@@ -154,11 +154,11 @@ const SessionPreview: React.FC<SessionNotesFormProps> = ({
                           columnGap: '20px',
                         }}
                       >
-                        <Stack sx={{flexDirection:'row',alignItems:'center',columnGap:'20px'}}>
-                        <Avatar
-                          src={sessionObj.customer?.profileImageUrl || '/assets/User@3x-1.png'}
-                          sx={{ height: '56px', width: '56px' }}
-                        ></Avatar>
+                        <Stack sx={{ flexDirection: 'row', alignItems: 'center', columnGap: '20px' }}>
+                          <Avatar
+                            src={sessionObj.customer?.profileImageUrl || '/assets/User@3x-1.png'}
+                            sx={{ height: '56px', width: '56px' }}
+                          ></Avatar>
                           <Typography
                             color="text.secondary"
                             style={{ fontFamily: '"Audiowide", sans-serif' }}
@@ -170,7 +170,6 @@ const SessionPreview: React.FC<SessionNotesFormProps> = ({
                         </Stack>
 
                         <Stack>
-
                           <Stack flexDirection={'row'} alignItems={'center'}>
                             <IconButton>
                               <Envelope size={25} />
@@ -179,10 +178,7 @@ const SessionPreview: React.FC<SessionNotesFormProps> = ({
                             <Typography
                               color="text.secondary"
                               gutterBottom
-                              sx={{
-                                wordBreak: 'break-word',
-                                overflowWrap: 'break-word',
-                              }}
+                              sx={{ width: '200px', overflow: 'hidden', textOverflow: 'ellipsis' }}
                             >
                               {sessionObj?.customer?.email}
                             </Typography>
@@ -275,11 +271,11 @@ const SessionPreview: React.FC<SessionNotesFormProps> = ({
                           columnGap: '20px',
                         }}
                       >
-                        <Stack sx={{flexDirection:'row',alignItems:'center',columnGap:'20px'}}>
+                        <Stack sx={{ flexDirection: 'row', alignItems: 'center', columnGap: '20px' }}>
                           <Avatar
                             src={sessionObj.trainer?.profileImageUrl || '/assets/User@3x-1.png'}
                             sx={{ height: '56px', width: '56px' }}
-                          ></Avatar>   
+                          ></Avatar>
                           <Typography
                             color="text.secondary"
                             style={{ fontFamily: '"Audiowide", sans-serif' }}
@@ -290,81 +286,88 @@ const SessionPreview: React.FC<SessionNotesFormProps> = ({
                           </Typography>
                         </Stack>
                         <Stack>
-                        <Stack flexDirection={'row'} justifyContent={'space-between'}  
-                           sx={{
-                            flexDirection: {
-                              sm: 'column', // Column direction for mobile screens
-                              md: 'row', // Row direction for larger screens like tablets and above
-                            },
-                            alignItems: {
-                             sm: 'start', // Align items to the start for mobile screens
-                             md:'center'
-                            },
-                           }}
+                          <Stack
+                            flexDirection={'row'}
+                            justifyContent={'space-between'}
+                            sx={{
+                              flexDirection: {
+                                sm: 'column', // Column direction for mobile screens
+                                md: 'row', // Row direction for larger screens like tablets and above
+                              },
+                              alignItems: {
+                                sm: 'start', // Align items to the start for mobile screens
+                                md: 'center',
+                              },
+                            }}
                           >
-                          <Stack flexDirection={'row'}  alignItems={'center'}>
-                            <IconButton>
-                              <Barbell size={18} />
-                            </IconButton>
-                            <Typography color="text.secondary" gutterBottom>
-                              {sessionObj?.trainer?.experience} years
-                            </Typography>
-                          </Stack>
-                          <Stack flexDirection={'row'} alignItems={'center'}>
-                            {sessionObj?.trainer?.fees && (
-                              <>
-                                <IconButton>
-                                  <CurrencyDollar size={20} />
-                                </IconButton>
-                                <Typography color="text.secondary" gutterBottom>
-                                  {sessionObj?.trainer?.fees}
-                                </Typography>
-                              </>
-                            )}
-                          </Stack>
-
+                            <Stack flexDirection={'row'} alignItems={'center'}>
+                              <IconButton>
+                                <Barbell size={18} />
+                              </IconButton>
+                              <Typography color="text.secondary" gutterBottom>
+                                {sessionObj?.trainer?.experience} years
+                              </Typography>
                             </Stack>
+                            <Stack flexDirection={'row'} alignItems={'center'}>
+                              {sessionObj?.trainer?.fees && (
+                                <>
+                                  <IconButton>
+                                    <CurrencyDollar size={20} />
+                                  </IconButton>
+                                  <Typography color="text.secondary" gutterBottom>
+                                    {sessionObj?.trainer?.fees}
+                                  </Typography>
+                                </>
+                              )}
+                            </Stack>
+                          </Stack>
 
                           <Stack flexDirection={'row'} alignItems={'center'}>
                             <IconButton>
                               <Envelope size={25} />
                             </IconButton>
-                            <Typography sx={{width:'200px',overflow:'hidden',textOverflow:'ellipsis'}} color="text.secondary" gutterBottom>
+                            <Typography
+                              sx={{ width: '200px', overflow: 'hidden', textOverflow: 'ellipsis' }}
+                              color="text.secondary"
+                              gutterBottom
+                            >
                               {sessionObj?.trainer?.email}
                             </Typography>
                           </Stack>
-                          <Stack flexDirection={'row'} justifyContent={'space-between'}  
-                           sx={{
-                            flexDirection: {
-                              sm: 'column', // Column direction for mobile screens
-                              md: 'row', // Row direction for larger screens like tablets and above
-                            },
-                            alignItems: {
-                             sm: 'start', // Align items to the start for mobile screens
-                             md:'center'
-                            },
-                           }}
+                          <Stack
+                            flexDirection={'row'}
+                            justifyContent={'space-between'}
+                            sx={{
+                              flexDirection: {
+                                sm: 'column', // Column direction for mobile screens
+                                md: 'row', // Row direction for larger screens like tablets and above
+                              },
+                              alignItems: {
+                                sm: 'start', // Align items to the start for mobile screens
+                                md: 'center',
+                              },
+                            }}
                           >
-                          <Stack flexDirection={'row'} alignItems={'center'}>
-                            {sessionObj?.trainer?.phoneNumber && (
-                              <IconButton>
-                                <Phone size={25} />
-                              </IconButton>
-                            )}
-                            <Typography color="text.secondary" gutterBottom>
-                              {sessionObj?.trainer?.phoneNumber}
-                            </Typography>
-                          </Stack>
-                          <Stack flexDirection={'row'} alignItems={'center'}>
-                            {sessionObj?.trainer?.gender && (
-                              <IconButton>
-                                <GenderIntersex size={25} />
-                              </IconButton>
-                            )}
-                            <Typography color="text.secondary" gutterBottom>
-                              {sessionObj?.trainer?.gender && GENDER_TYPE_DETAILS[sessionObj?.trainer?.gender]?.label}
-                            </Typography>
-                          </Stack>
+                            <Stack flexDirection={'row'} alignItems={'center'}>
+                              {sessionObj?.trainer?.phoneNumber && (
+                                <IconButton>
+                                  <Phone size={25} />
+                                </IconButton>
+                              )}
+                              <Typography color="text.secondary" gutterBottom>
+                                {sessionObj?.trainer?.phoneNumber}
+                              </Typography>
+                            </Stack>
+                            <Stack flexDirection={'row'} alignItems={'center'}>
+                              {sessionObj?.trainer?.gender && (
+                                <IconButton>
+                                  <GenderIntersex size={25} />
+                                </IconButton>
+                              )}
+                              <Typography color="text.secondary" gutterBottom>
+                                {sessionObj?.trainer?.gender && GENDER_TYPE_DETAILS[sessionObj?.trainer?.gender]?.label}
+                              </Typography>
+                            </Stack>
                           </Stack>
                           <Stack flexDirection={'row'} alignItems={'center'}>
                             {sessionObj?.trainer?.address && (
@@ -376,7 +379,6 @@ const SessionPreview: React.FC<SessionNotesFormProps> = ({
                               {sessionObj?.trainer?.address}
                             </Typography>
                           </Stack>
-
                         </Stack>
                       </Stack>
                     </Card>

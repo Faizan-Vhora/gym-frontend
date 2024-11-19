@@ -232,7 +232,7 @@ export function BookingTable({
                           <XCircle />
                         </IconButton>
                         <IconButton
-                          disabled={[BOOKING_STATUS.CANCELED, BOOKING_STATUS.PENDING].includes(entry.status)}
+                          // disabled={[BOOKING_STATUS.CANCELED, BOOKING_STATUS.PENDING].includes(entry.status)}
                           onClick={(e) => {
                             e.stopPropagation(); // Prevents the row click from triggering
                             handleDownloadChange(entry.id);

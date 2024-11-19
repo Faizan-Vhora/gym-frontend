@@ -261,11 +261,11 @@ export function BookingSessionTable({
                           <XCircle />
                         </IconButton>
                         <IconButton
-                          disabled={[
-                            BOOKING_SESSION_STATUS.CANCELLED,
-                            BOOKING_SESSION_STATUS.IN_COMING,
-                            BOOKING_SESSION_STATUS.STARTED,
-                          ].includes(entry.status)}
+                          // disabled={[
+                          //   BOOKING_SESSION_STATUS.CANCELLED,
+                          //   BOOKING_SESSION_STATUS.IN_COMING,
+                          //   BOOKING_SESSION_STATUS.STARTED,
+                          // ].includes(entry.status)}
                           onClick={(e) => {
                             e.stopPropagation(); // Prevents the row click from triggering
                             handleDownloadChange(entry.id);
