@@ -71,6 +71,7 @@ export default function TrainerEditForm(): React.JSX.Element {
   const [checkInRowsPerPage, setRowsPerPage] = useState(5);
   const [checkInEntries, setCheckInEntries] = useState<CheckInEntry[]>([]);
   const [totalCheckInEntries, setTotalCheckInEntries] = useState<number>(0);
+  const [qrCodeUrl, setQrCodeUrl] = useState('');
 
   const trainerSchema = z.object({
     fullName: z
@@ -322,6 +323,39 @@ export default function TrainerEditForm(): React.JSX.Element {
     }
   };
 
+  const handleRegenerateQR = async () => {
+    setLoading(true);
+
+    try {
+      // Regenerate QR Code
+      const regenerateResponse = await axiosInstance.put(
+        `/users/regenerate-qr-code/${id}`,
+        {},
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+
+      if (regenerateResponse.status === 200) {
+        // After regenerating, get the updated customer data
+        const response = await axiosInstance.get<{ data: Trainer }>(`/users/${id}`, {
+          params: { userType: 3 },
+        });
+
+        // Update the state with the new customer data
+        setQrCodeUrl(response.data.data.qrCodeImageUrl);
+      } else {
+        console.error('Failed to regenerate QR code', regenerateResponse);
+      }
+    } catch (error) {
+      console.error('Error during the API calls:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   if (!trainer && id) {
     return <div>Loading...</div>;
   }
@@ -402,7 +436,7 @@ export default function TrainerEditForm(): React.JSX.Element {
                                 style={{ position: 'relative', width: '100%', maxHeight: '200px', marginTop: '1rem' }}
                               >
                                 <img
-                                  src={trainer?.qrCodeImageUrl || '/assets/User@3x-1.png'}
+                                  src={qrCodeUrl || trainer?.qrCodeImageUrl || '/assets/User@3x-1.png'}
                                   alt="QR Preview"
                                   style={{ width: '100%', maxHeight: '200px', objectFit: 'cover', marginTop: '1rem' }}
                                 />
@@ -411,6 +445,26 @@ export default function TrainerEditForm(): React.JSX.Element {
                           </Stack>
                         </CardContent>
                       </Card>
+                      <Stack justifyContent={'center'} alignItems={'center'}>
+                        <Button
+                          variant="outlined"
+                          sx={{
+                            borderColor: '#d0021b',
+                            color: '#d0021b',
+                            transform: 'skewX(-20deg)',
+                            '&:hover': {
+                              borderColor: 'darkred',
+                              backgroundColor: 'rgba(255, 0, 0, 0.1)',
+                            },
+                            padding: '10px',
+                            marginTop: '15px',
+                            width: 'max-content',
+                          }}
+                          onClick={handleRegenerateQR}
+                        >
+                          Regenerate QR
+                        </Button>
+                      </Stack>
                     </Grid>
                   )}
                   <Grid item md={id ? 8 : 12} xs={12} marginTop={3} marginLeft={id ? 0 : 2}>
@@ -445,7 +499,8 @@ export default function TrainerEditForm(): React.JSX.Element {
                               render={({ field }) => (
                                 <FormControl fullWidth required={!id} error={Boolean(errors.password)}>
                                   <InputLabel>Password</InputLabel>
-                                  <OutlinedInput sx={{background:'#e8f0fe'}}
+                                  <OutlinedInput
+                                    sx={{ background: '#e8f0fe' }}
                                     {...field}
                                     label="Password"
                                     type={showPassword ? 'text' : 'password'}
