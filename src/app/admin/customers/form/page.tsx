@@ -460,11 +460,9 @@ export default function CustomerEditForm(): React.JSX.Element {
 
         // Update the state with the new customer data
         setQrCodeUrl(response.data.data.qrCodeImageUrl);
-      } else {
-        console.error('Failed to regenerate QR code', regenerateResponse);
       }
-    } catch (error) {
-      console.error('Error during the API calls:', error);
+    } catch (err: unknown) {
+      err instanceof Error ? err.message : 'An unexpected error occurred';
     } finally {
       setLoading(false);
     }
