@@ -49,6 +49,7 @@ export interface Customer {
   profileImageUrl?: string;
   changeProfileImage: boolean;
   lastEntryInTime?: string;
+  timezone?: string;
   lastEntryDate?: string;
   membership: {
     startDate: Date;
@@ -186,7 +187,7 @@ export function CustomersTable({
                             <IconButton>
                               <Clock />
                             </IconButton>
-                            {row.lastEntryInTime ? formatTo12HourFormat(row.lastEntryInTime) : '-'}
+                            {row.lastEntryInTime ? formatTo12HourFormat(row.lastEntryInTime, row.timezone) : '-'}
                           </>
                         </Typography>
                       </>

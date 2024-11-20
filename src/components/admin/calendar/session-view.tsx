@@ -406,7 +406,7 @@ const SessionPreview: React.FC<SessionNotesFormProps> = ({
 
           <Stack sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', marginTop: '30px' }}>
             <Typography color="text.secondary" gutterBottom>
-              {formatTo12HourFormat(sessionObj?.sessionStartTime)} <br />
+              {formatTo12HourFormat(sessionObj?.sessionStartTime, sessionObj?.timezone)} <br />
               <Typography variant="body2" component="span" fontSize={'12px'}>
                 Start
               </Typography>
@@ -418,7 +418,7 @@ const SessionPreview: React.FC<SessionNotesFormProps> = ({
               </Typography>
             </Typography>
             <Typography color="text.secondary" textAlign={'center'}>
-              {formatTo12HourFormat(sessionObj?.sessionEndTime)} <br />
+              {formatTo12HourFormat(sessionObj?.sessionEndTime, sessionObj?.timezone)} <br />
               <Typography variant="body2" component="span" fontSize={'12px'}>
                 End
               </Typography>

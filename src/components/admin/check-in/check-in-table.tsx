@@ -36,6 +36,7 @@ export interface CheckInEntry {
     userType: number;
     profileImageUrl?: string;
   };
+  timezone?: string | null;
 }
 
 const userTypeStatus: Record<number, { label: string; color: 'warning' | 'success' }> = {
@@ -81,9 +82,9 @@ export function CheckInTable({
           <TableHead>
             <TableRow>
               <TableCell sx={tableCss.tableHeaderCell}>User Details</TableCell>
-              <TableCell sx={tableCss.tableHeaderCell}>Entry Date</TableCell>
-              <TableCell sx={tableCss.tableHeaderCell}>Entry In Time</TableCell>
-              <TableCell sx={tableCss.tableHeaderCell}>Entry Out Time</TableCell>
+              <TableCell sx={tableCss.tableHeaderCell}>Check In Date</TableCell>
+              <TableCell sx={tableCss.tableHeaderCell}>Check In Time</TableCell>
+              <TableCell sx={tableCss.tableHeaderCell}>Check Out Time</TableCell>
               <TableCell sx={tableCss.tableHeaderCell}>User Type</TableCell>
               <TableCell sx={tableCss.tableHeaderCell}>Status</TableCell>
               {/* <TableCell sx={tableCss.tableHeaderCell}>Actions</TableCell> */}
@@ -115,9 +116,9 @@ export function CheckInTable({
                         sx={{ height: '56px', width: '56px' }}
                       />
                       <Stack>
-                        <Typography variant="subtitle2">{entry.user.fullName}</Typography>
+                        <Typography variant="subtitle2">{entry.user?.fullName}</Typography>
                         <Typography color="textSecondary" variant="body2">
-                          {entry.user.email}
+                          {entry.user?.email}
                         </Typography>
                       </Stack>
                     </Stack>
@@ -127,18 +128,18 @@ export function CheckInTable({
                     <IconButton>
                       <Clock />
                     </IconButton>
-                    {formatTo12HourFormat(entry.entryInTime)}
+                    {formatTo12HourFormat(entry.entryInTime, entry.timezone)}
                   </TableCell>
                   <TableCell>
                     <IconButton>
                       <Clock />
                     </IconButton>
-                    {entry.entryOutTime ? formatTo12HourFormat(entry.entryOutTime) : '-'}
+                    {entry.entryOutTime ? formatTo12HourFormat(entry.entryOutTime, entry.timezone) : '-'}
                   </TableCell>
                   <TableCell>
                     <Chip
-                      label={userTypeStatus[entry.user.userType]?.label}
-                      color={userTypeStatus[entry.user.userType]?.color}
+                      label={userTypeStatus[entry.user?.userType]?.label}
+                      color={userTypeStatus[entry.user?.userType]?.color}
                       sx={{ ml: 2 }}
                     />
                   </TableCell>

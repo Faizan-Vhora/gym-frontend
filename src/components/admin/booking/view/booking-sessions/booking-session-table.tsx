@@ -74,6 +74,7 @@ export interface BookingSessionEntry {
   netTotalAmount: number;
 
   notes: string;
+  timezone?: string;
 }
 
 interface BookingTableProps {
@@ -165,7 +166,9 @@ export function BookingSessionTable({
                     <TableCell sx={tableCss.tableCell}>
                       <Stack direction="row" spacing={2}>
                         <Box>
-                          <Typography variant="subtitle2">{formatTo12HourFormat(entry?.sessionStartTime)}</Typography>
+                          <Typography variant="subtitle2">
+                            {formatTo12HourFormat(entry?.sessionStartTime, entry.timezone)}
+                          </Typography>
                         </Box>
                       </Stack>
                     </TableCell>
@@ -173,7 +176,9 @@ export function BookingSessionTable({
                     <TableCell sx={tableCss.tableCell}>
                       <Stack direction="row" spacing={2}>
                         <Box>
-                          <Typography variant="subtitle2">{formatTo12HourFormat(entry?.sessionEndTime)}</Typography>
+                          <Typography variant="subtitle2">
+                            {formatTo12HourFormat(entry?.sessionEndTime, entry.timezone)}
+                          </Typography>
                         </Box>
                       </Stack>
                     </TableCell>

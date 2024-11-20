@@ -32,6 +32,7 @@ export interface CheckIn {
   entryInTime: string;
   entryOutTime: string;
   entryDate: string;
+  timezone?: string;
 }
 
 // const checkInStatus: Record<string, { label: string; color: 'error' | 'success' }> = {
@@ -106,13 +107,13 @@ export function CheckInUsers(): React.JSX.Element {
                       <IconButton>
                         <Clock />
                       </IconButton>
-                      {formatTo12HourFormat(order.entryInTime)}
+                      {formatTo12HourFormat(order.entryInTime, order.timezone)}
                     </TableCell>
                     <TableCell>
                       <IconButton>
                         <Clock />
                       </IconButton>
-                      {formatTo12HourFormat(order.entryOutTime)}
+                      {formatTo12HourFormat(order.entryOutTime, order.timezone)}
                     </TableCell>
                     {/* <TableCell>
                       <Chip color={color} label={label} size="small" />

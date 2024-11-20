@@ -29,7 +29,13 @@ export interface CheckInEntry {
     email: string;
     userType: number;
   };
+  timezone: string;
 }
+
+const userTypeStatus: Record<number, { label: string; color: 'warning' | 'success' }> = {
+  2: { label: 'Trainer', color: 'warning' },
+  3: { label: 'Member', color: 'success' },
+};
 
 const checkInStatus: Record<string, { label: string; color: 'error' | 'success' }> = {
   success: { label: 'Success', color: 'success' },
@@ -59,9 +65,10 @@ export function CheckInTableView({
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell>Entry Date</TableCell>
-              <TableCell>Entry In Time</TableCell>
+              <TableCell>Check In Date</TableCell>
+              <TableCell>Check In Time</TableCell>
               <TableCell>Entry Out Time</TableCell>
+              <TableCell>User Type</TableCell>
               <TableCell>Status</TableCell>
             </TableRow>
           </TableHead>
@@ -80,13 +87,24 @@ export function CheckInTableView({
                     <IconButton>
                       <Clock />
                     </IconButton>
-                    {formatTo12HourFormat(entry.entryInTime)}
+                    {formatTo12HourFormat(entry.entryInTime, entry.timezone)}
                   </TableCell>
                   <TableCell>
                     <IconButton>
                       <Clock />
                     </IconButton>
-                    {entry.entryOutTime ? formatTo12HourFormat(entry.entryOutTime) : '-'}
+                    {entry.entryOutTime ? formatTo12HourFormat(entry.entryOutTime, entry.timezone) : '-'}
+                  </TableCell>
+                  <TableCell>
+                    {userTypeStatus[entry.user?.userType] ? (
+                      <Chip
+                        label={userTypeStatus[entry.user?.userType]?.label}
+                        color={userTypeStatus[entry.user?.userType]?.color}
+                        sx={{ ml: 2 }}
+                      />
+                    ) : (
+                      '-'
+                    )}
                   </TableCell>
                   <TableCell>
                     <Tooltip
