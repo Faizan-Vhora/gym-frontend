@@ -24,6 +24,7 @@ import 'react-toastify/dist/ReactToastify.css';
 
 import { addUser } from '@/app/redux/slice';
 import { REGEX_VALIDATION } from '@/utils/constant';
+import { CustomLoader } from '@/utils/loader';
 import { useDispatch } from 'react-redux';
 import Swal from 'sweetalert2';
 
@@ -55,6 +56,8 @@ export function AccountDetailsForm(): React.JSX.Element {
   const [file, setFile] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [changeProfileImage, setChangeProfileImage] = React.useState(false);
+  const [loading, setLoading] = React.useState(false);
+  const [qrCodeUrl, setQrCodeUrl] = useState('');
   const dispatch = useDispatch();
 
   interface User {
@@ -64,6 +67,7 @@ export function AccountDetailsForm(): React.JSX.Element {
     phoneNumber: string | null;
     address: string | null;
     profileImageUrl: string;
+    qrCodeImageUrl: string;
   }
 
   // Fetch user details from the API
@@ -173,6 +177,34 @@ export function AccountDetailsForm(): React.JSX.Element {
     }
   };
 
+  const handleRegenerateQR = async () => {
+    setLoading(true);
+
+    try {
+      // Regenerate QR Code
+      const regenerateResponse = await axiosInstance.put(
+        `/users/regenerate-qr-code/${user?.id}`,
+        {},
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+
+      if (regenerateResponse.status === 200) {
+        // After regenerating, get the updated customer data
+        const response = await axiosInstance.get<{ data: User }>('/auth/profile');
+        // Update the state with the new customer data
+        setQrCodeUrl(response.data.data.qrCodeImageUrl);
+      }
+    } catch (err: unknown) {
+      err instanceof Error ? err.message : 'An unexpected error occurred';
+    } finally {
+      setLoading(false);
+    }
+  };
+
   if (!user) {
     return <div>Loading...</div>;
   }
@@ -200,6 +232,51 @@ export function AccountDetailsForm(): React.JSX.Element {
                   </Button>
                 </CardActions>
               </Card>
+              <Card
+                sx={{
+                  background: 'linear-gradient(135deg, #8B0000, #000000)', // Darker, classic red with black
+                  boxShadow: '0px 3px 15px rgba(0, 0, 0, 0.3)', // Softer, wider shadow for a timeless feel
+                  borderRadius: '8px', // Slightly rounded corners for a refined look
+                  padding: '16px', // Ensure good spacing inside the card
+                  color: 'white', // Keeps the text readable on dark background
+                  fontFamily: '"Georgia", serif', // Optional: Use a serif font for a classic text style
+                  margin: '15px',
+                }}
+              >
+                <CardContent>
+                  <Stack spacing={2} sx={{ alignItems: 'center' }}>
+                    <div>
+                      <div style={{ position: 'relative', width: '100%', maxHeight: '200px', marginTop: '1rem' }}>
+                        <img
+                          src={qrCodeUrl || user?.qrCodeImageUrl || '/assets/User@3x-1.png'}
+                          alt="QR Preview"
+                          style={{ width: '100%', maxHeight: '200px', objectFit: 'cover', marginTop: '1rem' }}
+                        />
+                      </div>
+                    </div>
+                  </Stack>
+                </CardContent>
+              </Card>
+              <Stack justifyContent={'center'} alignItems={'center'}>
+                <Button
+                  variant="outlined"
+                  sx={{
+                    borderColor: '#d0021b',
+                    color: '#d0021b',
+                    transform: 'skewX(-20deg)',
+                    '&:hover': {
+                      borderColor: 'darkred',
+                      backgroundColor: 'rgba(255, 0, 0, 0.1)',
+                    },
+                    padding: '10px',
+                    marginTop: '15px',
+                    width: 'max-content',
+                  }}
+                  onClick={handleRegenerateQR}
+                >
+                  Regenerate QR
+                </Button>
+              </Stack>
             </Grid>
 
             {/* Form Inputs for User Information */}
@@ -263,7 +340,7 @@ export function AccountDetailsForm(): React.JSX.Element {
             {isSubmitting ? 'Saving...' : 'Save details'}
           </Button>
         </CardActions>
-
+        {loading && <CustomLoader />}
         <ToastContainer />
       </Card>
     </form>
