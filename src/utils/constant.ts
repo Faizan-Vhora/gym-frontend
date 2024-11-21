@@ -146,12 +146,12 @@ export const BOOKING_PAYMENT_TYPE = {
 
 export const BOOKING_PAYMENT_TYPE_OPTIONS = [
   { value: BOOKING_PAYMENT_TYPE.FULL, label: "Full Payment" },
-  { value: BOOKING_PAYMENT_TYPE.PER_SESSION, label: "Per Sesion Payment" },
+  { value: BOOKING_PAYMENT_TYPE.PER_SESSION, label: "Per Session Payment" },
 ]
 
 export const BOOKING_PAYMENT_TYPE_DETAILS: Record<string, { value: string; label: string; color: 'warning' | 'success' }> = {
   [BOOKING_PAYMENT_TYPE.FULL] : { value: BOOKING_PAYMENT_TYPE.FULL, label: "Full" , color: 'warning'},
-  [BOOKING_PAYMENT_TYPE.PER_SESSION] : { value: BOOKING_PAYMENT_TYPE.PER_SESSION, label: "Per Sesion" , color: 'success'},
+  [BOOKING_PAYMENT_TYPE.PER_SESSION] : { value: BOOKING_PAYMENT_TYPE.PER_SESSION, label: "Per Session" , color: 'success'},
 }
 
 

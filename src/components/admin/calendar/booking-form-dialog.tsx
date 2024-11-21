@@ -165,7 +165,7 @@ export function BookingFormDialog({
   const [selectedDays, setSelectedDays] = React.useState<number[]>([dayjs().day()]); // Default to today's weekday
   const [selectedSlots, setSelectedSlots] = React.useState<SelectedSlotsI>({});
   const [selectedBookingSlots, setSelectedBookingSlots] = React.useState<Sessions[]>([]);
-  const [paymentType, setPaymentType] = React.useState<string>(BOOKING_PAYMENT_TYPE.FULL); // Initialize with an empty string
+  const [paymentType, setPaymentType] = React.useState<string>(BOOKING_PAYMENT_TYPE.PER_SESSION); // Initialize with an empty string
   const [bookingAmount, setBookingAmount] = React.useState<number>(0);
   const [bookingHours, setBookingHours] = React.useState<number>(0);
   const [discountAmount, setDiscountAmount] = React.useState<number>(0);
