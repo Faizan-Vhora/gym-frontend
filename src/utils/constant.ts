@@ -199,9 +199,9 @@ export const BOOKING_SESSION_STATUS_OPTIONS = [
   { value: BOOKING_SESSION_STATUS.COMPLETED, label: "Completed" },
 ]
 
-export const BOOKING_SESSION_STATUS_DETAILS: Record<string, { value: string; label: string; color: 'warning' | 'error' | 'success' }>  = {
+export const BOOKING_SESSION_STATUS_DETAILS: Record<string, { value: string; label: string; color: 'warning' | 'error' | 'success' | 'primary' }>  = {
   [BOOKING_SESSION_STATUS.IN_COMING] : { value: BOOKING_SESSION_STATUS.IN_COMING, label: "Pending" , color: 'warning'},
-  [BOOKING_SESSION_STATUS.STARTED] : { value: BOOKING_SESSION_STATUS.STARTED, label: "Started" , color: 'warning'},
+  [BOOKING_SESSION_STATUS.STARTED] : { value: BOOKING_SESSION_STATUS.STARTED, label: "Started" , color: 'primary'},
   [BOOKING_SESSION_STATUS.COMPLETED] : { value: BOOKING_SESSION_STATUS.COMPLETED, label: "Completed" , color: 'success'},
   [BOOKING_SESSION_STATUS.CANCELLED] : { value: BOOKING_SESSION_STATUS.CANCELLED, label: "Cancelled" , color: 'error'},
 }
@@ -223,11 +223,11 @@ export const BOOKING_SESSION_PAYMENT_STATUS_OPTIONS = [
   { value: BOOKING_SESSION_PAYMENT_STATUS.UNPAID, label: "Unpaid" },
 ]
 
-export const BOOKING_SESSION_PAYMENT_STATUS_DETAILS: Record<string, { value: string; label: string; color: 'warning' | 'error' | 'success' }>  = {
+export const BOOKING_SESSION_PAYMENT_STATUS_DETAILS: Record<string, { value: string; label: string; color: 'warning' | 'error' | 'success' | 'primary' }>  = {
   [BOOKING_SESSION_PAYMENT_STATUS.PENDING] : { value: BOOKING_SESSION_PAYMENT_STATUS.PENDING, label: "Pending" , color: 'warning'},
   [BOOKING_SESSION_PAYMENT_STATUS.CANCELED] : { value: BOOKING_SESSION_PAYMENT_STATUS.CANCELED, label: "Cancelled" , color: 'error'},
   [BOOKING_SESSION_PAYMENT_STATUS.COMPLETED] : { value: BOOKING_SESSION_PAYMENT_STATUS.COMPLETED, label: "Completed" , color: 'success'},
-  [BOOKING_SESSION_PAYMENT_STATUS.PAID] : { value: BOOKING_SESSION_PAYMENT_STATUS.PAID, label: "Paid" , color: 'success'},
+  [BOOKING_SESSION_PAYMENT_STATUS.PAID] : { value: BOOKING_SESSION_PAYMENT_STATUS.PAID, label: "Paid" , color: 'primary'},
   [BOOKING_SESSION_PAYMENT_STATUS.UNPAID] : { value: BOOKING_SESSION_PAYMENT_STATUS.UNPAID, label: "Unpaid" , color: 'error'},
 }
 
