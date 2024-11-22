@@ -1,4 +1,4 @@
-export const APP_BASE_URL='http://18.188.170.111:3001/'
+export const APP_BASE_URL='http://3.135.82.239:3001/'
 // export const APP_BASE_URL='http://localhost:3001/'
 
 export const NEXT_PUBLIC_PUSHER_KEY="3b7fccfd622a7ca677c6"
