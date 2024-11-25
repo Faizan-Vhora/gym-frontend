@@ -28,7 +28,7 @@ import tableCss from '@/styles/table-css';
 
 export interface SupportEntry {
   id: number;
-  user: { id: number; fullName: string; email: string; userType: number } | null;
+  user: { id: number; fullName: string; email: string; userType: number; memberId: string } | null;
   type: 'user' | 'trainer' | 'web';
   status: 'pending' | 'resolved' | 'reviewed';
   userType: 2 | 3;

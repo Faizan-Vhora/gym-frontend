@@ -39,9 +39,10 @@ export interface CheckInEntry {
   timezone?: string | null;
 }
 
-const userTypeStatus: Record<number, { label: string; color: 'warning' | 'success' }> = {
+const userTypeStatus: Record<number, { label: string; color: 'warning' | 'success' | 'primary' }> = {
   2: { label: 'Trainer', color: 'warning' },
   3: { label: 'Member', color: 'success' },
+  1: { label: 'Admin', color: 'primary' },
 };
 
 const checkInStatus: Record<string, { label: string; color: 'error' | 'success' }> = {
