@@ -79,6 +79,8 @@ export default function SupportForm(): React.JSX.Element {
   const [description, setTicketDescription] = useState<string>('');
   const [supportTicket, setSupportTicket] = useState<SupportFormInputs | null>(null);
   const [selectedUser, setSelectedUser] = useState<UserOption | null>(null);
+  const [userType, setUserType] = useState<string>('');
+  const [status, setStatus] = useState<string>('');
 
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
@@ -91,14 +93,13 @@ export default function SupportForm(): React.JSX.Element {
     setValue,
     reset,
     formState: { errors },
-    watch,
   } = useForm<SupportFormInputs>({
     resolver: zodResolver(supportSchema),
     mode: 'onBlur',
   });
 
-  const userType = watch('userType', '');
-  const status = watch('status', '');
+  // const userType = watch('userType', '');
+  // const status = watch('status', '');
 
   useEffect(() => {
     if (id) {
@@ -114,6 +115,8 @@ export default function SupportForm(): React.JSX.Element {
             status: fetchedData.status,
           });
           setTicketDescription(fetchedData.description);
+          setUserType(String(fetchedData.userType));
+          setStatus(fetchedData.status);
           setSelectedUser({
             label: `${fetchedData?.user?.memberId} | ${fetchedData?.user?.fullName} | ${fetchedData?.user?.email}`, // Assuming 'name' is a field in your user data
             value: String(fetchedData?.user?.id), // Assuming 'id' is the unique identifier for the user
