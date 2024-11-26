@@ -198,6 +198,12 @@ export default function SupportForm(): React.JSX.Element {
     setIsSubmitting(true);
     setError(null);
     setLoading(true);
+    if (!selectedUser) {
+      toast.error('Error: No user selected!');
+      setIsSubmitting(false);
+      setLoading(false);
+      return; // Exit the function early
+    }
     const selectedOption = userOptions.find((option) => option.value === formData.user);
     setSelectedUser(selectedOption || null);
 
@@ -269,6 +275,7 @@ export default function SupportForm(): React.JSX.Element {
                       {...register('userType')}
                       value={userType || supportTicket?.userType}
                       onChange={(e) => {
+                        setSelectedUser(null);
                         setValue('userType', e.target.value);
                       }}
                       label="User Type"
@@ -313,7 +320,7 @@ export default function SupportForm(): React.JSX.Element {
                 </Grid>
 
                 <Grid item xs={12} md={4} sm={12}>
-                  <FormControl fullWidth>
+                  <FormControl fullWidth variant="outlined" required error={Boolean(errors.user)}>
                     <Autocomplete
                       options={userOptions}
                       getOptionLabel={(option) => option.label}
