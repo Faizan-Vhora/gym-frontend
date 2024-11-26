@@ -79,8 +79,7 @@ export default function SupportForm(): React.JSX.Element {
   const [description, setTicketDescription] = useState<string>('');
   const [supportTicket, setSupportTicket] = useState<SupportFormInputs | null>(null);
   const [selectedUser, setSelectedUser] = useState<UserOption | null>(null);
-  const [userType, setUserType] = useState<string>('');
-  const [status, setStatus] = useState<string>('');
+  const [subjectData, setSubjectData] = useState<string>('');
 
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
@@ -93,13 +92,14 @@ export default function SupportForm(): React.JSX.Element {
     setValue,
     reset,
     formState: { errors },
+    watch,
   } = useForm<SupportFormInputs>({
     resolver: zodResolver(supportSchema),
     mode: 'onBlur',
   });
 
-  // const userType = watch('userType', '');
-  // const status = watch('status', '');
+  const userType = watch('userType', '');
+  const status = watch('status', '');
 
   useEffect(() => {
     if (id) {
@@ -115,8 +115,7 @@ export default function SupportForm(): React.JSX.Element {
             status: fetchedData.status,
           });
           setTicketDescription(fetchedData.description);
-          setUserType(String(fetchedData.userType));
-          setStatus(fetchedData.status);
+          setSubjectData(fetchedData.subject);
           setSelectedUser({
             label: `${fetchedData?.user?.memberId} | ${fetchedData?.user?.fullName} | ${fetchedData?.user?.email}`, // Assuming 'name' is a field in your user data
             value: String(fetchedData?.user?.id), // Assuming 'id' is the unique identifier for the user
@@ -138,7 +137,10 @@ export default function SupportForm(): React.JSX.Element {
       setValue('user', supportTicket.user);
       setValue('status', supportTicket.status);
     }
-  }, [supportTicket, setValue]);
+    if (subjectData) {
+      setValue('subject', subjectData); // Dynamically set the subject
+    }
+  }, [subjectData, supportTicket, setValue]);
 
   useEffect(() => {
     const updatedUserOptions =
@@ -176,6 +178,9 @@ export default function SupportForm(): React.JSX.Element {
   React.useEffect(() => {
     if (id && tabValue) {
       router.push(`/admin/support/form?id=${id}&tab=${tabValue}`);
+    }
+    if (subjectData) {
+      setValue('subject', subjectData); // Dynamically set the subject
     }
   }, [id, tabValue]);
 
@@ -262,7 +267,7 @@ export default function SupportForm(): React.JSX.Element {
                     <InputLabel>User Type</InputLabel>
                     <Select
                       {...register('userType')}
-                      value={userType}
+                      value={userType || supportTicket?.userType}
                       onChange={(e) => {
                         setValue('userType', e.target.value);
                       }}
@@ -287,7 +292,7 @@ export default function SupportForm(): React.JSX.Element {
                     <InputLabel>Status</InputLabel>
                     <Select
                       {...register('status')}
-                      value={status}
+                      value={status || supportTicket?.status}
                       onChange={(e) => {
                         setValue('status', e.target.value);
                       }}
@@ -314,6 +319,7 @@ export default function SupportForm(): React.JSX.Element {
                       getOptionLabel={(option) => option.label}
                       value={selectedUser}
                       onChange={(event, newValue) => {
+                        setSelectedUser(newValue);
                         setValue('user', newValue?.value || ''); // Handle null case
                       }}
                       renderInput={(params) => (
