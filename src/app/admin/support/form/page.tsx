@@ -80,6 +80,8 @@ export default function SupportForm(): React.JSX.Element {
   const [supportTicket, setSupportTicket] = useState<SupportFormInputs | null>(null);
   const [selectedUser, setSelectedUser] = useState<UserOption | null>(null);
   const [subjectData, setSubjectData] = useState<string>('');
+  const [userTypeData, setUserTypeData] = useState<string>('');
+  const [statusData, setStatusData] = useState<string>('');
 
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
@@ -116,6 +118,8 @@ export default function SupportForm(): React.JSX.Element {
           });
           setTicketDescription(fetchedData.description);
           setSubjectData(fetchedData.subject);
+          setUserTypeData(String(fetchedData.userType));
+          setStatusData(fetchedData.status);
           setSelectedUser({
             label: `${fetchedData?.user?.memberId} | ${fetchedData?.user?.fullName} | ${fetchedData?.user?.email}`, // Assuming 'name' is a field in your user data
             value: String(fetchedData?.user?.id), // Assuming 'id' is the unique identifier for the user
@@ -140,7 +144,13 @@ export default function SupportForm(): React.JSX.Element {
     if (subjectData) {
       setValue('subject', subjectData); // Dynamically set the subject
     }
-  }, [subjectData, supportTicket, setValue]);
+    if (userTypeData) {
+      setValue('userType', userTypeData); // Dynamically set the subject
+    }
+    if (statusData) {
+      setValue('status', statusData); // Dynamically set the subject
+    }
+  }, [subjectData, userTypeData, statusData, supportTicket, setValue]);
 
   useEffect(() => {
     const updatedUserOptions =
@@ -181,6 +191,12 @@ export default function SupportForm(): React.JSX.Element {
     }
     if (subjectData) {
       setValue('subject', subjectData); // Dynamically set the subject
+    }
+    if (userTypeData) {
+      setValue('userType', userTypeData); // Dynamically set the subject
+    }
+    if (statusData) {
+      setValue('status', statusData); // Dynamically set the subject
     }
   }, [id, tabValue]);
 
