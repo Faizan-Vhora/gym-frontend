@@ -33,7 +33,7 @@ interface NotificationCountS {
 
 export function MainNav(): React.JSX.Element {
   const [openNav, setOpenNav] = React.useState<boolean>(false);
-  const [user, setUser] = React.useState<User | null>(null);
+  // const [user, setUser] = React.useState<User | null>(null);
   const [unreadCount, setUnreadCount] = React.useState<number>(0);
 
   const userPopover = usePopover<HTMLDivElement>();
