@@ -54,6 +54,7 @@ export default function TrainerEditForm(): React.JSX.Element {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [imageFile, setImageFile] = React.useState<File | null>(null);
   const [redirectTo, setRedirectTo] = useState<'trainers' | 'profile-detail'>('trainers');
+  const [changeProfileImage, setChangeProfileImage] = React.useState(false);
 
   const trainerSchema = z.object({
     fullName: z.string().min(1, 'Full Name is required'),
@@ -153,12 +154,14 @@ export default function TrainerEditForm(): React.JSX.Element {
         setImageFile(file);
       };
       reader.readAsDataURL(file);
+      setChangeProfileImage(true);
     }
   };
 
   const handleRemoveImage = (): void => {
     setImagePreview(null);
     setImageFile(null);
+    setChangeProfileImage(true);
   };
 
   const onSubmit = async (data: TrainerFormInputs, destination: string): Promise<void> => {
@@ -179,6 +182,7 @@ export default function TrainerEditForm(): React.JSX.Element {
       { key: 'password', value: data.password },
       { key: 'profileImage', value: imageFile }, // Ensure imageFile is properly set
       { key: 'dateOfBirth', value: data.dateOfBirth ? dayjs(data.dateOfBirth).format('YYYY-MM-DD') : '' }, // Convert Date to YYYY-MM-DD
+      { key: 'changeProfileImage', value: changeProfileImage ? 'true' : 'false' }, // Convert boolean to string
     ];
 
     fields.forEach(({ key, value }) => {
