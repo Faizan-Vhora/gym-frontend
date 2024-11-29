@@ -66,6 +66,7 @@ export interface Trainer {
   experience: number;
   fees: number;
   profileImageUrl?: string;
+  qrCodeImageUrl: string;
   setSameTimeForAllDay: boolean;
   attendanceDetail?: TrainerAttendanceDetail; // Attendance data
   sessionDetail?: TrainerSessionDetail; // Session counts

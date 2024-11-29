@@ -138,7 +138,7 @@ export default function CheckinFilters({
         <Grid container spacing={2}>
           <Grid item md={6}>
             <TimeFilter
-              label="CheckIn"
+              label="Start CheckIn Time"
               name="checkInTime"
               control={control}
               onTimeChange={(time) => {
@@ -148,7 +148,7 @@ export default function CheckinFilters({
           </Grid>
           <Grid item md={6}>
             <TimeFilter
-              label="CheckOut"
+              label="End CheckIn Time"
               name="checkOutTime"
               control={control}
               onTimeChange={(time) => {

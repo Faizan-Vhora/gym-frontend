@@ -67,11 +67,14 @@ export function MainNav(): React.JSX.Element {
   }, [unreadCount]);
 
   interface UserData {
-    user: User;
+    user: {
+      user: User;
+    };
+    notification: NotificationCountS;
   }
 
   interface NoticficationCount {
-    notificationCount: NotificationCountS;
+    notification: NotificationCountS;
   }
 
   const userData = useSelector((data: UserData) => data);
@@ -81,8 +84,7 @@ export function MainNav(): React.JSX.Element {
     // Retrieve user data from localStorage
     // const storedUser = localStorage.getItem('user');
     // const parsedUser = storedUser ? (JSON.parse(storedUser) as User) : null;
-    // setUser(userData);
-
+    // setUser(parsedUser);
     void getNotificationListData();
   }, [unreadCount, userData]);
 
@@ -116,7 +118,12 @@ export function MainNav(): React.JSX.Element {
           <Stack sx={{ alignItems: 'center' }} direction="row" spacing={2}>
             <Tooltip title={'Notification'}>
               {unreadCount > 0 ? (
-                <Badge badgeContent={notificationCount?.notificationCount?.unreadCount || unreadCount} color="error">
+                <Badge
+                  badgeContent={
+                    userData.notification?.unreadCount || notificationCount?.notification?.unreadCount || unreadCount
+                  }
+                  color="error"
+                >
                   <IconButton onClick={notificationPopover.handleOpen}>
                     <Bell />
                   </IconButton>
@@ -131,7 +138,7 @@ export function MainNav(): React.JSX.Element {
             <Avatar
               onClick={userPopover.handleOpen}
               ref={userPopover.anchorRef}
-              src={userData.user?.profileImageUrl || '/assets/user-default.png'} // Use user image or fallback
+              src={userData.user?.user?.profileImageUrl || '/assets/user-default.png'} // Use user image or fallback
               sx={{ cursor: 'pointer' }}
             />
           </Stack>

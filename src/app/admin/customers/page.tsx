@@ -127,31 +127,31 @@ export default function Page(): React.JSX.Element {
     setPage(0); // Reset to first page on membership type filter change
   };
 
-  // const updateCustomerStatus = async (id: string, currentStatus: number): Promise<void> => {
-  //   const newStatus = currentStatus === 1 ? 2 : 1; // Toggle status
+  const updateCustomerStatus = async (id: string, currentStatus: number): Promise<void> => {
+    const newStatus = currentStatus === 1 ? 2 : 1; // Toggle status
 
-  //   // Show confirmation dialog
-  //   const result = await Swal.fire({
-  //     title: 'Are you sure?',
-  //     text: `You are about to ${newStatus === 1 ? 'activate' : 'deactivate'} this customer.`,
-  //     icon: 'warning',
-  //     showCancelButton: true,
-  //     confirmButtonColor: '#3085d6',
-  //     cancelButtonColor: '#d33',
-  //     confirmButtonText: `Yes, ${newStatus === 1 ? 'activate' : 'deactivate'} it!`,
-  //   });
+    // Show confirmation dialog
+    const result = await Swal.fire({
+      title: 'Are you sure?',
+      text: `You are about to ${newStatus === 1 ? 'activate' : 'deactivate'} this customer.`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: `Yes, ${newStatus === 1 ? 'activate' : 'deactivate'} it!`,
+    });
 
-  //   // If confirmed, proceed with the status update
-  //   if (result.isConfirmed) {
-  //     try {
-  //       await axiosInstance.patch(`/users/update-status/${id}`, { status: newStatus });
-  //       toast.success(`Status updated to ${newStatus === 1 ? 'Active' : 'Inactive'}`);
-  //       await fetchCustomers(); // Refresh customer data
-  //     } catch (error: unknown) {
-  //       error instanceof Error ? error.message : 'An unexpected error occurred';
-  //     }
-  //   }
-  // };
+    // If confirmed, proceed with the status update
+    if (result.isConfirmed) {
+      try {
+        await axiosInstance.patch(`/users/update-status/${id}`, { status: newStatus });
+        toast.success(`Status updated to ${newStatus === 1 ? 'Active' : 'Inactive'}`);
+        await fetchCustomers(); // Refresh customer data
+      } catch (error: unknown) {
+        error instanceof Error ? error.message : 'An unexpected error occurred';
+      }
+    }
+  };
 
   const handleUpdateStatus = async (id: number, newStatus: MembershipType['status']): Promise<void> => {
     let swalText = `Do you want to change the status?`;
@@ -221,7 +221,7 @@ export default function Page(): React.JSX.Element {
             rows={customers}
             onPageChange={handlePageChange}
             onRowsPerPageChange={handleRowsPerPageChange}
-            // updateCustomerStatus={updateCustomerStatus}
+            updateCustomerStatus={updateCustomerStatus}
             onUpdateStatus={handleUpdateStatus}
           />
         )}

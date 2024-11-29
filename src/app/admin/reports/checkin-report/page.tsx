@@ -182,7 +182,7 @@ const CheckInReport: React.FC = () => {
               <Grid container spacing={2}>
                 <Grid item md={6}>
                   <TimeFilter
-                    label="CheckIn"
+                    label="Start CheckIn Time"
                     name="checkInTime"
                     control={control}
                     onTimeChange={(time) => {
@@ -192,12 +192,12 @@ const CheckInReport: React.FC = () => {
                 </Grid>
                 <Grid item md={6}>
                   <TimeFilter
-                    label="CheckOut"
+                    label="End CheckOut Time"
                     name="checkOutTime"
                     control={control}
                     onTimeChange={(time) => {
                       handleTimeChange(time, false);
-                    }} // Pass false for check-out
+                    }}
                   />
                 </Grid>
               </Grid>

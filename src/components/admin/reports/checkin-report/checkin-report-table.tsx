@@ -30,6 +30,7 @@ export interface CheckInEntry {
     email: string;
     userType: number;
   };
+  timezone?: string | null;
 }
 
 const userTypeStatus: Record<number, { label: string; color: 'warning' | 'success' }> = {
@@ -82,13 +83,13 @@ export function CheckInReportTable({ rows }: CheckInTableProps): React.JSX.Eleme
                     <IconButton>
                       <Clock />
                     </IconButton>
-                    {formatTo12HourFormat(entry.entryInTime)}
+                    {formatTo12HourFormat(entry.entryInTime, entry.timezone)}
                   </TableCell>
                   <TableCell>
                     <IconButton>
                       <Clock />
                     </IconButton>
-                    {entry.entryOutTime ? formatTo12HourFormat(entry?.entryOutTime) : '-'}
+                    {entry.entryOutTime ? formatTo12HourFormat(entry?.entryOutTime, entry.timezone) : '-'}
                   </TableCell>
                   <TableCell>
                     <Chip

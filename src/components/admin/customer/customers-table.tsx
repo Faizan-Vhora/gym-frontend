@@ -6,15 +6,18 @@ import {
   MEMBERSHIP_PLAN_STATUS_DETAILS,
 } from '@/utils/constant';
 import { formatDate, formatTo12HourFormat } from '@/utils/date-utils';
+import { getStatusText } from '@/utils/userstatus';
 // import { getStatusText } from '@/utils/userstatus';
 import {
   Box,
   Chip,
   Divider,
+  FormControlLabel,
   IconButton,
   // FormControlLabel,
   // IconButton,
   Stack,
+  Switch,
   // Switch,
   Table,
   TableBody,
@@ -46,6 +49,7 @@ export interface Customer {
   profileImageUrl?: string;
   changeProfileImage: boolean;
   lastEntryInTime?: string;
+  timezone?: string;
   lastEntryDate?: string;
   membership: {
     startDate: Date;
@@ -70,8 +74,8 @@ interface CustomersTableProps {
   rows: Customer[];
   onPageChange: (event: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => void;
   onRowsPerPageChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  // updateCustomerStatus: (id: string, currentStatus: number) => void; // Added prop
-  onUpdateStatus: (id: number, newStatus: MembershipType['status']) => void;
+  updateCustomerStatus: (id: string, currentStatus: number) => void; // Added prop
+  onUpdateStatus?: (id: number, newStatus: MembershipType['status']) => void;
 }
 
 export function CustomersTable({
@@ -81,7 +85,7 @@ export function CustomersTable({
   rows,
   onPageChange,
   onRowsPerPageChange,
-  // updateCustomerStatus, // Added prop
+  updateCustomerStatus, // Added prop
   // onUpdateStatus,
 }: CustomersTableProps): React.JSX.Element {
   const router = useRouter();
@@ -123,8 +127,9 @@ export function CustomersTable({
               <TableCell sx={tableCss.tableHeaderCell}>Last CheckIn</TableCell>
               <TableCell sx={tableCss.tableHeaderCell}>Membership Plan</TableCell>
               <TableCell sx={tableCss.tableHeaderCell}>Membership Payment Status</TableCell>
-              {/* <TableCell sx={tableCss.tableHeaderCell}>Status</TableCell> */}
+
               <TableCell sx={tableCss.tableHeaderCell}>Membership Status</TableCell>
+              <TableCell sx={tableCss.tableHeaderCell}>Status</TableCell>
               {/* <TableCell sx={tableCss.tableHeaderCell}>Actions</TableCell> */}
             </TableRow>
           </TableHead>
@@ -182,7 +187,7 @@ export function CustomersTable({
                             <IconButton>
                               <Clock />
                             </IconButton>
-                            {row.lastEntryInTime ? formatTo12HourFormat(row.lastEntryInTime) : '-'}
+                            {row.lastEntryInTime ? formatTo12HourFormat(row.lastEntryInTime, row.timezone) : '-'}
                           </>
                         </Typography>
                       </>
@@ -228,7 +233,19 @@ export function CustomersTable({
                       '-'
                     )}
                   </TableCell>
-                  {/* <TableCell>
+
+                  <TableCell sx={[tableCss.tableCell]}>
+                    {row?.membership?.status ? (
+                      <Chip
+                        label={MEMBERSHIP_PLAN_STATUS_DETAILS[row.membership?.status]?.label}
+                        color={MEMBERSHIP_PLAN_STATUS_DETAILS[row.membership?.status]?.color}
+                        sx={{ ml: 2 }}
+                      />
+                    ) : (
+                      '-'
+                    )}
+                  </TableCell>
+                  <TableCell>
                     <FormControlLabel
                       control={
                         <Switch
@@ -242,17 +259,6 @@ export function CustomersTable({
                       }
                       label={getStatusText(row.status)}
                     />
-                  </TableCell> */}
-                  <TableCell sx={[tableCss.tableCell]}>
-                    {row?.membership?.status ? (
-                      <Chip
-                        label={MEMBERSHIP_PLAN_STATUS_DETAILS[row.membership?.status]?.label}
-                        color={MEMBERSHIP_PLAN_STATUS_DETAILS[row.membership?.status]?.color}
-                        sx={{ ml: 2 }}
-                      />
-                    ) : (
-                      '-'
-                    )}
                   </TableCell>
                   {/* <TableCell sx={tableCss.tableCell}>
                     <Stack direction="row" spacing={1} alignItems="center">

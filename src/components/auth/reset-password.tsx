@@ -61,7 +61,7 @@ export function ResetPasswordForm(): React.JSX.Element {
           setIsTokenValid(false);
         }
       } catch (err) {
-        setError('Failed to validate token. Please try again later.');
+        setError('The link has expired. Please try again.');
         setIsTokenValid(false);
       }
     };

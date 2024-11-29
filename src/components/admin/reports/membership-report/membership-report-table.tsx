@@ -58,7 +58,7 @@ export function MembershipPlanReportTable({ lastXDays, rows }: MembershipPlanTab
   const router = useRouter();
 
   const handleRowClick = (id: string): void => {
-    router.push(`/admin/reports/subscription-report/?membershipTypeId=${id}`); // Replace with the actual path to your form page
+    router.push(`/admin/reports/subscription-report?membershipId=${id}`); // Replace with the actual path to your form page
   };
 
   return (

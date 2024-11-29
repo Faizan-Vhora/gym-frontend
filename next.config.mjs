@@ -2,10 +2,15 @@
 const config = {
     images: {
         remotePatterns: [
+          // {
+          //   protocol: 'http',
+          //   hostname: '3.135.82.239',
+          //   port: '3001',
+          //   pathname: '/public/**',
+          // },
           {
-            protocol: 'http',
-            hostname: '18.188.170.111',
-            port: '3001',
+            protocol: 'https',
+            hostname: 'api.redstrengthca.com',
             pathname: '/public/**',
           },
           {

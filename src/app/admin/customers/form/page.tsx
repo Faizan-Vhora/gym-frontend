@@ -78,6 +78,7 @@ export default function CustomerEditForm(): React.JSX.Element {
   const [totalCheckInEntries, setTotalCheckInEntries] = useState<number>(0);
   const [openMembershipDialog, setOpenMembershipDialog] = useState(false);
   const [selectedPlanId, setSelectedPlanId] = useState<string | null>(null);
+  const [qrCodeUrl, setQrCodeUrl] = useState('');
 
   interface CustomerS {
     id: string;
@@ -436,6 +437,37 @@ export default function CustomerEditForm(): React.JSX.Element {
     closeMembershipDialogHandler(); // Close the dialog
   };
 
+  const handleRegenerateQR = async () => {
+    setLoading(true);
+
+    try {
+      // Regenerate QR Code
+      const regenerateResponse = await axiosInstance.put(
+        `/users/regenerate-qr-code/${id}`,
+        {},
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+
+      if (regenerateResponse.status === 200) {
+        // After regenerating, get the updated customer data
+        const response = await axiosInstance.get<{ data: CustomerS }>(`/users/${id}`, {
+          params: { userType: 3 },
+        });
+
+        // Update the state with the new customer data
+        setQrCodeUrl(response.data.data.qrCodeImageUrl);
+      }
+    } catch (err: unknown) {
+      err instanceof Error ? err.message : 'An unexpected error occurred';
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <Box component="form" onSubmit={handleSubmit((data) => onSubmit(data, redirectTo))}>
       <Card>
@@ -528,7 +560,7 @@ export default function CustomerEditForm(): React.JSX.Element {
                                 style={{ position: 'relative', width: '100%', maxHeight: '200px', marginTop: '1rem' }}
                               >
                                 <img
-                                  src={customer?.qrCodeImageUrl || '/assets/User@3x-1.png'}
+                                  src={qrCodeUrl || customer?.qrCodeImageUrl || '/assets/User@3x-1.png'}
                                   alt="QR Preview"
                                   style={{ width: '100%', maxHeight: '200px', objectFit: 'cover', marginTop: '1rem' }}
                                 />
@@ -537,6 +569,26 @@ export default function CustomerEditForm(): React.JSX.Element {
                           </Stack>
                         </CardContent>
                       </Card>
+                      <Stack justifyContent={'center'} alignItems={'center'}>
+                        <Button
+                          variant="outlined"
+                          sx={{
+                            borderColor: '#d0021b',
+                            color: '#d0021b',
+                            transform: 'skewX(-20deg)',
+                            '&:hover': {
+                              borderColor: 'darkred',
+                              backgroundColor: 'rgba(255, 0, 0, 0.1)',
+                            },
+                            padding: '10px',
+                            marginTop: '15px',
+                            width: 'max-content',
+                          }}
+                          onClick={handleRegenerateQR}
+                        >
+                          Regenerate QR
+                        </Button>
+                      </Stack>
                     </Grid>
                   </>
                 )}

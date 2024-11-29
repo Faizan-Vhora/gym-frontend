@@ -130,7 +130,7 @@ export default function NotificationForm() {
     try {
       await axiosInstance.post('/admin-notification', payload);
       toast.success('Notification sent successfully!');
-      router.push('/admin/notification');
+      router.push('/admin/communication');
     } catch (error: unknown) {
       error instanceof Error ? error.message : 'An unexpected error occurred';
     }
@@ -249,7 +249,7 @@ export default function NotificationForm() {
                 <Button
                   variant="outlined"
                   onClick={() => {
-                    router.push('/admin/notification');
+                    router.push('/admin/communication');
                   }}
                   sx={{
                     borderColor: '#d0021b',

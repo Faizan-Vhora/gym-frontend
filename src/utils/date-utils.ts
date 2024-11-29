@@ -53,16 +53,68 @@ export const formatTime = (inputDate: Date | string | null) => {
   return `${hours}:${minutes}:${seconds}`; // Return formatted time
 };
 
-export function formatTo12HourFormat(time:string) {
-  if(!time){
+
+export function formatTo12HourFormat(time: string, timezone: string | null = null) {
+  if (!time) {
     return "-";
   }
-  const [hours, minutes] = time.split(':').map(Number);
-  const ampm = hours >= 12 ? 'PM' : 'AM';
+
+  // If timezone is 'UTC', convert the time to local timezone
+  if (timezone === "UTC") {
+    // Assuming the time is in HH:mm format
+    const [hours, minutes] = time.split(":").map(Number);
+
+    // Validate hours and minutes
+    if (isNaN(hours) || isNaN(minutes)) {
+      return "Invalid Time";
+    }
+
+    // Create a UTC Date object from the input time (ignoring the date part)
+    const dateUtc = new Date(Date.UTC(1970, 0, 1, hours, minutes));
+
+    // Use Intl.DateTimeFormat to convert the time into the local timezone
+    return new Intl.DateTimeFormat("en-US", {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true,
+      timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone, // Use the system's local timezone
+    }).format(dateUtc);
+  }
+
+  // If timezone is not 'UTC', process the time as is (in HH:mm format)
+  const [hours, minutes] = time.split(":").map(Number);
+  
+  // Validate hours and minutes
+  if (isNaN(hours) || isNaN(minutes)) {
+    return "Invalid Time";
+  }
+
+  const ampm = hours >= 12 ? "PM" : "AM";
   const hours12 = hours % 12 || 12; // Convert hour 0 to 12
-  // return `${hours12}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')} ${ampm}`;
-  return `${hours12}:${String(minutes).padStart(2, '0')} ${ampm}`;
+
+  return `${hours12}:${String(minutes).padStart(2, "0")} ${ampm}`;
 }
+
+// export function formatTo12HourFormat(time: string, timezone: string | null = null) {
+//   if (!time) {
+//     return "-";
+//   }
+
+//   // Create a new variable instead of modifying the time parameter
+//   let formattedTime = time;
+
+//   // If timezone is 'UTC', convert the time to local timezone
+//   if (timezone === 'UTC') {
+//     const dateUtc = new Date(`1970-01-01T${time}Z`); // UTC time
+//     formattedTime = dateUtc.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+//   }
+
+//   const [hours, minutes] = formattedTime.split(':').map(Number);
+//   const ampm = hours >= 12 ? 'PM' : 'AM';
+//   const hours12 = hours % 12 || 12; // Convert hour 0 to 12
+
+//   return `${hours12}:${String(minutes).padStart(2, '0')} ${ampm}`;
+// }
 
 
 

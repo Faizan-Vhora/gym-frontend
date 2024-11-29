@@ -18,8 +18,6 @@ import {
 import { Clock } from '@phosphor-icons/react';
 import dayjs from 'dayjs';
 
-import tableCss from '@/styles/table-css';
-
 export interface CheckInEntry {
   id: number;
   entryDate: string;
@@ -32,6 +30,7 @@ export interface CheckInEntry {
     email: string;
     userType: number;
   };
+  timezone?: string;
 }
 
 const userTypeStatus: Record<number, { label: string; color: 'warning' | 'success' }> = {
@@ -67,9 +66,9 @@ export function CheckInTableView({
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell>User Details</TableCell>
-              <TableCell>Entry Date</TableCell>
-              <TableCell>Entry In Time</TableCell>
+              {/* <TableCell>User Details</TableCell> */}
+              <TableCell>Check In Date</TableCell>
+              <TableCell>Check In Time</TableCell>
               <TableCell>Entry Out Time</TableCell>
               <TableCell>User Type</TableCell>
               <TableCell>Status</TableCell>
@@ -85,33 +84,37 @@ export function CheckInTableView({
             ) : (
               entries.map((entry) => (
                 <TableRow key={entry.id}>
-                  <TableCell sx={tableCss.tableCell}>
+                  {/* <TableCell sx={tableCss.tableCell}>
                     <Typography variant="subtitle2" style={{ cursor: 'pointer' }}>
                       {entry.user.fullName}
                     </Typography>
                     <Typography color="textSecondary" variant="body2" style={{ cursor: 'pointer' }}>
                       {entry.user.email}
                     </Typography>
-                  </TableCell>
+                  </TableCell> */}
                   <TableCell>{dayjs(entry.entryDate).format('MMM D, YYYY')}</TableCell>
                   <TableCell>
                     <IconButton>
                       <Clock />
                     </IconButton>
-                    {formatTo12HourFormat(entry.entryInTime)}
+                    {formatTo12HourFormat(entry.entryInTime, entry.timezone)}
                   </TableCell>
                   <TableCell>
                     <IconButton>
                       <Clock />
                     </IconButton>
-                    {entry.entryOutTime ? formatTo12HourFormat(entry.entryOutTime) : '-'}
+                    {entry.entryOutTime ? formatTo12HourFormat(entry.entryOutTime, entry.timezone) : '-'}
                   </TableCell>
                   <TableCell>
-                    <Chip
-                      label={userTypeStatus[entry.user.userType]?.label}
-                      color={userTypeStatus[entry.user.userType]?.color}
-                      sx={{ ml: 2 }}
-                    />
+                    {userTypeStatus[entry.user?.userType] ? (
+                      <Chip
+                        label={userTypeStatus[entry.user?.userType]?.label}
+                        color={userTypeStatus[entry.user?.userType]?.color}
+                        sx={{ ml: 2 }}
+                      />
+                    ) : (
+                      '-'
+                    )}
                   </TableCell>
                   <TableCell>
                     <Tooltip
