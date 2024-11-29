@@ -14,6 +14,7 @@ import ListItemText from '@mui/material/ListItemText';
 import dayjs from 'dayjs';
 
 import axiosInstance from '@/lib/axios';
+import { NoDataPlaceholder } from './no-data-placeholder';
 
 export interface User {
   id: number;
@@ -89,15 +90,18 @@ export function IncompleteProfiles(): React.JSX.Element {
         <Divider />
         <List>
           {users?.length === 0 ? (
-            <ListItem>
-              <ListItemText
-                primary={
-                  <Typography variant="body2" style={{ fontFamily: '"Audiowide", sans-serif' }} color="text.secondary">
-                    No Incomplete Profiles available
-                  </Typography>
-                }
-                sx={{ textAlign: 'center', width: '100%' }}
-              />
+            // <ListItem>
+            //   <ListItemText
+            //     primary={
+            //       <Typography variant="body2" style={{ fontFamily: '"Audiowide", sans-serif' }} color="text.secondary">
+            //         No Incomplete Profiles available
+            //       </Typography>
+            //     }
+            //     sx={{ textAlign: 'center', width: '100%' }}
+            //   />
+            // </ListItem>
+            <ListItem sx={{display:'flex',alignItems:'center',justifyContent:'center',marginTop:'10%'}}>
+              <NoDataPlaceholder sx={{}}/>
             </ListItem>
           ) : (
             users?.map((product, index) => (

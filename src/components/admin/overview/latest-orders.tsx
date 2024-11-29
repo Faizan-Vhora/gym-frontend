@@ -44,6 +44,7 @@ export function LatestOrders({ orders = [] }: LatestOrdersProps): React.JSX.Elem
   return (
     <Card sx={{ height: '520px', overflowY: 'scroll', overflowX: 'auto' }}>
       <CardHeader style={{ fontFamily: '"Audiowide", sans-serif !important' }} title="Latest Booking" />
+
       <Divider />
       <Box sx={{}}>
         <Table sx={{ minWidth: 800 }}>
