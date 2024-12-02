@@ -21,7 +21,7 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
-import { Barbell, CurrencyDollar, Envelope, GenderIntersex, MapPin, Phone } from '@phosphor-icons/react';
+import { Barbell, CurrencyDollar, Envelope, GenderIntersex, MapPin, Note, Phone } from '@phosphor-icons/react';
 
 import { BookingSessionEntry } from '../booking/view/booking-sessions/booking-session-table';
 
@@ -32,6 +32,7 @@ interface SessionNotesFormProps {
   openRescheduleDialog?: () => void;
   openNotesDialog?: () => void;
   onUpdateStatus?: (id: string, newStatus: BookingSessionEntry['status']) => void;
+  onUpdateNotes?: (session: BookingSessionEntry) => void;
 }
 
 const SessionPreview: React.FC<SessionNotesFormProps> = ({
@@ -41,6 +42,7 @@ const SessionPreview: React.FC<SessionNotesFormProps> = ({
   openRescheduleDialog,
   openNotesDialog,
   onUpdateStatus,
+  onUpdateNotes,
 }) => {
   const statusDetail = BOOKING_SESSION_STATUS_DETAILS[sessionObj.status];
   const router = useRouter();
@@ -56,7 +58,9 @@ const SessionPreview: React.FC<SessionNotesFormProps> = ({
     (new Date(`1970-01-01T${sessionObj.sessionEndTime}Z`).getTime() -
       new Date(`1970-01-01T${sessionObj.sessionStartTime}Z`).getTime()) /
     (1000 * 60 * 60); // Calculate duration in hours
-
+    const handleNotesChange = (session: BookingSessionEntry): void => {
+      onUpdateNotes?.(session);
+    };
   return (
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth sx={{ zIndex: 999 }}>
       {/* <DialogTitle>Session Details</DialogTitle> */}
@@ -427,7 +431,17 @@ const SessionPreview: React.FC<SessionNotesFormProps> = ({
 
           <br />
 
-          {sessionObj.notes && <Stack>Notes: {sessionObj.notes}</Stack>}
+           <Stack flexDirection={'column'} alignItems={"flex-start"}>
+           <IconButton sx={{padding:'0px'}}
+              onClick={() => {
+                handleNotesChange(sessionObj);
+                              }}
+                            >
+                              <Note />
+            </IconButton>
+            <Typography > Notes: {sessionObj?.notes} </Typography> 
+            
+            </Stack>
         </Card>
       </DialogContent>
       <DialogActions sx={{ paddingBottom: '20px' }}>
