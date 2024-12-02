@@ -3,7 +3,7 @@ import {
   Avatar,
   Box,
   Card,
-  Chip,
+  // Chip,
   Divider,
   Stack,
   Table,
@@ -12,7 +12,7 @@ import {
   TableHead,
   TablePagination,
   TableRow,
-  Tooltip,
+  // Tooltip,
   Typography,
 } from '@mui/material';
 import { ToastContainer } from 'react-toastify'; // Import toast and ToastContainer
@@ -67,11 +67,11 @@ export function NotificationTable({
 }: NotificationTableProps): React.JSX.Element {
   const [selectedEntry, setSelectedEntry] = React.useState<NotificationEntry | null>(null);
   const router = useRouter();
-  const stripHtml = (html: string): string => {
-    const div = document.createElement('div');
-    div.innerHTML = html;
-    return div.textContent || div.innerText || '';
-  };
+  // const stripHtml = (html: string): string => {
+  //   const div = document.createElement('div');
+  //   div.innerHTML = html;
+  //   return div.textContent || div.innerText || '';
+  // };
 
   const handleread = async (entry: NotificationEntry) => {
     if (!entry) return;
@@ -114,16 +114,21 @@ export function NotificationTable({
 
             <TableBody>
               {entries.length === 0 ? (
-                <TableRow sx={tableCss.tableRow}>
+                <TableRow sx={{ ...tableCss.tableRow, fontWeight: 'bold' }}>
                   <TableCell sx={tableCss.tableCell} colSpan={5} align="center">
                     <Typography variant="body1">No data found</Typography>
                   </TableCell>
                 </TableRow>
               ) : (
                 entries.map((entry) => (
-                  <TableRow hover key={entry.id} sx={tableCss.tableRow}>
+                  <TableRow hover key={entry.id} sx={{ ...tableCss.tableRow, fontWeight: 'bold' }}>
                     <TableCell
-                      sx={{ ...tableCss.tableCell, textAlign: 'left', cursor: 'pointer' }}
+                      sx={{
+                        ...tableCss.tableCell,
+                        textAlign: 'left',
+                        cursor: 'pointer',
+                        width: '150px',
+                      }}
                       onClick={() => {
                         setSelectedEntry(entry);
                         if (entry?.user?.userType === 3) {
@@ -139,8 +144,14 @@ export function NotificationTable({
                           sx={{ height: '56px', width: '56px' }}
                         />
                         <Stack>
-                          <Typography variant="subtitle2">{entry.user?.fullName}</Typography>
-                          <Typography color="textSecondary" variant="body2">
+                          <Typography variant="subtitle2" sx={{ fontWeight: entry.isRead ? 'normal' : 'bold' }}>
+                            {entry.user?.fullName}
+                          </Typography>
+                          <Typography
+                            color="textSecondary"
+                            variant="body2"
+                            sx={{ fontWeight: entry.isRead ? 'normal' : 'bold' }}
+                          >
                             {entry.user?.email}
                           </Typography>
                         </Stack>
@@ -155,8 +166,14 @@ export function NotificationTable({
                         textAlign: 'left',
                       }}
                     >
-                      <Typography variant="subtitle2">{entry?.title}</Typography>
-                      <Typography color="textSecondary" variant="body2">
+                      <Typography variant="subtitle2" sx={{ fontWeight: entry.isRead ? 'normal' : 'bold' }}>
+                        {entry?.title}
+                      </Typography>
+                      <Typography
+                        color="textSecondary"
+                        variant="body2"
+                        sx={{ fontWeight: entry.isRead ? 'normal' : 'bold' }}
+                      >
                         <span dangerouslySetInnerHTML={{ __html: entry?.message }} />
                       </Typography>
 
@@ -178,7 +195,11 @@ export function NotificationTable({
                     </TableCell> */}
 
                     <TableCell sx={tableCss.tableCell}>
-                      {entry.createdAt && <Typography color="textSecondary">{formatDate(entry.createdAt)}</Typography>}
+                      {entry.createdAt && (
+                        <Typography color="textSecondary" sx={{ fontWeight: entry.isRead ? 'normal' : 'bold' }}>
+                          {formatDate(entry.createdAt)}
+                        </Typography>
+                      )}
                     </TableCell>
                     {/* <TableCell sx={tableCss.tableCell}>
                       <Chip

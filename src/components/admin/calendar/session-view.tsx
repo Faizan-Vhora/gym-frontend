@@ -36,7 +36,7 @@ interface SessionNotesFormProps {
   openRescheduleDialog?: () => void;
   openNotesDialog?: () => void;
   onUpdateStatus?: (id: string, newStatus: BookingSessionEntry['status']) => void;
-  onUpdateNotes?: (session: BookingSessionEntry) => void;
+  // onUpdateNotes?: (session: BookingSessionEntry) => void;
 }
 
 const SessionPreview: React.FC<SessionNotesFormProps> = ({
@@ -46,7 +46,7 @@ const SessionPreview: React.FC<SessionNotesFormProps> = ({
   openRescheduleDialog,
   openNotesDialog,
   onUpdateStatus,
-  onUpdateNotes,
+  // onUpdateNotes,
 }) => {
   const statusDetail = BOOKING_SESSION_STATUS_DETAILS[sessionObj.status];
   const router = useRouter();

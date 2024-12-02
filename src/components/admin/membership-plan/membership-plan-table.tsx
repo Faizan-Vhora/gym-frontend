@@ -62,7 +62,7 @@ interface MembershipPlanTableProps {
   onDelete: (id: string) => void;
   onPageChange: (event: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => void;
   onRowsPerPageChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  updatePlanStatus: (id: string, currentStatus: string) => void; // Added prop
+  // updatePlanStatus: (id: string, currentStatus: string) => void; // Added prop
 }
 
 export function MembershipPlanTable({
@@ -74,7 +74,7 @@ export function MembershipPlanTable({
   onDelete,
   onPageChange,
   onRowsPerPageChange,
-  updatePlanStatus, // Added prop
+  // updatePlanStatus, // Added prop
 }: MembershipPlanTableProps): React.JSX.Element {
   const router = useRouter();
   // const [open, setOpen] = React.useState(false);

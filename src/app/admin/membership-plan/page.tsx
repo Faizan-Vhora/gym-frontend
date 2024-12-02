@@ -114,32 +114,32 @@ export default function MembershipPlanPage(): React.JSX.Element {
     setPage(0); // Reset to first page on status filter change
   };
 
-  const updatePlanStatus = async (id: string, currentStatus: string): Promise<void> => {
-    const newStatus = currentStatus === 'active' ? 'inactive' : 'active'; // Toggle status
+  // const updatePlanStatus = async (id: string, currentStatus: string): Promise<void> => {
+  //   const newStatus = currentStatus === 'active' ? 'inactive' : 'active'; // Toggle status
 
-    // Show confirmation dialog
-    const result = await Swal.fire({
-      title: 'Are you sure?',
-      text: `You are about to ${newStatus === 'active' ? 'activate' : 'deactivate'} this membership plan.`,
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: `Yes, ${newStatus === 'active' ? 'activate' : 'deactivate'} it!`,
-    });
+  //   // Show confirmation dialog
+  //   const result = await Swal.fire({
+  //     title: 'Are you sure?',
+  //     text: `You are about to ${newStatus === 'active' ? 'activate' : 'deactivate'} this membership plan.`,
+  //     icon: 'warning',
+  //     showCancelButton: true,
+  //     confirmButtonColor: '#3085d6',
+  //     cancelButtonColor: '#d33',
+  //     confirmButtonText: `Yes, ${newStatus === 'active' ? 'activate' : 'deactivate'} it!`,
+  //   });
 
-    // If confirmed, proceed with the status update
-    if (result.isConfirmed) {
-      try {
-        await axiosInstance.patch(`/membership-types/update-status/${id}`, { status: newStatus });
-        toast.success(`Status updated to ${newStatus === 'active' ? 'Active' : 'Inactive'}`);
-        await fetchMembershipPlans(); // Refresh data
-      } catch (error: unknown) {
-        error instanceof Error ? error.message : 'An unexpected error occurred';
-        await Swal.fire('Failed to update Plan status');
-      }
-    }
-  };
+  //   // If confirmed, proceed with the status update
+  //   if (result.isConfirmed) {
+  //     try {
+  //       await axiosInstance.patch(`/membership-types/update-status/${id}`, { status: newStatus });
+  //       toast.success(`Status updated to ${newStatus === 'active' ? 'Active' : 'Inactive'}`);
+  //       await fetchMembershipPlans(); // Refresh data
+  //     } catch (error: unknown) {
+  //       error instanceof Error ? error.message : 'An unexpected error occurred';
+  //       await Swal.fire('Failed to update Plan status');
+  //     }
+  //   }
+  // };
 
   const handleEdit = (id: string): void => {
     router.push(`/admin/membership-plan/form?id=${id}`);
@@ -207,7 +207,7 @@ export default function MembershipPlanPage(): React.JSX.Element {
             onDelete={handleDelete}
             onPageChange={handlePageChange}
             onRowsPerPageChange={handleRowsPerPageChange}
-            updatePlanStatus={updatePlanStatus}
+            // updatePlanStatus={updatePlanStatus}
           />
         )}
       </Card>

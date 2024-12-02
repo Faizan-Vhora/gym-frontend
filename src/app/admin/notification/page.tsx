@@ -92,8 +92,8 @@ export default function Page(): React.JSX.Element {
     setPage(0);
   };
 
-  const handleNotificationTypeChange = (notificationType: string): void => {
-    setNotificationType(notificationType);
+  const handleNotificationTypeChange = (type: string): void => {
+    setNotificationType(type);
     setPage(0);
   };
 

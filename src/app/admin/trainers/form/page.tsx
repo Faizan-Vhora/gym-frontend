@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
@@ -286,14 +286,14 @@ export default function TrainerEditForm(): React.JSX.Element {
 
         setSessionEntries(data.data.items);
         setSessionCount(data.data.meta.totalItems);
-      } catch (error) {
-        toast.error('Failed to fetch data.');
+      } catch (err) {
+        err instanceof Error ? err.message : 'An unexpected error occurred';
       } finally {
         setLoading(false);
       }
     };
 
-    getSessionBookingSessionListData();
+    void getSessionBookingSessionListData();
   }, [sessionPage, sessionRowsPerPage]); // Dependencies
 
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
@@ -398,7 +398,7 @@ export default function TrainerEditForm(): React.JSX.Element {
     return <div>Loading...</div>;
   }
 
-  const handleDownload = async (id: number): Promise<void> => {
+  const handleDownload = async (sessionId: number): Promise<void> => {
     const swalText = `Do you want to download this session's details?`;
     const swalConfirmButtonText = `Yes, download it!`;
     const swalSuccessMessage = `The session details have been downloaded`;
@@ -417,7 +417,7 @@ export default function TrainerEditForm(): React.JSX.Element {
     if (result.isConfirmed) {
       try {
         // Make the API call to download the booking details (replace with actual API endpoint)
-        const response = await axiosInstance.get(`/session-booking/download-session/${id}`, {
+        const response = await axiosInstance.get(`/session-booking/download-session/${sessionId}`, {
           responseType: 'blob', // Ensures the response is treated as a file
         });
 
@@ -430,7 +430,7 @@ export default function TrainerEditForm(): React.JSX.Element {
 
         // Optionally, show a success message
         await Swal.fire('Downloaded!', swalSuccessMessage, 'success');
-      } catch (error) {
+      } catch (err) {
         await Swal.fire('Error!', 'Failed to download the booking details.', 'error');
       }
     }
