@@ -18,6 +18,7 @@ import { Clock } from '@phosphor-icons/react';
 import { ArrowRight as ArrowRightIcon } from '@phosphor-icons/react/dist/ssr/ArrowRight';
 
 import axiosInstance from '@/lib/axios';
+import { NoDataPlaceholder } from './no-data-placeholder';
 
 interface User {
   email: string;
@@ -67,77 +68,102 @@ export function CheckInUsers(): React.JSX.Element {
   return (
     <Card sx={{ height: '520px', overflowY: 'scroll', overflowX: 'auto' }}>
       <CardHeader style={{ fontFamily: '"Audiowide", sans-serif !important' }} title="User's CheckIn" />
-      <Divider />
-      <Box sx={{}}>
-        <Table sx={{ minWidth: 600 }}>
-          <TableHead>
-            <TableRow>
-              <TableCell>User</TableCell>
-              <TableCell>Date</TableCell>
-              <TableCell>CheckIn Time</TableCell>
-              <TableCell>CheckOut Time</TableCell>
-              {/* <TableCell>Status</TableCell> */}
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {Array.isArray(checkIn) &&
-              checkIn.map((order) => {
-                // const { label, color } = checkInStatus[order.status] ?? { label: 'Unknown', color: 'default' };
 
-                return (
-                  <TableRow
-                    hover
-                    key={order.id}
-                    // onClick={() => {
-                    //   handleRedirect(order.id);
-                    // }}
-                    sx={{ cursor: 'pointer' }}
-                  >
-                    <TableCell>
-                      <Typography variant="subtitle2">{order?.user?.fullName}</Typography>
-                      <Typography color="textSecondary" variant="body2">
-                        {order?.user?.email}
-                      </Typography>
-                      <Typography color="textSecondary" variant="body2">
-                        {order?.user?.phoneNumber}
-                      </Typography>
-                    </TableCell>
-                    <TableCell>{formatDate(order.entryDate)}</TableCell>
-                    <TableCell>
-                      <IconButton>
-                        <Clock />
-                      </IconButton>
-                      {formatTo12HourFormat(order.entryInTime, order.timezone)}
-                    </TableCell>
-                    <TableCell>
-                      <IconButton>
-                        <Clock />
-                      </IconButton>
-                      {formatTo12HourFormat(order.entryOutTime, order.timezone)}
-                    </TableCell>
-                    {/* <TableCell>
-                      <Chip color={color} label={label} size="small" />
-                    </TableCell> */}
-                  </TableRow>
-                );
-              })}
-          </TableBody>
-        </Table>
-      </Box>
-      <Divider />
-      <CardActions sx={{ justifyContent: 'flex-end' }}>
-        <Button
-          color="inherit"
-          endIcon={<ArrowRightIcon fontSize="var(--icon-fontSize-md)" />}
-          size="small"
-          variant="text"
-          onClick={() => {
-            router.push('/admin/check-in');
-          }}
-        >
-          View all
-        </Button>
-      </CardActions>
+      {
+
+(Array.isArray(checkIn) && checkIn.length) ?
+        (
+          <>
+                <Divider />
+          <Box sx={{}}>
+            <Table sx={{ minWidth: 600 }}>
+              <TableHead>
+                <TableRow>
+                  <TableCell>User</TableCell>
+                  <TableCell>Date</TableCell>
+                  <TableCell>CheckIn Time</TableCell>
+                  <TableCell>CheckOut Time</TableCell>
+                  {/* <TableCell>Status</TableCell> */}
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {Array.isArray(checkIn) &&
+                  checkIn.map((order) => {
+                    // const { label, color } = checkInStatus[order.status] ?? { label: 'Unknown', color: 'default' };
+    
+                    return (
+                      <TableRow
+                        hover
+                        key={order.id}
+                        // onClick={() => {
+                        //   handleRedirect(order.id);
+                        // }}
+                        sx={{ cursor: 'pointer' }}
+                      >
+                        <TableCell>
+                          <Typography variant="subtitle2">{order?.user?.fullName}</Typography>
+                          <Typography color="textSecondary" variant="body2">
+                            {order?.user?.email}
+                          </Typography>
+                          <Typography color="textSecondary" variant="body2">
+                            {order?.user?.phoneNumber}
+                          </Typography>
+                        </TableCell>
+                        <TableCell>{formatDate(order.entryDate)}</TableCell>
+                        <TableCell>
+                          <IconButton>
+                            <Clock />
+                          </IconButton>
+                          {formatTo12HourFormat(order.entryInTime, order.timezone)}
+                        </TableCell>
+                        <TableCell>
+                          <IconButton>
+                            <Clock />
+                          </IconButton>
+                          {formatTo12HourFormat(order.entryOutTime, order.timezone)}
+                        </TableCell>
+                        {/* <TableCell>
+                          <Chip color={color} label={label} size="small" />
+                        </TableCell> */}
+                      </TableRow>
+                    );
+                  })}
+              </TableBody>
+            </Table>
+          </Box>
+          <Divider />
+          <CardActions sx={{ justifyContent: 'flex-end' }}>
+            <Button
+              color="inherit"
+              endIcon={<ArrowRightIcon fontSize="var(--icon-fontSize-md)" />}
+              size="small"
+              variant="text"
+              onClick={() => {
+                router.push('/admin/check-in');
+              }}
+            >
+              View all
+            </Button>
+          </CardActions>
+          </>
+    
+        )
+        : <>
+        </>
+      }
+  
+ 
+ {
+!(Array.isArray(checkIn) && checkIn.length)  ?
+
+(
+  <NoDataPlaceholder />
+) :
+<></>
+
+ }
+
+
       {loading && <CustomLoader />}
     </Card>
   );
