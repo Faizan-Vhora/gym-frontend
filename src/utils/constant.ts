@@ -305,3 +305,20 @@ export const TRAINER_STATUS_DETAILS: Record<string, { value: string; label: stri
   [TRAINER_STATUS.ACTIVE]: { value: TRAINER_STATUS.ACTIVE, label: "Active", color: 'success' },
   [TRAINER_STATUS.INACTIVE]: { value: TRAINER_STATUS.INACTIVE, label: "Inactive", color: 'error' },
 };
+
+
+export const NOTIFICATION_EVENTS = {
+  MEMBER_SIGNUP_EVENT: '1',
+  TRAINER_SIGNUP_EVENT: '2',
+  BOOKING_ADD_EVENT: '3',
+  MEMBERSHIP_PLAN_PAYMENT_EVENT: '4',
+  FAILED_SIGNUP_ATTEMPT: '16',
+};
+
+export const NOTIFICATION_EVENT_OPTIONS = [
+  { value: NOTIFICATION_EVENTS.MEMBER_SIGNUP_EVENT, label: "Member Signup Event" },
+  { value: NOTIFICATION_EVENTS.TRAINER_SIGNUP_EVENT, label: "Trainer Signup Event" },
+  { value: NOTIFICATION_EVENTS.BOOKING_ADD_EVENT, label: "Booking Add Event" },
+  { value: NOTIFICATION_EVENTS.MEMBERSHIP_PLAN_PAYMENT_EVENT, label: "Membership Plan Payment Event" },
+  { value: NOTIFICATION_EVENTS.FAILED_SIGNUP_ATTEMPT, label: "Failed Signup Attempt" },
+];

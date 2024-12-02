@@ -9,7 +9,7 @@ interface NotificationFiltersProps {
   onSearchChange: (searchTerm: string) => void;
 }
 
-export function NotificationFilters({ onSearchChange }: NotificationFiltersProps): React.JSX.Element {
+export function CommunicationFilters({ onSearchChange }: NotificationFiltersProps): React.JSX.Element {
   const searchParams = useSearchParams();
   const [searchTerm, setSearchTerm] = useState(searchParams.get('search') || '');
 
@@ -40,25 +40,21 @@ export function NotificationFilters({ onSearchChange }: NotificationFiltersProps
   };
 
   return (
-    <Grid container spacing={2}>
-      <Grid item md={6} xs={12}>
-        <TextField
-          fullWidth
-          label="Search by title"
-          variant="outlined"
-          value={searchTerm}
-          onChange={handleSearchChange}
-          InputProps={{
-            endAdornment: searchTerm && (
-              <InputAdornment position="end">
-                <IconButton onClick={handleSearchClear} edge="end">
-                  <XIcon size={15} /> {/* Adjust size as needed */}
-                </IconButton>
-              </InputAdornment>
-            ),
-          }}
-        />
-      </Grid>
-    </Grid>
+    <TextField
+      fullWidth
+      label="Search by title"
+      variant="outlined"
+      value={searchTerm}
+      onChange={handleSearchChange}
+      InputProps={{
+        endAdornment: searchTerm && (
+          <InputAdornment position="end">
+            <IconButton onClick={handleSearchClear} edge="end">
+              <XIcon size={15} /> {/* Adjust size as needed */}
+            </IconButton>
+          </InputAdornment>
+        ),
+      }}
+    />
   );
 }

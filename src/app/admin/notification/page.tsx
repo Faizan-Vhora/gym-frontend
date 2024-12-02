@@ -4,13 +4,14 @@ import * as React from 'react';
 import { useCallback, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { CustomLoader } from '@/utils/loader';
-import { Card, Stack, Typography } from '@mui/material';
+import { Card, Grid, Stack, Typography } from '@mui/material';
 // import { Plus as PlusIcon } from '@phosphor-icons/react';
 import { ToastContainer } from 'react-toastify';
 import Swal from 'sweetalert2';
 
 import axiosInstance from '@/lib/axios';
-import { NotificationFilters } from '@/components/admin/communication/notification-filter';
+import { CommunicationFilters } from '@/components/admin/communication/notification-filter';
+import NotificationFilters from '@/components/admin/notification/notification-filter';
 import { NotificationEntry, NotificationTable } from '@/components/admin/notification/notification-table';
 
 export default function Page(): React.JSX.Element {
@@ -24,6 +25,7 @@ export default function Page(): React.JSX.Element {
   const [rowsPerPage, setRowsPerPage] = React.useState(
     searchParams.get('rowsPerPage') ? Number(searchParams.get('rowsPerPage')) : 10
   );
+  const [notificationType, setNotificationType] = React.useState<string>(searchParams.get('notifactionType') || '');
   const [count, setCount] = React.useState<number>(0);
   const [loading, setLoading] = React.useState(true);
 
@@ -35,6 +37,7 @@ export default function Page(): React.JSX.Element {
         page: page + 1,
         limit: rowsPerPage,
         search: searchTerm,
+        notificationEvent: notificationType,
       };
 
       const response = await axiosInstance.get<{ data: { items: NotificationEntry[]; meta: { totalItems: number } } }>(
@@ -50,17 +53,18 @@ export default function Page(): React.JSX.Element {
     } finally {
       setLoading(false);
     }
-  }, [page, rowsPerPage, searchTerm]);
+  }, [page, rowsPerPage, searchTerm, notificationType]);
 
   React.useEffect(() => {
     updateUrlPathQueryParams();
-  }, [searchTerm, page, rowsPerPage]);
+  }, [searchTerm, page, rowsPerPage, notificationType]);
 
   const updateUrlPathQueryParams = () => {
     const pathQueryParams = {
       search: searchTerm,
       page: String(page),
       rowsPerPage: String(rowsPerPage),
+      notificationEvent: String(notificationType),
     };
 
     // Construct the query string using URLSearchParams
@@ -85,6 +89,11 @@ export default function Page(): React.JSX.Element {
 
   const handleSearchChange = (search: string): void => {
     setSearchTerm(search);
+    setPage(0);
+  };
+
+  const handleNotificationTypeChange = (notificationType: string): void => {
+    setNotificationType(notificationType);
     setPage(0);
   };
 
@@ -113,7 +122,15 @@ export default function Page(): React.JSX.Element {
       </Stack>
       <Card>
         <Stack sx={{ padding: '30px' }}>
-          <NotificationFilters onSearchChange={handleSearchChange} />
+          <Grid container spacing={2}>
+            <Grid item lg={6} md={6} sm={6} xs={12}>
+              <CommunicationFilters onSearchChange={handleSearchChange} />
+            </Grid>
+
+            <Grid item lg={6} md={6} sm={6} xs={12}>
+              <NotificationFilters onNotificationTypeChange={handleNotificationTypeChange} />
+            </Grid>
+          </Grid>
         </Stack>
 
         {loading ? (

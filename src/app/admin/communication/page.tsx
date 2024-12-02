@@ -4,13 +4,13 @@ import * as React from 'react';
 import { useCallback, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { CustomLoader } from '@/utils/loader';
-import { Button, Card, Stack, Typography } from '@mui/material';
+import { Button, Card, Grid, Stack, Typography } from '@mui/material';
 import { Plus as PlusIcon } from '@phosphor-icons/react';
 import { toast, ToastContainer } from 'react-toastify';
 import Swal from 'sweetalert2';
 
 import axiosInstance from '@/lib/axios';
-import { NotificationFilters } from '@/components/admin/communication/notification-filter';
+import { CommunicationFilters } from '@/components/admin/communication/notification-filter';
 import { CommunicationTable, NotificationEntry } from '@/components/admin/communication/notification-table';
 
 export default function Page(): React.JSX.Element {
@@ -141,7 +141,11 @@ export default function Page(): React.JSX.Element {
       </Stack>
       <Card>
         <Stack sx={{ padding: '30px' }}>
-          <NotificationFilters onSearchChange={handleSearchChange} />
+          <Grid container spacing={2}>
+            <Grid item lg={6} md={6} sm={6} xs={12}>
+              <CommunicationFilters onSearchChange={handleSearchChange} />
+            </Grid>
+          </Grid>
         </Stack>
 
         {loading ? (

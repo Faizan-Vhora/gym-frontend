@@ -21,9 +21,13 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
-import { Barbell, CurrencyDollar, Envelope, GenderIntersex, MapPin, Note, Phone } from '@phosphor-icons/react';
+import { Barbell, CurrencyDollar, Envelope, GenderIntersex, MapPin, PencilSimple, Phone } from '@phosphor-icons/react';
+import { toast } from 'react-toastify';
+
+import axiosInstance from '@/lib/axios';
 
 import { BookingSessionEntry } from '../booking/view/booking-sessions/booking-session-table';
+import SessionNotesForm from './session-notes';
 
 interface SessionNotesFormProps {
   sessionObj: BookingSessionEntry;
@@ -47,6 +51,9 @@ const SessionPreview: React.FC<SessionNotesFormProps> = ({
   const statusDetail = BOOKING_SESSION_STATUS_DETAILS[sessionObj.status];
   const router = useRouter();
   const PaymentStatus = BOOKING_SESSION_PAYMENT_STATUS_DETAILS[sessionObj.paymentStatus];
+  const [isDialogOpenForNotes, setIsDialogOpenForNotes] = React.useState(false);
+  const [selectedSession, setSelectedSession] = React.useState<BookingSessionEntry | null>(null);
+  const [newNotes, setNewNotes] = React.useState<string | null>('');
 
   const handleStatusChange = (id: string, newStatus: BookingSessionEntry['status']): void => {
     if (onUpdateStatus) {
@@ -54,13 +61,38 @@ const SessionPreview: React.FC<SessionNotesFormProps> = ({
     }
   };
 
+  const handleUpdateNotes = (session: BookingSessionEntry) => {
+    setSelectedSession(session);
+    setIsDialogOpenForNotes(true);
+  };
+
+  const handleDialogCloseForNotes = () => {
+    setIsDialogOpenForNotes(false);
+    setSelectedSession(null);
+  };
+
+  const handleNotesChange = async (payload: { notes: string }) => {
+    try {
+      const response = await axiosInstance.put<{ data: BookingSessionEntry }>(
+        `/session-booking/session/notes/${selectedSession?.id}`,
+        {
+          notes: payload.notes,
+        }
+      );
+      toast.success('Notes updated successfully!');
+      setIsDialogOpenForNotes(false);
+      setNewNotes(payload.notes);
+      setSelectedSession(response.data.data);
+    } catch (error) {
+      toast.error('Failed to update notes');
+    }
+  };
+
   const sessionDurationInHours =
     (new Date(`1970-01-01T${sessionObj.sessionEndTime}Z`).getTime() -
       new Date(`1970-01-01T${sessionObj.sessionStartTime}Z`).getTime()) /
     (1000 * 60 * 60); // Calculate duration in hours
-    const handleNotesChange = (session: BookingSessionEntry): void => {
-      onUpdateNotes?.(session);
-    };
+
   return (
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth sx={{ zIndex: 999 }}>
       {/* <DialogTitle>Session Details</DialogTitle> */}
@@ -431,17 +463,17 @@ const SessionPreview: React.FC<SessionNotesFormProps> = ({
 
           <br />
 
-           <Stack flexDirection={'column'} alignItems={"flex-start"}>
-           <IconButton sx={{padding:'0px'}}
+          <Stack flexDirection={'row'} alignItems={'center'} columnGap={'10px'}>
+            <IconButton
+              sx={{ padding: '0px' }}
               onClick={() => {
-                handleNotesChange(sessionObj);
-                              }}
-                            >
-                              <Note />
+                handleUpdateNotes(selectedSession || sessionObj);
+              }}
+            >
+              <PencilSimple />
             </IconButton>
-            <Typography > Notes: {sessionObj?.notes} </Typography> 
-            
-            </Stack>
+            <Typography> Notes: {newNotes || sessionObj?.notes} </Typography>
+          </Stack>
         </Card>
       </DialogContent>
       <DialogActions sx={{ paddingBottom: '20px' }}>
@@ -497,6 +529,14 @@ const SessionPreview: React.FC<SessionNotesFormProps> = ({
             </Button>
           )}
       </DialogActions>
+      {selectedSession && (
+        <SessionNotesForm
+          open={isDialogOpenForNotes}
+          onClose={handleDialogCloseForNotes}
+          onSubmit={handleNotesChange}
+          sessionObj={selectedSession}
+        />
+      )}
     </Dialog>
   );
 };

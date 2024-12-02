@@ -105,10 +105,10 @@ export function NotificationTable({
             <TableHead>
               <TableRow sx={tableCss.tableRow}>
                 <TableCell sx={tableCss.tableHeaderCell}>User Details</TableCell>
-                <TableCell sx={{ ...tableCss.tableHeaderCell, textAlign: 'center' }}>Title</TableCell>
+                {/* <TableCell sx={{ ...tableCss.tableHeaderCell, textAlign: 'center' }}>Title</TableCell> */}
                 <TableCell sx={tableCss.tableHeaderCell}>Message</TableCell>
-                <TableCell sx={tableCss.tableHeaderCell}>Created At</TableCell>
-                <TableCell sx={tableCss.tableHeaderCell}>Is Read</TableCell>
+                <TableCell sx={{ ...tableCss.tableHeaderCell, textAlign: 'center' }}>Created At</TableCell>
+                {/* <TableCell sx={{ ...tableCss.tableHeaderCell, textAlign: 'center' }}>Is Read</TableCell> */}
               </TableRow>
             </TableHead>
 
@@ -148,7 +148,6 @@ export function NotificationTable({
                     </TableCell>
                     <TableCell
                       sx={{
-                        ...tableCss.tableCell,
                         maxWidth: '80px !important',
                         whiteSpace: 'nowrap',
                         overflow: 'hidden',
@@ -156,12 +155,14 @@ export function NotificationTable({
                         textAlign: 'left',
                       }}
                     >
-                      <Tooltip title={entry?.title || ''} arrow>
-                        <span>{entry?.title}</span>
-                      </Tooltip>
+                      <Typography variant="subtitle2">{entry?.title}</Typography>
+                      <Typography color="textSecondary" variant="body2">
+                        <span dangerouslySetInnerHTML={{ __html: entry?.message }} />
+                      </Typography>
+
                       {/* {entry?.title} */}
                     </TableCell>
-                    <TableCell
+                    {/* <TableCell
                       sx={{
                         ...tableCss.tableCell,
                         maxWidth: '80px !important',
@@ -174,18 +175,18 @@ export function NotificationTable({
                       <Tooltip title={stripHtml(entry?.message) || ''} arrow>
                         <span dangerouslySetInnerHTML={{ __html: entry?.message }} />
                       </Tooltip>
-                    </TableCell>
+                    </TableCell> */}
 
                     <TableCell sx={tableCss.tableCell}>
                       {entry.createdAt && <Typography color="textSecondary">{formatDate(entry.createdAt)}</Typography>}
                     </TableCell>
-                    <TableCell sx={tableCss.tableCell}>
+                    {/* <TableCell sx={tableCss.tableCell}>
                       <Chip
                         label={entry.isRead ? 'Readed' : 'Unread'}
                         color={entry.isRead ? 'default' : 'success'}
                         variant="outlined"
                       />
-                    </TableCell>
+                    </TableCell> */}
                   </TableRow>
                 ))
               )}
