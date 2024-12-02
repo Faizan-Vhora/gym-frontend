@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
@@ -45,6 +45,11 @@ import { Trash } from '@phosphor-icons/react';
 import dayjs, { Dayjs } from 'dayjs';
 import Swal from 'sweetalert2';
 
+import {
+  BookingSessionEntry,
+  BookingSessionTable,
+} from '@/components/admin/booking/view/booking-sessions/booking-session-table';
+import SessionPreview from '@/components/admin/calendar/session-view';
 import type { Trainer } from '@/components/admin/trainer/trainer-table';
 
 import ImageUploadCards from './banner-images/page';
@@ -72,6 +77,12 @@ export default function TrainerEditForm(): React.JSX.Element {
   const [checkInEntries, setCheckInEntries] = useState<CheckInEntry[]>([]);
   const [totalCheckInEntries, setTotalCheckInEntries] = useState<number>(0);
   const [qrCodeUrl, setQrCodeUrl] = useState('');
+  const [sessionEntries, setSessionEntries] = React.useState<BookingSessionEntry[]>([]);
+  const [sessionPage, setSessionPage] = React.useState<number>(0);
+  const [sessionRowsPerPage, setSessionRowsPerPage] = React.useState(5);
+  const [sessionCount, setSessionCount] = React.useState<number>(0);
+  const [selectedSession, setSelectedSession] = React.useState<BookingSessionEntry | null>(null);
+  const [isDialogOpenForPreview, setIsDialogOpenForPreview] = React.useState(false);
 
   const trainerSchema = z.object({
     fullName: z
@@ -256,6 +267,35 @@ export default function TrainerEditForm(): React.JSX.Element {
     }
   };
 
+  useEffect(() => {
+    const getSessionBookingSessionListData = async (): Promise<void> => {
+      setLoading(true); // Ensure this state update doesn't create additional renders in hooks
+      try {
+        const qParams = {
+          page: sessionPage + 1,
+          limit: sessionRowsPerPage,
+          trainerId: id,
+          tabFilter: 'upcoming',
+        };
+
+        const { data } = await axiosInstance.get<{
+          data: { items: BookingSessionEntry[]; meta: { totalItems: number } };
+        }>('/session-booking/session/list', {
+          params: qParams,
+        });
+
+        setSessionEntries(data.data.items);
+        setSessionCount(data.data.meta.totalItems);
+      } catch (error) {
+        toast.error('Failed to fetch data.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    getSessionBookingSessionListData();
+  }, [sessionPage, sessionRowsPerPage]); // Dependencies
+
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
     setTab(newValue);
     if (newValue === 4) {
@@ -358,6 +398,63 @@ export default function TrainerEditForm(): React.JSX.Element {
     return <div>Loading...</div>;
   }
 
+  const handleDownload = async (id: number): Promise<void> => {
+    const swalText = `Do you want to download this session's details?`;
+    const swalConfirmButtonText = `Yes, download it!`;
+    const swalSuccessMessage = `The session details have been downloaded`;
+
+    // Show a confirmation popup with SweetAlert
+    const result = await Swal.fire({
+      title: 'Are you sure?',
+      text: swalText,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: swalConfirmButtonText,
+      cancelButtonText: 'No',
+    });
+
+    // If confirmed, proceed to download
+    if (result.isConfirmed) {
+      try {
+        // Make the API call to download the booking details (replace with actual API endpoint)
+        const response = await axiosInstance.get(`/session-booking/download-session/${id}`, {
+          responseType: 'blob', // Ensures the response is treated as a file
+        });
+
+        // Create a Blob from the response data and trigger the download
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `session-${id}-details.pdf`; // Set the filename for download
+        link.click();
+
+        // Optionally, show a success message
+        await Swal.fire('Downloaded!', swalSuccessMessage, 'success');
+      } catch (error) {
+        await Swal.fire('Error!', 'Failed to download the booking details.', 'error');
+      }
+    }
+  };
+
+  const sessionHandlePageChange = (newPage: number): void => {
+    setSessionPage(newPage);
+  };
+
+  const sesssionHandleRowsPerPageChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
+    setSessionRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+
+  const handleSessionPreview = (session: BookingSessionEntry) => {
+    setSelectedSession(session);
+    setIsDialogOpenForPreview(true);
+  };
+
+  const handlePreviewDialogClose = () => {
+    setIsDialogOpenForPreview(false);
+    setSelectedSession(null);
+  };
+
   return (
     <Box>
       <Card>
@@ -373,6 +470,7 @@ export default function TrainerEditForm(): React.JSX.Element {
               <Tab value={4} label="Check In History" style={{ fontFamily: '"Audiowide", sans-serif' }} />
               <Tab value={5} label="Trainer Availability" style={{ fontFamily: '"Audiowide", sans-serif' }} />
               <Tab value={6} label="Trainer Block Days" style={{ fontFamily: '"Audiowide", sans-serif' }} />
+              <Tab value={7} label="Upcoming Sessions" style={{ fontFamily: '"Audiowide", sans-serif' }} />
             </Tabs>
           </Stack>
         )}
@@ -689,6 +787,29 @@ export default function TrainerEditForm(): React.JSX.Element {
         )}
         {tab === 5 && <WeekdayTimeSlots />}
         {tab === 6 && <UnavailableDateRanges />}
+        {tab === 7 && (
+          <BookingSessionTable
+            entries={sessionEntries}
+            page={sessionPage}
+            rowsPerPage={sessionRowsPerPage}
+            totalEntries={sessionCount}
+            // onUpdateStatus={handleUpdateStatus}
+            // onUpdateNotes={handleUpdateNotes}
+            onPreviewSession={handleSessionPreview}
+            // onRescheduleSession={handleRescheduleSession}
+            onPageChange={sessionHandlePageChange}
+            onRowsPerPageChange={sesssionHandleRowsPerPageChange}
+            onDownload={handleDownload}
+            showActions={false}
+          />
+        )}
+        {selectedSession && (
+          <SessionPreview
+            open={isDialogOpenForPreview}
+            onClose={handlePreviewDialogClose}
+            sessionObj={selectedSession}
+          />
+        )}
         {loading && <CustomLoader />}
         {error ? <Alert color="error">{error}</Alert> : null}
       </Card>

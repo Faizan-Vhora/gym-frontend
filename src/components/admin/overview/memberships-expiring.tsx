@@ -2,12 +2,14 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { formatDate } from '@/utils/date-utils';
 import { CustomLoader } from '@/utils/loader';
-import { Table, TableBody, TableCell, TableHead, TableRow, Typography } from '@mui/material';
+import { Stack, Table, TableBody, TableCell, TableHead, TableRow, Typography } from '@mui/material';
 import Card from '@mui/material/Card';
 import CardHeader from '@mui/material/CardHeader';
 import Divider from '@mui/material/Divider';
 
 import axiosInstance from '@/lib/axios';
+
+import { NoDataPlaceholder } from './no-data-placeholder';
 
 interface User {
   id: number;
@@ -58,26 +60,18 @@ export function MembershipExpiring(): React.JSX.Element {
     <Card sx={{ height: '520px', overflowY: 'scroll' }}>
       <CardHeader style={{ fontFamily: '"Audiowide", sans-serif !important' }} title="Expiring Memberships" />
       <Divider />
-      <Table sx={{ minWidth: 600 }}>
-        <TableHead>
-          <TableRow>
-            <TableCell>User</TableCell>
-            <TableCell>Membership Expiry</TableCell>
-            {/* <TableCell>Expiry Date</TableCell> */}
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {Array.isArray(membershipExpiring) && membershipExpiring.length === 0 ? (
+      {loading ? (
+        <CustomLoader />
+      ) : Array.isArray(membershipExpiring) && membershipExpiring.length > 0 ? (
+        <Table sx={{ minWidth: 600 }}>
+          <TableHead>
             <TableRow>
-              <TableCell colSpan={3} sx={{ textAlign: 'center' }}>
-                <Typography variant="body2" style={{ fontFamily: '"Audiowide", sans-serif' }} color="text.secondary">
-                  No Memberships with Expiring dates are available
-                </Typography>
-              </TableCell>
+              <TableCell>User</TableCell>
+              <TableCell>Membership Expiry</TableCell>
             </TableRow>
-          ) : (
-            Array.isArray(membershipExpiring) &&
-            membershipExpiring.map((membership) => (
+          </TableHead>
+          <TableBody>
+            {membershipExpiring.map((membership) => (
               <TableRow
                 hover
                 key={membership?.id}
@@ -96,14 +90,30 @@ export function MembershipExpiring(): React.JSX.Element {
                   <Typography variant="subtitle1">{membership?.membershipType.title}</Typography>
                   <Typography variant="caption">{formatDate(membership?.expiryDate)}</Typography>
                 </TableCell>
-                {/* <TableCell>
-                  <Typography variant="caption">{dayjs(membership?.expiryDate).format('MMM D, YYYY')}</Typography>
-                </TableCell> */}
               </TableRow>
-            ))
-          )}
-        </TableBody>
-      </Table>
+            ))}
+          </TableBody>
+        </Table>
+      ) : (
+        <Stack display={'flex'} alignItems={'center'} justifyContent={'center'} marginTop={'15%'}>
+          <NoDataPlaceholder sx={{}} />
+        </Stack>
+        // <ListItem sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: '10%' }}>
+
+        // </ListItem>
+        // <Table sx={{ minWidth: 600 }}>
+        //   <TableBody>
+        //     <TableRow>
+        //       <NoDataPlaceholder />
+        //       {/* <TableCell colSpan={2} sx={{ textAlign: 'center' }}>
+        //         <Typography variant="body2" style={{ fontFamily: '"Audiowide", sans-serif' }} color="text.secondary">
+        //           No Memberships with Expiring dates are available
+        //         </Typography>
+        //       </TableCell> */}
+        //     </TableRow>
+        //   </TableBody>
+        // </Table>
+      )}
 
       {loading && <CustomLoader />}
     </Card>

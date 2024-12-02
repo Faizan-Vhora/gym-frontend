@@ -948,7 +948,7 @@ export function BookingFormDialog({
                         sx={{ width: '100%' }}
                         disablePast
                         disabled={!selectedTrainer}
-                        format="DD-MM-YYYY"
+                        format="MM-DD-YYYY"
                         label="Select date"
                         onChange={(date) => {
                           const bookingSelectedDate = date ? date.toDate() : null;
@@ -995,7 +995,7 @@ export function BookingFormDialog({
                         sx={{ width: '100%' }}
                         disablePast
                         disabled={!selectedTrainer}
-                        format="DD-MM-YYYY"
+                        format="MM-DD-YYYY"
                         label="Start date"
                         onChange={(date) => {
                           const startDateWeeklyOne = date ? date.toDate() : null;
@@ -1032,7 +1032,6 @@ export function BookingFormDialog({
                   />
                 </Grid>
 
-
                 <Grid item sm={8} xs={12}>
                   <Controller
                     control={control}
@@ -1042,7 +1041,7 @@ export function BookingFormDialog({
                         sx={{ width: '100%' }}
                         disablePast
                         disabled={!selectedTrainer}
-                        format="DD-MM-YYYY"
+                        format="MM-DD-YYYY"
                         label="End date"
                         minDate={dayjs(bookingStartDate).isValid() ? dayjs(bookingStartDate) : undefined} // Ensure minDate is set
                         onChange={(date) => {

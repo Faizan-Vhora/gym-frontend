@@ -226,6 +226,7 @@ export default function BookingSessionsPage(): React.JSX.Element {
             onPageChange={handlePageChange}
             onRowsPerPageChange={handleRowsPerPageChange}
             onDownload={handleDownload}
+            showActions={true}
           />
         )}
       </Card>

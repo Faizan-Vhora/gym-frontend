@@ -82,13 +82,14 @@ interface BookingTableProps {
   page: number;
   rowsPerPage: number;
   totalEntries: number;
-  onUpdateStatus: (id: number, newStatus: BookingSessionEntry['status']) => void;
-  onUpdateNotes: (session: BookingSessionEntry) => void;
-  onPreviewSession: (session: BookingSessionEntry) => void;
-  onRescheduleSession: (session: BookingSessionEntry) => void;
+  onUpdateStatus?: (id: number, newStatus: BookingSessionEntry['status']) => void;
+  onUpdateNotes?: (session: BookingSessionEntry) => void;
+  onPreviewSession?: (session: BookingSessionEntry) => void;
+  onRescheduleSession?: (session: BookingSessionEntry) => void;
   onPageChange: (newPage: number) => void;
   onRowsPerPageChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   onDownload: (id: number) => void;
+  showActions?: boolean;
 }
 
 export function BookingSessionTable({
@@ -103,21 +104,22 @@ export function BookingSessionTable({
   onPageChange,
   onRowsPerPageChange,
   onDownload,
+  showActions,
 }: BookingTableProps): React.JSX.Element {
   const handleStatusChange = (id: number, newStatus: BookingSessionEntry['status']): void => {
-    onUpdateStatus(id, newStatus);
+    onUpdateStatus?.(id, newStatus);
   };
 
   const handleNotesChange = (session: BookingSessionEntry): void => {
-    onUpdateNotes(session);
+    onUpdateNotes?.(session);
   };
 
   const handleSessionPreview = (session: BookingSessionEntry): void => {
-    onPreviewSession(session);
+    onPreviewSession?.(session);
   };
 
   const handleRescheduleSession = (session: BookingSessionEntry): void => {
-    onRescheduleSession(session);
+    onRescheduleSession?.(session);
   };
 
   const handleDownloadChange = (id: number): void => {
@@ -138,7 +140,7 @@ export function BookingSessionTable({
                 {/* <TableCell sx={tableCss.tableHeaderCell}>Member</TableCell> */}
                 {/* <TableCell sx={tableCss.tableHeaderCell}>Trainer</TableCell> */}
                 <TableCell sx={tableCss.tableHeaderCell}>Session Amount</TableCell>
-                <TableCell sx={tableCss.tableHeaderCell}>Notes</TableCell>
+                {/* <TableCell sx={tableCss.tableHeaderCell}>Notes</TableCell> */}
                 <TableCell sx={tableCss.tableHeaderCell}>Status</TableCell>
                 <TableCell sx={tableCss.tableHeaderCell}>Actions</TableCell>
               </TableRow>
@@ -213,13 +215,13 @@ export function BookingSessionTable({
                       </Stack>
                     </TableCell>
 
-                    <TableCell sx={tableCss.tableCell}>
+                    {/* <TableCell sx={tableCss.tableCell}>
                       <Stack direction="row" spacing={2}>
                         <Box>
                           <Typography variant="subtitle2">{entry?.notes || '-'}</Typography>
                         </Box>
                       </Stack>
-                    </TableCell>
+                    </TableCell> */}
 
                     <TableCell sx={tableCss.tableCell}>
                       <Chip
@@ -239,32 +241,37 @@ export function BookingSessionTable({
                           <Eye />
                         </IconButton>
 
-                        <IconButton
-                          onClick={() => {
-                            handleNotesChange(entry);
-                          }}
-                        >
-                          <Note />
-                        </IconButton>
+                        {showActions && (
+                          <>
+                            <IconButton
+                              onClick={() => {
+                                handleNotesChange(entry);
+                              }}
+                            >
+                              <Note />
+                            </IconButton>
 
-                        <IconButton
-                          onClick={() => {
-                            handleRescheduleSession(entry);
-                          }}
-                        >
-                          <ArrowsClockwise />
-                        </IconButton>
+                            <IconButton
+                              onClick={() => {
+                                handleRescheduleSession(entry);
+                              }}
+                            >
+                              <ArrowsClockwise />
+                            </IconButton>
 
-                        <IconButton
-                          disabled={[BOOKING_SESSION_STATUS.COMPLETED, BOOKING_SESSION_STATUS.CANCELLED].includes(
-                            entry.status
-                          )}
-                          onClick={() => {
-                            handleStatusChange(entry.id, BOOKING_SESSION_STATUS.CANCELLED);
-                          }}
-                        >
-                          <XCircle />
-                        </IconButton>
+                            <IconButton
+                              disabled={[BOOKING_SESSION_STATUS.COMPLETED, BOOKING_SESSION_STATUS.CANCELLED].includes(
+                                entry.status
+                              )}
+                              onClick={() => {
+                                handleStatusChange(entry.id, BOOKING_SESSION_STATUS.CANCELLED);
+                              }}
+                            >
+                              <XCircle />
+                            </IconButton>
+                          </>
+                        )}
+
                         <IconButton
                           // disabled={[
                           //   BOOKING_SESSION_STATUS.CANCELLED,

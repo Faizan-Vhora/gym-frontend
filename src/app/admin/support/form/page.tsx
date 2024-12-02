@@ -86,7 +86,7 @@ export default function SupportForm(): React.JSX.Element {
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const [tabValue, setTabValue] = useState<string>('edit');
+  const [tabValue, setTabValue] = useState<string>(id ? 'message' : 'edit');
 
   const {
     register,
@@ -269,8 +269,8 @@ export default function SupportForm(): React.JSX.Element {
     <>
       <Stack margin={2}>
         <Tabs value={tabValue} onChange={handleTabChange} centered>
-          <Tab label="Edit Support Ticket" value="edit" />
           {id && <Tab label="Message" value="message" />}
+          <Tab label="Edit Support Ticket" value="edit" />
         </Tabs>
       </Stack>
       <Box component="form" onSubmit={handleSubmit(onSubmit)} sx={{ p: 3 }}>

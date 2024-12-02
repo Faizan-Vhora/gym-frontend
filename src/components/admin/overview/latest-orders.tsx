@@ -17,6 +17,8 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import { ArrowRight as ArrowRightIcon } from '@phosphor-icons/react/dist/ssr/ArrowRight';
 
+import { NoDataPlaceholder } from './no-data-placeholder';
+
 export interface Order {
   id: number;
   customerEmail: string;
@@ -46,73 +48,82 @@ export function LatestOrders({ orders = [] }: LatestOrdersProps): React.JSX.Elem
       <CardHeader style={{ fontFamily: '"Audiowide", sans-serif !important' }} title="Latest Booking" />
 
       <Divider />
-      <Box sx={{}}>
-        <Table sx={{ minWidth: 800 }}>
-          <TableHead>
-            <TableRow>
-              <TableCell>Booking</TableCell>
-              <TableCell>Customer</TableCell>
-              <TableCell>Trainer</TableCell>
-              <TableCell sortDirection="desc">Date</TableCell>
-              <TableCell>Status</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {orders.map((order) => {
-              const { label, color } = BOOKING_STATUS_DETAILS[order.status] ?? { label: 'Unknown', color: 'default' };
+      <Box>
+        {Array.isArray(orders) && orders.length > 0 ? (
+          <Table sx={{ minWidth: 800 }}>
+            <TableHead>
+              <TableRow>
+                <TableCell>Booking</TableCell>
+                <TableCell>Customer</TableCell>
+                <TableCell>Trainer</TableCell>
+                <TableCell sortDirection="desc">Date</TableCell>
+                <TableCell>Status</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {orders.map((order) => {
+                const { label, color } = BOOKING_STATUS_DETAILS[order.status] ?? { label: 'Unknown', color: 'default' };
 
-              return (
-                <TableRow
-                  hover
-                  key={order.id}
-                  onClick={() => {
-                    handleRedirect(order.id);
-                  }}
-                  sx={{ cursor: 'pointer' }}
-                >
-                  <TableCell>#{order.id}</TableCell>
-                  <TableCell>
-                    <Typography variant="subtitle2">{order?.name}</Typography>
-                    <Typography color="textSecondary" variant="body2">
-                      {order?.customerEmail}
-                    </Typography>
-                    <Typography color="textSecondary" variant="body2">
-                      {order?.customerPhoneNumber}
-                    </Typography>
-                  </TableCell>
-                  <TableCell>
-                    <Typography variant="subtitle2">{order?.trainerName}</Typography>
-                    <Typography color="textSecondary" variant="body2">
-                      {order?.trainerEmail}
-                    </Typography>
-                    <Typography color="textSecondary" variant="body2">
-                      {order?.trainerPhoneNumber}
-                    </Typography>
-                  </TableCell>
-                  <TableCell>{formatDate(order.createdAt)}</TableCell>
-                  <TableCell>
-                    <Chip color={color} label={label} size="small" />
-                  </TableCell>
-                </TableRow>
-              );
-            })}
-          </TableBody>
-        </Table>
+                return (
+                  <TableRow
+                    hover
+                    key={order.id}
+                    onClick={() => {
+                      handleRedirect(order.id);
+                    }}
+                    sx={{ cursor: 'pointer' }}
+                  >
+                    <TableCell>#{order.id}</TableCell>
+                    <TableCell>
+                      <Typography variant="subtitle2">{order?.name}</Typography>
+                      <Typography color="textSecondary" variant="body2">
+                        {order?.customerEmail}
+                      </Typography>
+                      <Typography color="textSecondary" variant="body2">
+                        {order?.customerPhoneNumber}
+                      </Typography>
+                    </TableCell>
+                    <TableCell>
+                      <Typography variant="subtitle2">{order?.trainerName}</Typography>
+                      <Typography color="textSecondary" variant="body2">
+                        {order?.trainerEmail}
+                      </Typography>
+                      <Typography color="textSecondary" variant="body2">
+                        {order?.trainerPhoneNumber}
+                      </Typography>
+                    </TableCell>
+                    <TableCell>{formatDate(order.createdAt)}</TableCell>
+                    <TableCell>
+                      <Chip color={color} label={label} size="small" />
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
+        ) : (
+          <NoDataPlaceholder sx={{}} />
+        )}
       </Box>
-      <Divider />
-      <CardActions sx={{ justifyContent: 'flex-end' }}>
-        <Button
-          color="inherit"
-          endIcon={<ArrowRightIcon fontSize="var(--icon-fontSize-md)" />}
-          size="small"
-          variant="text"
-          onClick={() => {
-            router.push('/admin/bookings');
-          }}
-        >
-          View all
-        </Button>
-      </CardActions>
+
+      {Array.isArray(orders) && orders.length > 0 && (
+        <>
+          <Divider />
+          <CardActions sx={{ justifyContent: 'flex-end' }}>
+            <Button
+              color="inherit"
+              endIcon={<ArrowRightIcon fontSize="var(--icon-fontSize-md)" />}
+              size="small"
+              variant="text"
+              onClick={() => {
+                router.push('/admin/bookings');
+              }}
+            >
+              View all
+            </Button>
+          </CardActions>
+        </>
+      )}
     </Card>
   );
 }

@@ -1,7 +1,8 @@
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import { formatAmount } from '@/utils/converter';
-import { getStatusStringText, UserStatusString } from '@/utils/userstatus';
+import { formatDate } from '@/utils/date-utils';
+// import { getStatusStringText, UserStatusString } from '@/utils/userstatus';
 import {
   Box,
   // Button,
@@ -10,9 +11,9 @@ import {
   // DialogActions,
   // DialogContent,
   Divider,
-  FormControlLabel,
+  // FormControlLabel,
   IconButton,
-  Switch,
+  // Switch,
   Table,
   TableBody,
   TableCell,
@@ -22,7 +23,8 @@ import {
   Typography,
 } from '@mui/material';
 import { PencilSimple, Trash } from '@phosphor-icons/react';
-import dayjs from 'dayjs';
+
+// import dayjs from 'dayjs';
 
 import tableCss from '@/styles/table-css';
 
@@ -88,14 +90,14 @@ export function MembershipPlanTable({
         <Table>
           <TableHead>
             <TableRow sx={tableCss.tableRow}>
-              <TableCell sx={tableCss.tableHeaderCell}>Title</TableCell>
-              <TableCell sx={tableCss.tableHeaderCell}>Cost</TableCell>
-              <TableCell sx={tableCss.tableHeaderCell}>Duration</TableCell>
-              <TableCell sx={tableCss.tableHeaderCell}>Payment Frequency</TableCell>
-              <TableCell sx={tableCss.tableHeaderCell}>Description</TableCell>
-              <TableCell sx={tableCss.tableHeaderCell}>Status</TableCell>
-              <TableCell sx={tableCss.tableHeaderCell}>Update At</TableCell>
-              <TableCell sx={tableCss.tableHeaderCell}>Action</TableCell>
+              <TableCell sx={{ ...tableCss.tableHeaderCell, textAlign: 'center' }}>Title</TableCell>
+              <TableCell sx={{ ...tableCss.tableHeaderCell, textAlign: 'center' }}>Cost</TableCell>
+              <TableCell sx={{ ...tableCss.tableHeaderCell, textAlign: 'center' }}>Duration</TableCell>
+              <TableCell sx={{ ...tableCss.tableHeaderCell, textAlign: 'center' }}>Payment Frequency</TableCell>
+              {/* <TableCell sx={tableCss.tableHeaderCell}>Description</TableCell> */}
+              {/* <TableCell sx={tableCss.tableHeaderCell}>Status</TableCell> */}
+              <TableCell sx={{ ...tableCss.tableHeaderCell, textAlign: 'center' }}>Update At</TableCell>
+              <TableCell sx={{ ...tableCss.tableHeaderCell, textAlign: 'center' }}>Actions</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -124,16 +126,16 @@ export function MembershipPlanTable({
 
                   <TableCell sx={tableCss.tableCell}>{row.durationInMonths} months</TableCell>
                   <TableCell sx={tableCss.tableCell}>{formatPaymentFrequency(row.paymentFrequency)}</TableCell>
-                  <TableCell
+                  {/* <TableCell
                     sx={[
                       tableCss.tableCell,
                       { textOverflow: 'ellipsis !important', maxWidth: '120px !important', overflow: 'hidden' },
                     ]}
                   >
                     {row.description}
-                  </TableCell>
+                  </TableCell> */}
 
-                  <TableCell sx={tableCss.tableCell}>
+                  {/* <TableCell sx={tableCss.tableCell}>
                     <FormControlLabel
                       control={
                         <Switch
@@ -147,8 +149,8 @@ export function MembershipPlanTable({
                       }
                       label={getStatusStringText(row.status as UserStatusString)}
                     />
-                  </TableCell>
-                  <TableCell sx={tableCss.tableCell}>{dayjs(row.updatedAt).format('MMM D, YYYY')}</TableCell>
+                  </TableCell> */}
+                  <TableCell sx={tableCss.tableCell}>{formatDate(row.updatedAt)}</TableCell>
                   <TableCell sx={tableCss.tableCell}>
                     <IconButton
                       onClick={() => {

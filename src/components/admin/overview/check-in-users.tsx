@@ -18,6 +18,7 @@ import { Clock } from '@phosphor-icons/react';
 import { ArrowRight as ArrowRightIcon } from '@phosphor-icons/react/dist/ssr/ArrowRight';
 
 import axiosInstance from '@/lib/axios';
+
 import { NoDataPlaceholder } from './no-data-placeholder';
 
 interface User {
@@ -69,12 +70,9 @@ export function CheckInUsers(): React.JSX.Element {
     <Card sx={{ height: '520px', overflowY: 'scroll', overflowX: 'auto' }}>
       <CardHeader style={{ fontFamily: '"Audiowide", sans-serif !important' }} title="User's CheckIn" />
 
-      {
-
-(Array.isArray(checkIn) && checkIn.length) ?
-        (
-          <>
-                <Divider />
+      {Array.isArray(checkIn) && checkIn.length ? (
+        <>
+          <Divider />
           <Box sx={{}}>
             <Table sx={{ minWidth: 600 }}>
               <TableHead>
@@ -90,7 +88,7 @@ export function CheckInUsers(): React.JSX.Element {
                 {Array.isArray(checkIn) &&
                   checkIn.map((order) => {
                     // const { label, color } = checkInStatus[order.status] ?? { label: 'Unknown', color: 'default' };
-    
+
                     return (
                       <TableRow
                         hover
@@ -145,24 +143,12 @@ export function CheckInUsers(): React.JSX.Element {
               View all
             </Button>
           </CardActions>
-          </>
-    
-        )
-        : <>
         </>
-      }
-  
- 
- {
-!(Array.isArray(checkIn) && checkIn.length)  ?
+      ) : (
+        <></>
+      )}
 
-(
-  <NoDataPlaceholder />
-) :
-<></>
-
- }
-
+      {!(Array.isArray(checkIn) && checkIn.length) ? <NoDataPlaceholder /> : <></>}
 
       {loading && <CustomLoader />}
     </Card>

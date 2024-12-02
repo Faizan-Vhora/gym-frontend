@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { formatDate } from '@/utils/date-utils';
 import { CustomLoader } from '@/utils/loader';
-import { CardActions, Chip, Typography } from '@mui/material';
+import { CardActions, Chip } from '@mui/material';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import CardHeader from '@mui/material/CardHeader';
@@ -14,6 +14,7 @@ import ListItemText from '@mui/material/ListItemText';
 import dayjs from 'dayjs';
 
 import axiosInstance from '@/lib/axios';
+
 import { NoDataPlaceholder } from './no-data-placeholder';
 
 export interface User {
@@ -100,8 +101,8 @@ export function IncompleteProfiles(): React.JSX.Element {
             //     sx={{ textAlign: 'center', width: '100%' }}
             //   />
             // </ListItem>
-            <ListItem sx={{display:'flex',alignItems:'center',justifyContent:'center',marginTop:'10%'}}>
-              <NoDataPlaceholder sx={{}}/>
+            <ListItem sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: '10%' }}>
+              <NoDataPlaceholder sx={{}} />
             </ListItem>
           ) : (
             users?.map((product, index) => (
