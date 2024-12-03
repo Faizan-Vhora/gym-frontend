@@ -12,6 +12,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { CustomLoader } from '@/utils/loader';
 import { Button, Card } from '@mui/material';
+import axios from 'axios';
 import Swal from 'sweetalert2';
 
 import axiosInstance from '@/lib/axios';
@@ -37,6 +38,11 @@ export default function MembershipPlanPage(): React.JSX.Element {
       items: MembershipPlans[];
       meta: { totalItems: number };
     };
+  }
+
+  interface ErrorResponse {
+    message?: string;
+    errors?: string;
   }
 
   const fetchMembershipPlans = useCallback(async () => {
@@ -164,8 +170,27 @@ export default function MembershipPlanPage(): React.JSX.Element {
         toast.success('Membership plan deleted successfully');
         await fetchMembershipPlans(); // Refresh data
       } catch (error: unknown) {
-        error instanceof Error ? error.message : 'An unexpected error occurred';
-        await Swal.fire('Failed to delete Plan');
+        let errorMessage = 'Error occurred'; // Default error message
+
+        // Check if the error is an Axios error
+        if (axios.isAxiosError(error)) {
+          // Extract the error message from response
+          if (error.response?.data) {
+            const responseData = error.response.data as ErrorResponse; // Type assertion
+            errorMessage = responseData.message || responseData.errors || 'Error occurred';
+          }
+        } else if (error instanceof Error) {
+          // If it's a general JavaScript error
+          errorMessage = error.message || 'Error occurred';
+        }
+
+        // Show the error message from API in Swal
+        await Swal.fire({
+          title: 'Failed to delete Plan',
+          text: errorMessage,
+          icon: 'error',
+          confirmButtonColor: '#3085d6',
+        });
       }
     }
   };

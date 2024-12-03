@@ -21,7 +21,7 @@ import 'react-toastify/dist/ReactToastify.css'; // Import toast styles
 import { BOOKING_SESSION_STATUS, BOOKING_SESSION_STATUS_DETAILS } from '@/utils/constant';
 import { formatAmount } from '@/utils/converter';
 import { formatDate, formatTo12HourFormat } from '@/utils/date-utils';
-import { ArrowsClockwise, DownloadSimple, Eye, Note, XCircle } from '@phosphor-icons/react';
+import { ArrowsClockwise, DownloadSimple, Eye, XCircle } from '@phosphor-icons/react';
 
 import tableCss from '@/styles/table-css';
 
@@ -98,7 +98,7 @@ export function BookingSessionTable({
   rowsPerPage,
   totalEntries,
   onUpdateStatus,
-  onUpdateNotes,
+  // onUpdateNotes,
   onPreviewSession,
   onRescheduleSession,
   onPageChange,
@@ -110,9 +110,9 @@ export function BookingSessionTable({
     onUpdateStatus?.(id, newStatus);
   };
 
-  const handleNotesChange = (session: BookingSessionEntry): void => {
-    onUpdateNotes?.(session);
-  };
+  // const handleNotesChange = (session: BookingSessionEntry): void => {
+  //   onUpdateNotes?.(session);
+  // };
 
   const handleSessionPreview = (session: BookingSessionEntry): void => {
     onPreviewSession?.(session);
@@ -243,13 +243,13 @@ export function BookingSessionTable({
 
                         {showActions && (
                           <>
-                            <IconButton
+                            {/* <IconButton
                               onClick={() => {
                                 handleNotesChange(entry);
                               }}
                             >
                               <Note />
-                            </IconButton>
+                            </IconButton> */}
 
                             <IconButton
                               onClick={() => {

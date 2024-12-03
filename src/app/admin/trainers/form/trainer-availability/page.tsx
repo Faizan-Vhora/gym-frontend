@@ -16,6 +16,8 @@ import {
   FormHelperText,
   Grid,
   IconButton,
+  Radio,
+  RadioGroup,
   Switch,
   Typography,
 } from '@mui/material';
@@ -93,7 +95,8 @@ export default function WeekdayTimeSlots() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
   const [setSameTimeForAllDay, setSetSameTimeForAllDay] = React.useState<boolean>(false);
-
+  // **New State for Interval Selection**
+  const [selectedInterval, setSelectedInterval] = useState<number | null>(null);
   const {
     control,
     handleSubmit,
@@ -121,7 +124,7 @@ export default function WeekdayTimeSlots() {
         })
         .then((response) => {
           setSetSameTimeForAllDay(response.data.data.setSameTimeForAllDay);
-          if(response?.data?.data?.setSameTimeForAllDay){
+          if (response?.data?.data?.setSameTimeForAllDay) {
             setValue('setSameTimeForAll', true);
           }
         })
@@ -212,7 +215,7 @@ export default function WeekdayTimeSlots() {
 
           const updatedDays = currentDays.map((day) => ({
             ...day,
-            isChecked : true,
+            isChecked: true,
             timeSlots: [...firstDayTimeSlots],
           }));
 
@@ -329,6 +332,59 @@ export default function WeekdayTimeSlots() {
     }
   };
 
+  // **New Function: Generate Time Slots Based on Interval**
+  const generateTimeSlotsForAllDays = (interval: number, dayIndex: number) => {
+    const updatedDays = watch('days').map((day, index) => {
+      if (!day.isChecked) return day;
+
+      if (!day.isChecked || (dayIndex !== index && !setSameTimeForAllDay)) return day;
+
+      const generatedSlots: TimeSlot[] = [];
+      day.timeSlots.forEach((slot) => {
+        if (slot.startTime && slot.endTime) {
+          let current = dayjs(slot.startTime);
+          const end = dayjs(slot.endTime);
+
+          if (setSameTimeForAllDay || day.isChecked) {
+            while (current.add(interval, 'minute').isBefore(end) || current.add(interval, 'minute').isSame(end)) {
+              const next = current.add(interval, 'minute');
+              generatedSlots.push({
+                startTime: current.toDate(),
+                endTime: next.toDate(),
+              });
+              current = next;
+            }
+
+            // Check for partial slot at the end if remaining time is less than the interval
+            if (current.isBefore(end)) {
+              generatedSlots.push({
+                startTime: current.toDate(),
+                endTime: end.toDate(),
+              });
+            }
+          }
+        }
+      });
+
+      return {
+        ...day,
+        timeSlots: generatedSlots,
+      };
+    });
+
+    setValue('days', updatedDays);
+    setSelectedInterval(null);
+  };
+
+  // **Handle Interval Change**
+  const handleIntervalChange = (selected: number | null, dayIndex: number) => {
+    setSelectedInterval(selected);
+
+    if (selected) {
+      generateTimeSlotsForAllDays(selected, dayIndex);
+    }
+  };
+
   const timeSlotFields = fields.map((day, dayIndex) => {
     const isChecked = watch(`days.${dayIndex}.isChecked`);
     const setSameTimeForAll = watch('setSameTimeForAll');
@@ -339,7 +395,7 @@ export default function WeekdayTimeSlots() {
         <Card>
           {/* <CardHeader style={{ fontFamily: '"Audiowide", sans-serif' }} title="Trainer Availability" /> */}
           {/* <Divider /> */}
-          <Grid container sx={{ padding: '5px',paddingLeft:'15px  ' }} alignItems="center">
+          <Grid container sx={{ padding: '5px', paddingLeft: '15px  ' }} alignItems="center">
             <Grid item md={2}>
               <FormControlLabel
                 control={
@@ -381,119 +437,160 @@ export default function WeekdayTimeSlots() {
             {isChecked && (
               <>
                 <Grid item md={10}>
-                  <Controller 
+                  <Controller
                     name={`days.${dayIndex}.timeSlots`}
                     control={control}
                     render={({ field, fieldState: { error: fieldError } }) => (
                       <>
-                        {field.value.map((slot, slotIndex) => (
-                          <Grid container key={slotIndex} alignItems="center">
-                            <Grid item xs={12} sm={6} md={4} sx={{ padding: '10px 10px' }}>
-                              <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                <FormControl
-                                  fullWidth
-                                  error={Boolean(errors?.days?.[dayIndex]?.timeSlots?.[slotIndex]?.startTime)}
-                                >
-                                  <TimePicker
-                                    label="Start Time"
-                                    value={slot.startTime ? dayjs(slot.startTime) : null}
-                                    minutesStep={30}
-                                    onChange={(newValue) => {
-                                      const updatedTimeSlots = [...field.value];
-                                      updatedTimeSlots[slotIndex].startTime = newValue?.toDate() ?? null;
-                                      setValue(`days.${dayIndex}.timeSlots`, updatedTimeSlots);
+                        {field.value.map((slot, slotIndex) => {
+                          const startTime = slot.startTime ? dayjs(slot.startTime) : null;
+                          const endTime = slot.endTime ? dayjs(slot.endTime) : null;
+                          const timeDifference =
+                            startTime && endTime ? Math.ceil(endTime.diff(startTime, 'minute') / 30) * 30 : 0;
+
+                          return (
+                            <Grid container key={slotIndex} alignItems="center">
+                              <Grid item xs={12} sm={6} md={4} sx={{ padding: '10px 10px' }}>
+                                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                  <FormControl
+                                    fullWidth
+                                    error={Boolean(errors?.days?.[dayIndex]?.timeSlots?.[slotIndex]?.startTime)}
+                                  >
+                                    <TimePicker
+                                      label="Start Time"
+                                      value={slot.startTime ? dayjs(slot.startTime) : null}
+                                      minutesStep={30}
+                                      onChange={(newValue) => {
+                                        const updatedTimeSlots = [...field.value];
+                                        updatedTimeSlots[slotIndex].startTime = newValue?.toDate() ?? null;
+                                        setValue(`days.${dayIndex}.timeSlots`, updatedTimeSlots);
+                                        if (setSameTimeForAll) {
+                                          applySameTimeToAll();
+                                        }
+                                      }}
+                                      disabled={isDisabled}
+                                      slotProps={{
+                                        textField: {
+                                          fullWidth: true,
+                                          helperText: fieldError ? fieldError.message : '',
+                                        },
+                                      }}
+                                    />
+                                    {errors?.days?.[dayIndex]?.timeSlots?.[slotIndex]?.startTime?.message && (
+                                      <FormHelperText error>
+                                        {errors?.days?.[dayIndex]?.timeSlots?.[slotIndex]?.startTime.message}
+                                      </FormHelperText>
+                                    )}
+                                  </FormControl>
+                                </LocalizationProvider>
+                              </Grid>
+
+                              <Grid item xs={12} sm={6} md={4} sx={{ padding: '10px 10px' }}>
+                                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                  <FormControl
+                                    fullWidth
+                                    error={Boolean(errors?.days?.[dayIndex]?.timeSlots?.[slotIndex]?.endTime)}
+                                  >
+                                    <TimePicker
+                                      label="End Time"
+                                      value={slot.endTime ? dayjs(slot.endTime) : null}
+                                      minTime={slot.startTime ? dayjs(slot.startTime).add(30, 'minute') : undefined}
+                                      minutesStep={30}
+                                      onChange={(newValue) => {
+                                        const updatedTimeSlots = [...field.value];
+                                        updatedTimeSlots[slotIndex].endTime = newValue?.toDate() ?? null;
+                                        setValue(`days.${dayIndex}.timeSlots`, updatedTimeSlots);
+                                        if (setSameTimeForAll) {
+                                          applySameTimeToAll();
+                                        }
+                                      }}
+                                      disabled={isDisabled}
+                                      slotProps={{
+                                        textField: {
+                                          fullWidth: true,
+                                          helperText: fieldError ? fieldError.message : '',
+                                        },
+                                      }}
+                                    />
+                                    {errors?.days?.[dayIndex]?.timeSlots?.[slotIndex]?.endTime?.message && (
+                                      <FormHelperText error>
+                                        {errors?.days?.[dayIndex]?.timeSlots?.[slotIndex]?.endTime.message}
+                                      </FormHelperText>
+                                    )}
+                                  </FormControl>
+                                </LocalizationProvider>
+                              </Grid>
+
+                              <Grid item xs={12} sm={6} md={1}>
+                                {slotIndex ? (
+                                  <IconButton
+                                    onClick={() => {
+                                      if (setSameTimeForAll && dayIndex !== 0) return;
+                                      const currentTimeSlots = [...field.value];
+                                      currentTimeSlots.splice(slotIndex, 1);
+                                      setValue(`days.${dayIndex}.timeSlots`, currentTimeSlots);
                                       if (setSameTimeForAll) {
                                         applySameTimeToAll();
                                       }
                                     }}
                                     disabled={isDisabled}
-                                    slotProps={{
-                                      textField: {
-                                        fullWidth: true,
-                                        helperText: fieldError ? fieldError.message : '',
-                                      },
-                                    }}
-                                  />
-                                  {errors?.days?.[dayIndex]?.timeSlots?.[slotIndex]?.startTime?.message && (
-                                    <FormHelperText error>
-                                      {errors?.days?.[dayIndex]?.timeSlots?.[slotIndex]?.startTime.message}
-                                    </FormHelperText>
-                                  )}
-                                </FormControl>
-                              </LocalizationProvider>
-                            </Grid>
-
-                            <Grid item xs={12} sm={6} md={4} sx={{ padding: '10px 10px' }}>
-                              <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                <FormControl
-                                  fullWidth
-                                  error={Boolean(errors?.days?.[dayIndex]?.timeSlots?.[slotIndex]?.endTime)}
-                                >
-                                  <TimePicker
-                                    label="End Time"
-                                    value={slot.endTime ? dayjs(slot.endTime) : null}
-                                    minTime={slot.startTime ? dayjs(slot.startTime).add(30, 'minute') : undefined}
-                                    minutesStep={30}
-                                    onChange={(newValue) => {
-                                      const updatedTimeSlots = [...field.value];
-                                      updatedTimeSlots[slotIndex].endTime = newValue?.toDate() ?? null;
-                                      setValue(`days.${dayIndex}.timeSlots`, updatedTimeSlots);
+                                  >
+                                    <Minus />
+                                  </IconButton>
+                                ) : (
+                                  <IconButton
+                                    onClick={() => {
+                                      if (setSameTimeForAll && dayIndex !== 0) return;
+                                      const currentTimeSlots = watch(`days.${dayIndex}.timeSlots`);
+                                      const newTimeSlot = { startTime: null, endTime: null };
+                                      setValue(`days.${dayIndex}.timeSlots`, [...currentTimeSlots, newTimeSlot]);
                                       if (setSameTimeForAll) {
                                         applySameTimeToAll();
                                       }
                                     }}
                                     disabled={isDisabled}
-                                    slotProps={{
-                                      textField: {
-                                        fullWidth: true,
-                                        helperText: fieldError ? fieldError.message : '',
-                                      },
-                                    }}
-                                  />
-                                  {errors?.days?.[dayIndex]?.timeSlots?.[slotIndex]?.endTime?.message && (
-                                    <FormHelperText error>
-                                      {errors?.days?.[dayIndex]?.timeSlots?.[slotIndex]?.endTime.message}
-                                    </FormHelperText>
-                                  )}
-                                </FormControl>
-                              </LocalizationProvider>
-                            </Grid>
+                                  >
+                                    <Plus />
+                                  </IconButton>
+                                )}
+                              </Grid>
 
-                            <Grid item xs={12} sm={6} md={1}>
-                              {slotIndex ? (
-                                <IconButton
-                                  onClick={() => {
-                                    if (setSameTimeForAll && dayIndex !== 0) return;
-                                    const currentTimeSlots = [...field.value];
-                                    currentTimeSlots.splice(slotIndex, 1);
-                                    setValue(`days.${dayIndex}.timeSlots`, currentTimeSlots);
-                                    if (setSameTimeForAll) {
-                                      applySameTimeToAll();
-                                    }
-                                  }}
-                                  disabled={isDisabled}
-                                >
-                                  <Minus />
-                                </IconButton>
-                              ) : (
-                                <IconButton
-                                  onClick={() => {
-                                    if (setSameTimeForAll && dayIndex !== 0) return;
-                                    const currentTimeSlots = watch(`days.${dayIndex}.timeSlots`);
-                                    const newTimeSlot = { startTime: null, endTime: null };
-                                    setValue(`days.${dayIndex}.timeSlots`, [...currentTimeSlots, newTimeSlot]);
-                                    if (setSameTimeForAll) {
-                                      applySameTimeToAll();
-                                    }
-                                  }}
-                                  disabled={isDisabled}
-                                >
-                                  <Plus />
-                                </IconButton>
+                              {!slotIndex && timeDifference > 30 && (
+                                <Box sx={{ marginBottom: 3 }}>
+                                  <Typography variant="h6" gutterBottom>
+                                    Set Slot Interval
+                                  </Typography>
+                                  <FormControl component="fieldset">
+                                    <RadioGroup
+                                      sx={{ flexDirection: 'row' }}
+                                      value={selectedInterval}
+                                      onChange={(e) => {
+                                        handleIntervalChange(Number(e.target.value), dayIndex);
+                                      }}
+                                    >
+                                      <FormControlLabel
+                                        control={
+                                          <Radio
+                                            value={30}
+                                            // disabled={selectedInterval === 60}
+                                            name={`interval_30min_day${dayIndex}`}
+                                          />
+                                        }
+                                        label="30 Minutes"
+                                      />
+                                      {timeDifference !== 60 && (
+                                        <FormControlLabel
+                                          control={<Radio value={60} name={`interval_1hour_day${dayIndex}`} />}
+                                          label="1 Hour"
+                                        />
+                                      )}
+                                    </RadioGroup>
+                                  </FormControl>
+                                </Box>
                               )}
                             </Grid>
-                          </Grid>
-                        ))}
+                          );
+                        })}
                       </>
                     )}
                   />
