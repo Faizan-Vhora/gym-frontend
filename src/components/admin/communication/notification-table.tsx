@@ -10,6 +10,7 @@ import {
   TableHead,
   TablePagination,
   TableRow,
+  Tooltip,
   Typography,
 } from '@mui/material';
 import { ToastContainer } from 'react-toastify'; // Import toast and ToastContainer
@@ -79,43 +80,44 @@ export function CommunicationTable({
               ) : (
                 entries.map((entry) => (
                   <TableRow hover key={entry.id} sx={tableCss.tableRow}>
-                    <TableCell
-                      sx={
-                        {
-                          // maxWidth: '400px !important',
-                          // overflow: 'hidden',
-                          // textOverflow: 'ellipsis !important',
-                          // textAlign: 'left',
-                        }
-                      }
-                    >
-                      <Typography variant="subtitle2">{entry?.title}</Typography>
-                      <Typography
-                        sx={{
-                          maxWidth: '380px !important',
-                          whiteSpace: 'nowrap',
-                          height: '60px',
-                          overflow: 'hidden',
-                          textOverflow: 'ellipsis !important',
-                          textAlign: 'left',
-                        }}
-                        color="textSecondary"
-                        variant="body2"
-                      >
-                        <span
-                          style={{
-                            display: 'block',
-                            maxWidth: '380px !important',
-                            whiteSpace: 'nowrap',
-                            height: '60px',
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis !important',
-                            textAlign: 'left',
-                          }}
-                          dangerouslySetInnerHTML={{ __html: entry?.message }}
-                        />
-                      </Typography>
-                    </TableCell>
+                    <TableCell>
+  <Typography variant="subtitle2">{entry?.title}</Typography>
+  <Typography
+    sx={{
+      whiteSpace: 'nowrap', // Prevents line breaks
+      overflow: 'hidden',  // Hides overflowing content
+      textOverflow: 'ellipsis', // Adds ellipsis to truncated text
+    }}
+    color="textSecondary"
+    variant="body2"
+  >
+    <Tooltip
+      title={
+        <div
+          dangerouslySetInnerHTML={{
+            __html: entry?.message?.replace(/<p>(&nbsp;|\s*)<\/p>/g, ''), // Removes empty <p> tags
+          }}
+        />
+      }
+      arrow
+    >
+      <span
+        className="communi-msg"
+        dangerouslySetInnerHTML={{
+          __html: entry?.message?.replace(/<p>(&nbsp;|\s*)<\/p>/g, ''), // Removes empty <p> tags
+        }}
+        style={{
+          display: 'inline-block', // Tooltip requires block-level or inline-block
+          maxWidth: '100%', // Prevent overflow
+          overflow: 'hidden', // Ensure content does not spill over
+          textOverflow: 'ellipsis', // Add ellipsis to overflowing text
+        }}
+      />
+    </Tooltip>
+  </Typography>
+</TableCell>
+
+
                     <TableCell sx={tableCss.tableCell}>{entry?.noOfNotifications}</TableCell>
                     <TableCell sx={tableCss.tableCell}>
                       {entry.updatedAt && (
