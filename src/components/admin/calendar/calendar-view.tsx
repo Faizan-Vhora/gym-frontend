@@ -33,7 +33,7 @@ import { BookingFormDialog } from './booking-form-dialog';
 import { CalendarContext } from './calendar-context';
 import { EventContent } from './event-content';
 import SlotRescheduleForm from './reschedule-session-dialog';
-import SessionNotesForm from './session-notes';
+// import SessionNotesForm from './session-notes';
 import SessionPreview from './session-view';
 import { Toolbar } from './toolbar';
 import type { ApiResponse, Event, SessionItem, ViewMode } from './types';
@@ -71,7 +71,7 @@ export function CalendarView({ view = 'dayGridMonth' }: CalendarViewProps): Reac
   const [statusFilter, setStatusFilter] = React.useState(searchParams.get('status') || 'ALL');
   // const [startDate, setStartDate] = React.useState<string | null>(null); // Keep as string
   // const [endDate, setEndDate] = React.useState<string | null>(null); // Keep as string
-  const [isDialogOpenForNotes, setIsDialogOpenForNotes] = React.useState(false);
+  // const [isDialogOpenForNotes, setIsDialogOpenForNotes] = React.useState(false);
   const [isDialogOpenForRechedule, setIsDialogOpenForRechedule] = React.useState(false);
 
   const bookingFormDialog = useDialog<BookingFormDialogData>();
@@ -238,33 +238,33 @@ export function CalendarView({ view = 'dayGridMonth' }: CalendarViewProps): Reac
     setIsDialogOpen(false);
   };
 
-  const handleNotesChange = async (payload: { notes: string }) => {
-    try {
-      // Call the API to update the notes
-      await axiosInstance.put(`/session-booking/session/notes/${selectedSession?.id}`, {
-        notes: payload.notes,
-      });
-      toast.success('Slot rescheduled successfully!');
-      setIsDialogOpenForNotes(false); // Close the dialog
+  // const handleNotesChange = async (payload: { notes: string }) => {
+  //   try {
+  //     // Call the API to update the notes
+  //     await axiosInstance.put(`/session-booking/session/notes/${selectedSession?.id}`, {
+  //       notes: payload.notes,
+  //     });
+  //     toast.success('Slot rescheduled successfully!');
+  //     setIsDialogOpenForNotes(false); // Close the dialog
 
-      await fetchEvents(); // Refresh events
-    } catch (error) {
-      toast.error('Failed to reschedule slot');
-    }
-  };
+  //     await fetchEvents(); // Refresh events
+  //   } catch (error) {
+  //     toast.error('Failed to reschedule slot');
+  //   }
+  // };
 
   const handleOpenRescheduleDialog = () => {
     setIsDialogOpenForRechedule(true);
   };
 
-  const handleOpenNotesDialog = () => {
-    setIsDialogOpenForNotes(true);
-  };
+  // const handleOpenNotesDialog = () => {
+  //   setIsDialogOpenForNotes(true);
+  // };
 
-  const handleDialogCloseForNotes = () => {
-    setIsDialogOpenForNotes(false);
-    setSelectedSession(null);
-  };
+  // const handleDialogCloseForNotes = () => {
+  //   setIsDialogOpenForNotes(false);
+  //   setSelectedSession(null);
+  // };
 
   const handleDialogCloseForRechedule = () => {
     setIsDialogOpenForRechedule(false);
@@ -422,14 +422,14 @@ export function CalendarView({ view = 'dayGridMonth' }: CalendarViewProps): Reac
       )}
 
       {/* change notes Dialog */}
-      {selectedSession && (
+      {/* {selectedSession && (
         <SessionNotesForm
           open={isDialogOpenForNotes}
           onClose={handleDialogCloseForNotes}
           onSubmit={handleNotesChange}
           sessionObj={selectedSession}
         />
-      )}
+      )} */}
 
       {/* change notes Dialog */}
       {selectedSession && (
@@ -438,7 +438,7 @@ export function CalendarView({ view = 'dayGridMonth' }: CalendarViewProps): Reac
           onClose={handleDialogClose}
           sessionObj={selectedSession}
           openRescheduleDialog={handleOpenRescheduleDialog}
-          openNotesDialog={handleOpenNotesDialog}
+          // openNotesDialog={handleOpenNotesDialog}
           onUpdateStatus={handleUpdateStatus}
         />
       )}

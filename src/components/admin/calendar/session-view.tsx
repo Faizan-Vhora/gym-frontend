@@ -1,6 +1,7 @@
 import React from 'react';
 import { useRouter } from 'next/navigation';
 import {
+  BOOKING_SESSION_PAYMENT_STATUS,
   BOOKING_SESSION_PAYMENT_STATUS_DETAILS,
   BOOKING_SESSION_STATUS_DETAILS,
   BOOKING_STATUS,
@@ -23,6 +24,7 @@ import {
 } from '@mui/material';
 import { Barbell, CurrencyDollar, Envelope, GenderIntersex, MapPin, PencilSimple, Phone } from '@phosphor-icons/react';
 import { toast } from 'react-toastify';
+import Swal from 'sweetalert2';
 
 import axiosInstance from '@/lib/axios';
 
@@ -44,16 +46,18 @@ const SessionPreview: React.FC<SessionNotesFormProps> = ({
   open,
   onClose,
   openRescheduleDialog,
-  openNotesDialog,
+  // openNotesDialog,
   onUpdateStatus,
   // onUpdateNotes,
 }) => {
   const statusDetail = BOOKING_SESSION_STATUS_DETAILS[sessionObj.status];
   const router = useRouter();
-  const PaymentStatus = BOOKING_SESSION_PAYMENT_STATUS_DETAILS[sessionObj.paymentStatus];
+
   const [isDialogOpenForNotes, setIsDialogOpenForNotes] = React.useState(false);
   const [selectedSession, setSelectedSession] = React.useState<BookingSessionEntry | null>(null);
   const [newNotes, setNewNotes] = React.useState<string | null>('');
+  const PaymentStatus =
+    BOOKING_SESSION_PAYMENT_STATUS_DETAILS[selectedSession?.paymentStatus || sessionObj.paymentStatus];
 
   const handleStatusChange = (id: string, newStatus: BookingSessionEntry['status']): void => {
     if (onUpdateStatus) {
@@ -85,6 +89,34 @@ const SessionPreview: React.FC<SessionNotesFormProps> = ({
       setSelectedSession(response.data.data);
     } catch (error) {
       toast.error('Failed to update notes');
+    }
+  };
+
+  const handleChipClick = async (sessionId: number): Promise<void> => {
+    const swalText = `Do you want to pay the session?`;
+    const swalConfirmButtonText = `Yes`;
+    const swalSuccessMessage = `The session has been paid`;
+
+    const result = await Swal.fire({
+      title: 'Are you sure?',
+      text: swalText,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: swalConfirmButtonText,
+      cancelButtonText: 'No',
+    });
+
+    if (result.isConfirmed) {
+      try {
+        const endpoint = `session-booking/session/payment/${sessionId}`;
+
+        const response = await axiosInstance.patch<{ data: BookingSessionEntry }>(endpoint);
+        setSelectedSession(response.data.data);
+        toast.success(swalSuccessMessage);
+      } catch (error) {
+        toast.error('Failed to update.');
+        await Swal.fire('Error!', 'Failed to update.', 'error');
+      }
     }
   };
 
@@ -504,8 +536,25 @@ const SessionPreview: React.FC<SessionNotesFormProps> = ({
             Reschedule Session
           </Button>
         )}
+        {selectedSession?.paymentStatus !== BOOKING_SESSION_PAYMENT_STATUS.CANCELED &&
+          selectedSession?.paymentStatus !== BOOKING_SESSION_PAYMENT_STATUS.PAID &&
+          selectedSession?.paymentStatus !== BOOKING_SESSION_PAYMENT_STATUS.COMPLETED &&
+          sessionObj.paymentStatus !== BOOKING_SESSION_PAYMENT_STATUS.CANCELED &&
+          sessionObj.paymentStatus !== BOOKING_SESSION_PAYMENT_STATUS.PAID &&
+          sessionObj.paymentStatus !== BOOKING_SESSION_PAYMENT_STATUS.COMPLETED && (
+            <Button
+              onClick={() => handleChipClick(sessionObj.id)}
+              className="btnsuccess"
+              sx={{
+                color: '#fff',
+                fontFamily: 'Audiowide, sans-serif !important',
+              }}
+            >
+              Pay Now
+            </Button>
+          )}
 
-        {openNotesDialog && (
+        {/* {openNotesDialog && (
           <Button
             sx={{ color: '#fff', fontFamily: 'Audiowide, sans-serif !important' }}
             onClick={openNotesDialog}
@@ -513,7 +562,7 @@ const SessionPreview: React.FC<SessionNotesFormProps> = ({
           >
             Update Notes
           </Button>
-        )}
+        )} */}
 
         {onUpdateStatus &&
           sessionObj.status !== BOOKING_STATUS.CANCELED &&
