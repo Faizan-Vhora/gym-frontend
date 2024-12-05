@@ -62,16 +62,10 @@ export function CalendarView({ view = 'dayGridMonth' }: CalendarViewProps): Reac
 
   const [isDialogOpen, setIsDialogOpen] = React.useState(false);
   const [searchTerm, setSearchTerm] = React.useState(searchParams.get('search') || '');
-  // const rawDateRange = searchParams.get('dateRange');
-  // const [start, end] = rawDateRange ? rawDateRange.split(',') : [null, null];
-  // const initialDateRange: DateRange<Dayjs> = [start ? dayjs(start) : null, end ? dayjs(end) : null];
-  // const [dateRange, setDateRange] = React.useState<DateRange<Dayjs>>(initialDateRange);
   const [trainer, selectedTrainer] = React.useState<number | null>(null);
   const [member, selectedMember] = React.useState<number | null>(null);
   const [statusFilter, setStatusFilter] = React.useState(searchParams.get('status') || 'ALL');
-  // const [startDate, setStartDate] = React.useState<string | null>(null); // Keep as string
-  // const [endDate, setEndDate] = React.useState<string | null>(null); // Keep as string
-  // const [isDialogOpenForNotes, setIsDialogOpenForNotes] = React.useState(false);
+
   const [isDialogOpenForRechedule, setIsDialogOpenForRechedule] = React.useState(false);
 
   const bookingFormDialog = useDialog<BookingFormDialogData>();
@@ -171,14 +165,6 @@ export function CalendarView({ view = 'dayGridMonth' }: CalendarViewProps): Reac
     setStatusFilter(status);
   };
 
-  // const handleStartDateChange = (startDate: string): void => {
-  //   setStarteDateFilter(startDate);
-  // };
-
-  // const handleEndDateChange = (endDate: string): void => {
-  //   setEndDateFilter(endDate);
-  // };
-
   const handleDateToday = React.useCallback(() => {
     const calendarApi = calendarRef.current?.getApi();
 
@@ -238,66 +224,14 @@ export function CalendarView({ view = 'dayGridMonth' }: CalendarViewProps): Reac
     setIsDialogOpen(false);
   };
 
-  // const handleNotesChange = async (payload: { notes: string }) => {
-  //   try {
-  //     // Call the API to update the notes
-  //     await axiosInstance.put(`/session-booking/session/notes/${selectedSession?.id}`, {
-  //       notes: payload.notes,
-  //     });
-  //     toast.success('Slot rescheduled successfully!');
-  //     setIsDialogOpenForNotes(false); // Close the dialog
-
-  //     await fetchEvents(); // Refresh events
-  //   } catch (error) {
-  //     toast.error('Failed to reschedule slot');
-  //   }
-  // };
-
   const handleOpenRescheduleDialog = () => {
     setIsDialogOpenForRechedule(true);
   };
-
-  // const handleOpenNotesDialog = () => {
-  //   setIsDialogOpenForNotes(true);
-  // };
-
-  // const handleDialogCloseForNotes = () => {
-  //   setIsDialogOpenForNotes(false);
-  //   setSelectedSession(null);
-  // };
 
   const handleDialogCloseForRechedule = () => {
     setIsDialogOpenForRechedule(false);
     setSelectedSession(null);
   };
-
-  // const handleEventResize = React.useCallback(
-  //   (arg: EventResizeDoneArg) => {
-  //     const { event } = arg;
-  //     updateEvent(event.id, { start: event.start!, end: event.end! });
-  //   },
-  //   [updateEvent]
-  // );
-
-  // const handleEventDrop = React.useCallback(
-  //   (arg: EventDropArg) => {
-  //     const { event } = arg;
-  //     updateEvent(event.id, { start: event.start!, end: event.end! });
-  //   },
-  //   [updateEvent]
-  // );
-
-  // const handleDateRangeChange = (newDateRange: [Dayjs | null, Dayjs | null]) => {
-  //   // Update the date range state
-  //   setDateRange(newDateRange);
-
-  //   // Destructure the newDateRange tuple
-  //   const [starts, ends] = newDateRange;
-
-  //   // Set formatted start and end dates, or null if undefined
-  //   setStartDate(starts ? starts.format('YYYY-MM-DD') : null);
-  //   setEndDate(ends ? ends.format('YYYY-MM-DD') : null);
-  // };
 
   const handleUpdateStatus = async (id: string, newStatus: BookingSessionEntry['status']): Promise<void> => {
     let swalText = `Do you want to change the status?`;
@@ -420,16 +354,6 @@ export function CalendarView({ view = 'dayGridMonth' }: CalendarViewProps): Reac
           sessionObj={selectedSession}
         />
       )}
-
-      {/* change notes Dialog */}
-      {/* {selectedSession && (
-        <SessionNotesForm
-          open={isDialogOpenForNotes}
-          onClose={handleDialogCloseForNotes}
-          onSubmit={handleNotesChange}
-          sessionObj={selectedSession}
-        />
-      )} */}
 
       {/* change notes Dialog */}
       {selectedSession && (
