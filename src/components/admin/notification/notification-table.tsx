@@ -12,6 +12,7 @@ import {
   TableHead,
   TablePagination,
   TableRow,
+  Tooltip,
   // Tooltip,
   Typography,
 } from '@mui/material';
@@ -169,30 +170,36 @@ export function NotificationTable({
                       <Typography variant="subtitle2" sx={{ fontWeight: entry.isRead ? 'normal' : 'bold' }}>
                         {entry?.title}
                       </Typography>
-                      <Typography
-                        color="textSecondary"
-                        variant="body2"
-                        sx={{ fontWeight: entry.isRead ? 'normal' : 'bold' }}
-                      >
-                        <span dangerouslySetInnerHTML={{ __html: entry?.message }} />
-                      </Typography>
 
-                      {/* {entry?.title} */}
-                    </TableCell>
-                    {/* <TableCell
-                      sx={{
-                        ...tableCss.tableCell,
-                        maxWidth: '80px !important',
-                        whiteSpace: 'nowrap',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis !important',
-                        textAlign: 'left',
-                      }}
-                    >
-                      <Tooltip title={stripHtml(entry?.message) || ''} arrow>
-                        <span dangerouslySetInnerHTML={{ __html: entry?.message }} />
+                      <Tooltip
+                        title={
+                          <div
+                            dangerouslySetInnerHTML={{
+                              __html: entry?.message?.replace(/<p>(?:&nbsp;|\s*)<\/p>/g, ''), // Remove empty <p> tags
+                            }}
+                          />
+                        }
+                        arrow
+                      >
+                        <Typography
+                          color="textSecondary"
+                          variant="body2"
+                          sx={{
+                            fontWeight: entry.isRead ? 'normal' : 'bold',
+                            maxWidth: '500px',
+                            whiteSpace: 'nowrap',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                          }}
+                        >
+                          <span
+                            dangerouslySetInnerHTML={{
+                              __html: entry?.message?.replace(/<p>(?:&nbsp;|\s*)<\/p>/g, ''), // Ensure empty <p> tags are removed
+                            }}
+                          />
+                        </Typography>
                       </Tooltip>
-                    </TableCell> */}
+                    </TableCell>
 
                     <TableCell sx={tableCss.tableCell}>
                       {entry.createdAt && (

@@ -187,7 +187,7 @@ body {
   font-family: '"Audiowide", sans-serif' !important;
 } */
    .communi-msg p {
-     max-width:400px !important;
+     max-width:800px !important;
      overflow: hidden;
      text-overflow: ellipsis !important;
      text-align: left;
