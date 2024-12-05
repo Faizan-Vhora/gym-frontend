@@ -20,9 +20,7 @@ export default function Page(): React.JSX.Element {
   // State variables
   const [entries, setEntries] = React.useState<NotificationEntry[]>([]);
   const [searchTerm, setSearchTerm] = React.useState(searchParams.get('search') || '');
-  const [page, setPage] = React.useState<number>(
-    searchParams.get('rowsPerPage') ? Number(searchParams.get('rowsPerPage')) : 0
-  );
+  const [page, setPage] = React.useState<number>(searchParams.get('page') ? Number(searchParams.get('page')) : 0);
   const [rowsPerPage, setRowsPerPage] = React.useState(
     searchParams.get('rowsPerPage') ? Number(searchParams.get('rowsPerPage')) : 10
   );
@@ -48,13 +46,12 @@ export default function Page(): React.JSX.Element {
       setCount(response.data.data.meta.totalItems);
     } catch (error: unknown) {
       error instanceof Error ? error.message : 'An unexpected error occurred';
-      await Swal.fire('Error!', 'Something went wrong.', 'error');
     } finally {
       setLoading(false);
     }
   }, [page, rowsPerPage, searchTerm]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     updateUrlPathQueryParams();
   }, [searchTerm, page, rowsPerPage]);
 

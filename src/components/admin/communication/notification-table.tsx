@@ -62,11 +62,10 @@ export function CommunicationTable({
           <Table sx={{ minWidth: '800px' }}>
             <TableHead>
               <TableRow sx={tableCss.tableRow}>
-                <TableCell sx={tableCss.tableHeaderCell}>Title</TableCell>
                 <TableCell sx={tableCss.tableHeaderCell}>Message</TableCell>
-                <TableCell sx={tableCss.tableHeaderCell}>Users Count</TableCell>
-                <TableCell sx={tableCss.tableHeaderCell}>Created At</TableCell>
-                <TableCell sx={tableCss.tableHeaderCell}>Action</TableCell>
+                <TableCell sx={{ ...tableCss.tableHeaderCell, textAlign: 'center' }}>Users Count</TableCell>
+                <TableCell sx={{ ...tableCss.tableHeaderCell, textAlign: 'center' }}>Created At</TableCell>
+                <TableCell sx={{ ...tableCss.tableHeaderCell, textAlign: 'center' }}>Action</TableCell>
               </TableRow>
             </TableHead>
 
@@ -80,8 +79,43 @@ export function CommunicationTable({
               ) : (
                 entries.map((entry) => (
                   <TableRow hover key={entry.id} sx={tableCss.tableRow}>
-                    <TableCell sx={tableCss.tableCell}>{entry?.title}</TableCell>
-                    <TableCell sx={tableCss.tableCell} dangerouslySetInnerHTML={{ __html: entry?.message }} />
+                    <TableCell
+                      sx={
+                        {
+                          // maxWidth: '400px !important',
+                          // overflow: 'hidden',
+                          // textOverflow: 'ellipsis !important',
+                          // textAlign: 'left',
+                        }
+                      }
+                    >
+                      <Typography variant="subtitle2">{entry?.title}</Typography>
+                      <Typography
+                        sx={{
+                          maxWidth: '380px !important',
+                          whiteSpace: 'nowrap',
+                          height: '60px',
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis !important',
+                          textAlign: 'left',
+                        }}
+                        color="textSecondary"
+                        variant="body2"
+                      >
+                        <span
+                          style={{
+                            display: 'block',
+                            maxWidth: '380px !important',
+                            whiteSpace: 'nowrap',
+                            height: '60px',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis !important',
+                            textAlign: 'left',
+                          }}
+                          dangerouslySetInnerHTML={{ __html: entry?.message }}
+                        />
+                      </Typography>
+                    </TableCell>
                     <TableCell sx={tableCss.tableCell}>{entry?.noOfNotifications}</TableCell>
                     <TableCell sx={tableCss.tableCell}>
                       {entry.updatedAt && (
